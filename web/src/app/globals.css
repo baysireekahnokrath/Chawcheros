@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Chaw Cher OS — โทนสีอบอุ่น มินิมอล ตามแบรนด์เฟอร์นิเจอร์ไม้
+   มือถือมาก่อน desktop เป็นรอง (กฎ A9)
+--------------------------------------------------------------------------- */
+:root {
+  --bg:        #faf9f7;
+  --surface:   #ffffff;
+  --border:    #e7e2db;
+  --text:      #1c1917;
+  --muted:     #78716c;
+  --accent:    #6b5b4a;
+  --accent-fg: #ffffff;
+  --ok:        #3f6f4f;
+  --warn:      #9a6b23;
+  --danger:    #9b3232;
+  --locked:    #7c3f58;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:      #171513;
+    --surface: #211e1b;
+    --border:  #38322c;
+    --text:    #f5f2ee;
+    --muted:   #a8a29e;
+    --accent:  #c4ad94;
+    --accent-fg: #1c1917;
+    --ok:      #7fb08d;
+    --warn:    #d5a45c;
+    --danger:  #e08a8a;
+    --locked:  #d49bb6;
+  }
+}
+
+@theme inline {
+  --color-bg:        var(--bg);
+  --color-surface:   var(--surface);
+  --color-border:    var(--border);
+  --color-text:      var(--text);
+  --color-muted:     var(--muted);
+  --color-accent:    var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-ok:        var(--ok);
+  --color-warn:      var(--warn);
+  --color-danger:    var(--danger);
+  --color-locked:    var(--locked);
+  --font-sans:       var(--font-thai);
+}
+
+html, body { background: var(--bg); color: var(--text); }
+body { font-family: var(--font-thai), system-ui, sans-serif; }
+
+/* ปุ่มบนมือถือต้องกดง่าย — อย่างน้อย 44px ตามมาตรฐาน touch target */
+@media (pointer: coarse) {
+  button, a[role="button"], input, select { min-height: 44px; }
+}

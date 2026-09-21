@@ -294,3 +294,24 @@ OPEN-13 (แผนก) · OPEN-14 (จำนวนคน) · OPEN-15 (Excel+ส�
 OPEN-19 (7,000 = Line OA) · OPEN-21 (ได้ CSV แล้ว) · OPEN-22 (เพดานส่วนลด + ขั้นบันได) ·
 OPEN-23 (Bareo ขายจริง) · OPEN-24 (HOF ยังไม่ส่ง) · OPEN-26 (Size CM ทิ้งได้) ·
 OPEN-27 (คลัง = ASE/Showroom/Chaw Cher Home/ชอบใจ/อื่นๆ) · OPEN-28 (memo ธรรมดา)
+
+---
+
+## K. ข้อจำกัดที่เจอตอนสร้างเว็บแอป (2026-09-21)
+
+### `*.supabase.co` ถูกบล็อกใน session พัฒนา
+
+proxy ตอบตรงๆ ว่า `connect_rejected — the egress proxy denied the CONNECT (organization policy)`
+
+| ทำอะไรได้ | ทำไม |
+|---|---|
+| ✅ แก้ฐานข้อมูล · รัน SQL · ตรวจ advisor | ผ่าน MCP ซึ่งวิ่งผ่านเซิร์ฟเวอร์ Anthropic ไม่ใช่ network ของ session |
+| ✅ `npm run build` · typecheck · ทดสอบ SQL ใน Postgres เครื่อง | ไม่ต้องออก network |
+| ❌ **ทดสอบเว็บแอปผ่านเบราว์เซอร์** | เบราว์เซอร์ต้องเรียก supabase.co ตรงๆ ซึ่งถูกบล็อก |
+
+**ทางแก้ 2 ทาง** — ดู `web/README.md`
+
+### หมายเหตุ: bootstrap ยังไม่ถูกใช้
+
+`core.app_users` ยังเป็น 0 แถว → สิทธิ์ "คนแรก = เจ้าของ" ยังรอ Bay อยู่
+ผู้ใช้ทดสอบที่สร้างระหว่าง debug ถูกลบทิ้งแล้ว (auth.users = 0)
