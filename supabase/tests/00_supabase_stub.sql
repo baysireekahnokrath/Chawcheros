@@ -6,7 +6,7 @@ create or replace function auth.uid() returns uuid
 do $$
 declare r text;
 begin
-  foreach r in array array['authenticated','anon','service_role'] loop
+  foreach r in array array['authenticated','anon','service_role','authenticator'] loop
     if not exists (select 1 from pg_roles where rolname = r) then
       execute format('create role %I', r);
     end if;
