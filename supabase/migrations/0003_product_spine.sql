@@ -72,6 +72,10 @@ create table product_variants (
   product_id     uuid not null references products(id),
 
   configuration  text,        -- '3 ที่นั่ง' · 'L-shape' · 'Corner Sofa' · '5 ฟุต'
+  seat_count     numeric(3,1),-- 1 · 1.5 · 2 · 3
+  arm_config     text,        -- 'ไม่มีแขน' · '1 แขนซ้าย' · '1 แขนขวา' · '2 แขน'
+  is_modular     boolean not null default false,
+
   width_cm       numeric(7,1),
   depth_cm       numeric(7,1),
   height_cm      numeric(7,1),
@@ -93,6 +97,11 @@ create table product_variants (
 
 comment on column product_variants.sku is
   'SKU 8 หลัก · ออกโดยระบบเท่านั้น · ห้ามแก้ตลอดชีวิตสินค้า (กฎ A3)';
+comment on column product_variants.arm_config is
+  'โรงงานทำหลายแบบเพื่อเอาไปต่อ modular — 1 ที่นั่งอาจเป็นอาร์มแชร์ '
+  'หรือตัวกลางไม่มีแขน หรือตัวมุมมีแขนข้างเดียว จึงต้องแยกเป็นคนละ SKU';
+comment on column product_variants.is_modular is
+  'true = ตัวนี้เอาไปต่อกับตัวอื่นได้';
 comment on column product_variants.superseded_by is
   'ถ้าวันหนึ่งย้ายไปแบบ ข. (แยกทุกสีผ้า): SKU เดิมไม่ถูกแก้ แต่ชี้มาที่ตัวใหม่ '
   'ออเดอร์เก่ายังอ่านออกเหมือนเดิม';
