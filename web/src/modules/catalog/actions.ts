@@ -104,6 +104,49 @@ export async function approveGroup(collection: string, category: string): Promis
   return { ok: true, count: (data as number) ?? 0 };
 }
 
+/**
+ * อนุมัติเฉพาะตัวที่เลือก
+ *
+ * บางกลุ่มมีของคนละตัวปนกัน เช่น กางเขน · ตู้เก็บของ มีสูง 126.5 กับสูง 80
+ * ตัวหนึ่งยังขาย อีกตัวเลิกแล้ว ถ้าเลือกได้แค่ "ทั้งกลุ่ม" ก็บอกระบบไม่ได้
+ */
+export async function approveRows(ids: string[]): Promise<ActionResult> {
+  if (ids.length === 0) return { ok: false, error: 'ยังไม่ได้เลือกตัวไหนเลย' };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema('catalog')
+    .rpc('approve_import_rows', { p_ids: ids });
+
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/review');
+  return { ok: true, count: (data as number) ?? 0 };
+}
+
+/** ไม่เอาเฉพาะตัวที่เลือก — เปลี่ยนสถานะ ไม่ได้ลบ (กฎ A7) */
+export async function rejectRows(ids: string[], note: string): Promise<ActionResult> {
+  if (ids.length === 0) return { ok: false, error: 'ยังไม่ได้เลือกตัวไหนเลย' };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema('catalog')
+    .from('import_variants')
+    .update({
+      review_status: 'ไม่เอา',
+      review_note: note.trim() || null,
+      reviewed_at: new Date().toISOString(),
+    })
+    .in('id', ids)
+    .eq('review_status', 'รอตรวจ')
+    .select('id');
+
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/review');
+  return { ok: true, count: data?.length ?? 0 };
+}
+
 /** ไม่เอากลุ่มนี้ — เปลี่ยนสถานะ ไม่ได้ลบ (กฎ A7 ห้าม DELETE) */
 export async function rejectGroup(
   collection: string,
