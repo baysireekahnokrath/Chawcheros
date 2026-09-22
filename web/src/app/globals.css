@@ -56,3 +56,26 @@ body { font-family: var(--font-thai), system-ui, sans-serif; }
 @media (pointer: coarse) {
   button, a[role="button"], input, select { min-height: 44px; }
 }
+
+/* ---------------------------------------------------------------------------
+   พิมพ์สติกเกอร์ QR
+   หน้าเว็บทั้งหน้ามีหัวเมนูและปุ่มเต็มไปหมด ซึ่งไม่ควรติดไปบนกระดาษ
+   และ QR ต้องพิมพ์เป็นสีดำบนขาวเสมอ ไม่งั้นโหมดมืดจะพิมพ์ออกมาสแกนไม่ติด
+--------------------------------------------------------------------------- */
+@media print {
+  header, nav, footer { display: none !important; }
+  main { max-width: none !important; padding: 0 !important; }
+
+  /* บังคับขาวดำ ไม่ว่าเครื่องคนพิมพ์จะตั้งโหมดไหนอยู่ */
+  :root, :root[data-theme="dark"] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --text: #000000;
+    --muted: #444444;
+    --border: #999999;
+  }
+  html, body { background: #fff !important; color: #000 !important; }
+  svg { color: #000 !important; }
+
+  @page { margin: 8mm; }
+}
