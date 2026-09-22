@@ -244,3 +244,103 @@ export async function addVariantFromBase(formData: FormData): Promise<ActionResu
   revalidatePath('/catalog/products');
   return { ok: true };
 }
+
+export type GroupRef = { collection: string; category: string };
+
+/**
+ * อนุมัติสิ่งที่เลือกไว้ทั้งหมดในครั้งเดียว
+ *
+ * หน้าตรวจให้ติ๊กได้สองระดับ ติ๊กทั้งกลุ่มที่หัวการ์ด หรือกางลงมาติ๊กทีละตัว
+ * ถ้าให้เบราว์เซอร์ไล่ยิงทีละกลุ่ม 95 กลุ่มจะเป็น 95 รอบ และถ้าหลุดกลางทาง
+ * จะไม่รู้ว่าอนุมัติไปถึงไหนแล้ว — รวบมาทำในรอบเดียวจึงตรงไปตรงมากว่า
+ */
+export async function approveSelection(
+  wholeGroups: GroupRef[],
+  rowIds: string[],
+): Promise<ActionResult> {
+  if (wholeGroups.length === 0 && rowIds.length === 0) {
+    return { ok: false, error: 'ยังไม่ได้เลือกอะไรเลย' };
+  }
+
+  const supabase = await createClient();
+  let total = 0;
+
+  for (const g of wholeGroups) {
+    const { data, error } = await supabase
+      .schema('catalog')
+      .rpc('approve_import_group', { p_collection: g.collection, p_category: g.category });
+    if (error) {
+      return {
+        ok: false,
+        error: `อนุมัติ "${g.collection} · ${g.category}" ไม่สำเร็จ: ${error.message}` +
+               (total > 0 ? ` — ก่อนหน้านี้อนุมัติไปแล้ว ${total} ตัว` : ''),
+      };
+    }
+    total += (data as number) ?? 0;
+  }
+
+  if (rowIds.length > 0) {
+    const { data, error } = await supabase
+      .schema('catalog')
+      .rpc('approve_import_rows', { p_ids: rowIds });
+    if (error) {
+      return {
+        ok: false,
+        error: `${error.message}` + (total > 0 ? ` — ก่อนหน้านี้อนุมัติไปแล้ว ${total} ตัว` : ''),
+      };
+    }
+    total += (data as number) ?? 0;
+  }
+
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/review');
+  return { ok: true, count: total };
+}
+
+/** ไม่เอาสิ่งที่เลือกไว้ทั้งหมด — เปลี่ยนสถานะ ไม่ได้ลบ (กฎ A7) */
+export async function rejectSelection(
+  wholeGroups: GroupRef[],
+  rowIds: string[],
+  note: string,
+): Promise<ActionResult> {
+  if (wholeGroups.length === 0 && rowIds.length === 0) {
+    return { ok: false, error: 'ยังไม่ได้เลือกอะไรเลย' };
+  }
+
+  const supabase = await createClient();
+  const patch = {
+    review_status: 'ไม่เอา',
+    review_note: note.trim() || null,
+    reviewed_at: new Date().toISOString(),
+  };
+  let total = 0;
+
+  for (const g of wholeGroups) {
+    const { data, error } = await supabase
+      .schema('catalog')
+      .from('import_variants')
+      .update(patch)
+      .eq('collection', g.collection)
+      .eq('category', g.category)
+      .eq('review_status', 'รอตรวจ')
+      .select('id');
+    if (error) return { ok: false, error: error.message };
+    total += data?.length ?? 0;
+  }
+
+  if (rowIds.length > 0) {
+    const { data, error } = await supabase
+      .schema('catalog')
+      .from('import_variants')
+      .update(patch)
+      .in('id', rowIds)
+      .eq('review_status', 'รอตรวจ')
+      .select('id');
+    if (error) return { ok: false, error: error.message };
+    total += data?.length ?? 0;
+  }
+
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/review');
+  return { ok: true, count: total };
+}

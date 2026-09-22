@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { approveRows, rejectRows, fetchGroupRows } from '@/modules/catalog/actions';
+import {
+  approveSelection,
+  rejectSelection,
+  fetchGroupRows,
+  type GroupRef,
+} from '@/modules/catalog/actions';
 import type { ImportGroup, ImportRow } from '@/modules/catalog/queries';
 
 const baht = (n: number | null) =>
@@ -22,14 +27,7 @@ const dimsOf = (r: ImportRow) =>
   [r.width_cm, r.depth_cm, r.height_cm].map((v) => v ?? '—').join('×') +
   (r.seat_height_cm !== null ? ` (นั่ง ${r.seat_height_cm})` : '');
 
-/**
- * หาว่าในกลุ่มนี้ ช่องไหนที่ค่าไม่เหมือนกัน
- *
- * เดิมผมเขียนว่า "ถ้ามีเกรดผ้าให้โชว์เกรดผ้า ไม่งั้นค่อยโชว์ไม้"
- * ผลคือ กีวี่ อาร์มแชร์ ไม้วอลนัท 39,600 กับ ไม้โอ๊ค 33,600
- * ขึ้นหน้าจอว่า "ผ้า A" เหมือนกันทั้งคู่ คนตรวจแยกไม่ออกว่าตัวไหนเป็นตัวไหน
- * เลิกเดาว่าช่องไหนสำคัญ — แสดงทุกช่องที่มีค่า แล้วเน้นช่องที่ต่างกัน
- */
+/** ช่องไหนในกลุ่มนี้ที่ค่าไม่เหมือนกัน — ช่องพวกนั้นคือตัวที่ทำให้แต่ละตัวต่างกัน */
 function varyingFields(rows: ImportRow[]): Set<string> {
   const out = new Set<string>();
   for (const [k] of ATTRS) {
@@ -40,13 +38,21 @@ function varyingFields(rows: ImportRow[]): Set<string> {
   return out;
 }
 
+/**
+ * สิ่งที่เลือกไว้ของกลุ่มหนึ่ง
+ *   'all'  = ติ๊กทั้งกลุ่มที่หัวการ์ด ยังไม่ต้องรู้ว่าข้างในมีอะไรบ้าง
+ *   Set    = กางลงมาแล้วติ๊กทีละตัว
+ * แยกสองแบบเพราะติ๊กทั้งกลุ่มต้องทำได้โดยไม่ต้องโหลดแถวก่อน
+ */
+type Pick = 'all' | Set<string>;
+
 export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [rows, setRows] = useState<Record<string, ImportRow[]>>({});
-  const [picked, setPicked] = useState<Record<string, Set<string>>>({});
-  const [busy, setBusy] = useState<string | null>(null);
+  const [sel, setSel] = useState<Record<string, Pick>>({});
   const [error, setError] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false);
+  const [busy, startBusy] = useTransition();
   const [, start] = useTransition();
   const router = useRouter();
 
@@ -54,144 +60,181 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
   const doneGroups = groups.filter((g) => !isPending(g));
   const visible = showDone ? groups : pendingGroups;
 
-  function toggleGroup(g: ImportGroup) {
-    const k = key(g);
-    if (openKey === k) { setOpenKey(null); return; }
-    setOpenKey(k);
-    if (rows[k]) return;
+  const pendingRowsOf = (k: string) =>
+    (rows[k] ?? []).filter((r) => r.review_status === 'รอตรวจ');
 
+  /** จำนวนตัวที่เลือกไว้ในกลุ่มนี้ */
+  function countIn(g: ImportGroup): number {
+    const p = sel[key(g)];
+    if (p === undefined) return 0;
+    if (p === 'all') return g.รอตรวจ;
+    return p.size;
+  }
+
+  function loadRows(g: ImportGroup, then?: (rs: ImportRow[]) => void) {
+    const k = key(g);
+    if (rows[k]) { then?.(rows[k]); return; }
     start(async () => {
       const res = await fetchGroupRows(g.collection, g.category);
       if (!res.ok) { setError(res.error); return; }
       setRows((prev) => ({ ...prev, [k]: res.rows }));
-      // เปิดมาติ๊กไว้ทุกตัวก่อน — ส่วนใหญ่เอาทั้งกลุ่ม คนตรวจค่อยเอาออกทีละตัว
-      setPicked((prev) => ({
-        ...prev,
-        [k]: new Set(res.rows.filter((r) => r.review_status === 'รอตรวจ').map((r) => r.id)),
-      }));
+      then?.(res.rows);
     });
   }
 
-  function toggleRow(k: string, id: string) {
-    setPicked((prev) => {
-      const next = new Set(prev[k] ?? []);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return { ...prev, [k]: next };
-    });
-  }
-
-  function pickAll(k: string, all: boolean) {
-    const pendingIds = (rows[k] ?? []).filter((r) => r.review_status === 'รอตรวจ').map((r) => r.id);
-    setPicked((prev) => ({ ...prev, [k]: new Set(all ? pendingIds : []) }));
-  }
-
-  /** ตัวที่เลือกอยู่ · ถ้ายังไม่เปิดดูรายละเอียด ถือว่าเลือกทั้งกลุ่ม */
-  function chosen(g: ImportGroup): string[] | null {
+  function toggleOpen(g: ImportGroup) {
     const k = key(g);
-    if (!rows[k]) return null;              // null = ยังไม่โหลด ใช้ทั้งกลุ่ม
-    return Array.from(picked[k] ?? []);
+    if (openKey === k) { setOpenKey(null); return; }
+    setOpenKey(k);
+    loadRows(g);
   }
 
-  function countFor(g: ImportGroup): number {
-    const c = chosen(g);
-    return c === null ? g.รอตรวจ : c.length;
+  /** ติ๊กที่หัวกลุ่ม = เลือก/ไม่เลือกทั้งกลุ่ม */
+  function toggleGroupPick(g: ImportGroup) {
+    const k = key(g);
+    setSel((prev) => {
+      const next = { ...prev };
+      if (next[k] === undefined) next[k] = 'all';
+      else delete next[k];
+      return next;
+    });
   }
 
-  async function idsFor(g: ImportGroup): Promise<string[]> {
-    const c = chosen(g);
-    if (c !== null) return c;
-    const res = await fetchGroupRows(g.collection, g.category);
-    if (!res.ok) throw new Error(res.error);
-    return res.rows.filter((r) => r.review_status === 'รอตรวจ').map((r) => r.id);
+  /** ติ๊กรายตัว — ถ้าก่อนหน้าเป็น 'all' ต้องกางออกเป็นรายตัวก่อน */
+  function toggleRowPick(g: ImportGroup, id: string) {
+    const k = key(g);
+    const all = pendingRowsOf(k).map((r) => r.id);
+    setSel((prev) => {
+      const cur = prev[k];
+      const set = cur === 'all' ? new Set(all) : new Set(cur ?? []);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      const next = { ...prev };
+      if (set.size === 0) delete next[k];
+      else next[k] = set;
+      return next;
+    });
   }
 
-  function onApprove(g: ImportGroup) {
-    const n = countFor(g);
-    if (n === 0) { setError('ยังไม่ได้เลือกตัวไหนเลย'); return; }
+  function pickAllVisible(on: boolean) {
+    if (!on) { setSel({}); return; }
+    const next: Record<string, Pick> = {};
+    for (const g of pendingGroups) next[key(g)] = 'all';
+    setSel(next);
+  }
+
+  /** แยกสิ่งที่เลือกเป็น "ทั้งกลุ่ม" กับ "รายตัว" เพื่อส่งให้ server */
+  function splitSelection(): { wholeGroups: GroupRef[]; rowIds: string[]; total: number } {
+    const wholeGroups: GroupRef[] = [];
+    const rowIds: string[] = [];
+    let total = 0;
+
+    for (const g of pendingGroups) {
+      const p = sel[key(g)];
+      if (p === undefined) continue;
+      if (p === 'all') {
+        wholeGroups.push({ collection: g.collection, category: g.category });
+        total += g.รอตรวจ;
+      } else {
+        for (const id of p) rowIds.push(id);
+        total += p.size;
+      }
+    }
+    return { wholeGroups, rowIds, total };
+  }
+
+  function afterWrite() {
+    setSel({});
+    setRows({});
+    setOpenKey(null);
+    router.refresh();
+  }
+
+  function onApprove() {
+    const { wholeGroups, rowIds, total } = splitSelection();
+    if (total === 0) return;
     if (!confirm(
-      `อนุมัติ ${n} ตัว ในรุ่น "${g.collection} · ${g.category}" ใช่ไหม\n\n` +
-      `จะออก SKU ให้ ${n} ตัวนี้\n` +
+      `อนุมัติ ${total} ตัว ใช่ไหม\n\n` +
+      `จะออก SKU ให้ ${total} ตัวนี้\n` +
       `SKU ออกแล้วออกเลย ใช้ซ้ำไม่ได้ และแก้ไม่ได้ตลอดอายุสินค้า`,
     )) return;
 
     setError(null);
-    setBusy(key(g));
-    start(async () => {
-      try {
-        const res = await approveRows(await idsFor(g));
-        if (!res.ok) setError(res.error);
-        else { setRows((p) => { const q = { ...p }; delete q[key(g)]; return q; }); router.refresh(); }
-      } catch (e) {
-        setError(e instanceof Error ? e.message : String(e));
-      } finally {
-        setBusy(null);
-      }
+    startBusy(async () => {
+      const res = await approveSelection(wholeGroups, rowIds);
+      if (!res.ok) setError(res.error);
+      else afterWrite();
     });
   }
 
-  function onReject(g: ImportGroup) {
-    const n = countFor(g);
-    if (n === 0) { setError('ยังไม่ได้เลือกตัวไหนเลย'); return; }
+  function onReject() {
+    const { wholeGroups, rowIds, total } = splitSelection();
+    if (total === 0) return;
     const note = prompt(
-      `ไม่เอา ${n} ตัว ในรุ่น "${g.collection} · ${g.category}" — เพราะอะไร?\n\n` +
-      `(เช่น เลิกขายแล้ว / ซ้ำกับรุ่นอื่น / ราคายังไม่นิ่ง)\n` +
+      `ไม่เอา ${total} ตัว — เพราะอะไร?\n\n` +
+      `(เช่น เลิกขายแล้ว / ซ้ำกับรุ่นอื่น / สีเลือกตอนสั่ง)\n` +
       `ข้อมูลไม่ได้ถูกลบ แค่เปลี่ยนสถานะ ย้อนดูทีหลังได้`,
       '',
     );
     if (note === null) return;
 
     setError(null);
-    setBusy(key(g));
-    start(async () => {
-      try {
-        const res = await rejectRows(await idsFor(g), note);
-        if (!res.ok) setError(res.error);
-        else { setRows((p) => { const q = { ...p }; delete q[key(g)]; return q; }); router.refresh(); }
-      } catch (e) {
-        setError(e instanceof Error ? e.message : String(e));
-      } finally {
-        setBusy(null);
-      }
+    startBusy(async () => {
+      const res = await rejectSelection(wholeGroups, rowIds, note);
+      if (!res.ok) setError(res.error);
+      else afterWrite();
     });
   }
 
-  const total = groups.length;
+  const { total: picked } = splitSelection();
+  const pickedGroups = Object.keys(sel).length;
+  const totalGroups = groups.length;
   const done = doneGroups.length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-28">
       <div className="rounded-2xl border border-border bg-surface p-4">
         <div className="flex items-baseline justify-between">
-          <span className="text-sm font-medium">ตรวจแล้ว {done} จาก {total} กลุ่ม</span>
-          <span className="text-xs text-muted">เหลือ {total - done}</span>
+          <span className="text-sm font-medium">ตรวจแล้ว {done} จาก {totalGroups} กลุ่ม</span>
+          <span className="text-xs text-muted">เหลือ {totalGroups - done}</span>
         </div>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-border">
           <div
             className="h-full rounded-full bg-ok transition-all"
-            style={{ width: total === 0 ? '0%' : `${(done / total) * 100}%` }}
+            style={{ width: totalGroups === 0 ? '0%' : `${(done / totalGroups) * 100}%` }}
           />
         </div>
-        {doneGroups.length > 0 && (
-          <button
-            onClick={() => setShowDone((v) => !v)}
-            className="mt-3 text-xs text-accent underline-offset-2 hover:underline"
-          >
-            {showDone ? 'ซ่อนกลุ่มที่ตรวจแล้ว' : `แสดงกลุ่มที่ตรวจแล้วด้วย (${done})`}
-          </button>
-        )}
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs">
+          {pendingGroups.length > 0 && (
+            <>
+              <button onClick={() => pickAllVisible(true)} className="text-accent">
+                เลือกทุกกลุ่มที่เหลือ ({pendingGroups.length})
+              </button>
+              {pickedGroups > 0 && (
+                <button onClick={() => pickAllVisible(false)} className="text-accent">
+                  ล้างที่เลือก
+                </button>
+              )}
+            </>
+          )}
+          {doneGroups.length > 0 && (
+            <button onClick={() => setShowDone((v) => !v)} className="text-accent">
+              {showDone ? 'ซ่อนกลุ่มที่ตรวจแล้ว' : `แสดงกลุ่มที่ตรวจแล้ว (${done})`}
+            </button>
+          )}
+        </div>
       </div>
 
       {error && (
         <div className="rounded-2xl border border-danger/40 bg-danger/5 p-4 text-sm">
           <div className="font-medium text-danger">ทำรายการไม่สำเร็จ</div>
-          <p className="mt-1">{error}</p>
+          <p className="mt-1 whitespace-pre-wrap">{error}</p>
         </div>
       )}
 
       {visible.length === 0 && (
         <p className="rounded-2xl border border-border bg-surface p-6 text-center text-sm text-muted">
-          {total === 0
+          {totalGroups === 0
             ? 'ยังไม่มีข้อมูลรอตรวจ — ไปอัปโหลดไฟล์ราคาก่อน'
             : 'ตรวจครบทุกกลุ่มแล้ว 🎉'}
         </p>
@@ -201,52 +244,70 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
         {visible.map((g) => {
           const k = key(g);
           const open = openKey === k;
-          const working = busy === k;
           const pending = isPending(g);
+          const p = sel[k];
+          const n = countIn(g);
           const loaded = rows[k];
-          const sel = picked[k] ?? new Set<string>();
-          const n = countFor(g);
-          const pendingInGroup = (loaded ?? []).filter((r) => r.review_status === 'รอตรวจ');
-          const partial = loaded != null && n > 0 && n < pendingInGroup.length;
+          const pend = pendingRowsOf(k);
+          const partial = p !== undefined && p !== 'all' && loaded != null && p.size < pend.length;
 
           return (
-            <li key={k} className="overflow-hidden rounded-2xl border border-border bg-surface">
-              <button
-                onClick={() => toggleGroup(g)}
-                aria-expanded={open}
-                className="flex w-full items-start justify-between gap-3 p-4 text-left"
-              >
-                <div className="min-w-0">
-                  <div className="font-medium">{g.collection}</div>
-                  <div className="text-sm text-muted">{g.category}</div>
-                  <div className="mt-1.5 text-xs text-muted">
-                    {g.จำนวนแถว} ตัว · {baht(g.ราคาต่ำสุด)}–{baht(g.ราคาสูงสุด)} บาท
-                  </div>
-                </div>
-                <div className="shrink-0 text-right">
-                  {pending ? (
-                    <span className="rounded-lg bg-warn/10 px-2 py-1 text-xs text-warn">
-                      รอตรวจ {g.รอตรวจ}
-                    </span>
-                  ) : (
-                    <span className="rounded-lg bg-ok/10 px-2 py-1 text-xs text-ok">
-                      {g.อนุมัติแล้ว > 0 ? `อนุมัติ ${g.อนุมัติแล้ว}` : ''}
-                      {g.อนุมัติแล้ว > 0 && g.ไม่เอา > 0 ? ' · ' : ''}
-                      {g.ไม่เอา > 0 ? `ไม่เอา ${g.ไม่เอา}` : ''}
-                    </span>
-                  )}
-                  <div className="mt-1 text-xs text-muted">{open ? '▲' : '▼'}</div>
-                </div>
-              </button>
+            <li
+              key={k}
+              className={
+                'overflow-hidden rounded-2xl border bg-surface transition ' +
+                (n > 0 ? 'border-accent' : 'border-border')
+              }
+            >
+              <div className="flex items-start gap-3 p-4">
+                {pending && (
+                  <input
+                    type="checkbox"
+                    checked={n > 0}
+                    ref={(el) => { if (el) el.indeterminate = !!partial; }}
+                    onChange={() => toggleGroupPick(g)}
+                    aria-label={`เลือกทั้งกลุ่ม ${g.collection} ${g.category}`}
+                    className="mt-1 h-5 w-5 shrink-0 accent-[var(--accent)]"
+                  />
+                )}
 
-              <div className="border-t border-border px-4 py-3 text-xs text-muted">
+                <button
+                  onClick={() => toggleOpen(g)}
+                  aria-expanded={open}
+                  className="flex min-w-0 flex-1 items-start justify-between gap-3 text-left"
+                >
+                  <div className="min-w-0">
+                    <div className="font-medium">{g.collection}</div>
+                    <div className="text-sm text-muted">{g.category}</div>
+                    <div className="mt-1.5 text-xs text-muted">
+                      {g.จำนวนแถว} ตัว · {baht(g.ราคาต่ำสุด)}–{baht(g.ราคาสูงสุด)} บาท
+                    </div>
+                    {partial && (
+                      <div className="mt-1 text-xs text-accent">เลือกไว้ {n} จาก {pend.length} ตัว</div>
+                    )}
+                  </div>
+                  <div className="shrink-0 text-right">
+                    {pending ? (
+                      <span className="rounded-lg bg-warn/10 px-2 py-1 text-xs text-warn">
+                        รอตรวจ {g.รอตรวจ}
+                      </span>
+                    ) : (
+                      <span className="rounded-lg bg-ok/10 px-2 py-1 text-xs text-ok">
+                        {g.อนุมัติแล้ว > 0 ? `อนุมัติ ${g.อนุมัติแล้ว}` : ''}
+                        {g.อนุมัติแล้ว > 0 && g.ไม่เอา > 0 ? ' · ' : ''}
+                        {g.ไม่เอา > 0 ? `ไม่เอา ${g.ไม่เอา}` : ''}
+                      </span>
+                    )}
+                    <div className="mt-1 text-xs text-muted">{open ? '▲ ปิด' : '▼ ดูรายตัว'}</div>
+                  </div>
+                </button>
+              </div>
+
+              <div className="border-t border-border px-4 py-2.5 text-xs text-muted">
                 {g.วัสดุที่มี && <div>วัสดุ: {g.วัสดุที่มี}</div>}
                 {g.รูปทรงที่มี && <div className="mt-0.5">รูปทรง: {g.รูปทรงที่มี}</div>}
                 {g.ไม่มีราคา > 0 && (
                   <div className="mt-0.5 text-warn">ไม่มีราคา {g.ไม่มีราคา} ตัว — จะยังตั้งราคาไม่ได้</div>
-                )}
-                {pending && !open && (
-                  <div className="mt-1 text-accent">แตะเพื่อเลือกเฉพาะบางตัว</div>
                 )}
               </div>
 
@@ -256,35 +317,26 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
                     <p className="p-4 text-sm text-muted">กำลังโหลด…</p>
                   ) : (
                     <>
-                      {pendingInGroup.length > 1 && (
-                        <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2 text-xs">
-                          <span className="text-muted">เลือกไว้ {n} จาก {pendingInGroup.length} ตัว</span>
-                          <span className="flex gap-3">
-                            <button onClick={() => pickAll(k, true)} className="text-accent">เลือกทั้งหมด</button>
-                            <button onClick={() => pickAll(k, false)} className="text-accent">ไม่เลือกเลย</button>
-                          </span>
-                        </div>
-                      )}
                       <ul>
                         {loaded.map((r) => {
                           const canPick = r.review_status === 'รอตรวจ';
-                          const on = sel.has(r.id);
+                          const on = p === 'all' ? canPick : !!p && p.has(r.id);
                           const vary = varyingFields(loaded);
-                          const parts = ATTRS.filter(([k]) => r[k]).map(([k, label]) => ({
-                            k,
+                          const parts = ATTRS.filter(([kk]) => r[kk]).map(([kk, label]) => ({
+                            k: kk,
                             label,
-                            value: r[k] as string,
-                            differs: vary.has(k),
+                            value: r[kk] as string,
+                            differs: vary.has(kk),
                           }));
 
                           return (
                             <li
                               key={r.id}
-                              onClick={canPick ? () => toggleRow(k, r.id) : undefined}
+                              onClick={canPick ? () => toggleRowPick(g, r.id) : undefined}
                               className={
-                                'flex items-start gap-3 border-t border-border px-3 py-3 ' +
-                                (canPick ? 'cursor-pointer ' : '') +
-                                (canPick && !on ? 'opacity-40' : '')
+                                'flex items-start gap-3 border-t border-border px-4 py-3 ' +
+                                (canPick ? 'cursor-pointer ' : 'opacity-50 ') +
+                                (canPick && !on ? 'opacity-45' : '')
                               }
                             >
                               <span className="pt-0.5">
@@ -292,7 +344,7 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
                                   <input
                                     type="checkbox"
                                     checked={on}
-                                    onChange={() => toggleRow(k, r.id)}
+                                    onChange={() => toggleRowPick(g, r.id)}
                                     onClick={(e) => e.stopPropagation()}
                                     aria-label={`เลือกแถว ${r.source_row_no}`}
                                     className="h-4 w-4 accent-[var(--accent)]"
@@ -351,8 +403,9 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
                         })}
                       </ul>
                       {varyingFields(loaded).size > 0 && (
-                        <p className="border-t border-border px-3 py-2 text-[11px] text-muted">
-                          ช่องที่<span className="mx-1 rounded bg-accent/15 px-1.5 py-0.5 text-accent">เน้นสี</span>
+                        <p className="border-t border-border px-4 py-2 text-[11px] text-muted">
+                          ช่องที่
+                          <span className="mx-1 rounded bg-accent/15 px-1.5 py-0.5 text-accent">เน้นสี</span>
                           คือช่องที่ทำให้แต่ละตัวต่างกัน
                         </p>
                       )}
@@ -360,36 +413,38 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
                   )}
                 </div>
               )}
-
-              {pending && (
-                <div className="border-t border-border p-3">
-                  {partial && (
-                    <p className="mb-2 text-center text-xs text-warn">
-                      เลือกไว้ {n} ตัว · อีก {pendingInGroup.length - n} ตัวจะยังค้างรอตรวจไว้
-                    </p>
-                  )}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onApprove(g)}
-                      disabled={working || n === 0}
-                      className="flex-1 rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-fg disabled:opacity-50"
-                    >
-                      {working ? 'กำลังออก SKU…' : `อนุมัติ ${n} ตัว`}
-                    </button>
-                    <button
-                      onClick={() => onReject(g)}
-                      disabled={working || n === 0}
-                      className="rounded-xl border border-border px-4 py-3 text-sm text-danger disabled:opacity-50"
-                    >
-                      ไม่เอา {n} ตัว
-                    </button>
-                  </div>
-                </div>
-              )}
             </li>
           );
         })}
       </ul>
+
+      {/* แถบล่าง · โผล่เมื่อเลือกอะไรไว้ ติดขอบล่างเพราะตรวจกันบนมือถือ */}
+      {picked > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 backdrop-blur">
+          <div className="mx-auto max-w-5xl px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="mb-2 text-center text-xs text-muted">
+              เลือกไว้ <span className="font-medium text-text">{picked}</span> ตัว
+              จาก {pickedGroups} กลุ่ม
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={onApprove}
+                disabled={busy}
+                className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg disabled:opacity-50"
+              >
+                {busy ? 'กำลังออก SKU…' : `อนุมัติ ${picked} ตัว`}
+              </button>
+              <button
+                onClick={onReject}
+                disabled={busy}
+                className="rounded-xl border border-border px-4 py-3.5 text-sm text-danger disabled:opacity-50"
+              >
+                ไม่เอา
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
