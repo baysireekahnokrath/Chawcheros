@@ -217,3 +217,30 @@ export async function fetchGroupRows(
   if (error) return { ok: false, error: error.message };
   return { ok: true, rows: (data ?? []) as ImportRow[] };
 }
+
+/**
+ * เพิ่มตัวสินค้าใหม่เข้ารุ่นที่มีอยู่ โดยบอกว่าบวกจากตัวฐานกี่บาท
+ *
+ * เก็บแค่ "ส่วนที่บวก" ไม่เก็บราคาสุดท้าย เพราะปีหน้าขึ้นราคาตัวฐานแล้ว
+ * ราคาตัวนี้ต้องขยับตามเอง ไม่ใช่ค้างอยู่ที่ราคาปีที่แล้วโดยไม่มีใครรู้
+ */
+export async function addVariantFromBase(formData: FormData): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const uplift = Number(String(formData.get('uplift') ?? '').replace(/,/g, ''));
+  if (!Number.isFinite(uplift) || uplift < 0) {
+    return { ok: false, error: 'ส่วนที่บวกเพิ่มต้องเป็นตัวเลขและไม่ติดลบ' };
+  }
+
+  const { error } = await supabase.schema('catalog').rpc('add_variant_from_base', {
+    p_base_variant_id: String(formData.get('base_variant_id') ?? ''),
+    p_material_grade: String(formData.get('material_grade') ?? '').trim(),
+    p_uplift: uplift,
+    p_note: String(formData.get('note') ?? '').trim() || null,
+  });
+
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/products');
+  return { ok: true };
+}

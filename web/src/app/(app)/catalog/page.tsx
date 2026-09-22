@@ -49,6 +49,13 @@ export default async function CatalogPage() {
           <p className="mt-0.5 text-sm text-muted">ตรวจทีละรุ่น ไม่ใช่ทีละแถว</p>
         </Link>
 
+        <Link href="/catalog/products" className="block rounded-2xl border border-border bg-surface p-4">
+          <div className="font-medium">สินค้าในระบบ</div>
+          <p className="mt-0.5 text-sm text-muted">
+            ดูรุ่น ตัวที่ขายจริง ราคา · เพิ่มเกรดวัสดุที่ไฟล์ราคาไม่มี
+          </p>
+        </Link>
+
         <Link href="/catalog/import" className="block rounded-2xl border border-border bg-surface p-4">
           <div className="font-medium">อัปโหลดไฟล์ราคา</div>
           <p className="mt-0.5 text-sm text-muted">ไฟล์ .csv จาก Airtable</p>
