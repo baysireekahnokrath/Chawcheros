@@ -427,3 +427,23 @@ export async function sendMessage(itemId: string, body: string, partLabel: strin
   revalidatePath(`/content/${itemId}/review`);
   return { ok: true };
 }
+
+// ── ปฏิทิน (R4) ─────────────────────────────────────────────────────────────
+
+/** ลากการ์ดไปวันใหม่ · ย้ายทุกช่องทางที่อยู่บนการ์ดนั้น (ช่องทางที่ลงแล้วไม่ย้าย) */
+export async function movePlacements(placementIds: string[], date: string, itemId: string): Promise<ActionResult> {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { ok: false, error: 'วันที่ไม่ถูกต้อง' };
+  if (placementIds.length === 0) return { ok: false, error: 'ไม่มีช่องทางให้ย้าย' };
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema('content')
+    .from('placements')
+    .update({ planned_on: date })
+    .in('id', placementIds)
+    .is('published_at', null)
+    .select('id');
+  if (error) return { ok: false, error: error.message };
+  if (!data?.length) return { ok: false, error: 'ย้ายไม่ได้ · ช่องทางนี้ลงไปแล้ว หรือไม่มีสิทธิ์แก้' };
+  refresh(itemId);
+  return { ok: true };
+}

@@ -222,3 +222,23 @@ export type InterviewTurn = {
   choices: string[];
   created_at: string;
 };
+
+// ── ปฏิทิน (R4) ─────────────────────────────────────────────────────────────
+
+/** ชิ้นงานบนปฏิทิน · ข้อมูลพอสำหรับการ์ดและตัวกรอง */
+export type CalItem = {
+  id: string;
+  title: string;
+  hook: string | null;
+  stage: Stage;
+  brand_id: string | null;
+  pillar_id: string | null;
+  campaign_id: string | null;
+  owner_id: string | null;
+  off_plan: boolean;
+  visual: string | null;
+  products: string[];
+};
+
+/** ช่องทางที่มีวันลง · การ์ด 1 ใบ = ชิ้นงาน × วัน (Q-23) */
+export type CalPlacement = { id: string; item_id: string; channel_id: string; planned_on: string; published_at: string | null };
