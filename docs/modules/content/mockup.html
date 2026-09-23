@@ -209,6 +209,15 @@ textarea.inp { resize: vertical; min-height: 88px; line-height: 1.6; }
   .mcard[draggable="true"] { cursor: grab; }
 }
 
+/* ---------- ช่องไอเดีย ---------- */
+.idea { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: grid; gap: 10px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.idea textarea { min-height: 56px; }
+.idea .foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.idea .foot .inp { flex: 1 1 200px; padding: 8px 10px; font-size: 14px; }
+.understood { display: grid; gap: 4px; font-size: 13.5px; background: var(--sunk); border-radius: 12px; padding: 10px 12px; }
+.understood b { color: var(--muted); font-weight: 500; font-size: 12px; margin-right: 6px; }
+.offplan { font-size: 10.5px; font-weight: 600; border-radius: 6px; padding: 0 5px; line-height: 16px; background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+
 /* ---------- หน้าชิ้นงาน ---------- */
 .detail { display: grid; gap: 14px; }
 @media (min-width: 1000px) { .detail.two { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: start; } }
@@ -510,6 +519,7 @@ const S = {
   f: { ch: '', pillar: '', campaign: '', product: '', owner: '' },
   itemId: null, tab: 'FB', unlock: false, bounceRows: null, brandTab: 'model', planId: 'pl-nov',
   pendingNote: null, chat: [], chatSec: null, back: 'cal',
+  idea: { text: 'พรุ่งนี้อยากเล่นเรื่อง mid century ใช้ภาพโซฟา Emu', link: 'drive.google.com/…/emu-walnut.jpg', phase: 'idle' },
 };
 try { const r = localStorage.getItem('cc-mock-role'); if (r) S.role = r; } catch (e) {}
 
@@ -569,7 +579,7 @@ function card(g) {
   const pic = hasPic(it) ? `<div class="thumb" style="--g:${grad(it.images[0].hue)}"></div>` : '';
   return `<button class="card ${pic ? '' : 'nothumb'}" style="--c:${colorOf(it)}" data-act="open" data-id="${it.id}">
     ${pic}<div><div class="hook">${esc(it.hook)}</div>
-    <div class="meta">${g.chs.map(chTag).join('')} ${stagePill(it.stage)}</div></div></button>`;
+    <div class="meta">${g.chs.map(chTag).join('')} ${stagePill(it.stage)}${it.offPlan ? '<span class="offplan">นอกแผน</span>' : ''}</div></div></button>`;
 }
 
 /* ============================================================
@@ -595,7 +605,7 @@ function viewCal() {
           <button class="mcard" style="--c:${colorOf(g.it)}" data-act="open" data-id="${g.it.id}" data-date="${d}" ${matchMedia('(pointer:fine)').matches ? 'draggable="true"' : ''}>
             ${hasPic(g.it) ? `<div class="thumb" style="--g:${grad(g.it.images[0].hue)}"></div>` : ''}
             <span class="hook">${esc(g.it.hook)}</span>
-            <span class="meta">${g.chs.map(chTag).join('')}</span></button>`).join('')}
+            <span class="meta">${g.chs.map(chTag).join('')}${g.it.offPlan ? '<span class="offplan">นอกแผน</span>' : ''}</span></button>`).join('')}
       </div>`;
     }
     body = `<div class="scroll-x"><div class="month">${cells}</div></div>
@@ -628,7 +638,7 @@ function viewCal() {
   const legend = (S.colorBy === 'pillar' ? pl : cps).map(x => `<span><i style="background:${x.c}"></i>${esc(x.name)}</span>`).join('') +
     `<span><i style="background:var(--pn)"></i>${S.colorBy === 'pillar' ? 'ไม่มี pillar' : 'ไม่ผูกแคมเปญ'}</span>`;
 
-  return `<div class="calbar">
+  return `${ideaBar()}<div class="calbar">
     <div class="calnav">
       <button class="iconbtn" data-act="calPrev" aria-label="ก่อนหน้า">${svg('prev')}</button>
       <button class="iconbtn" data-act="calNext" aria-label="ถัดไป">${svg('next')}</button>
@@ -647,6 +657,46 @@ function viewCal() {
       <div class="seg" role="group" aria-label="ระบายสีตาม"><button data-act="colorBy" data-v="pillar" aria-pressed="${S.colorBy === 'pillar'}">สีตาม pillar</button><button data-act="colorBy" data-v="campaign" aria-pressed="${S.colorBy === 'campaign'}">สีตามแคมเปญ</button></div>
     </div>
   </div>${body}`;
+}
+
+/* ============================================================
+   ช่องไอเดีย: พิมพ์ประโยคเดียว ที่เหลือ agent ทำเอง
+   ============================================================ */
+function parseIdea(text) {
+  const t = text.toLowerCase();
+  const alias = { 'emu': 'Emu Sofa', 'อีมู': 'Emu Sofa', 'กระสา': 'กระสา โซฟา 3 ที่นั่ง', 'กระเรียน': 'กระเรียน โซฟา 2 ที่นั่ง', 'koontong': 'Koontong Sideboard', 'คุณทอง': 'Koontong Sideboard', 'กีวี่': 'กีวี่ เก้าอี้' };
+  const products = [...new Set(Object.entries(alias).filter(([k]) => t.includes(k)).map(([, v]) => v))].filter(p => PRODUCTS[S.brand].includes(p));
+  const date = t.includes('วันนี้') ? TODAY : add(TODAY, 1);
+  const topic = (text.match(/เรื่อง\s*([^ใ]+?)(\s+ใช้|\s+มี|$)/) || [])[1]?.trim() || text.slice(0, 40);
+  const ch = ['FB', 'IG']; if (/เว็บ|บล็อก|blog|seo/i.test(text)) ch.push('WEB');
+  return { topic, products, date, ch, pillar: products.length ? PILLARS[S.brand][0].id : '' };
+}
+function ideaBar() {
+  const I = S.idea;
+  let status = '';
+  if (I.phase === 'reading') status = `<div class="writing"><span class="bot">AI</span><span>agent กำลังอ่านไอเดีย</span><span class="dots"><i></i><i></i><i></i></span></div>`;
+  if (I.parsed && I.phase !== 'reading') {
+    const P = I.parsed;
+    status = `<div class="understood"><div class="row"><span class="bot">AI</span><b style="color:var(--text);font-size:13.5px">เข้าใจว่า</b></div>
+      <div><b>หัวข้อ</b>${esc(P.topic)}</div>
+      <div><b>สินค้า</b>${P.products.length ? P.products.map(esc).join(' · ') : 'ไม่ผูก'}</div>
+      <div><b>ภาพ</b>${I.link ? '1 ภาพ ใช้ได้เลย ไม่ต้องรอกราฟิก' : 'ยังไม่มี · ส่งให้กราฟิก'}</div>
+      <div><b>ลง</b>${P.ch.map(chTag).join(' ')} ${fmt(P.date)}</div>
+      <div><b>ผูกกับ</b>${P.pillar ? esc(PILLARS[S.brand].find(x => x.id === P.pillar).name) + ' (agent เดา)' : 'ไม่ผูก pillar'} · ไม่ผูกแคมเปญ · <span class="offplan">นอกแผน</span></div></div>`;
+  }
+  if (I.phase === 'asking') status += `<div class="ask"><div class="row"><span class="bot">AI</span><span class="q">ในระบบยังไม่มีข้อมูลว่า ${esc(I.parsed.products[0] || 'ชิ้นนี้')} เป็น ${esc(I.parsed.topic)} ตรงไหน · agent ไม่เดาเอง</span></div>
+      <div class="chips">${['ขาไม้เรียว ทรงเตี้ย', 'ไม้วอลนัตโทนอุ่น', 'เส้นสายเรียบแบบยุค 60'].map(c => `<button class="chip" data-act="ideaAns" data-v="${c}">${c}</button>`).join('')}</div></div>`;
+  if (I.phase === 'writing') status += `<div class="writing"><span class="bot">AI</span><span>กำลังเขียน ${I.parsed.ch.map(c => CH[c]).join(' · ')}</span><span class="dots"><i></i><i></i><i></i></span></div>`;
+  if (I.phase === 'done') status += `<div class="note ok"><b>เสร็จแล้ว · อยู่ในปฏิทิน ${fmt(I.parsed.date)} · รอพี่ตรวจ</b>
+      <div class="row" style="margin-top:8px"><button class="btn sm primary" data-act="goReview" data-id="${I.itemId}">ตรวจเลย</button><button class="btn sm" data-act="open" data-id="${I.itemId}">เปิดชิ้นงาน</button><button class="btn sm ghost" data-act="ideaReset">ไอเดียใหม่</button></div>
+      ${I.note ? `<div class="small" style="margin-top:8px">จดลงสมุดไหม: “${esc(I.note)}” <button class="btn sm" data-act="ideaNote">จด</button></div>` : ''}</div>`;
+  const busy = ['reading', 'asking', 'writing'].includes(I.phase);
+  return `<div class="idea">
+    <label class="f" for="idea-in">มีไอเดียอะไร พิมพ์เลย <span class="hint">agent คิด hook · ข้อความทุกช่องทาง · หาสินค้า · ลงปฏิทินให้เอง</span></label>
+    <textarea class="inp" id="idea-in" data-idea="text" rows="2" ${busy || I.phase === 'done' ? 'readonly' : ''}>${esc(I.text)}</textarea>
+    <div class="foot"><input class="inp" id="idea-link" data-idea="link" placeholder="ลิงก์ภาพ (ถ้ามี)" value="${esc(I.link)}" ${busy || I.phase === 'done' ? 'readonly' : ''}>
+      ${I.phase === 'idle' ? `<button class="btn primary" data-act="ideaGo">ส่งให้ agent</button>` : ''}</div>
+    ${status}</div>`;
 }
 
 /* ============================================================
@@ -787,8 +837,8 @@ function viewNew() {
       <label class="f">Visual <span class="hint">ภาพที่ต้องได้</span><input class="inp" id="n-visual" value="มุมโซฟาตอนเย็น แสงอุ่น"></label>
     </div>
     <div class="panel grid2">
-      <label class="f">Pillar<select class="inp" id="n-pillar">${pl.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
-      <label class="f">ธีม<select class="inp" id="n-theme">${ths.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></label>
+      <label class="f">Pillar<select class="inp" id="n-pillar"><option value="">ไม่ผูก</option>${pl.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
+      <label class="f">ธีม<select class="inp" id="n-theme"><option value="">ไม่ผูก</option>${ths.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></label>
       <label class="f">แคมเปญ<select class="inp" id="n-camp"><option value="">ไม่ผูก</option>${cps.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
       <label class="f">คนทำภาพ<select class="inp" id="n-owner">${Object.entries(PEOPLE).map(([k, v]) => `<option value="${k}" ${k === 'ton' ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
       <div class="f" style="grid-column:1/-1;font-size:13px;font-weight:500">สินค้า <span class="hint">ไม่บังคับ</span>
@@ -1067,10 +1117,37 @@ document.addEventListener('click', e => {
     case 'confirmSec': brandModel[S.brand][v].st = 'ok'; render(); break;
     case 'nType': NEW.type = v; render(); break;
     case 'nCh': NEW.ch = NEW.ch.includes(v) ? NEW.ch.filter(x => x !== v) : [...NEW.ch, v]; render(); break;
+    case 'ideaGo': {
+      const I = S.idea; if (!I.text.trim()) { toast('พิมพ์ไอเดียก่อน'); break; }
+      I.phase = 'reading'; I.parsed = null; render();
+      setTimeout(() => { I.parsed = parseIdea(I.text); I.phase = I.parsed.products.length ? 'asking' : 'writing'; render(); if (I.phase === 'writing') setTimeout(ideaFinish, 1100); }, 700);
+      break;
+    }
+    case 'ideaAns': S.idea.answer = v; S.idea.phase = 'writing'; render(); setTimeout(ideaFinish, 1100); break;
+    case 'ideaNote': notebook.push({ id: notebook.length + 1, text: S.idea.note, scope: S.brand, st: 'ok', from: 'Bay ตอบในช่องไอเดีย' }); S.idea.note = null; toast('จดลงสมุดแล้ว'); render(); break;
+    case 'ideaReset': S.idea = { text: '', link: '', phase: 'idle' }; render(); break;
     case 'nProd': NEW.products = NEW.products.includes(v) ? NEW.products.filter(x => x !== v) : [...NEW.products, v]; render(); break;
   }
 });
 
+function ideaFinish() {
+  const I = S.idea, P = I.parsed;
+  const hookTopic = P.topic.replace(/^./, c => c.toUpperCase());
+  const it = {
+    id: 'q' + Date.now(), brand: S.brand, type: 'single', title: `${hookTopic}${P.products[0] ? ' · ' + P.products[0] : ''}`, stage: 'idea',
+    hook: P.products[0] ? `${P.products[0]} ความ ${hookTopic} ที่อยู่ได้ทุกยุค` : hookTopic,
+    content: I.answer ? `${I.answer} คือเสน่ห์ ${hookTopic} ของรุ่นนี้` : hookTopic, visual: I.link ? 'ภาพที่ Bay แนบมา' : '',
+    pillar: P.pillar, campaign: null, theme: '', products: P.products, owner: 'ton', offPlan: true,
+    images: I.link ? img(24, 1) : [], imagesDone: !!I.link,
+    place: P.ch.map(c => ({ ch: c, date: P.date })), comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' }, agent: 'done',
+    source: I.text,
+  };
+  it.drafts = draftFor(it); items.push(it); autoToReview(it);
+  I.itemId = it.id; I.phase = 'done';
+  I.note = I.answer && P.products[0] ? `${P.products[0]} = ${P.topic} เพราะ${I.answer}` : null;
+  S.cursor = P.date;
+  if (S.screen === 'cal') render();
+}
 function checkPosted(it) {
   const live = it.place.filter(p => !p.skip);
   if (it.stage === 'ready' && live.length && live.every(p => p.url)) { it.stage = 'posted'; toast('ลงครบทุกช่องทาง · โพสต์แล้ว'); }
@@ -1094,6 +1171,7 @@ document.addEventListener('input', e => {
     const lab = t.closest('label')?.querySelector('.counter');
     if (lab) { const max = { 'WEB.title': LIMIT.WEBtitle, 'WEB.meta': LIMIT.WEBmeta }[t.dataset.draft] || LIMIT[ch]; if (max) lab.outerHTML = counter(t.value.length, max); }
   }
+  if (t.dataset.idea) S.idea[t.dataset.idea] = t.value;
   if (t.dataset.fc && it) it.firstComment[t.dataset.fc] = t.value;
   if (t.dataset.brow !== undefined) S.bounceRows[+t.dataset.brow][t.dataset.k] = t.value;
   if (t.dataset.pb) playbooks[S.brand][t.dataset.pb] = t.value;
@@ -1114,7 +1192,7 @@ document.addEventListener('submit', e => {
   const it = {
     id: 'x' + Date.now(), brand: S.brand, type: NEW.type, title: hook, stage: 'idea', hook,
     content: $('#n-content').value.trim(), visual: $('#n-visual').value.trim(),
-    pillar: $('#n-pillar').value, theme: $('#n-theme').value, campaign: $('#n-camp').value || null,
+    pillar: $('#n-pillar').value, theme: $('#n-theme').value, offPlan: true, campaign: $('#n-camp').value || null,
     products: [...NEW.products], owner: $('#n-owner').value, images: [], imagesDone: NEW.type === 'text',
     place: NEW.ch.map(c => ({ ch: c, date })), comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' }, agent: 'idle',
   };
