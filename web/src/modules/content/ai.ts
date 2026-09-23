@@ -42,7 +42,9 @@ function jsonSchema(schema: z.ZodType): Record<string, unknown> {
 }
 
 export async function runClaude<S extends z.ZodType>(a: RunArgs<S>): Promise<AiResult<z.infer<S>>> {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  // ตัดช่องว่าง/ขึ้นบรรทัดที่ติดมาตอนคัดลอก key · ต้องขึ้นต้นด้วย sk-ant-
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim().replace(/^["']|["']$/g, '');
+  if (!apiKey) {
     return { ok: false, error: 'ยังไม่ได้ใส่ ANTHROPIC_API_KEY ใน Vercel · agent ยังทำงานไม่ได้' };
   }
 
@@ -66,7 +68,7 @@ export async function runClaude<S extends z.ZodType>(a: RunArgs<S>): Promise<AiR
     };
   }
 
-  const client = new Anthropic();
+  const client = new Anthropic({ apiKey });
   const isOpus5 = model === 'claude-opus-5';
   const log = async (row: {
     status: 'สำเร็จ' | 'ถามก่อน' | 'ล้มเหลว' | 'ถูกปฏิเสธ';
@@ -102,7 +104,9 @@ export async function runClaude<S extends z.ZodType>(a: RunArgs<S>): Promise<AiR
       ...(isOpus5 ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
     }).finalMessage();
   } catch (e) {
-    const error = e instanceof Anthropic.APIError ? `Claude ตอบ ${e.status}: ${e.message}` : String(e);
+    const error = e instanceof Anthropic.AuthenticationError
+      ? `API key ไม่ถูกต้อง (key ใน Vercel ขึ้นต้นด้วย ${apiKey.slice(0, 7)}… ยาว ${apiKey.length} ตัว · ของจริงต้องขึ้นต้น sk-ant- ยาวราว 100 ตัว)`
+      : e instanceof Anthropic.APIError ? `Claude ตอบ ${e.status}: ${e.message}` : String(e);
     const requestId = await log({ status: 'ล้มเหลว', error });
     return { ok: false, error: 'เรียก AI ไม่สำเร็จ · ' + error, requestId };
   }
