@@ -37,12 +37,13 @@ type Brain = { text: string; refs: Record<string, string> };
 
 export async function loadBrain(supabase: Supa, brandId: string, channels: string[]): Promise<Brain> {
   const db = supabase.schema('content');
-  const [{ data: sections }, { data: notes }, { data: books }] = await Promise.all([
+  const [{ data: sections }, { data: notes }, { data: books }, { data: examples }] = await Promise.all([
     db.from('brand_sections').select('id,kind,topic,body').eq('brand_id', brandId).eq('active', true)
       .not('confirmed_at', 'is', null).order('kind').order('sort_order'),
     db.from('notebook').select('id,body,brand_id').eq('status', 'ใช้อยู่')
       .or(`brand_id.is.null,brand_id.eq.${brandId}`).order('created_at'),
     db.from('playbooks').select('id,channel_id,body').eq('brand_id', brandId).in('channel_id', channels),
+    db.from('brand_examples').select('id,kind,note,item_id,url').eq('brand_id', brandId).is('removed_at', null).limit(12),
   ]);
   const refs: Record<string, string> = {};
   const out: string[] = [];
@@ -55,6 +56,18 @@ export async function loadBrain(supabase: Supa, brandId: string, channels: strin
   out.push('', '## Brand book');
   if (book.length === 0) out.push('(ยังว่าง)');
   book.forEach((s, i) => { refs[`BB${i + 1}`] = s.id; out.push(`[BB${i + 1}] ${s.topic}: ${s.body}`); });
+  if (examples?.length) {
+    const ids = examples.map((x) => x.item_id).filter(Boolean) as string[];
+    const { data: its } = ids.length
+      ? await db.from('placements').select('item_id,channel_id,copy_text').in('item_id', ids).not('copy_text', 'is', null)
+      : { data: [] };
+    out.push('', '## ตัวอย่างที่ใช่ / ไม่ใช่ (Q-71)');
+    examples.forEach((x, i) => {
+      refs[`EX${i + 1}`] = x.id;
+      const text = (its ?? []).find((t) => t.item_id === x.item_id)?.copy_text;
+      out.push(`[EX${i + 1}] ${x.kind} · ${x.note}${text ? `\n  ข้อความ: ${text.slice(0, 400)}` : x.url ? ` · ${x.url}` : ''}`);
+    });
+  }
   out.push('', '## สมุดความคิด Bay');
   if (!notes?.length) out.push('(ยังไม่มีข้อ)');
   (notes ?? []).forEach((n, i) => {
@@ -147,7 +160,7 @@ export async function writeItem(
 
   const [{ data: placements }, { data: images }, { data: models }, { data: brand },
     { data: pillar }, { data: theme }, { data: questions }, { data: notes }, { data: chat }] = await Promise.all([
-    db.from('placements').select('id,channel_id,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_copy_text,skipped_reason,published_at')
+    db.from('placements').select('id,channel_id,planned_on,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_copy_text,skipped_reason,published_at')
       .eq('item_id', itemId),
     db.from('item_images').select('url').eq('item_id', itemId).is('removed_at', null).order('position'),
     db.from('item_models').select('product_id').eq('item_id', itemId),
@@ -166,15 +179,29 @@ export async function writeItem(
 
   const live = (placements ?? []).filter((p) => !p.skipped_reason && !p.published_at);
   const force = new Set(opts.force ?? []);
-  const targets = live.filter((p) => !p.human_edited || force.has(p.channel_id));
+  // เส้นทาง agent (Q-08) · ช่องที่ Bay ตั้งเป็น "คนทำเอง" agent ไม่เขียน
+  const { data: routes } = await db.from('agent_routes').select('channel_id,agent').eq('format', item.format);
+  const manual = new Set((routes ?? []).filter((r) => r.agent === 'คนทำเอง').map((r) => r.channel_id));
+  const targets = live.filter((p) => !manual.has(p.channel_id) && (!p.human_edited || force.has(p.channel_id)));
   if (targets.length === 0) {
-    return { ok: false, error: 'ทุกช่องทางคนแก้เองแล้ว · agent ไม่เขียนทับ · ถ้าต้องการให้กด "ให้ AI เขียนช่องนี้ใหม่" หรือสั่ง @AI พร้อมชื่อช่องทาง' };
+    return { ok: false, error: manual.size
+      ? 'ไม่มีช่องที่ agent ต้องเขียน · บางช่อง Bay ตั้งให้คนทำเอง (แบรนด์ → เส้นทาง agent) และช่องที่เหลือคนแก้เองแล้ว'
+      : 'ทุกช่องทางคนแก้เองแล้ว · agent ไม่เขียนทับ · ถ้าต้องการให้กด "ให้ AI เขียนช่องนี้ใหม่" หรือสั่ง @AI พร้อมชื่อช่องทาง' };
   }
   const targetIds = targets.map((t) => t.channel_id);
   const brain = await loadBrain(supabase, item.brand_id, targetIds);
   const facts = await productFacts(supabase, (models ?? []).map((m) => m.product_id));
 
   const edits = live.filter((p) => p.human_edited && p.ai_copy_text && p.ai_copy_text !== p.copy_text);
+  // หัวข้อรายสัปดาห์ของธีม (Q-12) · สัปดาห์ของวันลงแรก
+  let weekTopic: string | null = null;
+  const first = (placements ?? []).map((p) => (p as { planned_on?: string }).planned_on).filter(Boolean).sort()[0];
+  if (item.theme_id && first) {
+    const d = new Date(first + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    const { data: tw } = await db.from('theme_weeks').select('topic').eq('theme_id', item.theme_id).eq('week_of', d.toISOString().slice(0, 10)).maybeSingle();
+    weekTopic = tw?.topic ?? null;
+  }
   const brief = [
     `# ชิ้นงาน`,
     `แบรนด์: ${brand?.name ?? '-'} · ประเภท: ${item.format} · ภาพ ${images?.length ?? 0} ภาพ`,
@@ -184,7 +211,7 @@ export async function writeItem(
     `Visual: ${item.visual ?? '-'}`,
     item.brief ? `Brief เพิ่มเติม: ${item.brief}` : '',
     pillar ? `Pillar: ${pillar.name}` : '',
-    theme ? `ธีม: ${theme.name}${theme.goal ? ` · เป้าหมาย ${theme.goal}` : ''}` : '',
+    theme ? `ธีม: ${theme.name}${theme.goal ? ` · เป้าหมาย ${theme.goal}` : ''}${weekTopic ? ` · หัวข้อสัปดาห์นี้: ${weekTopic}` : ''}` : '',
     '',
     '# ข้อมูลสินค้าจากระบบ',
     facts,
@@ -523,4 +550,103 @@ export async function suggestIdeas(
   const { error } = await db.from('idea_suggestions').insert(rows);
   if (error) return { ok: false as const, error: error.message };
   return { ok: true as const };
+}
+
+// ── agent ร่างแผนเดือน (Bay ขอ 2026-09-23) ─────────────────────────────────────
+
+const PlanSchema = z.object({
+  slots: z.array(z.object({
+    planned_on: z.string(),
+    format: z.enum(['ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ']),
+    channels: z.array(ChannelId),
+    hook: z.string(),
+    key_message: z.string(),
+    visual: z.string(),
+    pillar_id: z.string(),
+    theme_id: z.string(),
+    product_ids: z.array(z.string()),
+  })),
+  note_to_team: z.string(),
+});
+
+/**
+ * ร่างชิ้นในแผนทั้งเดือน · ลงเป็นช่องในแผนสถานะร่าง ให้คนแก้/ตัด/เพิ่มก่อนส่ง Bay
+ * ใช้ brand model · สมุด · pillar · ธีม + หัวข้อสัปดาห์ · สินค้าที่ไม่ได้พูดถึงนาน · แฟ้มคู่แข่ง
+ */
+export async function draftPlan(
+  supabase: Supa, planId: string, count: number, direction: string,
+  stale: { id: string; name: string; last: string | null }[],
+) {
+  const db = supabase.schema('content');
+  const { data: plan } = await db.from('plans').select('id,brand_id,month,status').eq('id', planId).maybeSingle();
+  if (!plan) return { ok: false as const, error: 'ไม่พบแผน' };
+  if (!['ร่าง', 'ตีกลับ'].includes(plan.status)) return { ok: false as const, error: 'agent ร่างได้เฉพาะแผนที่ยังเป็นร่างหรือถูกตีกลับ' };
+
+  const monthEnd = (() => { const [y, m] = plan.month.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); })();
+  const [brain, { data: brand }, { data: pillars }, { data: themes }, { data: existing }, { data: swipes }, { data: products }] = await Promise.all([
+    loadBrain(supabase, plan.brand_id, ['facebook', 'instagram', 'website']),
+    supabase.schema('catalog').from('brands').select('name').eq('id', plan.brand_id).maybeSingle(),
+    db.from('pillars').select('id,name').eq('brand_id', plan.brand_id).eq('active', true),
+    db.from('themes').select('id,name,goal,starts_on,ends_on').eq('brand_id', plan.brand_id).eq('active', true)
+      .lte('starts_on', monthEnd).gte('ends_on', plan.month),
+    db.from('plan_slots').select('planned_on,hook').eq('plan_id', planId).is('removed_at', null),
+    db.from('swipes').select('competitor,summary,hook_type').is('archived_at', null).not('summary', 'is', null).limit(6),
+    supabase.schema('catalog').from('products').select('id,collection,name_th').eq('brand_id', plan.brand_id).neq('status', 'เลิกขาย'),
+  ]);
+  const { data: weeks } = (themes ?? []).length
+    ? await db.from('theme_weeks').select('theme_id,week_of,topic').in('theme_id', (themes ?? []).map((t) => t.id))
+    : { data: [] };
+  const staleIds = new Set(stale.map((s) => s.id));
+
+  const res = await runClaude({
+    supabase, kind: 'ร่างแผน', brandId: plan.brand_id, instruction: direction || null,
+    usedRefs: { brain: brain.refs, plan: planId },
+    system: RULES + '\n\n' + brain.text,
+    content: [{ type: 'text', text: [
+      `# ร่างแผนคอนเทนต์เดือน ${plan.month.slice(0, 7)} ของแบรนด์ ${brand?.name ?? ''}`,
+      `ช่วงวัน: ${plan.month} ถึง ${monthEnd} · จำนวน ${count} ชิ้น`,
+      direction ? `ทิศทางจาก Bay/ทีม: ${direction}` : '',
+      '',
+      '# Pillar (id · ชื่อ)', ...((pillars ?? []).length ? (pillars ?? []).map((p) => `${p.id} · ${p.name}`) : ['(ยังไม่มี · ใส่ pillar_id = "")']),
+      '',
+      '# ธีมที่คร่อมเดือนนี้ (id · ชื่อ · เป้าหมาย · ช่วง)',
+      ...((themes ?? []).length ? (themes ?? []).map((t) => `${t.id} · ${t.name} · ${t.goal ?? '-'} · ${t.starts_on}→${t.ends_on}`) : ['(ไม่มี · ใส่ theme_id = "")']),
+      ...((weeks ?? []).map((w) => `  หัวข้อสัปดาห์ ${w.week_of}: ${w.topic} (ธีม ${w.theme_id})`)),
+      '',
+      '# สินค้าของแบรนด์ (id · รุ่น) · ★ = ไม่ได้พูดถึงเกิน 60 วัน ควรหยิบ',
+      ...(products ?? []).slice(0, 80).map((p) => `${p.id} · ${p.collection}${p.name_th ? ` ${p.name_th}` : ''}${staleIds.has(p.id) ? ' ★' : ''}`),
+      '',
+      '# สรุปโพสต์คู่แข่ง', ...((swipes ?? []).length ? (swipes ?? []).map((s) => `- ${s.competitor ?? '?'} · ${s.hook_type ?? ''} · ${s.summary}`) : ['(ไม่มี)']),
+      '',
+      existing?.length ? '# มีในแผนแล้ว (อย่าซ้ำ)\n' + existing.map((e) => `- ${e.planned_on} ${e.hook ?? ''}`).join('\n') : '',
+      '# งานของคุณ',
+      `- ร่าง ${count} ชิ้น กระจายทั้งเดือน ไม่กองวันเดียว · สมดุล pillar · ถ้ามีธีม/หัวข้อสัปดาห์ให้ผูก theme_id และเล่าตามหัวข้อสัปดาห์นั้น`,
+      '- format: ภาพเดี่ยว/อัลบั้มภาพ ลง facebook + instagram · ข้อความล้วน ห้าม instagram · ใส่ website เฉพาะเรื่องที่เหมาะเป็นบทความ SEO (เดือนละ 2-4 ชิ้น)',
+      '- hook ประโยคเปิดที่หยุดคนดู · key_message สิ่งที่อยากให้คนจำ 1 ข้อ · visual อธิบายภาพที่ต้องถ่าย/ทำ',
+      '- product_ids ใช้ id จากรายการเท่านั้น · ห้ามแต่งสเปก · pillar_id/theme_id ใช้ id จากรายการหรือ ""',
+      '- note_to_team: 1-2 ประโยค สรุปแนวคิดของแผนนี้',
+    ].filter(Boolean).join('\n') }],
+    schema: PlanSchema, maxTokens: 8000, effort: 'medium',
+  });
+  if (!res.ok) return res;
+
+  const pIds = new Set((pillars ?? []).map((p) => p.id));
+  const tIds = new Set((themes ?? []).map((t) => t.id));
+  const prodIds = new Set((products ?? []).map((p) => p.id));
+  const rows = res.data.slots
+    .filter((s) => /^\d{4}-\d{2}-\d{2}$/.test(s.planned_on) && s.planned_on >= plan.month && s.planned_on <= monthEnd)
+    .map((s) => {
+      const channels = [...new Set(s.channels)].filter((c) => !(s.format === 'ข้อความล้วน' && c === 'instagram'));
+      return {
+        plan_id: planId, planned_on: s.planned_on, format: s.format,
+        channels: channels.length ? channels : ['facebook'],
+        hook: s.hook.trim() || null, key_message: s.key_message.trim() || null, visual: s.visual.trim() || null,
+        pillar_id: pIds.has(s.pillar_id) ? s.pillar_id : null, theme_id: tIds.has(s.theme_id) ? s.theme_id : null,
+        product_ids: s.product_ids.filter((id) => prodIds.has(id)),
+      };
+    });
+  if (rows.length === 0) return { ok: false as const, error: 'agent ร่างมาไม่ได้สักชิ้น · ลองใหม่' };
+  const { error } = await db.from('plan_slots').insert(rows);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, count: rows.length, note: res.data.note_to_team };
 }

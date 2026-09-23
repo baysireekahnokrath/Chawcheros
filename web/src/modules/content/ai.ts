@@ -13,7 +13,7 @@ import { AI_MODELS } from './types';
 
 type Supa = Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>;
 
-export type AiKind = 'เขียนข้อความ' | 'ไอเดียด่วน' | 'สัมภาษณ์' | 'แชท @AI' | 'สรุปคู่แข่ง' | 'คิดไอเดีย';
+export type AiKind = 'เขียนข้อความ' | 'ไอเดียด่วน' | 'สัมภาษณ์' | 'แชท @AI' | 'สรุปคู่แข่ง' | 'คิดไอเดีย' | 'ร่างแผน';
 
 export type AiResult<T> =
   | { ok: true; data: T; requestId: string }

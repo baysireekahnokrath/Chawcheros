@@ -20,7 +20,7 @@ export default async function ReviewPage({ params }: PageProps<'/content/[id]/re
 
   const supabase = await createClient();
   const [{ data: { user } }, placements, images, open, messages, team, brands, approver, { data: admin }] = await Promise.all([
-    supabase.auth.getUser(), getPlacements(id), getImages(id), getOpenParts(id), getMessages(id), getTeam(), getBrands(), canApprove(),
+    supabase.auth.getUser(), getPlacements(id), getImages(id), getOpenParts(id), getMessages(id), getTeam(), getBrands(true), canApprove(),
     supabase.schema('core').from('user_capabilities').select('capability').eq('capability', 'admin').is('revoked_at', null).maybeSingle(),
   ]);
   await markRead(id);

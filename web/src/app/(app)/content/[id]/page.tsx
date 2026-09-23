@@ -36,7 +36,7 @@ export default async function ContentItemPage({ params }: PageProps<'/content/[i
 
   const supabase = await createClient();
   const [placements, images, models, brands, pillars, themes, campaigns, allModels, team, approver, notes, messages, versions, questions, { data: { user } }] = await Promise.all([
-    getPlacements(id), getImages(id), getItemModels(id), getBrands(), getPillars(), getThemes(),
+    getPlacements(id), getImages(id), getItemModels(id), getBrands(true), getPillars(), getThemes(),
     getCampaigns(), getModels(), getTeam(), canApprove(), getReviewNotes(id), getMessages(id), getVersions(id), getAgentQuestions(id),
     supabase.auth.getUser(),
   ]);

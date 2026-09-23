@@ -242,3 +242,28 @@ export type CalItem = {
 
 /** ช่องทางที่มีวันลง · การ์ด 1 ใบ = ชิ้นงาน × วัน (Q-23) */
 export type CalPlacement = { id: string; item_id: string; channel_id: string; planned_on: string; published_at: string | null };
+
+// ── แผนเดือน + แบรนด์ (R6) ──────────────────────────────────────────────────
+
+export type Plan = {
+  id: string; brand_id: string; month: string; status: 'ร่าง' | 'รออนุมัติ' | 'ตีกลับ' | 'อนุมัติแล้ว';
+  note: string | null; review_note: string | null; submitted_at: string | null; approved_at: string | null;
+};
+export type PlanSlot = {
+  id: string; plan_id: string; planned_on: string; format: Format; channels: string[];
+  hook: string | null; key_message: string | null; visual: string | null;
+  pillar_id: string | null; theme_id: string | null; campaign_id: string | null; owner_id: string | null;
+  product_ids: string[]; item_id: string | null; item_stage: Stage | null;
+};
+export type PlanChange = { id: string; kind: 'เพิ่ม' | 'ตัด'; summary: string; seen_at: string | null; created_at: string };
+export type ThemeWeek = { theme_id: string; week_of: string; topic: string };
+export type BrandKit = { brand_id: string; logo_url: string | null; fonts: string | null; colors: { name: string; hex: string }[] };
+export type BrandExample = { id: string; brand_id: string; kind: 'ใช่' | 'ไม่ใช่'; item_id: string | null; url: string | null; note: string };
+export type AgentRoute = { format: Format; channel_id: string; agent: string };
+
+/** เส้นตายส่งแผน = วันแรกของเดือน − 20 วัน (Q-15) */
+export const planDeadline = (month: string) => {
+  const [y, m] = month.split('-').map(Number);
+  const d = new Date(Date.UTC(y, m - 1, 1 - 20));
+  return d.toISOString().slice(0, 10);
+};

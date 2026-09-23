@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { getBrands, getGaps, canApprove, isAdmin, getModels } from '@/modules/content/queries';
+import { getBrands, getGaps, canApprove, isAdmin, getModels, getOpenPlans, getPlan } from '@/modules/content/queries';
 import { getDashboard } from '@/modules/content/dashboard';
-import { channelShort, TONE } from '@/modules/content/types';
+import { channelShort, TONE, planDeadline } from '@/modules/content/types';
 import NewMenu from '@/components/content/NewMenu';
 import { AsksBox, NotebookBox, SwipeBox, IdeasBox } from '@/components/content/HomeBoxes';
 
@@ -28,13 +28,20 @@ const panel = 'rounded-2xl border border-border bg-surface p-4';
  */
 export default async function ContentHome({ searchParams }: PageProps<'/content'>) {
   const { brand } = await searchParams;
-  const b = typeof brand === 'string' ? brand : '';
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const [d, brands, gaps, approver, admin, models] = await Promise.all([
-    getDashboard(user?.id ?? '', b || null), getBrands(), getGaps(), canApprove(), isAdmin(), getModels(),
+  const [{ data: { user } }, brands] = await Promise.all([supabase.auth.getUser(), getBrands()]);
+  // เปิดมาเป็นแบรนด์ตั้งต้น (ฌ เฌอ) · ?brand=all = ทุกแบรนด์
+  const b = brand === 'all' ? '' : typeof brand === 'string' && brands.some((x) => x.id === brand) ? brand : brands[0]?.id ?? '';
+  const [d, gaps, approver, admin, models] = await Promise.all([
+    getDashboard(user?.id ?? '', b || null), getGaps(), canApprove(), isAdmin(), getModels(),
   ]);
   const boss = approver || admin;
+  // แผนเดือน (H4 · Q-125) · Bay เห็นแผนที่รออนุมัติ · การตลาดเห็นแผนเดือนหน้าที่ต้องส่ง
+  const nextMonth = (() => { const [y, m] = d.today.split('-').map(Number); return m === 12 ? `${y + 1}-01-01` : `${y}-${String(m + 1).padStart(2, '0')}-01`; })();
+  const openPlans = await getOpenPlans();
+  const brandName = (id: string) => brands.find((x) => x.id === id)?.name ?? '';
+  const planBrands = b ? brands.filter((x) => x.id === b) : brands;
+  const nextPlans = await Promise.all(planBrands.map(async (x) => ({ brand: x, ...(await getPlan(x.id, nextMonth)) })));
   const productName = Object.fromEntries(models.map((m) => [m.id, `${m.collection}${m.name_th ? ` ${m.name_th}` : ''}`]));
   const maxShare = Math.max(1, ...d.share.flatMap((s) => [s.now, s.prev]));
   const unreadMentions = d.mentions.filter((m) => m.unread);
@@ -51,7 +58,7 @@ export default async function ContentHome({ searchParams }: PageProps<'/content'
 
       {brands.length > 1 && (
         <nav className="mt-3 flex flex-wrap gap-2" aria-label="แบรนด์">
-          <Link href="/content" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
+          <Link href="/content?brand=all" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
           {brands.map((x) => (
             <Link key={x.id} href={`/content?brand=${x.id}`}
               className={'rounded-full border px-3 py-1.5 text-sm ' + (b === x.id ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>{x.name}</Link>
@@ -114,9 +121,29 @@ export default async function ContentHome({ searchParams }: PageProps<'/content'
 
         {boss && <NotebookBox notes={d.notebook} isAdmin={admin} />}
 
-        <section className={panel}>
-          <h2 className="text-sm font-medium">{boss ? 'แผนเดือนรออนุมัติ' : 'แผนเดือนที่ต้องส่ง'}</h2>
-          <p className="mt-2 text-sm text-muted">หน้าแผนเดือนมาในรอบ R6 · ตอนนี้ตั้งงานผ่านไอเดียด่วนหรือตั้งงานแบบเต็มไปก่อน</p>
+        <section className={panel + (boss && openPlans.some((x) => x.status === 'รออนุมัติ') ? ' border-locked/40' : '')}>
+          <div className="flex items-baseline justify-between gap-2">
+            <h2 className="text-sm font-medium">{boss ? 'แผนเดือน' : 'แผนเดือนที่ต้องส่ง'}</h2>
+            <Link href="/content/plan" className="text-xs text-muted underline">หน้าแผน</Link>
+          </div>
+          {boss && openPlans.filter((x) => x.status === 'รออนุมัติ').map((x) => (
+            <Link key={x.id} href={`/content/plan?brand=${x.brand_id}&month=${x.month}`}
+              className="mt-2 flex items-center justify-between gap-2 rounded-xl border border-locked/40 bg-locked/5 px-3 py-2 text-sm">
+              <span>รออนุมัติ · {brandName(x.brand_id)} · {x.month.slice(0, 7)}</span>
+              <span className="shrink-0 rounded-lg bg-accent px-2.5 py-1 text-xs font-medium text-accent-fg">ดูแผน</span>
+            </Link>
+          ))}
+          <ul className="mt-2 space-y-1 text-sm">
+            {nextPlans.map((x) => (
+              <li key={x.brand.id} className="flex items-baseline justify-between gap-2">
+                <Link href={`/content/plan?brand=${x.brand.id}&month=${nextMonth}`} className="underline">{x.brand.name} · เดือนหน้า</Link>
+                <span className="text-xs text-muted">
+                  {x.plan ? `${x.plan.status} · ${x.slots.length} ชิ้น` : 'ยังไม่เริ่ม'}
+                  {(!x.plan || ['ร่าง', 'ตีกลับ'].includes(x.plan.status)) && ` · ส่งภายใน ${planDeadline(nextMonth).slice(5).split('-').reverse().join('/')}`}
+                </span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {!boss && (

@@ -44,7 +44,8 @@ export default async function CalendarPage({ searchParams }: PageProps<'/content
     const [cal, brands, pillars, campaigns, models, team] = await Promise.all([
       getCalendar(), getBrands(), getPillars(), getCampaigns(), getModels(), getTeam(),
     ]);
-    const b = typeof brand === 'string' && brand ? brand : '';
+    // เปิดมาเป็นแบรนด์ตั้งต้น (ฌ เฌอ) · ?brand=all = ทุกแบรนด์
+    const b = brand === 'all' ? '' : typeof brand === 'string' && brands.some((x) => x.id === brand) ? brand : brands[0]?.id ?? '';
     const items = b ? cal.items.filter((i) => i.brand_id === b) : cal.items;
     const dated = new Set(cal.placements.map((p) => p.item_id));
     const undated = items.filter((i) => !dated.has(i.id) && i.stage !== 'โพสต์แล้ว').length;
@@ -53,7 +54,7 @@ export default async function CalendarPage({ searchParams }: PageProps<'/content
         {header}
         {brands.length > 1 && (
           <nav className="mt-3 flex flex-wrap gap-2" aria-label="แบรนด์">
-            <Link href="/content/calendar" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
+            <Link href="/content/calendar?brand=all" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
             {brands.map((x) => (
               <Link key={x.id} href={`/content/calendar?brand=${x.id}`}
                 className={'rounded-full border px-3 py-1.5 text-sm ' + (b === x.id ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>{x.name}</Link>
@@ -81,7 +82,7 @@ export default async function CalendarPage({ searchParams }: PageProps<'/content
     supabase.schema('content').from('placements').select('item_id,channel_id,skipped_reason'),
   ]);
 
-  const items = typeof brand === 'string' && brand ? all.filter((i) => i.brand_id === brand) : all;
+  const items = typeof brand === 'string' && brand && brand !== 'all' ? all.filter((i) => i.brand_id === brand) : all;
   const visuals = await getKeyVisuals(items.map((i) => i.id));
   const chans: Record<string, string[]> = {};
   for (const r of (plRows ?? []) as { item_id: string; channel_id: string; skipped_reason: string | null }[]) {

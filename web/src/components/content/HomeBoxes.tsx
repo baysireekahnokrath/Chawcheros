@@ -159,7 +159,7 @@ export function IdeasBox({ ideas, brands, brandId, productName }: {
 }) {
   const { error, pending, run } = useRun();
   const router = useRouter();
-  const [brand, setBrand] = useState(brandId || brands.find((b) => b.name === 'ฌ เฌอ')?.id || brands[0]?.id || '');
+  const [brand, setBrand] = useState(brandId || brands[0]?.id || '');
   const open = ideas.filter((i) => i.status === 'เสนอ');
   return (
     <section className={panel}>
