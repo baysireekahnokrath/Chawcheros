@@ -5,6 +5,8 @@
  */
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { draftPlan } from './agent';
+import { getDashboard } from './dashboard';
 
 type Result = { ok: true } | { ok: false; error: string };
 const done = (error?: { message: string } | null): Result => {
@@ -146,4 +148,19 @@ export async function setRoute(format: string, channelId: string, agent: string)
     .update({ agent }).eq('format', format).eq('channel_id', channelId).select('format');
   if (!error && !data?.length) return { ok: false, error: 'ตั้งค่าได้เฉพาะ Bay' };
   return done(error);
+}
+
+// ── agent ช่วย (Bay ขอ 2026-09-23) ─────────────────────────────────────────
+
+/** agent ร่างชิ้นในแผนทั้งเดือน · ลงเป็นร่างให้ทีมแก้ก่อนส่ง */
+export async function aiDraftPlan(planId: string, count: number, direction: string): Promise<{ ok: true; message: string } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'ต้องล็อกอินก่อน' };
+  const { data: plan } = await supabase.schema('content').from('plans').select('brand_id').eq('id', planId).maybeSingle();
+  if (!plan) return { ok: false, error: 'ไม่พบแผน' };
+  const d = await getDashboard(user.id, plan.brand_id);
+  const r = await draftPlan(supabase, planId, Math.min(Math.max(count, 1), 20), direction.trim(), d.stale);
+  revalidatePath('/content', 'layout');
+  return r.ok ? { ok: true, message: `agent ร่างมา ${r.count} ชิ้น${r.note ? ` · ${r.note}` : ''}` } : { ok: false, error: r.error };
 }

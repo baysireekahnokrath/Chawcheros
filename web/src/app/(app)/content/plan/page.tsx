@@ -8,6 +8,9 @@ import PlanEditor from '@/components/content/PlanEditor';
 
 export const metadata = { title: 'แผนเดือน · Chaw Cher OS' };
 
+// agent ร่างแผน / เขียนทีละชิ้น เรียก AI จากหน้านี้
+export const maxDuration = 300;
+
 const MON = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
 const shift = (month: string, n: number) => {
   const [y, m] = month.split('-').map(Number);

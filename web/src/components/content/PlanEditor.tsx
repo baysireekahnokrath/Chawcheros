@@ -4,8 +4,9 @@ import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  createPlan, addSlot, removeSlot, submitPlan, approvePlan, bouncePlan, markChangesSeen, addTheme, setThemeWeek,
+  createPlan, addSlot, removeSlot, submitPlan, approvePlan, bouncePlan, markChangesSeen, addTheme, setThemeWeek, aiDraftPlan,
 } from '@/modules/content/plan-actions';
+import { aiWrite } from '@/modules/content/agent-actions';
 import {
   PHASE1_FORMATS, PHASE1_CHANNELS, TONE, channelShort, planDeadline,
   type Plan, type PlanSlot, type PlanChange, type Pillar, type Theme, type ThemeWeek, type Model, type Person,
@@ -54,7 +55,35 @@ export default function PlanEditor(p: {
   const [adding, setAdding] = useState(false);
   const [format, setFormat] = useState<string>('ภาพเดี่ยว');
   const [note, setNote] = useState('');
+  const [count, setCount] = useState(8);
+  const [direction, setDirection] = useState('');
+  const [aiMsg, setAiMsg] = useState<string | null>(null);
+  const [progress, setProgress] = useState<string | null>(null);
+  const router = useRouter();
   const { plan } = p;
+
+  // agent ร่างทั้งเดือน (Bay ขอ 2026-09-23)
+  function draft() {
+    if (!plan) return;
+    setAiMsg(null);
+    run(async () => {
+      const r = await aiDraftPlan(plan.id, count, direction);
+      if (r.ok) setAiMsg(r.message);
+      return r.ok ? { ok: true } : r;
+    });
+  }
+  // หลังอนุมัติ · agent เขียนทีละชิ้นจนครบ (แต่ละชิ้น 30-90 วินาที)
+  const toWrite = p.slots.filter((s) => s.item_id && ['ไอเดีย', 'กำลังทำ'].includes(s.item_stage ?? ''));
+  async function writeAll() {
+    const fails: string[] = [];
+    for (let i = 0; i < toWrite.length; i++) {
+      setProgress(`agent กำลังเขียนชิ้นที่ ${i + 1} จาก ${toWrite.length} · ${toWrite[i].hook ?? ''}`);
+      const r = await aiWrite(toWrite[i].item_id!);
+      if (!r.ok) fails.push(`${label(toWrite[i].planned_on)}: ${r.error}`);
+    }
+    setProgress(fails.length ? `เขียนเสร็จ ${toWrite.length - fails.length}/${toWrite.length} · ไม่สำเร็จ: ${fails.join(' · ')}` : `เขียนครบ ${toWrite.length} ชิ้น · ชิ้นที่ภาพพร้อม/ข้อความล้วนส่งตรวจแล้ว`);
+    router.refresh();
+  }
   const deadline = planDeadline(p.month);
   const daysLeft = Math.round((toD(deadline).getTime() - toD(p.today).getTime()) / 864e5);
   const editable = p.canWrite && plan && plan.status !== 'รออนุมัติ';
@@ -100,10 +129,39 @@ export default function PlanEditor(p: {
               </p>
             )}
             {p.canWrite && ['ร่าง', 'ตีกลับ'].includes(plan.status) && (
+              <div className="space-y-2 rounded-xl border border-accent/30 bg-accent/5 p-3">
+                <p className="text-sm font-medium">ให้ agent ร่างแผนทั้งเดือน</p>
+                <p className="text-xs text-muted">คิดจาก brand model · pillar · ธีมและหัวข้อสัปดาห์ · สินค้าที่ไม่ได้พูดถึงนาน · แฟ้มคู่แข่ง · ร่างมาแล้วแก้/ตัด/เพิ่มได้ก่อนส่ง</p>
+                <div className="flex gap-2">
+                  <label className="text-sm">จำนวน
+                    <input type="number" min={1} max={20} value={count} onChange={(e) => setCount(Number(e.target.value))}
+                      className="mt-1 w-20 rounded-xl border border-border bg-bg px-3 py-2.5 text-sm" />
+                  </label>
+                  <label className="flex-1 text-sm">ทิศทาง (ไม่บังคับ)
+                    <input value={direction} onChange={(e) => setDirection(e.target.value)} placeholder="เช่น เน้นโซฟาห้องเล็ก ช่วงปลายปี" className={input} />
+                  </label>
+                </div>
+                <button className={btn + ' w-full'} disabled={pending} onClick={draft}>
+                  {pending ? 'agent กำลังร่าง… (30-60 วินาที)' : `ให้ agent ร่าง ${count} ชิ้น`}
+                </button>
+                {aiMsg && <p className="text-sm text-ok">{aiMsg}</p>}
+              </div>
+            )}
+            {p.canWrite && ['ร่าง', 'ตีกลับ'].includes(plan.status) && (
               <button className={btn + ' w-full'} disabled={pending || p.slots.length === 0} onClick={() => run(() => submitPlan(plan.id))}>
                 ส่งแผนให้ Bay ({p.slots.length} ชิ้น)
               </button>
             )}
+            {approved && toWrite.length > 0 && (
+              <div className="space-y-2 rounded-xl border border-accent/30 bg-accent/5 p-3">
+                <p className="text-sm font-medium">การ์ดที่ยังไม่มีข้อความ {toWrite.length} ชิ้น</p>
+                <p className="text-xs text-muted">agent เขียนทุกช่องทางทีละชิ้น · ชิ้นละ 30-90 วินาที · Opus 5 ราว 5-8 บาท/ชิ้น · เปิดหน้านี้ค้างไว้จนเสร็จ</p>
+                <button className={btn + ' w-full'} disabled={!!progress && !progress.startsWith('เขียน')} onClick={writeAll}>
+                  ให้ agent เขียนทุกชิ้น
+                </button>
+              </div>
+            )}
+            {progress && <p className="rounded-xl bg-bg p-3 text-sm">{progress}</p>}
             {p.canApprove && plan.status === 'รออนุมัติ' && (
               <div className="space-y-2 rounded-xl border border-locked/40 bg-locked/5 p-3">
                 <p className="text-sm font-medium">รอพี่อนุมัติ · อนุมัติแล้วทุกชิ้นกลายเป็นการ์ดไอเดียในปฏิทิน</p>

@@ -551,3 +551,102 @@ export async function suggestIdeas(
   if (error) return { ok: false as const, error: error.message };
   return { ok: true as const };
 }
+
+// ── agent ร่างแผนเดือน (Bay ขอ 2026-09-23) ─────────────────────────────────────
+
+const PlanSchema = z.object({
+  slots: z.array(z.object({
+    planned_on: z.string(),
+    format: z.enum(['ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ']),
+    channels: z.array(ChannelId),
+    hook: z.string(),
+    key_message: z.string(),
+    visual: z.string(),
+    pillar_id: z.string(),
+    theme_id: z.string(),
+    product_ids: z.array(z.string()),
+  })),
+  note_to_team: z.string(),
+});
+
+/**
+ * ร่างชิ้นในแผนทั้งเดือน · ลงเป็นช่องในแผนสถานะร่าง ให้คนแก้/ตัด/เพิ่มก่อนส่ง Bay
+ * ใช้ brand model · สมุด · pillar · ธีม + หัวข้อสัปดาห์ · สินค้าที่ไม่ได้พูดถึงนาน · แฟ้มคู่แข่ง
+ */
+export async function draftPlan(
+  supabase: Supa, planId: string, count: number, direction: string,
+  stale: { id: string; name: string; last: string | null }[],
+) {
+  const db = supabase.schema('content');
+  const { data: plan } = await db.from('plans').select('id,brand_id,month,status').eq('id', planId).maybeSingle();
+  if (!plan) return { ok: false as const, error: 'ไม่พบแผน' };
+  if (!['ร่าง', 'ตีกลับ'].includes(plan.status)) return { ok: false as const, error: 'agent ร่างได้เฉพาะแผนที่ยังเป็นร่างหรือถูกตีกลับ' };
+
+  const monthEnd = (() => { const [y, m] = plan.month.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); })();
+  const [brain, { data: brand }, { data: pillars }, { data: themes }, { data: existing }, { data: swipes }, { data: products }] = await Promise.all([
+    loadBrain(supabase, plan.brand_id, ['facebook', 'instagram', 'website']),
+    supabase.schema('catalog').from('brands').select('name').eq('id', plan.brand_id).maybeSingle(),
+    db.from('pillars').select('id,name').eq('brand_id', plan.brand_id).eq('active', true),
+    db.from('themes').select('id,name,goal,starts_on,ends_on').eq('brand_id', plan.brand_id).eq('active', true)
+      .lte('starts_on', monthEnd).gte('ends_on', plan.month),
+    db.from('plan_slots').select('planned_on,hook').eq('plan_id', planId).is('removed_at', null),
+    db.from('swipes').select('competitor,summary,hook_type').is('archived_at', null).not('summary', 'is', null).limit(6),
+    supabase.schema('catalog').from('products').select('id,collection,name_th').eq('brand_id', plan.brand_id).neq('status', 'เลิกขาย'),
+  ]);
+  const { data: weeks } = (themes ?? []).length
+    ? await db.from('theme_weeks').select('theme_id,week_of,topic').in('theme_id', (themes ?? []).map((t) => t.id))
+    : { data: [] };
+  const staleIds = new Set(stale.map((s) => s.id));
+
+  const res = await runClaude({
+    supabase, kind: 'ร่างแผน', brandId: plan.brand_id, instruction: direction || null,
+    usedRefs: { brain: brain.refs, plan: planId },
+    system: RULES + '\n\n' + brain.text,
+    content: [{ type: 'text', text: [
+      `# ร่างแผนคอนเทนต์เดือน ${plan.month.slice(0, 7)} ของแบรนด์ ${brand?.name ?? ''}`,
+      `ช่วงวัน: ${plan.month} ถึง ${monthEnd} · จำนวน ${count} ชิ้น`,
+      direction ? `ทิศทางจาก Bay/ทีม: ${direction}` : '',
+      '',
+      '# Pillar (id · ชื่อ)', ...((pillars ?? []).length ? (pillars ?? []).map((p) => `${p.id} · ${p.name}`) : ['(ยังไม่มี · ใส่ pillar_id = "")']),
+      '',
+      '# ธีมที่คร่อมเดือนนี้ (id · ชื่อ · เป้าหมาย · ช่วง)',
+      ...((themes ?? []).length ? (themes ?? []).map((t) => `${t.id} · ${t.name} · ${t.goal ?? '-'} · ${t.starts_on}→${t.ends_on}`) : ['(ไม่มี · ใส่ theme_id = "")']),
+      ...((weeks ?? []).map((w) => `  หัวข้อสัปดาห์ ${w.week_of}: ${w.topic} (ธีม ${w.theme_id})`)),
+      '',
+      '# สินค้าของแบรนด์ (id · รุ่น) · ★ = ไม่ได้พูดถึงเกิน 60 วัน ควรหยิบ',
+      ...(products ?? []).slice(0, 80).map((p) => `${p.id} · ${p.collection}${p.name_th ? ` ${p.name_th}` : ''}${staleIds.has(p.id) ? ' ★' : ''}`),
+      '',
+      '# สรุปโพสต์คู่แข่ง', ...((swipes ?? []).length ? (swipes ?? []).map((s) => `- ${s.competitor ?? '?'} · ${s.hook_type ?? ''} · ${s.summary}`) : ['(ไม่มี)']),
+      '',
+      existing?.length ? '# มีในแผนแล้ว (อย่าซ้ำ)\n' + existing.map((e) => `- ${e.planned_on} ${e.hook ?? ''}`).join('\n') : '',
+      '# งานของคุณ',
+      `- ร่าง ${count} ชิ้น กระจายทั้งเดือน ไม่กองวันเดียว · สมดุล pillar · ถ้ามีธีม/หัวข้อสัปดาห์ให้ผูก theme_id และเล่าตามหัวข้อสัปดาห์นั้น`,
+      '- format: ภาพเดี่ยว/อัลบั้มภาพ ลง facebook + instagram · ข้อความล้วน ห้าม instagram · ใส่ website เฉพาะเรื่องที่เหมาะเป็นบทความ SEO (เดือนละ 2-4 ชิ้น)',
+      '- hook ประโยคเปิดที่หยุดคนดู · key_message สิ่งที่อยากให้คนจำ 1 ข้อ · visual อธิบายภาพที่ต้องถ่าย/ทำ',
+      '- product_ids ใช้ id จากรายการเท่านั้น · ห้ามแต่งสเปก · pillar_id/theme_id ใช้ id จากรายการหรือ ""',
+      '- note_to_team: 1-2 ประโยค สรุปแนวคิดของแผนนี้',
+    ].filter(Boolean).join('\n') }],
+    schema: PlanSchema, maxTokens: 8000, effort: 'medium',
+  });
+  if (!res.ok) return res;
+
+  const pIds = new Set((pillars ?? []).map((p) => p.id));
+  const tIds = new Set((themes ?? []).map((t) => t.id));
+  const prodIds = new Set((products ?? []).map((p) => p.id));
+  const rows = res.data.slots
+    .filter((s) => /^\d{4}-\d{2}-\d{2}$/.test(s.planned_on) && s.planned_on >= plan.month && s.planned_on <= monthEnd)
+    .map((s) => {
+      const channels = [...new Set(s.channels)].filter((c) => !(s.format === 'ข้อความล้วน' && c === 'instagram'));
+      return {
+        plan_id: planId, planned_on: s.planned_on, format: s.format,
+        channels: channels.length ? channels : ['facebook'],
+        hook: s.hook.trim() || null, key_message: s.key_message.trim() || null, visual: s.visual.trim() || null,
+        pillar_id: pIds.has(s.pillar_id) ? s.pillar_id : null, theme_id: tIds.has(s.theme_id) ? s.theme_id : null,
+        product_ids: s.product_ids.filter((id) => prodIds.has(id)),
+      };
+    });
+  if (rows.length === 0) return { ok: false as const, error: 'agent ร่างมาไม่ได้สักชิ้น · ลองใหม่' };
+  const { error } = await db.from('plan_slots').insert(rows);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const, count: rows.length, note: res.data.note_to_team };
+}
