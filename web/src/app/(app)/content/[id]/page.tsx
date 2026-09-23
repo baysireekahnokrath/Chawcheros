@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getItem, getPlacements, getChannels, canApprove } from '@/modules/content/queries';
+import {
+  getItem, getPlacements, getChannels, canApprove, getImages, getItemModels,
+  getBrands, getPillars, getThemes, getCampaigns, getModels, getTeam, isPhase1,
+} from '@/modules/content/queries';
 import ItemDetail from '@/components/content/ItemDetail';
+import LegacyItemDetail from '@/components/content/LegacyItemDetail';
 
 export const metadata = { title: 'งานคอนเทนต์ · Chaw Cher OS' };
 
@@ -10,17 +14,45 @@ export default async function ContentItemPage({ params }: PageProps<'/content/[i
   const item = await getItem(id);
   if (!item) notFound();
 
-  const [placements, channels, approver] = await Promise.all([
-    getPlacements(id),
-    getChannels(),
-    canApprove(),
+  const back = <Link href="/content" className="text-sm text-muted">← คอนเทนต์</Link>;
+
+  // งานคลิปเดิม · ยังเปิดดูได้ แต่ไม่มีหน้าตั้งงานแบบนี้แล้ว (Q-04)
+  if (!isPhase1(item.format)) {
+    const [placements, channels, approver] = await Promise.all([getPlacements(id), getChannels(), canApprove()]);
+    return (
+      <>
+        {back}
+        <div className="mt-3">
+          <LegacyItemDetail item={item} placements={placements} channels={channels} canApprove={approver} />
+        </div>
+      </>
+    );
+  }
+
+  const [placements, images, models, brands, pillars, themes, campaigns, allModels, team, approver] = await Promise.all([
+    getPlacements(id), getImages(id), getItemModels(id), getBrands(), getPillars(), getThemes(),
+    getCampaigns(), getModels(), getTeam(), canApprove(),
   ]);
+  const order = ['facebook', 'instagram', 'website'];
+  placements.sort((a, b) => order.indexOf(a.channel_id) - order.indexOf(b.channel_id));
 
   return (
     <>
-      <Link href="/content" className="text-sm text-muted">← คอนเทนต์</Link>
+      {back}
       <div className="mt-3">
-        <ItemDetail item={item} placements={placements} channels={channels} canApprove={approver} />
+        <ItemDetail
+          item={item}
+          brandName={brands.find((b) => b.id === item.brand_id)?.name ?? ''}
+          placements={placements}
+          images={images}
+          models={models}
+          pillars={pillars}
+          themes={themes}
+          campaigns={campaigns}
+          allModels={allModels}
+          team={team}
+          canApprove={approver}
+        />
       </div>
     </>
   );

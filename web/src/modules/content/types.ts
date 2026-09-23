@@ -8,16 +8,51 @@
  */
 
 export const STAGES = [
-  'ไอเดีย', 'เขียนบท', 'ถ่ายแล้วรอตัด', 'ตัดเสร็จ',
+  'ไอเดีย', 'กำลังทำ', 'เขียนบท', 'ถ่ายแล้วรอตัด', 'ตัดเสร็จ',
   'รอตรวจ', 'ตีกลับแก้', 'พร้อมโพสต์', 'โพสต์แล้ว', 'พับไว้',
 ] as const;
 export type Stage = (typeof STAGES)[number];
 
-/** ขั้นที่คนทำงานเลื่อนเองได้ · ที่เหลือเลื่อนผ่านปุ่มส่งตรวจ/อนุมัติเท่านั้น */
+/** ขั้นที่คนทำงานเลื่อนเองได้ (งานคลิปเดิม) · ที่เหลือเลื่อนผ่านปุ่มส่งตรวจ/อนุมัติเท่านั้น */
 export const WORK_STAGES: Stage[] = ['ไอเดีย', 'เขียนบท', 'ถ่ายแล้วรอตัด', 'ตัดเสร็จ'];
 
-export const FORMATS = ['คลิปยาว', 'คลิปสั้น', 'หน้าเว็บ'] as const;
+/** ขั้นที่คนทำงานเลื่อนเองได้ของงานเฟส 1 · ผลิตไม่ได้แบ่ง 3 ขั้นแบบวิดีโอแล้ว (requirement Q1) */
+export const PHASE1_WORK_STAGES: Stage[] = ['ไอเดีย', 'กำลังทำ'];
+
+export const FORMATS = ['คลิปยาว', 'คลิปสั้น', 'หน้าเว็บ', 'ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ'] as const;
 export type Format = (typeof FORMATS)[number];
+
+/** เฟส 1 ทำแค่นี้ (decisions-log N1) · คลิปซ่อนไว้จนถึงเฟสวิดีโอ */
+export const PHASE1_FORMATS = ['ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ'] as const satisfies readonly Format[];
+export const isPhase1 = (f: string) => (PHASE1_FORMATS as readonly string[]).includes(f);
+
+/** เฟส 1 ลงแค่ 3 ช่องทาง (decisions-log N2) · ตัวย่อใช้บนการ์ด (K3) */
+export const PHASE1_CHANNELS = [
+  { id: 'facebook', short: 'FB', name: 'Facebook' },
+  { id: 'instagram', short: 'IG', name: 'Instagram' },
+  { id: 'website', short: 'WEB', name: 'บล็อก SEO' },
+] as const;
+export const channelShort = (id: string) => PHASE1_CHANNELS.find((c) => c.id === id)?.short ?? id;
+export const channelName = (id: string) => PHASE1_CHANNELS.find((c) => c.id === id)?.name ?? id;
+
+/** ความยาวที่แต่ละช่องทางรับ · เตือนเมื่อเกิน (Q-34) */
+export const LIMITS = { facebook: 63206, instagram: 2200, web_title: 60, web_meta: 155 } as const;
+
+/** Instagram รับอัลบั้มสูงสุด 20 ภาพ · ฐานข้อมูลบังคับซ้ำอีกชั้น */
+export const MAX_ALBUM = 20;
+
+export const TONE: Record<string, string> = {
+  ไอเดีย: 'bg-border text-muted',
+  กำลังทำ: 'bg-warn/10 text-warn',
+  เขียนบท: 'bg-accent/10 text-accent',
+  ถ่ายแล้วรอตัด: 'bg-warn/10 text-warn',
+  ตัดเสร็จ: 'bg-accent/10 text-accent',
+  รอตรวจ: 'bg-locked/10 text-locked',
+  ตีกลับแก้: 'bg-danger/10 text-danger',
+  พร้อมโพสต์: 'bg-ok/10 text-ok',
+  โพสต์แล้ว: 'bg-ok/10 text-ok',
+  พับไว้: 'bg-border text-muted',
+};
 
 export type Item = {
   id: string;
@@ -34,6 +69,15 @@ export type Item = {
   approved_at: string | null;
   review_note: string | null;
   updated_at: string;
+  brand_id: string | null;
+  hook: string | null;
+  key_message: string | null;
+  visual: string | null;
+  pillar_id: string | null;
+  theme_id: string | null;
+  owner_id: string | null;
+  off_plan: boolean;
+  source_url: string | null;
 };
 
 export type Placement = {
@@ -43,8 +87,24 @@ export type Placement = {
   planned_on: string | null;
   published_at: string | null;
   published_url: string | null;
+  hook: string | null;
+  copy_text: string | null;
+  first_comment: string | null;
+  web_title: string | null;
+  web_keyword: string | null;
+  web_meta: string | null;
+  human_edited: boolean;
+  skipped_reason: string | null;
   channels: { name_th: string } | null;
 };
+
+export type ItemImage = { id: string; position: number; url: string };
+
+export type Brand = { id: string; name: string };
+export type Pillar = { id: string; brand_id: string; name: string; color: string; sort_order: number; active: boolean };
+export type Theme = { id: string; brand_id: string; name: string; goal: string | null; starts_on: string; ends_on: string; active: boolean };
+export type Model = { id: string; brand_id: string; collection: string; name_th: string | null };
+export type Person = { id: string; full_name: string };
 
 export type TodayItem = {
   หมวด: string;

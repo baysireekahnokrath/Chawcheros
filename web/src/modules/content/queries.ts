@@ -1,16 +1,22 @@
 import { createClient } from '@/lib/supabase/server';
 
 export * from './types';
-import type { Item, Placement, TodayItem, Gap } from './types';
+import type {
+  Item, Placement, TodayItem, Gap, ItemImage, Brand, Pillar, Theme, Model, Person,
+} from './types';
+
+const ITEM_COLS =
+  'id,title,format,stage,brief,campaign_id,script_url,raw_url,edit_url,thumbnail_url,due_on,approved_at,review_note,updated_at,' +
+  'brand_id,hook,key_message,visual,pillar_id,theme_id,owner_id,off_plan,source_url';
 
 export async function getItems(): Promise<Item[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .schema('content')
     .from('items')
-    .select('id,title,format,stage,brief,campaign_id,script_url,raw_url,edit_url,thumbnail_url,due_on,approved_at,review_note,updated_at')
+    .select(ITEM_COLS)
     .order('updated_at', { ascending: false });
-  return (data ?? []) as Item[];
+  return (data ?? []) as unknown as Item[];
 }
 
 export async function getItem(id: string): Promise<Item | null> {
@@ -18,10 +24,10 @@ export async function getItem(id: string): Promise<Item | null> {
   const { data } = await supabase
     .schema('content')
     .from('items')
-    .select('id,title,format,stage,brief,campaign_id,script_url,raw_url,edit_url,thumbnail_url,due_on,approved_at,review_note,updated_at')
+    .select(ITEM_COLS)
     .eq('id', id)
     .maybeSingle();
-  return (data ?? null) as Item | null;
+  return (data ?? null) as unknown as Item | null;
 }
 
 export async function getPlacements(itemId: string): Promise<Placement[]> {
@@ -29,9 +35,50 @@ export async function getPlacements(itemId: string): Promise<Placement[]> {
   const { data } = await supabase
     .schema('content')
     .from('placements')
-    .select('id,item_id,channel_id,planned_on,published_at,published_url,channels(name_th)')
+    .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,skipped_reason,channels(name_th)')
     .eq('item_id', itemId);
   return (data ?? []) as unknown as Placement[];
+}
+
+/** ภาพของชิ้นงาน เรียงตามลำดับ · ภาพแรก = key visual */
+export async function getImages(itemId: string): Promise<ItemImage[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('item_images')
+    .select('id,position,url')
+    .eq('item_id', itemId)
+    .is('removed_at', null)
+    .order('position')
+    .order('created_at');
+  return (data ?? []) as ItemImage[];
+}
+
+/** key visual ของหลายชิ้นในครั้งเดียว · ใช้บนรายการงาน */
+export async function getKeyVisuals(itemIds: string[]): Promise<Record<string, string>> {
+  if (itemIds.length === 0) return {};
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('item_images')
+    .select('item_id,url,position,created_at')
+    .in('item_id', itemIds)
+    .is('removed_at', null)
+    .order('position')
+    .order('created_at');
+  const out: Record<string, string> = {};
+  for (const r of (data ?? []) as { item_id: string; url: string }[]) out[r.item_id] ??= r.url;
+  return out;
+}
+
+export async function getItemModels(itemId: string): Promise<string[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('item_models')
+    .select('product_id')
+    .eq('item_id', itemId);
+  return ((data ?? []) as { product_id: string }[]).map((r) => r.product_id);
 }
 
 export async function getContentToday(): Promise<TodayItem[]> {
@@ -65,6 +112,63 @@ export async function getCampaigns() {
     .select('id,name')
     .order('starts_on', { ascending: false });
   return (data ?? []) as { id: string; name: string }[];
+}
+
+/** แบรนด์ที่ยังใช้อยู่ · ตั้งงานคอนเทนต์ต้องเลือกแบรนด์ก่อน (Q-110) */
+export async function getBrands(): Promise<Brand[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('catalog')
+    .from('brands')
+    .select('id,name')
+    .neq('status', 'เลิกขาย')
+    .order('name');
+  return (data ?? []) as Brand[];
+}
+
+export async function getPillars(): Promise<Pillar[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('pillars')
+    .select('id,brand_id,name,color,sort_order,active')
+    .order('sort_order')
+    .order('name');
+  return (data ?? []) as Pillar[];
+}
+
+export async function getThemes(): Promise<Theme[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('themes')
+    .select('id,brand_id,name,goal,starts_on,ends_on,active')
+    .order('starts_on', { ascending: false });
+  return (data ?? []) as Theme[];
+}
+
+/** รุ่นสินค้า (Collection) · คอนเทนต์ผูกระดับรุ่น ไม่ใช่ SKU */
+export async function getModels(): Promise<Model[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('catalog')
+    .from('products')
+    .select('id,brand_id,collection,name_th')
+    .neq('status', 'เลิกขาย')
+    .order('collection');
+  return (data ?? []) as Model[];
+}
+
+/** คนในทีมที่ยังทำงานอยู่ · ใช้เลือกคนทำ */
+export async function getTeam(): Promise<Person[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('core')
+    .from('app_users')
+    .select('id,full_name')
+    .eq('status', 'ใช้งาน')
+    .order('full_name');
+  return (data ?? []) as Person[];
 }
 
 /** ฉันอนุมัติคอนเทนต์ได้ไหม — ใช้ตัดสินว่าจะโชว์ปุ่มอนุมัติ */
