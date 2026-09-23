@@ -82,6 +82,11 @@ main { padding: 16px 16px calc(96px + env(safe-area-inset-bottom, 0px)); max-wid
   box-shadow: var(--shadow); display: grid; place-items: center;
 }
 .fab svg { width: 26px; height: 26px; }
+.fabmenu { position: fixed; right: 16px; bottom: calc(142px + env(safe-area-inset-bottom, 0px)); z-index: 32; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 6px; display: grid; min-width: 230px; }
+.fabmenu button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; display: grid; gap: 1px; }
+.fabmenu button:hover { background: var(--sunk); }
+.fabmenu small { color: var(--muted); font-size: 12px; }
+@media (min-width: 900px) { .fabmenu { bottom: 90px; right: 24px; } }
 
 @media (min-width: 900px) {
   .app { grid-template-columns: 208px 1fr; }
@@ -301,7 +306,8 @@ table.routes th { color: var(--muted); font-weight: 500; font-size: 12px; }
     <main id="main"></main>
   </div>
 </div>
-<button class="fab" id="fab" aria-label="ตั้งงานใหม่" data-act="new">
+<div class="fabmenu" id="fabmenu" hidden><button data-act="goIdea"><b>ไอเดียด่วน</b><small>พิมพ์ประโยคเดียว agent ทำที่เหลือ</small></button><button data-act="new"><b>ตั้งงานแบบเต็ม</b><small>กรอก brief เลือก pillar ธีม แคมเปญเอง</small></button></div>
+<button class="fab" id="fab" aria-label="เพิ่มงาน" aria-haspopup="menu" data-act="fab">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
 </button>
 <div class="toast" id="toast" hidden></div>
@@ -638,7 +644,7 @@ function viewCal() {
   const legend = (S.colorBy === 'pillar' ? pl : cps).map(x => `<span><i style="background:${x.c}"></i>${esc(x.name)}</span>`).join('') +
     `<span><i style="background:var(--pn)"></i>${S.colorBy === 'pillar' ? 'ไม่มี pillar' : 'ไม่ผูกแคมเปญ'}</span>`;
 
-  return `${ideaBar()}<div class="calbar">
+  return `<div class="calbar">
     <div class="calnav">
       <button class="iconbtn" data-act="calPrev" aria-label="ก่อนหน้า">${svg('prev')}</button>
       <button class="iconbtn" data-act="calNext" aria-label="ถัดไป">${svg('next')}</button>
@@ -1007,16 +1013,16 @@ function viewInterview() {
 function render() {
   const reviewCount = items.filter(i => i.brand === S.brand && i.stage === 'review').length;
   const navs = [['cal', 'ปฏิทิน'], ['plan', 'แผน'], ['review', 'ตรวจ'], ['brand', 'แบรนด์']];
-  const onScreen = { item: S.back, new: S.back, reviewItem: 'review' }[S.screen] || S.screen;
+  const onScreen = { item: S.back, new: S.back, idea: S.back, reviewItem: 'review' }[S.screen] || S.screen;
   $('#nav').innerHTML = `<div class="brandmark">Content Studio<small>Chaw Cher OS</small></div>` + navs.map(([k, v]) =>
     `<button data-act="nav" data-v="${k}" aria-current="${onScreen === k ? 'page' : 'false'}">${svg(k)}<span>${v}</span>${k === 'review' && reviewCount ? `<span class="badge num">${reviewCount}</span>` : ''}</button>`).join('');
-  $('#top').innerHTML = `<h1>${{ cal: 'ปฏิทินคอนเทนต์', plan: 'แผน', review: 'ตรวจงาน', brand: 'แบรนด์', item: 'ชิ้นงาน', new: 'ตั้งงานใหม่', reviewItem: 'ตรวจงาน' }[S.screen]}</h1>
+  $('#top').innerHTML = `<h1>${{ cal: 'ปฏิทินคอนเทนต์', plan: 'แผน', review: 'ตรวจงาน', brand: 'แบรนด์', item: 'ชิ้นงาน', new: 'ตั้งงานใหม่', idea: 'ไอเดียด่วน', reviewItem: 'ตรวจงาน' }[S.screen]}</h1>
     <div class="seg" role="group" aria-label="แบรนด์">${Object.entries(BRANDS).map(([k, v]) => `<button data-act="brand" data-v="${k}" aria-pressed="${S.brand === k}">${v}</button>`).join('')}</div>
     <label class="xs muted" for="role">ดูในฐานะ</label><select id="role" class="inp" style="width:auto;padding:5px 8px;font-size:13px" data-role>
       <option value="mkt" ${S.role === 'mkt' ? 'selected' : ''}>การตลาด</option><option value="bay" ${S.role === 'bay' ? 'selected' : ''}>Bay</option></select>`;
-  const V = { cal: viewCal, item: viewItem, new: viewNew, review: viewReview, reviewItem: viewReviewItem, plan: viewPlan, brand: viewBrand }[S.screen];
+  const V = { idea: () => `<button class="back" data-act="back">← กลับ</button><div style="max-width:720px">${ideaBar()}</div>`, cal: viewCal, item: viewItem, new: viewNew, review: viewReview, reviewItem: viewReviewItem, plan: viewPlan, brand: viewBrand }[S.screen];
   $('#main').innerHTML = V();
-  $('#fab').hidden = !['cal', 'plan'].includes(S.screen);
+  $('#fab').hidden = !['cal', 'plan'].includes(S.screen); $('#fabmenu').hidden = true;
 }
 const go = (screen, extra = {}) => { Object.assign(S, extra, { screen }); render(); window.scrollTo(0, 0); };
 
@@ -1042,6 +1048,7 @@ function finishAgent(it) {
 }
 
 document.addEventListener('click', e => {
+  if (!e.target.closest('#fabmenu, #fab')) $('#fabmenu').hidden = true;
   const b = e.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act, v = b.dataset.v;
   const it = S.itemId ? itemById(S.itemId) : null;
@@ -1059,6 +1066,8 @@ document.addEventListener('click', e => {
     }
     case 'open': e.preventDefault(); go('item', { itemId: b.dataset.id, back: S.screen === 'item' ? S.back : S.screen, unlock: false, tab: 'FB' }); break;
     case 'back': go(S.back || 'cal', { unlock: false, bounceRows: null }); break;
+    case 'fab': $('#fabmenu').hidden = !$('#fabmenu').hidden; return;
+    case 'goIdea': go('idea', { back: S.screen }); break;
     case 'new': go('new', { back: S.screen }); break;
     case 'tab': S.tab = v; render(); break;
     case 'answer':
@@ -1146,7 +1155,7 @@ function ideaFinish() {
   I.itemId = it.id; I.phase = 'done';
   I.note = I.answer && P.products[0] ? `${P.products[0]} = ${P.topic} เพราะ${I.answer}` : null;
   S.cursor = P.date;
-  if (S.screen === 'cal') render();
+  if (S.screen === 'idea') render();
 }
 function checkPosted(it) {
   const live = it.place.filter(p => !p.skip);
