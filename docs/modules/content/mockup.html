@@ -266,6 +266,31 @@ textarea.inp { resize: vertical; min-height: 88px; line-height: 1.6; }
 @media (min-width: 900px) { .sticky-actions { bottom: 0; } }
 .sticky-actions .btn { flex: 1; min-height: 46px; }
 
+/* ---------- ตรวจทีละส่วน + แชท ---------- */
+.part { display: grid; gap: 8px; }
+.part.ok { border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+.part.fix { border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+.part.prev { opacity: .7; }
+.verdict { display: flex; gap: 6px; flex-wrap: wrap; }
+.verdict label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; font-size: 13.5px; cursor: pointer; background: var(--surface); }
+.verdict input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+.verdict label.on-ok { border-color: var(--ok); color: var(--ok); font-weight: 600; }
+.verdict label.on-fix { border-color: var(--danger); color: var(--danger); font-weight: 600; }
+.partimg { display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: start; }
+.partimg .thumb { aspect-ratio: 1; border-radius: 10px; width: 84px; }
+.chatbox { display: grid; gap: 10px; }
+.msgs { display: grid; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 2px; }
+.msg { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: start; }
+.msg .av { width: 28px; height: 28px; border-radius: 99px; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--sunk); color: var(--text); border: 1px solid var(--border); }
+.msg.ai .av { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.msg .who { font-size: 12px; color: var(--muted); }
+.msg .who b { color: var(--text); font-weight: 600; margin-right: 4px; }
+.msg .txt { font-size: 14px; white-space: pre-wrap; }
+.msg .ref { font-size: 11px; font-weight: 600; border-radius: 6px; padding: 0 5px; background: var(--sunk); color: var(--muted); margin-right: 4px; }
+.sysmsg { font-size: 12px; color: var(--muted); text-align: center; }
+.chatin { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; }
+.chatin select { width: auto; padding: 8px; font-size: 13px; }
+
 /* ---------- แผน ---------- */
 .timeline { display: grid; gap: 6px; }
 .tl-head { display: grid; grid-template-columns: repeat(3, 1fr); font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
@@ -457,6 +482,33 @@ items.forEach(it => {
   it.firstComment ||= { FB: it.products[0] ? `ดูรุ่น ${it.products[0]} → chawcher.com/p/…` : '', IG: '' };
 });
 items.find(x => x.id === 'i7').drafts.IG.human = true;
+items.forEach(it => { it.chat ||= []; it.passed ||= []; });
+itemById('i4').chat = [
+  { sys: 'Content agent ร่าง Facebook · Instagram · บล็อก SEO', when: '20 ก.ย.' },
+  { who: 'mint', ref: 'ภาพ 3', t: 'ภาพนี้เห็นหน้าคุณแพร ต้องขออนุญาตก่อนไหม', when: '21 ก.ย. 10:12' },
+  { who: 'ton', ref: 'ภาพ 3', t: 'ขอแล้วครับ คุณแพรโอเค แต่เบลอกรอบรูปครอบครัวให้แล้ว', when: '21 ก.ย. 10:40' },
+  { sys: 'ภาพครบ → ส่งถึง Bay ตรวจ', when: '22 ก.ย.' },
+];
+itemById('i6').chat = [
+  { sys: 'Bay ตรวจ v1 · ผ่าน Facebook · ต้องแก้ ภาพ 1 และ Instagram', when: '21 ก.ย.' },
+  { who: 'ton', ref: 'ภาพ 1', t: 'ถ่ายใหม่พรุ่งนี้ 8 โมงครับ แสงเข้าหน้าต่างพอดี', when: '21 ก.ย. 16:05' },
+];
+itemById('i6').passed = ['FB'];
+function whoName(k) { return { mint: 'มิ้นท์', ton: 'ต้น', bay: 'Bay', ai: 'Content agent' }[k] || k; }
+function nowStr() { const d = new Date(); return `${fmt(TODAY)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
+function partsOf(it) {
+  const chs = [...new Set(it.place.filter(p => !p.skip).map(p => p.ch))];
+  return [...it.images.map((m, i) => ({ k: 'img' + i, label: `ภาพ ${i + 1}`, img: m, i })), ...chs.map(c => ({ k: c, label: CH[c], ch: c }))];
+}
+function chatBox(it) {
+  const refs = ['ทั้งชิ้น', ...partsOf(it).map(p => p.label)];
+  return `<div class="panel chatbox"><div class="spread"><h3>คุยกันในงานนี้</h3><span class="xs muted">พิมพ์ @AI เพื่อสั่ง agent</span></div>
+    <div class="msgs" id="msgs-${it.id}">${it.chat.map(m => m.sys ? `<div class="sysmsg">${esc(m.sys)} · ${esc(m.when)}</div>` :
+      `<div class="msg ${m.who === 'ai' ? 'ai' : ''}"><span class="av">${m.who === 'ai' ? 'AI' : esc(whoName(m.who).slice(0, 1))}</span>
+        <div><div class="who"><b>${esc(whoName(m.who))}</b>${esc(m.when)}</div><div class="txt">${m.ref && m.ref !== 'ทั้งชิ้น' ? `<span class="ref">${esc(m.ref)}</span>` : ''}${esc(m.t)}</div></div></div>`).join('') || '<div class="sysmsg">ยังไม่มีข้อความ</div>'}</div>
+    <div class="chatin"><select class="inp" id="chat-ref" aria-label="พูดถึงส่วนไหน">${refs.map(r => `<option>${esc(r)}</option>`).join('')}</select>
+      <input class="inp" id="chat-msg" placeholder="พิมพ์ข้อความ หรือ @AI ขอ hook สั้นลง"><button class="btn primary" data-act="chatSend">ส่ง</button></div></div>`;
+}
 
 /* แผนรายเดือน */
 const plans = [
@@ -524,7 +576,7 @@ const S = {
   view: wide() ? 'month' : 'agenda', cursor: '2026-10-01', colorBy: 'pillar',
   f: { ch: '', pillar: '', campaign: '', product: '', owner: '' },
   itemId: null, tab: 'FB', unlock: false, bounceRows: null, brandTab: 'model', planId: 'pl-nov',
-  pendingNote: null, chat: [], chatSec: null, back: 'cal',
+  pendingNote: null, chat: [], chatSec: null, back: 'cal', rv: { marks: {}, notes: {} },
   idea: { text: 'พรุ่งนี้อยากเล่นเรื่อง mid century ใช้ภาพโซฟา Emu', link: 'drive.google.com/…/emu-walnut.jpg', phase: 'idle' },
 };
 try { const r = localStorage.getItem('cc-mock-role'); if (r) S.role = r; } catch (e) {}
@@ -733,7 +785,7 @@ function viewItem() {
       <button class="btn primary" data-act="runAgent">ส่งให้ Content agent เขียนทุกช่องทาง</button></div>`;
   }
 
-  const bounceBox = it.stage === 'bounce' ? `<div class="note bad"><div class="spread"><b>Bay ตีกลับ · แก้ทีละข้อ แล้วส่งใหม่</b><span class="xs muted">v${it.version}</span></div>
+  const bounceBox = it.stage === 'bounce' ? `<div class="note bad"><div class="spread"><b>Bay ตีกลับ · แก้ทีละข้อ แล้วส่งใหม่${it.passed.length ? ` · ผ่านแล้ว: ${it.passed.map(k => k.startsWith('img') ? 'ภาพ ' + (+k.slice(3) + 1) : CH[k]).join(', ')}` : ''}</b><span class="xs muted">v${it.version}</span></div>
       <div style="margin-top:6px">${it.comments.map((c, i) => `<label class="check ${c.done ? 'done' : ''}"><input type="checkbox" id="cm-${it.id}-${i}" data-act="tick" data-i="${i}" ${c.done ? 'checked' : ''}><span><b>${esc(c.target)}</b> · ${esc(c.text)}</span></label>`).join('')}</div>
       <button class="btn primary" style="margin-top:8px;width:100%" data-act="resubmit" ${it.comments.every(c => c.done) ? '' : 'disabled'}>ส่งตรวจอีกครั้ง${it.comments.every(c => c.done) ? '' : ` · เหลือ ${it.comments.filter(c => !c.done).length} ข้อ`}</button></div>` : '';
 
@@ -814,7 +866,7 @@ function viewItem() {
         ${humanBadge}${tabBody}
       </div>
     </div>
-    <div class="stack">${imgBox}${plcBox}${info}</div>
+    <div class="stack">${chatBox(it)}${imgBox}${plcBox}${info}</div>
   </div>`;
 }
 
@@ -877,29 +929,39 @@ function viewReview() {
 
 function viewReviewItem() {
   const it = itemById(S.itemId);
-  const chs = [...new Set(it.place.filter(p => !p.skip).map(p => p.ch))];
   const isBay = S.role === 'bay';
-  const targets = ['ทั้งชิ้น', ...it.images.map((_, i) => `ภาพ ${i + 1}`), ...chs.map(c => CH[c])];
+  const R = S.rv;
   const d = it.drafts;
-  const bounce = S.bounceRows ? `<div class="panel stack"><h3>ตีกลับ · บอกทีละข้อว่าต้องแก้อะไร</h3>
-    ${S.bounceRows.map((r, i) => `<div class="row" style="flex-wrap:nowrap;align-items:flex-start">
-      <select class="inp" id="br-t-${i}" data-brow="${i}" data-k="target" style="max-width:130px">${targets.map(t => `<option ${r.target === t ? 'selected' : ''}>${t}</option>`).join('')}</select>
-      <input class="inp" id="br-x-${i}" data-brow="${i}" data-k="text" placeholder="ต้องแก้อะไร" value="${esc(r.text)}"></div>`).join('')}
-    <div class="row"><button class="btn sm" data-act="addRow">+ อีกข้อ</button></div>
-    <div class="row"><button class="btn danger" data-act="doBounce">ส่งกลับให้แก้</button><button class="btn ghost" data-act="cancelBounce">ยกเลิก</button></div>
-    <p class="xs muted" style="margin:0">ต้องมีเหตุผลอย่างน้อย 1 ข้อ · agent จะเรียนจากเหตุผลนี้แล้วเสนอจดลงสมุด</p></div>` : '';
+  const parts = partsOf(it);
+  const open = parts.filter(p => !it.passed.includes(p.k));
+  const undecided = open.filter(p => !R.marks[p.k]).length;
+  const fixes = open.filter(p => R.marks[p.k] === 'fix');
+  const missingNote = fixes.some(p => !(R.notes[p.k] || '').trim());
+  const verdict = p => it.passed.includes(p.k) ? `<span class="pill t-ready">ผ่านแล้วรอบก่อน</span>` : `<div class="verdict">
+      <label class="${R.marks[p.k] === 'ok' ? 'on-ok' : ''}"><input type="checkbox" id="vk-${p.k}-ok" data-act="mark" data-k="${p.k}" data-v="ok" ${R.marks[p.k] === 'ok' ? 'checked' : ''} ${isBay ? '' : 'disabled'}>ผ่าน</label>
+      <label class="${R.marks[p.k] === 'fix' ? 'on-fix' : ''}"><input type="checkbox" id="vk-${p.k}-fix" data-act="mark" data-k="${p.k}" data-v="fix" ${R.marks[p.k] === 'fix' ? 'checked' : ''} ${isBay ? '' : 'disabled'}>ไม่ผ่าน</label></div>
+      ${R.marks[p.k] === 'fix' ? `<input class="inp" id="vn-${p.k}" data-vnote="${p.k}" placeholder="ต้องแก้อะไร (บังคับ)" value="${esc(R.notes[p.k] || '')}">` : ''}`;
+  const cls = p => it.passed.includes(p.k) ? 'prev' : R.marks[p.k] || '';
+  const imgParts = parts.filter(p => p.img), chParts = parts.filter(p => p.ch);
+  let btn;
+  if (!isBay) btn = `<button class="btn primary" disabled>ตรวจได้เฉพาะ Bay</button>`;
+  else if (undecided) btn = `<button class="btn primary" disabled>ยังไม่ได้ติ๊ก ${undecided} ส่วน</button>`;
+  else if (!fixes.length) btn = `<button class="btn primary" data-act="confirmReview">ผ่านทั้งหมด · อนุมัติ</button>`;
+  else btn = `<button class="btn danger" data-act="confirmReview" ${missingNote ? 'disabled' : ''}>${missingNote ? 'ใส่เหตุผลทุกข้อที่ไม่ผ่าน' : `ส่งกลับแก้ ${fixes.length} ส่วน · ผ่าน ${open.length - fixes.length}`}</button>`;
   return `<button class="back" data-act="back">← กลับ</button>
-  <div class="stack" style="max-width:860px">
-    <div class="spread"><div><div class="eyebrow">ตรวจทั้งชุด · ${BRANDS[it.brand]} · ${TYPES[it.type]} · v${it.version}</div><h2>${esc(it.hook)}</h2></div>${stagePill(it.stage)}</div>
-    ${it.images.length ? `<div class="panel"><div class="imgs">${it.images.map((m, i) => `<div class="it"><div class="thumb" style="--g:${grad(m.hue)}"></div><div class="lab"><span>ภาพ ${i + 1}${i === 0 ? ' ★' : ''}</span></div></div>`).join('')}</div></div>` : ''}
-    ${chs.map(c => `<div class="panel stack"><div class="spread"><h3>${CH[c]}</h3><span class="xs muted">ลง ${it.place.filter(p => p.ch === c).map(p => fmt(p.date)).join(', ')}</span></div>
-      ${c === 'WEB' ? `<div class="kv"><dt>หัวเรื่อง</dt><dd>${esc(d.WEB.title)}</dd><dt>คำค้นหลัก</dt><dd>${esc(d.WEB.keyword)}</dd><dt>Meta</dt><dd>${esc(d.WEB.meta)}</dd></div><pre class="small" style="white-space:pre-wrap;font:inherit;margin:0">${esc(d.WEB.text)}</pre>`
-        : `<pre style="white-space:pre-wrap;font:inherit;margin:0">${esc(d[c].text)}</pre>`}
-      <div class="trace">ใช้: ${TRACE.map(t => `<span>${t}</span>`).join('')}</div></div>`).join('')}
-    ${bounce}
-    ${!S.bounceRows ? `<div class="sticky-actions">
-      <button class="btn danger" data-act="startBounce" ${isBay ? '' : 'disabled'}>ตีกลับ</button>
-      <button class="btn primary" data-act="approve" ${isBay ? '' : 'disabled'}>${isBay ? 'อนุมัติทั้งชุด' : 'อนุมัติได้เฉพาะ Bay'}</button></div>` : ''}
+  <div class="detail two">
+    <div class="stack">
+      <div class="spread"><div><div class="eyebrow">ตรวจทีละส่วน · ${BRANDS[it.brand]} · ${TYPES[it.type]} · v${it.version}</div><h2>${esc(it.hook)}</h2></div>${stagePill(it.stage)}</div>
+      ${isBay && open.length > 1 ? `<div class="row"><button class="btn sm" data-act="markAll">ติ๊กผ่านทั้งหมด</button><span class="xs muted">แล้วค่อยติ๊ก “ไม่ผ่าน” เฉพาะส่วนที่ต้องแก้</span></div>` : ''}
+      ${imgParts.length ? `<div class="stack">${imgParts.map(p => `<div class="panel part ${cls(p)}"><div class="partimg"><div class="thumb" style="--g:${grad(p.img.hue)}"></div>
+        <div class="stack" style="gap:6px"><b>${p.label}${p.i === 0 ? ' · key visual' : ''}</b>${verdict(p)}</div></div></div>`).join('')}</div>` : ''}
+      ${chParts.map(p => `<div class="panel part ${cls(p)}"><div class="spread"><h3>${p.label}</h3><span class="xs muted">ลง ${it.place.filter(x => x.ch === p.ch).map(x => fmt(x.date)).join(', ')}</span></div>
+        ${p.ch === 'WEB' ? `<div class="kv"><dt>หัวเรื่อง</dt><dd>${esc(d.WEB.title)}</dd><dt>คำค้นหลัก</dt><dd>${esc(d.WEB.keyword)}</dd><dt>Meta</dt><dd>${esc(d.WEB.meta)}</dd></div><pre class="small" style="white-space:pre-wrap;font:inherit;margin:0">${esc(d.WEB.text)}</pre>`
+          : `<pre style="white-space:pre-wrap;font:inherit;margin:0">${esc(d[p.ch].text)}</pre>`}
+        ${verdict(p)}</div>`).join('')}
+      <div class="sticky-actions">${btn}</div>
+    </div>
+    <div class="stack">${chatBox(it)}</div>
   </div>`;
 }
 
@@ -1078,13 +1140,35 @@ document.addEventListener('click', e => {
     case 'simImages': it.images = img(Math.floor(Math.random() * 360), it.type === 'album' ? 4 : 1); it.imagesDone = true; autoToReview(it); render(); break;
     case 'imgUp': { const i = +b.dataset.i; [it.images[i - 1], it.images[i]] = [it.images[i], it.images[i - 1]]; render(); break; }
     case 'tick': it.comments[+b.dataset.i].done = b.checked; render(); break;
-    case 'resubmit': it.versions.push({ v: it.version, when: fmt(TODAY), note: `ตีกลับ ${it.comments.length} ข้อ · แก้ครบ` }); it.version++; it.comments = []; it.stage = 'review'; toast('ส่งถึง Bay อีกครั้ง'); render(); break;
+    case 'resubmit': it.versions.push({ v: it.version, when: fmt(TODAY), note: `ตีกลับ ${it.comments.length} ข้อ · แก้ครบ` }); it.version++; it.comments = []; it.stage = 'review'; it.chat.push({ sys: `แก้ครบ · ส่ง v${it.version} ให้ Bay ตรวจเฉพาะส่วนที่แก้`, when: fmt(TODAY) }); toast('ส่งถึง Bay อีกครั้ง'); render(); break;
     case 'unlock': S.unlock = true; render(); break;
     case 'redo': { const x = S.tab === 'WEB' ? it.drafts.WEB : it.drafts[S.tab]; const fresh = draftFor(it); it.drafts[S.tab] = fresh[S.tab]; toast(`AI ร่าง ${CH[S.tab]} ใหม่แล้ว`); render(); void x; break; }
     case 'skip': it.place[+b.dataset.i].skip = 'Bay/ทีมเลือกไม่ลง'; checkPosted(it); render(); break;
     case 'posted': it.place[+b.dataset.i].url = 'แปะแล้ว'; checkPosted(it); render(); break;
     case 'copy': copy(v); break;
-    case 'goReview': go('reviewItem', { itemId: b.dataset.id, bounceRows: null }); break;
+    case 'goReview': go('reviewItem', { itemId: b.dataset.id, rv: { marks: {}, notes: {} } }); break;
+    case 'mark': { const k = b.dataset.k; S.rv.marks[k] = S.rv.marks[k] === v ? undefined : v; render(); break; }
+    case 'markAll': partsOf(it).forEach(p => { if (!it.passed.includes(p.k)) S.rv.marks[p.k] = 'ok'; }); render(); break;
+    case 'confirmReview': {
+      const open = partsOf(it).filter(p => !it.passed.includes(p.k));
+      const fixes = open.filter(p => S.rv.marks[p.k] === 'fix');
+      const oks = open.filter(p => S.rv.marks[p.k] === 'ok');
+      if (!fixes.length) { it.stage = 'ready'; it.passed = []; it.chat.push({ sys: `Bay ตรวจ v${it.version} · ผ่านทั้งหมด · อนุมัติแล้ว`, when: fmt(TODAY) }); toast('อนุมัติแล้ว · พร้อมโพสต์'); go('review'); break; }
+      it.passed = [...it.passed, ...oks.map(p => p.k)];
+      it.comments = fixes.map(p => ({ target: p.label, text: S.rv.notes[p.k], done: false }));
+      it.stage = 'bounce';
+      it.chat.push({ sys: `Bay ตรวจ v${it.version} · ผ่าน ${oks.map(p => p.label).join(', ') || '—'} · ต้องแก้ ${fixes.map(p => p.label).join(', ')}`, when: fmt(TODAY) });
+      fixes.forEach(p => it.chat.push({ who: 'bay', ref: p.label, t: S.rv.notes[p.k], when: nowStr() }));
+      S.pendingNote = { text: `จากที่พี่ติ: ${S.rv.notes[fixes[0].k]}`, from: it.hook };
+      toast(`ส่งกลับแก้ ${fixes.length} ส่วน · ส่วนที่ผ่านไม่ต้องตรวจซ้ำ`); go('review'); break;
+    }
+    case 'chatSend': {
+      const t = ($('#chat-msg')?.value || '').trim(); if (!t) break;
+      const ref = $('#chat-ref')?.value || 'ทั้งชิ้น';
+      it.chat.push({ who: S.role === 'bay' ? 'bay' : 'mint', ref, t, when: nowStr() });
+      if (/@ai/i.test(t)) setTimeout(() => { it.chat.push({ who: 'ai', ref, t: `รับทราบ ร่าง${ref === 'ทั้งชิ้น' ? 'ทุกช่องทาง' : ref}ใหม่ตามที่ขอแล้ว · ช่องที่คนแก้เองไว้ไม่แตะ`, when: nowStr() }); render(); }, 900);
+      render(); const m = document.getElementById('msgs-' + it.id); if (m) m.scrollTop = m.scrollHeight; break;
+    }
     case 'approve': it.stage = 'ready'; toast('อนุมัติทั้งชุดแล้ว · พร้อมโพสต์'); go('review'); break;
     case 'startBounce': S.bounceRows = [{ target: 'ทั้งชิ้น', text: '' }]; render(); break;
     case 'addRow': S.bounceRows.push({ target: 'ทั้งชิ้น', text: '' }); render(); break;
@@ -1172,6 +1256,7 @@ document.addEventListener('input', e => {
   if (t.dataset.draft && it) {
     const [ch, key] = t.dataset.draft.split('.');
     it.drafts[ch][key] = t.value; it.drafts[ch].human = true;
+    if (it.passed.includes(ch)) { it.passed = it.passed.filter(k => k !== ch); toast(`${CH[ch]} ถูกแก้ · ต้องตรวจช่องนี้ใหม่`); }
     if (S.unlock && ['ready', 'posted'].includes(it.stage)) {
       it.versions.push({ v: it.version, when: fmt(TODAY), note: 'แก้หลังอนุมัติ · อนุมัติเป็นโมฆะ' });
       it.version++; it.stage = 'review'; S.unlock = false; toast('การอนุมัติเป็นโมฆะ · กลับไปรอ Bay ตรวจ');
@@ -1181,6 +1266,7 @@ document.addEventListener('input', e => {
     if (lab) { const max = { 'WEB.title': LIMIT.WEBtitle, 'WEB.meta': LIMIT.WEBmeta }[t.dataset.draft] || LIMIT[ch]; if (max) lab.outerHTML = counter(t.value.length, max); }
   }
   if (t.dataset.idea) S.idea[t.dataset.idea] = t.value;
+  if (t.dataset.vnote) { S.rv.notes[t.dataset.vnote] = t.value; const btn = document.querySelector('.sticky-actions .btn'); const need = Object.entries(S.rv.marks).some(([k, m]) => m === 'fix' && !(S.rv.notes[k] || '').trim()); if (btn && btn.dataset.act === 'confirmReview') { btn.disabled = need; } }
   if (t.dataset.fc && it) it.firstComment[t.dataset.fc] = t.value;
   if (t.dataset.brow !== undefined) S.bounceRows[+t.dataset.brow][t.dataset.k] = t.value;
   if (t.dataset.pb) playbooks[S.brand][t.dataset.pb] = t.value;
@@ -1192,6 +1278,7 @@ document.addEventListener('change', e => {
   if (t.dataset.pdate !== undefined && it && t.value) { it.place[+t.dataset.pdate].date = t.value; toast(`ย้าย ${it.place[+t.dataset.pdate].ch} ไป ${fmt(t.value)}`); }
   if (t.dataset.brow !== undefined) S.bounceRows[+t.dataset.brow][t.dataset.k] = t.value;
 });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'chat-msg') { e.preventDefault(); document.querySelector('[data-act="chatSend"]')?.click(); } });
 document.addEventListener('submit', e => {
   if (e.target.id !== 'newForm') return;
   e.preventDefault();
