@@ -34,12 +34,18 @@ export async function getItem(id: string): Promise<Item | null> {
 
 export async function getPlacements(itemId: string): Promise<Placement[]> {
   const supabase = await createClient();
-  const { data } = await supabase
-    .schema('content')
-    .from('placements')
-    .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_request_id,skipped_reason,passed_at,channels(name_th)')
-    .eq('item_id', itemId);
-  return (data ?? []) as unknown as Placement[];
+  // ชื่อช่องทางดึงแยก · embed ข้าม schema (content → marketing) ถูก PostgREST ปฏิเสธหลังเพิ่ม ai_request_id (R3)
+  const [{ data, error }, { data: chans }] = await Promise.all([
+    supabase
+      .schema('content')
+      .from('placements')
+      .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_request_id,skipped_reason,passed_at')
+      .eq('item_id', itemId),
+    supabase.schema('marketing').from('channels').select('id,name_th'),
+  ]);
+  if (error) console.error('getPlacements', error);
+  const name = new Map((chans ?? []).map((c) => [c.id as string, c.name_th as string]));
+  return (data ?? []).map((p) => ({ ...p, channels: { name_th: name.get(p.channel_id) ?? p.channel_id } })) as Placement[];
 }
 
 /** ภาพของชิ้นงาน เรียงตามลำดับ · ภาพแรก = key visual */
