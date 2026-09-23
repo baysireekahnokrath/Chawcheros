@@ -1,0 +1,1478 @@
+<title>Chaw Cher Content Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* โทเคนเดียวกับ web/src/app/globals.css ของ Chaw Cher OS */
+:root {
+  --bg: #faf9f7; --surface: #ffffff; --sunk: #f3f0ec; --border: #e7e2db;
+  --text: #1c1917; --muted: #78716c; --accent: #6b5b4a; --accent-fg: #ffffff;
+  --ok: #3f6f4f; --warn: #9a6b23; --danger: #9b3232; --locked: #7c3f58;
+  --p1: #a0673f; --p2: #5d7b58; --p3: #49698a; --p4: #9a7d2e; --p5: #8b4763; --p6: #2f7a74; --pn: #a8a29e;
+  --shadow: 0 1px 2px rgba(28,25,23,.06), 0 8px 24px rgba(28,25,23,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #171513; --surface: #211e1b; --sunk: #1b1917; --border: #38322c;
+    --text: #f5f2ee; --muted: #a8a29e; --accent: #c4ad94; --accent-fg: #1c1917;
+    --ok: #7fb08d; --warn: #d5a45c; --danger: #e08a8a; --locked: #d49bb6;
+    --p1: #cf9670; --p2: #93b38d; --p3: #86a7c8; --p4: #cdb163; --p5: #c98aa4; --p6: #6fb5ae; --pn: #78716c;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171513; --surface: #211e1b; --sunk: #1b1917; --border: #38322c;
+  --text: #f5f2ee; --muted: #a8a29e; --accent: #c4ad94; --accent-fg: #1c1917;
+  --ok: #7fb08d; --warn: #d5a45c; --danger: #e08a8a; --locked: #d49bb6;
+  --p1: #cf9670; --p2: #93b38d; --p3: #86a7c8; --p4: #cdb163; --p5: #c98aa4; --p6: #6fb5ae; --pn: #78716c;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- โครงแอป ---------- */
+.mock-flag {
+  background: var(--sunk); color: var(--muted); font-size: 12px; text-align: center;
+  padding: 6px 16px; border-bottom: 1px solid var(--border);
+}
+.app { display: grid; grid-template-columns: 1fr; min-height: calc(100% - 31px); }
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px; flex-wrap: wrap;
+}
+.top h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -.01em; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 600px) { .top h1 { flex-basis: 100%; } }
+.seg { display: inline-flex; background: var(--sunk); border: 1px solid var(--border); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; border-radius: 9px; padding: 5px 10px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 500; }
+main { padding: 16px 16px calc(96px + env(safe-area-inset-bottom, 0px)); max-width: 1180px; width: 100%; margin: 0 auto; }
+
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+}
+.nav button {
+  border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 12px; color: var(--muted); padding: 6px 0; position: relative; border-radius: 12px;
+}
+.nav button[aria-current="page"] { color: var(--accent); font-weight: 600; }
+.nav svg { width: 22px; height: 22px; }
+.badge { position: absolute; top: 2px; left: calc(50% + 6px); background: var(--locked); color: #fff; font-size: 10px; border-radius: 99px; padding: 0 5px; line-height: 16px; min-width: 16px; text-align: center; }
+.fab {
+  position: fixed; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 31;
+  width: 56px; height: 56px; border-radius: 18px; border: 0; background: var(--accent); color: var(--accent-fg);
+  box-shadow: var(--shadow); display: grid; place-items: center;
+}
+.fab svg { width: 26px; height: 26px; }
+.fabmenu { position: fixed; right: 16px; bottom: calc(142px + env(safe-area-inset-bottom, 0px)); z-index: 32; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 6px; display: grid; min-width: 230px; }
+.fabmenu button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; display: grid; gap: 1px; }
+.fabmenu button:hover { background: var(--sunk); }
+.fabmenu small { color: var(--muted); font-size: 12px; }
+@media (min-width: 900px) { .fabmenu { bottom: 90px; right: 24px; } }
+
+@media (min-width: 900px) {
+  .app { grid-template-columns: 208px 1fr; }
+  .nav {
+    position: sticky; top: 0; height: 100vh; grid-template-columns: 1fr; align-content: start; gap: 4px;
+    border-top: 0; border-right: 1px solid var(--border); padding: 16px 12px; grid-row: 1 / span 2;
+  }
+  .nav .brandmark { display: block; }
+  .nav button { flex-direction: row; justify-content: flex-start; gap: 10px; font-size: 14px; padding: 10px 12px; }
+  .nav button[aria-current="page"] { background: var(--sunk); }
+  .badge { position: static; margin-left: auto; }
+  .fab { bottom: 24px; right: 24px; }
+  main { padding-bottom: 48px; }
+}
+.brandmark { display: none; font-weight: 700; letter-spacing: -.01em; padding: 4px 12px 16px; font-size: 15px; }
+.brandmark small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+
+/* ---------- ชิ้นส่วนทั่วไป ---------- */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.stack { display: grid; gap: 12px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.spread { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.xs { font-size: 12px; }
+h2 { font-size: 20px; margin: 0; letter-spacing: -.01em; font-weight: 600; text-wrap: balance; }
+h3 { font-size: 15px; margin: 0; font-weight: 600; }
+.eyebrow { font-size: 12px; letter-spacing: .04em; color: var(--muted); font-weight: 500; }
+.btn { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 9px 14px; font-size: 14px; min-height: 40px; }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 500; }
+.btn.danger { color: var(--danger); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn.sm { min-height: 32px; padding: 5px 10px; font-size: 13px; border-radius: 10px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.t-idea { background: color-mix(in srgb, var(--muted) 14%, transparent); color: var(--muted); }
+.t-work { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+.t-review { background: color-mix(in srgb, var(--locked) 14%, transparent); color: var(--locked); }
+.t-bounce { background: color-mix(in srgb, var(--danger) 13%, transparent); color: var(--danger); }
+.t-ready { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+.t-posted { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+.ch { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; border: 1px solid var(--border); border-radius: 6px; padding: 0 4px; color: var(--muted); background: var(--surface); line-height: 16px; }
+label.f { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+label.f .hint { font-weight: 400; color: var(--muted); font-size: 12px; }
+.inp, select.inp, textarea.inp { width: 100%; border: 1px solid var(--border); background: var(--bg); border-radius: 12px; padding: 10px 12px; font-size: 15px; outline: none; }
+.inp:focus { border-color: var(--accent); }
+textarea.inp { resize: vertical; min-height: 88px; line-height: 1.6; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--border); background: var(--surface); border-radius: 99px; padding: 6px 12px; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.chip[disabled] { opacity: .4; cursor: not-allowed; }
+.note { border-radius: 14px; padding: 12px 14px; font-size: 13px; border: 1px solid; }
+.note.ok { border-color: color-mix(in srgb, var(--ok) 35%, transparent); background: color-mix(in srgb, var(--ok) 7%, transparent); }
+.note.warn { border-color: color-mix(in srgb, var(--warn) 40%, transparent); background: color-mix(in srgb, var(--warn) 8%, transparent); }
+.note.bad { border-color: color-mix(in srgb, var(--danger) 35%, transparent); background: color-mix(in srgb, var(--danger) 6%, transparent); }
+.note.lock { border-color: color-mix(in srgb, var(--locked) 35%, transparent); background: color-mix(in srgb, var(--locked) 6%, transparent); }
+.back { border: 0; background: none; color: var(--muted); padding: 4px 0; font-size: 14px; display: inline-flex; gap: 4px; align-items: center; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+  background: var(--text); color: var(--bg); border-radius: 12px; padding: 10px 16px; font-size: 14px; box-shadow: var(--shadow);
+  max-width: calc(100% - 32px);
+}
+@media (min-width: 900px) { .toast { bottom: 32px; } }
+
+/* ---------- ปฏิทิน ---------- */
+.calbar { display: grid; gap: 10px; margin-bottom: 12px; }
+.calnav { display: flex; align-items: center; gap: 6px; }
+.calnav h2 { flex: 1; font-size: 19px; }
+.iconbtn { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; }
+.iconbtn svg { width: 18px; height: 18px; }
+.viewseg { overflow-x: auto; max-width: 100%; }
+.filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.filters select { border: 1px solid var(--border); background: var(--surface); border-radius: 99px; padding: 6px 10px; font-size: 13px; }
+.filters select.on { border-color: var(--accent); color: var(--accent); font-weight: 500; }
+.legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+
+.card {
+  display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start;
+  background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--c);
+  border-radius: 12px; padding: 8px; text-align: left; width: 100%;
+}
+.card .thumb { width: 64px; aspect-ratio: 1; border-radius: 8px; }
+.card .hook { font-size: 14px; font-weight: 500; line-height: 1.4; }
+.card .meta { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+.card.nothumb { grid-template-columns: 1fr; }
+.thumb { background: var(--g); position: relative; overflow: hidden; max-width: 100%; }
+.thumb::after { content: ""; position: absolute; inset: 58% 18% 16% 18%; border-radius: 6px 6px 3px 3px; background: rgba(255,255,255,.28); box-shadow: 0 -10px 0 -3px rgba(255,255,255,.18); }
+
+.agenda { display: grid; gap: 14px; }
+.aday { display: grid; grid-template-columns: 52px 1fr; gap: 10px; }
+.aday .d { text-align: center; padding-top: 4px; }
+.aday .d b { display: block; font-size: 22px; line-height: 1; font-weight: 600; }
+.aday .d span { font-size: 12px; color: var(--muted); }
+.aday.today .d b { color: var(--accent); }
+.aday .cards { display: grid; gap: 8px; }
+
+.cols { display: grid; gap: 8px; }
+.col { min-width: 0; }
+.col .h { font-size: 12px; color: var(--muted); padding: 4px 2px 6px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.col .h b { font-size: 16px; color: var(--text); margin-right: 4px; }
+.col.today .h b { color: var(--accent); }
+.col .cards { display: grid; gap: 6px; }
+.cols.compact .card { grid-template-columns: 1fr; padding: 6px; }
+.cols.compact .card .thumb { width: 100%; aspect-ratio: 4/3; }
+.cols.compact .card .hook { font-size: 12.5px; }
+
+.month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--border); border-left: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.month .wd { font-size: 12px; color: var(--muted); text-align: center; padding: 6px 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--sunk); }
+.mcell { min-height: 84px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 4px; display: grid; align-content: start; gap: 3px; min-width: 0; }
+.mcell.out { background: var(--sunk); }
+.mcell.out .dn { opacity: .45; }
+.mcell .dn { font-size: 12px; font-weight: 500; }
+.mcell.today .dn { background: var(--accent); color: var(--accent-fg); border-radius: 99px; width: 22px; height: 22px; display: grid; place-items: center; }
+.mcell.drop { outline: 2px dashed var(--accent); outline-offset: -3px; }
+.mbar { border: 0; background: var(--c); color: #fff; border-radius: 4px; font-size: 11px; line-height: 1.35; padding: 1px 4px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.mcard { display: none; }
+@media (min-width: 720px) {
+  .mcell { min-height: 132px; padding: 6px; gap: 6px; }
+  .mbar { display: none; }
+  .mcard { display: grid; gap: 4px; border: 1px solid var(--border); border-top: 3px solid var(--c); border-radius: 8px; padding: 4px; background: var(--surface); text-align: left; width: 100%; }
+  .mcard .thumb { width: 100%; aspect-ratio: 16/9; border-radius: 5px; }
+  .mcard .hook { font-size: 12px; line-height: 1.35; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mcard .meta { display: flex; gap: 3px; flex-wrap: wrap; }
+  .mcard[draggable="true"] { cursor: grab; }
+}
+
+/* ---------- ช่องไอเดีย ---------- */
+.idea { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: grid; gap: 10px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.idea textarea { min-height: 56px; }
+.idea .foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.idea .foot .inp { flex: 1 1 200px; padding: 8px 10px; font-size: 14px; }
+.understood { display: grid; gap: 4px; font-size: 13.5px; background: var(--sunk); border-radius: 12px; padding: 10px 12px; }
+.understood b { color: var(--muted); font-weight: 500; font-size: 12px; margin-right: 6px; }
+.offplan { font-size: 10.5px; font-weight: 600; border-radius: 6px; padding: 0 5px; line-height: 16px; background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+
+/* ---------- หน้าชิ้นงาน ---------- */
+.detail { display: grid; gap: 14px; }
+@media (min-width: 1000px) { .detail.two { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: start; } }
+.progress { display: flex; gap: 8px; flex-wrap: wrap; }
+.step { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; font-size: 13px; background: var(--surface); }
+.step.done { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
+.step.wait { color: var(--warn); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tabs button { border: 0; background: none; padding: 8px 12px; font-size: 14px; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.preview { border: 1px solid var(--border); border-radius: 14px; background: var(--bg); padding: 12px; }
+.preview .who { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.preview .av { width: 32px; height: 32px; border-radius: 99px; background: var(--accent); color: var(--accent-fg); display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+.preview pre { white-space: pre-wrap; font: inherit; margin: 0; font-size: 14px; }
+.counter { font-size: 12px; color: var(--muted); }
+.counter.over { color: var(--danger); font-weight: 600; }
+.trace { font-size: 12px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; }
+.trace span { background: var(--sunk); border-radius: 6px; padding: 1px 6px; }
+.imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.imgs .it { display: grid; gap: 4px; }
+.imgs .thumb { aspect-ratio: 1; border-radius: 10px; width: 100%; }
+.imgs .lab { font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+.imgs .lab button { border: 0; background: var(--sunk); border-radius: 6px; padding: 0 6px; font-size: 12px; }
+.ask { border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); background: color-mix(in srgb, var(--accent) 6%, transparent); border-radius: 16px; padding: 14px; display: grid; gap: 10px; }
+.ask .q { font-weight: 600; }
+.bot { display: inline-flex; width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: var(--accent-fg); align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.writing { display: flex; gap: 10px; align-items: center; }
+.dots i { display: inline-block; width: 6px; height: 6px; border-radius: 99px; background: var(--accent); margin: 0 2px; animation: b 1s infinite; }
+.dots i:nth-child(2) { animation-delay: .15s; } .dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes b { 0%,100% { opacity: .25 } 50% { opacity: 1 } }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--border); }
+.check:first-child { border-top: 0; }
+.check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+.check.done span { text-decoration: line-through; color: var(--muted); }
+.kv { display: grid; grid-template-columns: 88px 1fr; gap: 6px 10px; font-size: 14px; }
+.kv dt { color: var(--muted); font-size: 13px; }
+.kv dd { margin: 0; }
+.plc { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }
+.plc:first-of-type { border-top: 0; }
+.sticky-actions { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; background: var(--bg); padding: 10px 0; border-top: 1px solid var(--border); z-index: 5; }
+@media (min-width: 900px) { .sticky-actions { bottom: 0; } }
+.sticky-actions .btn { flex: 1; min-height: 46px; }
+
+/* ---------- ตรวจทีละส่วน + แชท ---------- */
+.part { display: grid; gap: 8px; }
+.part.ok { border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+.part.fix { border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+.part.prev { opacity: .7; }
+.verdict { display: flex; gap: 6px; flex-wrap: wrap; }
+.verdict label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; font-size: 13.5px; cursor: pointer; background: var(--surface); }
+.verdict input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+.verdict label.on-ok { border-color: var(--ok); color: var(--ok); font-weight: 600; }
+.verdict label.on-fix { border-color: var(--danger); color: var(--danger); font-weight: 600; }
+.partimg { display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: start; }
+.partimg .thumb { aspect-ratio: 1; border-radius: 10px; width: 84px; }
+.chatbox { display: grid; gap: 10px; }
+.msgs { display: grid; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 2px; }
+.msg { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: start; }
+.msg .av { width: 28px; height: 28px; border-radius: 99px; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--sunk); color: var(--text); border: 1px solid var(--border); }
+.msg.ai .av { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.msg .who { font-size: 12px; color: var(--muted); }
+.msg .who b { color: var(--text); font-weight: 600; margin-right: 4px; }
+.msg .txt { font-size: 14px; white-space: pre-wrap; }
+.msg .ref { font-size: 11px; font-weight: 600; border-radius: 6px; padding: 0 5px; background: var(--sunk); color: var(--muted); margin-right: 4px; }
+.sysmsg { font-size: 12px; color: var(--muted); text-align: center; }
+.chatin { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; }
+.chatin select { width: auto; padding: 8px; font-size: 13px; }
+
+/* ---------- หน้าแรก ---------- */
+.dash { display: grid; gap: 14px; }
+.hello h2 { font-size: 22px; }
+.todo { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; display: grid; gap: 8px; align-content: start; }
+.tile.hot { border-color: color-mix(in srgb, var(--locked) 45%, transparent); }
+.tile .big { font-size: 28px; font-weight: 700; line-height: 1; }
+.tile .lbl { font-size: 13px; color: var(--muted); }
+.tile .line { font-size: 13.5px; display: flex; gap: 6px; align-items: baseline; }
+.tile .line button { border: 0; background: none; padding: 0; text-align: left; color: var(--text); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.dcols { display: grid; gap: 14px; }
+@media (min-width: 900px) { .dcols { grid-template-columns: 1fr 1fr; } }
+.week7 { display: grid; gap: 6px; }
+.w7row { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: start; padding: 6px 0; border-top: 1px solid var(--border); }
+.w7row:first-child { border-top: 0; }
+.w7row .d { font-size: 13px; color: var(--muted); }
+.w7row .d b { color: var(--text); font-size: 16px; margin-right: 3px; }
+.w7item { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13.5px; border: 0; background: none; padding: 2px 0; text-align: left; width: 100%; }
+.w7item.risk .h { color: var(--danger); font-weight: 600; }
+.bars { display: grid; gap: 8px; }
+.barrow { display: grid; grid-template-columns: 110px 1fr 64px; gap: 8px; align-items: center; font-size: 13px; }
+.barrow .track { display: grid; gap: 3px; }
+.barrow .b { height: 8px; border-radius: 4px; background: var(--c); }
+.barrow .b.prev { opacity: .35; }
+.barrow .n { text-align: right; color: var(--muted); }
+.plist { display: grid; }
+.prow { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
+.prow:first-child { border-top: 0; }
+.swipe { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--border); }
+.swipe:first-of-type { border-top: 0; }
+.aidea { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--border); }
+.aidea:first-of-type { border-top: 0; }
+.why { font-size: 12px; color: var(--muted); }
+
+/* ---------- แผน ---------- */
+.timeline { display: grid; gap: 6px; }
+.tl-head { display: grid; grid-template-columns: repeat(3, 1fr); font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.tl-row { position: relative; height: 30px; background: repeating-linear-gradient(90deg, transparent 0 calc(33.333% - 1px), var(--border) calc(33.333% - 1px) 33.333%); border-radius: 6px; }
+.tl-bar { position: absolute; top: 3px; bottom: 3px; border-radius: 6px; background: color-mix(in srgb, var(--c) 22%, var(--surface)); border: 1px solid var(--c); color: var(--text); font-size: 12px; padding: 0 8px; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot { display: grid; grid-template-columns: 58px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+.slot .d { font-size: 13px; }
+.slot .d b { display: block; font-size: 18px; line-height: 1.1; }
+.hcv { display: grid; gap: 2px; font-size: 13.5px; }
+.hcv b { font-weight: 600; color: var(--muted); font-size: 11.5px; letter-spacing: .03em; margin-right: 6px; }
+.week-h { font-size: 13px; font-weight: 600; margin-top: 10px; color: var(--accent); }
+
+/* ---------- แบรนด์ ---------- */
+.sec { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+.sec:first-child { border-top: 0; }
+.sec p { grid-column: 1 / -1; margin: 0; font-size: 13.5px; }
+.chat { display: grid; gap: 10px; }
+.bub { max-width: 88%; padding: 10px 12px; border-radius: 14px; font-size: 14px; }
+.bub.a { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 4px; }
+.bub.b { background: var(--accent); color: var(--accent-fg); justify-self: end; border-top-right-radius: 4px; }
+.swatch { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 6px 0; }
+.swatch i { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); }
+.nb { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--border); }
+.nb:first-child { border-top: 0; }
+.grid2 { display: grid; gap: 12px; }
+@media (min-width: 760px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+table.routes { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.routes th, table.routes td { text-align: left; padding: 8px 6px; border-top: 1px solid var(--border); }
+table.routes th { color: var(--muted); font-weight: 500; font-size: 12px; }
+.scroll-x { overflow-x: auto; }
+</style>
+
+<div class="mock-flag">Mockup ด่าน 3 · ข้อมูลตัวอย่างทั้งหมด ไม่ต่อฐานข้อมูล · วันนี้ในตัวอย่าง = 23 ก.ย. 2026</div>
+<div class="app">
+  <nav class="nav" id="nav" aria-label="เมนูหลัก"></nav>
+  <div>
+    <header class="top" id="top"></header>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="fabmenu" id="fabmenu" hidden><button data-act="goIdea"><b>ไอเดียด่วน</b><small>พิมพ์ประโยคเดียว agent ทำที่เหลือ</small></button><button data-act="new"><b>ตั้งงานแบบเต็ม</b><small>กรอก brief เลือก pillar ธีม แคมเปญเอง</small></button></div>
+<button class="fab" id="fab" aria-label="เพิ่มงาน" aria-haspopup="menu" data-act="fab">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+/* ============================================================
+   ข้อมูลตัวอย่าง
+   ============================================================ */
+const TODAY = '2026-09-23';
+const TH_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TH_MON_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TH_WD = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+const CH = { FB: 'Facebook', IG: 'Instagram', WEB: 'บล็อก SEO' };
+const TYPES = { text: 'ข้อความล้วน', single: 'ภาพเดี่ยว', album: 'อัลบั้มภาพ' };
+const STAGE = {
+  idea:   ['ไอเดีย', 't-idea'],
+  work:   ['กำลังทำ', 't-work'],
+  review: ['รอตรวจ', 't-review'],
+  bounce: ['ตีกลับแก้', 't-bounce'],
+  ready:  ['พร้อมโพสต์', 't-ready'],
+  posted: ['โพสต์แล้ว', 't-posted'],
+};
+const BRANDS = { cc: 'Chaw Cher', hof: 'HOF' };
+const PEOPLE = { mint: 'มิ้นท์ · การตลาด', ton: 'ต้น · กราฟิก', bay: 'Bay' };
+
+const PILLARS = {
+  cc: [
+    { id: 'p1', name: 'สินค้า', c: 'var(--p1)' },
+    { id: 'p2', name: 'งานช่าง', c: 'var(--p2)' },
+    { id: 'p3', name: 'บ้านลูกค้าจริง', c: 'var(--p3)' },
+    { id: 'p4', name: 'ความรู้แต่งบ้าน', c: 'var(--p4)' },
+  ],
+  hof: [
+    { id: 'h1', name: 'ของขายดี', c: 'var(--p1)' },
+    { id: 'h2', name: 'โปรโมชัน', c: 'var(--p5)' },
+  ],
+};
+const CAMPAIGNS = [
+  { id: 'c1', brand: 'cc', name: '10.10 ลดทั้งร้าน', c: 'var(--p5)' },
+  { id: 'c2', brand: 'cc', name: 'Payday ต.ค.', c: 'var(--p6)' },
+  { id: 'c3', brand: 'hof', name: 'HOF 11.11', c: 'var(--p5)' },
+];
+const THEMES = [
+  { id: 't1', brand: 'cc', name: 'ห้องเล็กอยู่สบาย', from: '2026-10-01', to: '2026-11-15', c: 'var(--p3)' },
+  { id: 't2', brand: 'cc', name: 'ปีใหม่ บ้านใหม่', from: '2026-11-16', to: '2027-01-10', c: 'var(--p1)' },
+  { id: 't3', brand: 'hof', name: 'ครบห้อง ราคาเดียว', from: '2026-10-01', to: '2026-10-31', c: 'var(--p6)' },
+];
+const PRODUCTS = {
+  cc: ['Emu Sofa', 'กระสา โซฟา 3 ที่นั่ง', 'กระเรียน โซฟา 2 ที่นั่ง', 'Koontong Sideboard', 'กีวี่ เก้าอี้'],
+  hof: ['HOF ชุดโต๊ะกินข้าว 4 ที่', 'HOF ตู้เสื้อผ้า 2 บาน'],
+};
+
+let seq = 100;
+const img = (hue, n = 1) => Array.from({ length: n }, (_, i) => ({ hue: (hue + i * 17) % 360, link: `drive.google.com/…/IMG_${2400 + seq++}.jpg` }));
+
+const items = [
+  {
+    id: 'i1', brand: 'cc', type: 'album', title: 'โซฟานั่ง 5 ปี ไม่ยุบ', stage: 'posted',
+    hook: 'โซฟาตัวนี้นั่งมา 5 ปี ยังไม่ยุบ', content: 'โครงไม้จริงกับฟองน้ำหนาแน่นสูง ทำให้ทรงไม่เสีย', visual: 'เทียบภาพโซฟาใหม่กับของลูกค้าที่ใช้มา 5 ปี',
+    pillar: 'p1', campaign: null, theme: 't1', products: ['กระสา โซฟา 3 ที่นั่ง'], owner: 'ton', images: img(28, 4), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-10-02', url: 'facebook.com/chawcher/posts/…' }, { ch: 'IG', date: '2026-10-02', url: 'instagram.com/p/…' }, { ch: 'WEB', date: '2026-10-05', url: 'chawcher.com/blog/…' }],
+  },
+  {
+    id: 'i2', brand: 'cc', type: 'single', title: 'เบื้องหลังเก้าอี้ 1 ตัว', stage: 'posted',
+    hook: 'เก้าอี้ 1 ตัว ผ่านมือช่างกี่คน', content: 'ช่าง 4 คน 9 ขั้นตอน กว่าจะได้เก้าอี้ 1 ตัว', visual: 'มือช่างกำลังขัดพนักพิง แสงเช้าในโรงงาน',
+    pillar: 'p2', campaign: null, theme: 't1', products: ['กีวี่ เก้าอี้'], owner: 'ton', images: img(40, 1), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-10-07', url: 'facebook.com/…' }, { ch: 'IG', date: '2026-10-08', url: 'instagram.com/p/…' }],
+  },
+  {
+    id: 'i3', brand: 'cc', type: 'album', title: '10.10 เปิดตัวลด', stage: 'ready',
+    hook: '10.10 ปีละครั้ง โซฟาไม้จริงลดทั้งร้าน', content: 'ลดทุกรุ่น 3 วันเท่านั้น 10-12 ต.ค.', visual: 'อัลบั้มโซฟา 5 รุ่นขายดี พื้นหลังโทนเดียวกัน',
+    pillar: 'p1', campaign: 'c1', theme: 't1', products: ['Emu Sofa', 'กระสา โซฟา 3 ที่นั่ง', 'กระเรียน โซฟา 2 ที่นั่ง'], owner: 'ton', images: img(12, 5), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-10-10' }, { ch: 'IG', date: '2026-10-10' }],
+  },
+  {
+    id: 'i4', brand: 'cc', type: 'album', title: 'คอนโด 28 ตร.ม. ของคุณแพร', stage: 'review',
+    hook: 'ห้อง 28 ตร.ม. วางโซฟา 3 ที่นั่งได้ไหม', content: 'เลือกโซฟาขาเรียว พนักต่ำ ห้องเล็กก็ดูโปร่ง', visual: 'บ้านลูกค้าจริง ถ่ายมุมกว้าง + ภาพวัดขนาด',
+    pillar: 'p3', campaign: null, theme: 't1', products: ['กระเรียน โซฟา 2 ที่นั่ง'], owner: 'ton', images: img(205, 6), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-10-14' }, { ch: 'IG', date: '2026-10-15' }, { ch: 'WEB', date: '2026-10-16' }],
+  },
+  {
+    id: 'i5', brand: 'cc', type: 'single', title: 'ไม้สักหรือไม้โอ๊ค', stage: 'review',
+    hook: 'ไม้สัก vs ไม้โอ๊ค แบบไหนเหมาะกับบ้านคุณ', content: 'เทียบความทน สี และการดูแล ให้เลือกง่ายขึ้น', visual: 'ชิ้นไม้ 2 ชนิดวางคู่กัน ถ่ายตรง พื้นขาว',
+    pillar: 'p4', campaign: null, theme: 't1', products: [], owner: 'ton', images: img(34, 1), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-10-19' }, { ch: 'WEB', date: '2026-10-20' }],
+  },
+  {
+    id: 'i6', brand: 'cc', type: 'single', title: 'ตู้ Koontong ในห้องนั่งเล่น', stage: 'bounce',
+    hook: 'ตู้เดียว เก็บของได้ทั้งห้องนั่งเล่น', content: 'ลิ้นชักลึก 3 ชั้น บานเปิดกันฝุ่น', visual: 'ตู้จัดของเต็ม เปิดลิ้นชักให้เห็นข้างใน',
+    pillar: 'p1', campaign: 'c2', theme: 't1', products: ['Koontong Sideboard'], owner: 'ton', images: img(22, 1), imagesDone: true, version: 2,
+    comments: [
+      { target: 'ภาพ 1', text: 'แสงมืดไป ถ่ายใหม่ช่วงเช้า', done: true },
+      { target: 'Instagram', text: 'แฮชแท็กเยอะไป เหลือ 5 อันพอ', done: false },
+    ],
+    versions: [{ v: 1, when: '21 ก.ย.', note: 'ส่งตรวจครั้งแรก · Bay ตีกลับ 2 ข้อ' }],
+    place: [{ ch: 'FB', date: '2026-10-24' }, { ch: 'IG', date: '2026-10-25' }],
+  },
+  {
+    id: 'i7', brand: 'cc', type: 'album', title: 'Payday จัดห้องครบ', stage: 'work',
+    hook: 'เงินเดือนออก ถึงเวลาเปลี่ยนมุมโปรดในบ้าน', content: 'ผ่อน 0% 10 เดือน ทุกรุ่นในร้าน', visual: 'มุมนั่งเล่นจัดครบ โซฟา + ตู้ + เก้าอี้',
+    pillar: 'p1', campaign: 'c2', theme: 't1', products: ['Emu Sofa', 'Koontong Sideboard'], owner: 'ton', images: [], imagesDone: false,
+    place: [{ ch: 'FB', date: '2026-10-28' }, { ch: 'IG', date: '2026-10-28' }],
+  },
+  {
+    id: 'i8', brand: 'cc', type: 'text', title: 'ถาม-ตอบ ดูแลโซฟาผ้า', stage: 'idea',
+    hook: 'โซฟาผ้าเปื้อนกาแฟ ทำยังไงดี', content: '', visual: '',
+    pillar: 'p4', campaign: null, theme: 't1', products: [], owner: 'mint', images: [], imagesDone: false,
+    place: [{ ch: 'FB', date: '2026-10-30' }, { ch: 'WEB', date: '2026-10-31' }],
+  },
+  {
+    id: 'i9', brand: 'cc', type: 'single', title: 'ช่างเย็บเบาะ', stage: 'idea',
+    hook: 'ตะเข็บตรงทุกเส้น เพราะคนเย็บคนเดียวทั้งตัว', content: 'ช่างเบาะอายุงาน 20 ปี', visual: 'โคลสอัพมือกับจักร',
+    pillar: 'p2', campaign: null, theme: 't1', products: [], owner: 'ton', images: [], imagesDone: false,
+    place: [{ ch: 'FB', date: '2026-10-21' }, { ch: 'IG', date: '2026-10-22' }],
+  },
+  {
+    id: 'i10', brand: 'hof', type: 'album', title: 'HOF ครบห้อง', stage: 'review',
+    hook: 'ย้ายเข้าคอนโดใหม่ เฟอร์ครบห้องในงบเดียว', content: 'เซ็ตห้องนอน + ห้องนั่งเล่น ราคาเดียว', visual: 'ห้องโชว์จัดครบ 4 มุม',
+    pillar: 'h2', campaign: null, theme: 't3', products: ['HOF ชุดโต๊ะกินข้าว 4 ที่'], owner: 'ton', images: img(190, 4), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-10-09' }, { ch: 'IG', date: '2026-10-09' }],
+  },
+];
+
+items.push(
+  {
+    id: 'i11', brand: 'cc', type: 'single', title: 'เก้าอี้กีวี่ มุมอ่านหนังสือ', stage: 'work',
+    hook: 'มุมอ่านหนังสือ ใช้เก้าอี้ตัวเดียวก็พอ', content: 'พนักพิงรับหลังพอดี นั่งนานไม่เมื่อย', visual: 'มุมหน้าต่าง เก้าอี้ + โคมไฟ',
+    pillar: 'p1', campaign: null, theme: '', products: ['กีวี่ เก้าอี้'], owner: 'ton', images: [], imagesDone: false,
+    place: [{ ch: 'FB', date: '2026-09-25' }, { ch: 'IG', date: '2026-09-25' }],
+  },
+  {
+    id: 'i12', brand: 'cc', type: 'text', title: '5 วิธีดูไม้จริง', stage: 'review',
+    hook: 'ไม้จริงหรือไม้อัด ดูยังไงใน 10 วินาที', content: 'ดูลายไม้ปลายขอบ น้ำหนัก และรอยต่อ', visual: '',
+    pillar: 'p4', campaign: null, theme: '', products: [], owner: 'mint', images: [], imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-09-27' }, { ch: 'WEB', date: '2026-09-28' }],
+  },
+  {
+    id: 'i13', brand: 'cc', type: 'single', title: 'Emu Sofa มุมใหม่', stage: 'ready',
+    hook: 'Emu Sofa ในห้องโทนขาว', content: 'ผ้าสีครีมเข้ากับทุกห้อง', visual: 'ห้องโทนขาว แสงเช้า',
+    pillar: 'p1', campaign: null, theme: '', products: ['Emu Sofa'], owner: 'ton', images: img(30, 1), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-09-22', url: 'facebook.com/…' }, { ch: 'IG', date: '2026-09-22' }],
+  },
+);
+const LAST_TALK = { 'Emu Sofa': '2026-09-22', 'กระสา โซฟา 3 ที่นั่ง': '2026-07-10', 'กระเรียน โซฟา 2 ที่นั่ง': '2026-06-02', 'Koontong Sideboard': '2026-09-01', 'กีวี่ เก้าอี้': '2026-05-20', 'HOF ชุดโต๊ะกินข้าว 4 ที่': '2026-09-10', 'HOF ตู้เสื้อผ้า 2 บาน': '2026-04-15' };
+const swipes = [
+  { brand: 'cc', who: 'มิ้นท์', link: 'facebook.com/คู่แข่ง A/posts/…', sum: 'เล่าเรื่องช่างรุ่นพ่อสู่รุ่นลูก · hook เปิดด้วยคำถาม “ทำไมโต๊ะตัวนี้ราคา 3 หมื่น” · คอมเมนต์เยอะเพราะคนถกเรื่องราคา', when: '22 ก.ย.' },
+  { brand: 'cc', who: 'ต้น', link: 'instagram.com/คู่แข่ง B/p/…', sum: 'อัลบั้ม 8 ภาพ ก่อน/หลังจัดห้องคอนโด · ภาพแรกเป็นห้องรก · ใช้ข้อความบนภาพน้อยมาก', when: '20 ก.ย.' },
+];
+const agentIdeas = [
+  { brand: 'cc', hook: 'กระเรียน 2 ที่นั่ง โซฟาที่คนอยู่คนเดียวเลือกมากที่สุด', why: 'กระเรียนไม่มีคอนเทนต์มา 113 วัน · ตรงกับธีม “ห้องเล็กอยู่สบาย”', ch: ['FB', 'IG'], pillar: 'p1', product: 'กระเรียน โซฟา 2 ที่นั่ง' },
+  { brand: 'cc', hook: 'ทำไมโซฟาไม้จริงถึงแพงกว่า แล้วคุ้มไหม', why: 'คู่แข่ง A ได้คอมเมนต์เยอะจากเรื่องราคา · brand promise “ใช้ได้เป็นสิบปี”', ch: ['FB', 'WEB'], pillar: 'p4', product: '' },
+  { brand: 'cc', hook: 'ก่อน/หลัง ห้องคุณแพร เปลี่ยนแค่โซฟา', why: 'แบบอัลบั้มก่อน/หลังของคู่แข่ง B · มีภาพบ้านลูกค้าจริงในระบบแล้ว', ch: ['IG'], pillar: 'p3', product: 'กระเรียน โซฟา 2 ที่นั่ง' },
+];
+
+/* ข้อความที่ agent ร่าง */
+function draftFor(it) {
+  const prod = it.products.length ? it.products.join(' · ') : '';
+  const body = it.content || 'เรื่องนี้ agent จะเขียนจากคำตอบของ Bay';
+  const tags = it.brand === 'hof' ? '#HOF #เฟอร์นิเจอร์ครบห้อง #คอนโด' : '#ChawCher #ฌเฌอ #เฟอร์นิเจอร์ไม้จริง #ไม้จริงทั้งตัว';
+  return {
+    FB: { text: `${it.hook}\n\n${body}${prod ? `\n\nรุ่นในภาพ: ${prod}` : ''}\n\nแวะนั่งลองที่โชว์รูม หรือทักแชทถามขนาดได้เลยครับ`, human: false },
+    IG: { text: `${it.hook}\n.\n${body}\n.\n${tags}`, human: false },
+    WEB: {
+      title: `${it.hook} | ${BRANDS[it.brand]}`,
+      keyword: it.pillar === 'p4' ? 'วิธีเลือกเฟอร์นิเจอร์ไม้' : 'โซฟาไม้จริง',
+      meta: `${body} อ่านวิธีเลือกและดูตัวอย่างจากบ้านลูกค้าจริงของ ${BRANDS[it.brand]}`,
+      text: `## ${it.hook}\n\n${body}\n\n## ทำไมเรื่องนี้สำคัญ\nอธิบายปัญหาที่ลูกค้าเจอบ่อย ก่อนพูดถึงสินค้า\n\n## ตัวอย่างจากบ้านลูกค้า\nภาพและเรื่องเล่าจริง${prod ? `\n\n## รุ่นที่เกี่ยวข้อง\n${it.products.map(p => '- ' + p).join('\n')}` : ''}`,
+      human: false,
+    },
+  };
+}
+const TRACE = ['brand model · น้ำเสียง', 'สมุด #2 ไม่ใช้คำว่า “ราคาพิเศษ”', 'คู่มือแพลตฟอร์ม'];
+items.forEach(it => {
+  if (!['idea'].includes(it.stage)) { it.drafts = draftFor(it); it.agent = 'done'; }
+  else it.agent = 'idle';
+  it.comments ||= []; it.versions ||= []; it.version ||= 1;
+  it.firstComment ||= { FB: it.products[0] ? `ดูรุ่น ${it.products[0]} → chawcher.com/p/…` : '', IG: '' };
+});
+items.find(x => x.id === 'i7').drafts.IG.human = true;
+items.forEach(it => { it.chat ||= []; it.passed ||= []; });
+itemById('i4').chat = [
+  { sys: 'Content agent ร่าง Facebook · Instagram · บล็อก SEO', when: '20 ก.ย.' },
+  { who: 'mint', ref: 'ภาพ 3', t: 'ภาพนี้เห็นหน้าคุณแพร ต้องขออนุญาตก่อนไหม', when: '21 ก.ย. 10:12' },
+  { who: 'mint', ref: 'ทั้งชิ้น', t: '@Bay ชิ้นนี้อยากลง 14 ต.ค. ก่อน payday ได้ไหมครับ', when: '22 ก.ย. 09:30', mention: 'bay' },
+  { who: 'ton', ref: 'ภาพ 3', t: 'ขอแล้วครับ คุณแพรโอเค แต่เบลอกรอบรูปครอบครัวให้แล้ว', when: '21 ก.ย. 10:40' },
+  { sys: 'ภาพครบ → ส่งถึง Bay ตรวจ', when: '22 ก.ย.' },
+];
+itemById('i6').chat = [
+  { sys: 'Bay ตรวจ v1 · ผ่าน Facebook · ต้องแก้ ภาพ 1 และ Instagram', when: '21 ก.ย.' },
+  { who: 'ton', ref: 'ภาพ 1', t: 'ถ่ายใหม่พรุ่งนี้ 8 โมงครับ แสงเข้าหน้าต่างพอดี', when: '21 ก.ย. 16:05' },
+];
+itemById('i6').passed = ['FB'];
+{ const x = itemById('i8'); x.stage = 'work'; x.agent = 'asking'; x.question = { q: `“${x.hook}” อยากให้จบที่อะไร`, choices: ['แนะนำบริการทำความสะอาดของร้าน', 'สอนวิธีเองทั้งหมด ไม่ขายของ', 'พาไปดูผ้ากันคราบรุ่นใหม่'] }; }
+function whoName(k) { return { mint: 'มิ้นท์', ton: 'ต้น', bay: 'Bay', ai: 'Content agent' }[k] || k; }
+function nowStr() { const d = new Date(); return `${fmt(TODAY)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
+function partsOf(it) {
+  const chs = [...new Set(it.place.filter(p => !p.skip).map(p => p.ch))];
+  return [...it.images.map((m, i) => ({ k: 'img' + i, label: `ภาพ ${i + 1}`, img: m, i })), ...chs.map(c => ({ k: c, label: CH[c], ch: c }))];
+}
+function chatBox(it) {
+  const refs = ['ทั้งชิ้น', ...partsOf(it).map(p => p.label)];
+  return `<div class="panel chatbox"><div class="spread"><h3>คุยกันในงานนี้</h3><span class="xs muted">พิมพ์ @AI เพื่อสั่ง agent</span></div>
+    <div class="msgs" id="msgs-${it.id}">${it.chat.map(m => m.sys ? `<div class="sysmsg">${esc(m.sys)} · ${esc(m.when)}</div>` :
+      `<div class="msg ${m.who === 'ai' ? 'ai' : ''}"><span class="av">${m.who === 'ai' ? 'AI' : esc(whoName(m.who).slice(0, 1))}</span>
+        <div><div class="who"><b>${esc(whoName(m.who))}</b>${esc(m.when)}</div><div class="txt">${m.ref && m.ref !== 'ทั้งชิ้น' ? `<span class="ref">${esc(m.ref)}</span>` : ''}${esc(m.t)}</div></div></div>`).join('') || '<div class="sysmsg">ยังไม่มีข้อความ</div>'}</div>
+    <div class="chatin"><select class="inp" id="chat-ref" aria-label="พูดถึงส่วนไหน">${refs.map(r => `<option>${esc(r)}</option>`).join('')}</select>
+      <input class="inp" id="chat-msg" placeholder="พิมพ์ข้อความ หรือ @AI ขอ hook สั้นลง"><button class="btn primary" data-act="chatSend">ส่ง</button></div></div>`;
+}
+
+/* แผนรายเดือน */
+const plans = [
+  {
+    id: 'pl-oct', brand: 'cc', month: '2026-10', status: 'approved', sentOn: '2026-09-09', approvedOn: '2026-09-11',
+    log: ['มิ้นท์ ย้าย “ช่างเย็บเบาะ” 20 → 21 ต.ค.', 'มิ้นท์ เพิ่ม 1 ชิ้น “ตู้ Koontong ในห้องนั่งเล่น” · แจ้ง Bay แล้ว'],
+    slots: [],
+  },
+  {
+    id: 'pl-nov', brand: 'cc', month: '2026-11', status: 'draft', sentOn: null, approvedOn: null, log: [],
+    weeks: ['ต่อจากธีมเดิม: ห้องเล็ก ใช้ของน้อยชิ้น', 'ของจริงในบ้านลูกค้า', 'เปิดธีมใหม่ ปีใหม่ บ้านใหม่', 'ของขวัญให้บ้าน'],
+    slots: [
+      { w: 0, date: '2026-11-03', ch: ['FB', 'IG'], type: 'album', pillar: 'p3', hook: 'ห้อง 24 ตร.ม. ใช้เฟอร์แค่ 4 ชิ้น', content: 'เลือกของอเนกประสงค์ ห้องเล็กไม่รก', visual: 'ห้องลูกค้าจริง ภาพมุมกว้าง 4 ภาพ' },
+      { w: 0, date: '2026-11-06', ch: ['FB', 'WEB'], type: 'text', pillar: 'p4', hook: '5 วิธีวัดห้องก่อนซื้อโซฟา', content: 'วัดทางเดิน ประตู และระยะนั่ง', visual: '' },
+      { w: 1, date: '2026-11-10', ch: ['FB', 'IG'], type: 'single', pillar: 'p3', hook: 'คุณต้อมเลือกโซฟาตัวนี้เพราะแมว', content: 'ผ้าทนเล็บแมว ทำความสะอาดง่าย', visual: 'แมวนอนบนโซฟาจริง' },
+      { w: 1, date: '2026-11-13', ch: ['IG'], type: 'single', pillar: 'p2', hook: 'ข้อต่อเดือยไม้ ไม่ใช้ตะปูสักตัว', content: 'งานข้อต่อแบบดั้งเดิม', visual: 'โคลสอัพข้อต่อ' },
+      { w: 2, date: '2026-11-17', ch: ['FB', 'IG', 'WEB'], type: 'album', pillar: 'p1', hook: 'ปีใหม่ เปลี่ยนมุมเดียว บ้านรู้สึกใหม่', content: 'เปลี่ยนแค่โซฟาหรือตู้ ห้องเปลี่ยนทั้งห้อง', visual: 'ก่อน/หลัง มุมนั่งเล่น' },
+      { w: 3, date: '2026-11-25', ch: ['FB', 'IG'], type: 'single', pillar: 'p1', hook: 'ของขวัญที่ใช้ได้ทุกวัน 10 ปี', content: 'เก้าอี้ไม้จริงเป็นของขวัญขึ้นบ้านใหม่', visual: 'เก้าอี้ผูกโบว์ในห้องจริง' },
+    ],
+  },
+];
+
+/* สมองของ agent */
+const MODEL_SECTIONS = ['Purpose · ทำไมแบรนด์นี้มีอยู่', 'Vision', 'Mission', 'Values', 'ลูกค้าเป้าหมาย', 'Positioning', 'Personality', 'Brand promise', 'น้ำเสียง'];
+const brandModel = {
+  cc: {
+    'Purpose · ทำไมแบรนด์นี้มีอยู่': { st: 'ok', text: 'ทำเฟอร์นิเจอร์ไม้จริงที่อยู่กับบ้านได้เป็นสิบปี ให้คนไทยไม่ต้องซื้อซ้ำ' },
+    'น้ำเสียง': { st: 'draft', text: 'อบอุ่น พูดตรง ไม่โอ้อวด เล่าด้วยของจริงมากกว่าคำคุณศัพท์' },
+  },
+  hof: {},
+};
+const INTERVIEW = {
+  'Vision': { q: 'อีก 10 ปี อยากให้คนพูดถึง Chaw Cher ว่าอะไร', choices: ['แบรนด์เฟอร์ไม้จริงที่คนไทยไว้ใจที่สุด', 'แบรนด์ไทยที่ส่งออกได้', 'ของในบ้านที่ส่งต่อให้ลูกได้'] },
+  'Mission': { q: 'ทุกวันเราทำอะไรเพื่อไปถึงตรงนั้น', choices: ['ใช้ไม้จริงทั้งตัว ไม่ใช้วัสดุแทน', 'ช่างไทยทำเองทุกชิ้น', 'รับประกันโครงสร้างนาน'] },
+  'Values': { q: 'เรื่องที่เราไม่ยอมเด็ดขาด คืออะไร', choices: ['ไม่ลดคุณภาพเพื่อลดราคา', 'ไม่โฆษณาเกินของจริง', 'ไม่ทิ้งลูกค้าหลังขาย'] },
+  'ลูกค้าเป้าหมาย': { q: 'ลูกค้าที่ใช่ที่สุดคือใคร', choices: ['คู่แต่งงานใหม่ ซื้อบ้านหลังแรก', 'ครอบครัวมีลูกเล็ก', 'คนคอนโดที่อยากได้ของดีชิ้นเดียว'] },
+  'Positioning': { q: 'ถ้าลูกค้าเทียบกับแบรนด์อื่น เราต่างตรงไหน', choices: ['ไม้จริงในราคาที่จับต้องได้', 'ดีไซน์เรียบ อยู่ได้นานไม่ตกยุค', 'ปรับขนาด/ผ้าได้ตามบ้าน'] },
+  'Personality': { q: 'ถ้าแบรนด์เป็นคน เป็นคนแบบไหน', choices: ['ช่างไม้ใจดี พูดน้อย ทำจริง', 'เพื่อนที่มีรสนิยม', 'ผู้เชี่ยวชาญที่เข้าถึงง่าย'] },
+  'Brand promise': { q: 'สัญญาข้อเดียวที่ให้ลูกค้าทุกคน', choices: ['ใช้ได้เป็นสิบปี', 'ตรงตามภาพทุกชิ้น', 'มีปัญหา เราดูแลตลอด'] },
+};
+const notebook = [
+  { id: 1, text: 'เปิดด้วยปัญหาของลูกค้าก่อน แล้วค่อยพูดถึงสินค้า', scope: 'all', st: 'ok', from: 'Bay ตอบคำถามใน “โซฟานั่ง 5 ปี”' },
+  { id: 2, text: 'ไม่ใช้คำว่า “ราคาพิเศษ” ใช้ตัวเลขจริงแทน', scope: 'cc', st: 'ok', from: 'เหตุผลตีกลับ “10.10 เปิดตัวลด” v1' },
+  { id: 3, text: 'IG ใช้แฮชแท็กไม่เกิน 5 อัน', scope: 'all', st: 'pending', from: 'เหตุผลตีกลับ “ตู้ Koontong” v1' },
+];
+const playbooks = {
+  cc: {
+    FB: 'เปิดด้วย hook 1 ประโยค · เล่าเรื่องจริง 2-4 ย่อหน้าสั้น · ปิดด้วยชวนมาโชว์รูมหรือทักแชท · ไม่ใส่แฮชแท็ก',
+    IG: 'บรรทัดแรกต้องหยุดนิ้ว (ก่อนคำว่า “เพิ่มเติม”) · สั้นกว่า FB · แฮชแท็ก 5 อัน · ภาพแรกต้องเล่าเรื่องได้เอง',
+    WEB: 'เขียนตอบคำถามที่คนค้นจริง · คำค้นหลักอยู่ในหัวเรื่องและย่อหน้าแรก · หัวข้อย่อย H2 3-5 หัว · meta ไม่เกิน 155 ตัวอักษร · ลิงก์ไปหน้าสินค้าที่ผูกไว้',
+  },
+  hof: { FB: 'บอกราคาและโปรให้ชัดในบรรทัดแรก', IG: 'ภาพสินค้าชัด ราคาอยู่ในภาพ', WEB: 'หน้ารวมสินค้าพร้อมราคา' },
+};
+const kit = {
+  cc: { colors: [['ไม้โอ๊ค', '#6B5B4A'], ['ครีมผ้าลินิน', '#FAF9F7'], ['เขียวใบมะกอก', '#3F6F4F']], fonts: 'Noto Sans Thai · หัวข้อ 600 · เนื้อ 400' },
+  hof: { colors: [['HOF แดง', '#B3261E'], ['เทาเข้ม', '#2B2B2B']], fonts: 'ยังไม่กำหนด' },
+};
+
+/* ============================================================
+   สถานะหน้าจอ
+   ============================================================ */
+const wide = () => matchMedia('(min-width: 900px)').matches;
+const S = {
+  screen: 'home', role: 'bay', brand: 'cc',
+  view: wide() ? 'month' : 'agenda', cursor: '2026-10-01', colorBy: 'pillar',
+  f: { ch: '', pillar: '', campaign: '', product: '', owner: '' },
+  itemId: null, tab: 'FB', unlock: false, bounceRows: null, brandTab: 'model', planId: 'pl-nov',
+  pendingNote: null, chat: [], chatSec: null, back: 'cal', rv: { marks: {}, notes: {} },
+  idea: { text: 'พรุ่งนี้อยากเล่นเรื่อง mid century ใช้ภาพโซฟา Emu', link: 'drive.google.com/…/emu-walnut.jpg', phase: 'idle' },
+};
+try { const r = localStorage.getItem('cc-mock-role'); if (r) S.role = r; } catch (e) {}
+
+/* ============================================================
+   ตัวช่วย
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const D = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const K = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const add = (s, n) => { const d = D(s); d.setDate(d.getDate() + n); return K(d); };
+const fmt = s => { const d = D(s); return `${d.getDate()} ${TH_MON[d.getMonth()]}`; };
+const daysBetween = (a, b) => Math.round((D(b) - D(a)) / 864e5);
+function itemById(id) { return items.find(i => i.id === id); }
+const pillarOf = it => (PILLARS[it.brand] || []).find(p => p.id === it.pillar);
+const campOf = it => CAMPAIGNS.find(c => c.id === it.campaign);
+const colorOf = it => S.colorBy === 'pillar' ? (pillarOf(it)?.c || 'var(--pn)') : (campOf(it)?.c || 'var(--pn)');
+const grad = h => `linear-gradient(140deg, hsl(${h} 28% 64%), hsl(${(h + 20) % 360} 24% 40%))`;
+const stagePill = st => `<span class="pill ${STAGE[st][1]}">${STAGE[st][0]}</span>`;
+const chTag = c => `<span class="ch">${c}</span>`;
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2600); }
+const ico = {
+  cal: '<path d="M4 7h16M8 3v4M16 3v4"/><rect x="4" y="5" width="16" height="15" rx="3"/>',
+  plan: '<path d="M5 6h14M5 12h10M5 18h6"/>',
+  review: '<path d="M4 12l5 5L20 6"/>',
+  home: '<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
+  brand: '<circle cx="12" cy="9" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/>',
+  prev: '<path d="M15 5l-7 7 7 7"/>', next: '<path d="M9 5l7 7-7 7"/>',
+};
+const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ico[k]}</svg>`;
+
+/* การ์ดในปฏิทิน: แยกตามวัน (K3.1) รวมช่องทางที่ลงวันเดียวกัน */
+function groups() {
+  const out = [];
+  for (const it of items) {
+    if (it.brand !== S.brand) continue;
+    const f = S.f;
+    if (f.pillar && it.pillar !== f.pillar) continue;
+    if (f.campaign && it.campaign !== f.campaign) continue;
+    if (f.product && !it.products.includes(f.product)) continue;
+    if (f.owner && it.owner !== f.owner) continue;
+    const byDate = {};
+    for (const p of it.place) {
+      if (p.skip) continue;
+      if (f.ch && p.ch !== f.ch) continue;
+      (byDate[p.date] ||= []).push(p.ch);
+    }
+    for (const [date, chs] of Object.entries(byDate)) out.push({ it, date, chs });
+  }
+  return out;
+}
+const onDate = (gs, d) => gs.filter(g => g.date === d);
+const hasPic = it => it.images.length > 0; // K4: ไม่มีรูป = โชว์แค่ hook
+
+function card(g) {
+  const { it } = g;
+  const pic = hasPic(it) ? `<div class="thumb" style="--g:${grad(it.images[0].hue)}"></div>` : '';
+  return `<button class="card ${pic ? '' : 'nothumb'}" style="--c:${colorOf(it)}" data-act="open" data-id="${it.id}">
+    ${pic}<div><div class="hook">${esc(it.hook)}</div>
+    <div class="meta">${g.chs.map(chTag).join('')} ${stagePill(it.stage)}${it.offPlan ? '<span class="offplan">นอกแผน</span>' : ''}</div></div></button>`;
+}
+
+/* ============================================================
+   หน้าจอ: ปฏิทิน
+   ============================================================ */
+function viewCal() {
+  const gs = groups();
+  const cur = D(S.cursor);
+  const views = [['agenda', 'กำหนดการ'], ['day', 'วัน'], ['3day', '3 วัน'], ['week', 'สัปดาห์'], ['month', 'เดือน']];
+  let title, body;
+  if (S.view === 'month') {
+    title = `${TH_MON_FULL[cur.getMonth()]} ${cur.getFullYear() + 543}`;
+    const first = new Date(cur.getFullYear(), cur.getMonth(), 1);
+    const start = add(K(first), -first.getDay());
+    let cells = TH_WD.map(w => `<div class="wd">${w}</div>`).join('');
+    for (let i = 0; i < 42; i++) {
+      const d = add(start, i), dd = D(d);
+      if (i >= 35 && dd.getMonth() !== cur.getMonth()) break;
+      const gg = onDate(gs, d);
+      cells += `<div class="mcell ${dd.getMonth() !== cur.getMonth() ? 'out' : ''} ${d === TODAY ? 'today' : ''}" data-date="${d}">
+        <span class="dn num">${dd.getDate()}</span>
+        ${gg.map(g => `<button class="mbar" style="--c:${colorOf(g.it)}" data-act="open" data-id="${g.it.id}">${esc(g.it.hook)}</button>
+          <button class="mcard" style="--c:${colorOf(g.it)}" data-act="open" data-id="${g.it.id}" data-date="${d}" ${matchMedia('(pointer:fine)').matches ? 'draggable="true"' : ''}>
+            ${hasPic(g.it) ? `<div class="thumb" style="--g:${grad(g.it.images[0].hue)}"></div>` : ''}
+            <span class="hook">${esc(g.it.hook)}</span>
+            <span class="meta">${g.chs.map(chTag).join('')}${g.it.offPlan ? '<span class="offplan">นอกแผน</span>' : ''}</span></button>`).join('')}
+      </div>`;
+    }
+    body = `<div class="scroll-x"><div class="month">${cells}</div></div>
+      <p class="xs muted" style="margin-top:8px">คอมลากการ์ดไปวันอื่นได้ · มือถือแตะการ์ดแล้วเปลี่ยนวันในหน้าชิ้นงาน</p>`;
+  } else if (S.view === 'agenda') {
+    title = `${TH_MON_FULL[cur.getMonth()]} ${cur.getFullYear() + 543}`;
+    const dates = [...new Set(gs.map(g => g.date))].filter(d => d.slice(0, 7) === S.cursor.slice(0, 7)).sort();
+    body = dates.length ? `<div class="agenda">${dates.map(d => {
+      const dd = D(d);
+      return `<div class="aday ${d === TODAY ? 'today' : ''}"><div class="d"><b class="num">${dd.getDate()}</b><span>${TH_WD[dd.getDay()]}</span></div>
+        <div class="cards">${onDate(gs, d).map(card).join('')}</div></div>`;
+    }).join('')}</div>` : `<div class="panel muted">เดือนนี้ยังไม่มีชิ้นงานตามตัวกรองที่เลือก</div>`;
+  } else {
+    const n = S.view === 'day' ? 1 : S.view === '3day' ? 3 : 7;
+    const start = S.view === 'week' ? add(S.cursor, -D(S.cursor).getDay()) : S.cursor;
+    const end = add(start, n - 1);
+    title = `${fmt(start)} – ${fmt(end)}`;
+    let cols = '';
+    for (let i = 0; i < n; i++) {
+      const d = add(start, i), dd = D(d);
+      cols += `<div class="col ${d === TODAY ? 'today' : ''}"><div class="h"><b class="num">${dd.getDate()}</b>${TH_WD[dd.getDay()]}</div>
+        <div class="cards">${onDate(gs, d).map(card).join('') || '<span class="xs muted">—</span>'}</div></div>`;
+    }
+    body = `<div class="scroll-x"><div class="cols ${n > 3 ? 'compact' : ''}" style="grid-template-columns:repeat(${n}, minmax(${n > 3 ? 96 : 0}px,1fr))">${cols}</div></div>`;
+  }
+
+  const opt = (key, label, list) => `<select id="f-${key}" class="${S.f[key] ? 'on' : ''}" data-filter="${key}" aria-label="${label}">
+    <option value="">${label}: ทั้งหมด</option>${list.map(([v, t]) => `<option value="${esc(v)}" ${S.f[key] === v ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const pl = PILLARS[S.brand], cps = CAMPAIGNS.filter(c => c.brand === S.brand);
+  const legend = (S.colorBy === 'pillar' ? pl : cps).map(x => `<span><i style="background:${x.c}"></i>${esc(x.name)}</span>`).join('') +
+    `<span><i style="background:var(--pn)"></i>${S.colorBy === 'pillar' ? 'ไม่มี pillar' : 'ไม่ผูกแคมเปญ'}</span>`;
+
+  return `<div class="calbar">
+    <div class="calnav">
+      <button class="iconbtn" data-act="calPrev" aria-label="ก่อนหน้า">${svg('prev')}</button>
+      <button class="iconbtn" data-act="calNext" aria-label="ถัดไป">${svg('next')}</button>
+      <h2 class="num">${title}</h2>
+      <button class="btn sm" data-act="calToday">วันนี้</button>
+    </div>
+    <div class="viewseg"><div class="seg" role="group" aria-label="มุมมอง">${views.map(([v, t]) => `<button data-act="view" data-v="${v}" aria-pressed="${S.view === v}">${t}</button>`).join('')}</div></div>
+    <div class="filters">
+      ${opt('ch', 'ช่องทาง', Object.entries(CH).map(([k, v]) => [k, v]))}
+      ${opt('pillar', 'Pillar', pl.map(p => [p.id, p.name]))}
+      ${opt('campaign', 'แคมเปญ', cps.map(c => [c.id, c.name]))}
+      ${opt('product', 'สินค้า', PRODUCTS[S.brand].map(p => [p, p]))}
+      ${opt('owner', 'คนทำ', Object.entries(PEOPLE))}
+    </div>
+    <div class="spread"><div class="legend">${legend}</div>
+      <div class="seg" role="group" aria-label="ระบายสีตาม"><button data-act="colorBy" data-v="pillar" aria-pressed="${S.colorBy === 'pillar'}">สีตาม pillar</button><button data-act="colorBy" data-v="campaign" aria-pressed="${S.colorBy === 'campaign'}">สีตามแคมเปญ</button></div>
+    </div>
+  </div>${body}`;
+}
+
+/* ============================================================
+   ช่องไอเดีย: พิมพ์ประโยคเดียว ที่เหลือ agent ทำเอง
+   ============================================================ */
+function parseIdea(text) {
+  const t = text.toLowerCase();
+  const alias = { 'emu': 'Emu Sofa', 'อีมู': 'Emu Sofa', 'กระสา': 'กระสา โซฟา 3 ที่นั่ง', 'กระเรียน': 'กระเรียน โซฟา 2 ที่นั่ง', 'koontong': 'Koontong Sideboard', 'คุณทอง': 'Koontong Sideboard', 'กีวี่': 'กีวี่ เก้าอี้' };
+  const products = [...new Set(Object.entries(alias).filter(([k]) => t.includes(k)).map(([, v]) => v))].filter(p => PRODUCTS[S.brand].includes(p));
+  const date = t.includes('วันนี้') ? TODAY : add(TODAY, 1);
+  const topic = (text.match(/เรื่อง\s*([^ใ]+?)(\s+ใช้|\s+มี|$)/) || [])[1]?.trim() || text.slice(0, 40);
+  const ch = ['FB', 'IG']; if (/เว็บ|บล็อก|blog|seo/i.test(text)) ch.push('WEB');
+  return { topic, products, date, ch, pillar: products.length ? PILLARS[S.brand][0].id : '' };
+}
+function ideaBar() {
+  const I = S.idea;
+  let status = '';
+  if (I.phase === 'reading') status = `<div class="writing"><span class="bot">AI</span><span>agent กำลังอ่านไอเดีย</span><span class="dots"><i></i><i></i><i></i></span></div>`;
+  if (I.parsed && I.phase !== 'reading') {
+    const P = I.parsed;
+    status = `<div class="understood"><div class="row"><span class="bot">AI</span><b style="color:var(--text);font-size:13.5px">เข้าใจว่า</b></div>
+      <div><b>หัวข้อ</b>${esc(P.topic)}</div>
+      <div><b>สินค้า</b>${P.products.length ? P.products.map(esc).join(' · ') : 'ไม่ผูก'}</div>
+      <div><b>ภาพ</b>${I.link ? '1 ภาพ ใช้ได้เลย ไม่ต้องรอกราฟิก' : 'ยังไม่มี · ส่งให้กราฟิก'}</div>
+      <div><b>ลง</b>${P.ch.map(chTag).join(' ')} ${fmt(P.date)}</div>
+      <div><b>ผูกกับ</b>${P.pillar ? esc(PILLARS[S.brand].find(x => x.id === P.pillar).name) + ' (agent เดา)' : 'ไม่ผูก pillar'} · ไม่ผูกแคมเปญ · <span class="offplan">นอกแผน</span></div></div>`;
+  }
+  if (I.phase === 'asking') status += `<div class="ask"><div class="row"><span class="bot">AI</span><span class="q">ในระบบยังไม่มีข้อมูลว่า ${esc(I.parsed.products[0] || 'ชิ้นนี้')} เป็น ${esc(I.parsed.topic)} ตรงไหน · agent ไม่เดาเอง</span></div>
+      <div class="chips">${['ขาไม้เรียว ทรงเตี้ย', 'ไม้วอลนัตโทนอุ่น', 'เส้นสายเรียบแบบยุค 60'].map(c => `<button class="chip" data-act="ideaAns" data-v="${c}">${c}</button>`).join('')}</div></div>`;
+  if (I.phase === 'writing') status += `<div class="writing"><span class="bot">AI</span><span>กำลังเขียน ${I.parsed.ch.map(c => CH[c]).join(' · ')}</span><span class="dots"><i></i><i></i><i></i></span></div>`;
+  if (I.phase === 'done') status += `<div class="note ok"><b>เสร็จแล้ว · อยู่ในปฏิทิน ${fmt(I.parsed.date)} · รอพี่ตรวจ</b>
+      <div class="row" style="margin-top:8px"><button class="btn sm primary" data-act="goReview" data-id="${I.itemId}">ตรวจเลย</button><button class="btn sm" data-act="open" data-id="${I.itemId}">เปิดชิ้นงาน</button><button class="btn sm ghost" data-act="ideaReset">ไอเดียใหม่</button></div>
+      ${I.note ? `<div class="small" style="margin-top:8px">จดลงสมุดไหม: “${esc(I.note)}” <button class="btn sm" data-act="ideaNote">จด</button></div>` : ''}</div>`;
+  const busy = ['reading', 'asking', 'writing'].includes(I.phase);
+  return `<div class="idea">
+    <label class="f" for="idea-in">มีไอเดียอะไร พิมพ์เลย <span class="hint">agent คิด hook · ข้อความทุกช่องทาง · หาสินค้า · ลงปฏิทินให้เอง</span></label>
+    <textarea class="inp" id="idea-in" data-idea="text" rows="2" ${busy || I.phase === 'done' ? 'readonly' : ''}>${esc(I.text)}</textarea>
+    <div class="foot"><input class="inp" id="idea-link" data-idea="link" placeholder="ลิงก์ภาพ (ถ้ามี)" value="${esc(I.link)}" ${busy || I.phase === 'done' ? 'readonly' : ''}>
+      ${I.phase === 'idle' ? `<button class="btn primary" data-act="ideaGo">ส่งให้ agent</button>` : ''}</div>
+    ${status}</div>`;
+}
+
+/* ============================================================
+   หน้าจอ: ชิ้นงาน
+   ============================================================ */
+const LIMIT = { FB: 63206, IG: 2200, WEBmeta: 155, WEBtitle: 60 };
+function counter(len, max) { return `<span class="counter num ${len > max ? 'over' : ''}">${len.toLocaleString()} / ${max.toLocaleString()}${len > max ? ' · ยาวเกินที่รับได้' : ''}</span>`; }
+
+function viewItem() {
+  const it = itemById(S.itemId);
+  const chs = [...new Set(it.place.filter(p => !p.skip).map(p => p.ch))];
+  if (!chs.includes(S.tab)) S.tab = chs[0] || 'FB';
+  const needImg = it.type !== 'text';
+  const textDone = it.agent === 'done';
+  const locked = ['ready', 'posted'].includes(it.stage) && !S.unlock;
+  const isBay = S.role === 'bay';
+
+  let agentBox = '';
+  if (it.agent === 'asking') {
+    agentBox = `<div class="ask"><div class="row"><span class="bot">AI</span><span class="q">ก่อนเขียน ขอถามพี่ Bay 1 ข้อ</span></div>
+      <div>${esc(it.question.q)}</div>
+      <div class="chips">${it.question.choices.map(c => `<button class="chip" data-act="answer" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <p class="xs muted">คำตอบที่ใช้กับงานอื่นได้ agent จะเสนอจดลงสมุดความคิด · พี่กดยืนยันเองทุกข้อ</p></div>`;
+  } else if (it.agent === 'writing') {
+    agentBox = `<div class="ask"><div class="writing"><span class="bot">AI</span><span>Content agent กำลังเขียน ${chs.map(c => CH[c]).join(' · ')}</span><span class="dots"><i></i><i></i><i></i></span></div></div>`;
+  } else if (it.agent === 'idle') {
+    agentBox = `<div class="ask"><div class="row"><span class="bot">AI</span><span class="q">ยังไม่ได้ให้ agent เขียน</span></div>
+      <button class="btn primary" data-act="runAgent">ส่งให้ Content agent เขียนทุกช่องทาง</button></div>`;
+  }
+
+  const bounceBox = it.stage === 'bounce' ? `<div class="note bad"><div class="spread"><b>Bay ตีกลับ · แก้ทีละข้อ แล้วส่งใหม่${it.passed.length ? ` · ผ่านแล้ว: ${it.passed.map(k => k.startsWith('img') ? 'ภาพ ' + (+k.slice(3) + 1) : CH[k]).join(', ')}` : ''}</b><span class="xs muted">v${it.version}</span></div>
+      <div style="margin-top:6px">${it.comments.map((c, i) => `<label class="check ${c.done ? 'done' : ''}"><input type="checkbox" id="cm-${it.id}-${i}" data-act="tick" data-i="${i}" ${c.done ? 'checked' : ''}><span><b>${esc(c.target)}</b> · ${esc(c.text)}</span></label>`).join('')}</div>
+      <button class="btn primary" style="margin-top:8px;width:100%" data-act="resubmit" ${it.comments.every(c => c.done) ? '' : 'disabled'}>ส่งตรวจอีกครั้ง${it.comments.every(c => c.done) ? '' : ` · เหลือ ${it.comments.filter(c => !c.done).length} ข้อ`}</button></div>` : '';
+
+  const lockBox = ['ready', 'posted'].includes(it.stage) ? (S.unlock
+    ? `<div class="note warn">กำลังแก้หลังอนุมัติ · บันทึกแล้วการอนุมัติจะเป็นโมฆะ งานกลับไปรอ Bay ตรวจใหม่</div>`
+    : `<div class="note ok"><div class="spread"><span><b>Bay อนุมัติแล้วทั้งชุด</b> · ภาพและข้อความทุกช่องทาง</span>
+       ${it.stage === 'ready' ? `<button class="btn sm" data-act="unlock">แก้ (ถอนอนุมัติ)</button>` : ''}</div></div>`) : '';
+
+  const d = it.drafts;
+  let tabBody = '';
+  if (!d) tabBody = `<p class="muted small">ร่างจะขึ้นที่นี่เมื่อ agent เขียนเสร็จ</p>`;
+  else if (S.tab === 'WEB') {
+    const w = d.WEB;
+    tabBody = `<div class="stack">
+      <label class="f">หัวเรื่อง ${counter(w.title.length, LIMIT.WEBtitle)}<input class="inp" id="w-title" data-draft="WEB.title" value="${esc(w.title)}" ${locked ? 'readonly' : ''}></label>
+      <label class="f">คำค้นหลัก<input class="inp" id="w-kw" data-draft="WEB.keyword" value="${esc(w.keyword)}" ${locked ? 'readonly' : ''}></label>
+      <label class="f">Meta description ${counter(w.meta.length, LIMIT.WEBmeta)}<textarea class="inp" id="w-meta" data-draft="WEB.meta" rows="2" ${locked ? 'readonly' : ''}>${esc(w.meta)}</textarea></label>
+      <label class="f">เนื้อหาบทความ<textarea class="inp" id="w-body" data-draft="WEB.text" rows="10" ${locked ? 'readonly' : ''}>${esc(w.text)}</textarea></label>
+    </div>`;
+  } else {
+    const x = d[S.tab];
+    tabBody = `<div class="preview"><div class="who"><span class="av">${it.brand === 'cc' ? 'ฌ' : 'H'}</span><div><b class="small">${BRANDS[it.brand]}</b><div class="xs muted">พรีวิว ${CH[S.tab]}</div></div></div>
+        ${hasPic(it) ? `<div class="thumb" style="--g:${grad(it.images[0].hue)};aspect-ratio:${S.tab === 'IG' ? '4/5' : '16/10'};border-radius:10px;margin-bottom:8px;max-height:260px"></div>` : ''}
+        <pre>${esc(x.text)}</pre></div>
+      <label class="f" style="margin-top:12px">แก้ข้อความ ${counter(x.text.length, LIMIT[S.tab])}
+        <textarea class="inp" id="d-${S.tab}" data-draft="${S.tab}.text" rows="7" ${locked ? 'readonly' : ''}>${esc(x.text)}</textarea></label>
+      <label class="f" style="margin-top:10px">คอมเมนต์แรก <span class="hint">คัดลอกไปวางตอนโพสต์</span>
+        <div class="row" style="flex-wrap:nowrap"><input class="inp" id="fc-${S.tab}" data-fc="${S.tab}" value="${esc(it.firstComment[S.tab] || '')}"><button class="btn sm" data-act="copy" data-v="${esc(it.firstComment[S.tab] || '')}">คัดลอก</button></div></label>`;
+  }
+  const cur = d && (S.tab === 'WEB' ? d.WEB : d[S.tab]);
+  const humanBadge = cur?.human
+    ? `<div class="note warn small">คนแก้ช่องนี้แล้ว · AI จะไม่เขียนทับ <button class="btn sm ghost" data-act="redo">ให้ AI ร่างใหม่ช่องนี้</button></div>`
+    : (d ? `<div class="trace">ใช้: ${TRACE.map(t => `<span>${t}</span>`).join('')}</div>` : '');
+
+  const imgBox = needImg ? `<div class="panel stack">
+      <div class="spread"><h3>ภาพ ${it.type === 'album' ? `· อัลบั้ม ${it.images.length} ภาพ` : ''}</h3><span class="xs muted">แปะลิงก์ Drive/Figma · ภาพ 1 = key visual</span></div>
+      ${it.images.length ? `<div class="imgs">${it.images.map((m, i) => `<div class="it"><div class="thumb" style="--g:${grad(m.hue)}"></div>
+        <div class="lab"><span>ภาพ ${i + 1}${i === 0 ? ' ★' : ''}</span>${it.type === 'album' && i > 0 && !locked ? `<button data-act="imgUp" data-i="${i}" aria-label="เลื่อนภาพ ${i + 1} ขึ้น">↑</button>` : ''}</div></div>`).join('')}</div>`
+        : `<p class="small muted">ยังไม่มีภาพ · รอ ${PEOPLE[it.owner] || 'กราฟิก'}</p>`}
+      ${!it.imagesDone ? `<button class="btn" data-act="simImages">จำลอง: กราฟิกแปะภาพเสร็จ</button>` : ''}
+    </div>` : '';
+
+  const plcBox = `<div class="panel"><h3 style="margin-bottom:6px">ลงที่ไหน วันไหน</h3>
+    ${it.place.map((p, i) => `<div class="plc">${chTag(p.ch)}
+      <div class="row" style="justify-content:space-between">
+        ${p.skip ? `<span class="small muted">ไม่ลงที่นี่แล้ว · ${esc(p.skip)}</span>` : `<input type="date" class="inp" id="pd-${it.id}-${i}" style="max-width:170px;padding:6px 10px" data-pdate="${i}" value="${p.date}">
+        ${it.stage === 'ready' || it.stage === 'posted' ? (p.url ? `<span class="xs" style="color:var(--ok)">โพสต์แล้ว ✓</span>` : `<button class="btn sm" data-act="posted" data-i="${i}">แปะลิงก์โพสต์จริง</button>`) : ''}
+        ${!p.url ? `<button class="btn sm ghost" data-act="skip" data-i="${i}">ไม่ลงที่นี่แล้ว</button>` : ''}`}
+      </div></div>`).join('')}
+    ${it.stage === 'ready' ? `<p class="xs muted" style="margin:6px 0 0">ลงครบทุกช่องทาง → เปลี่ยนเป็น “โพสต์แล้ว” เอง</p>` : ''}</div>`;
+
+  const info = `<div class="panel"><dl class="kv">
+      <dt>แบรนด์</dt><dd>${BRANDS[it.brand]}</dd><dt>ประเภท</dt><dd>${TYPES[it.type]}</dd>
+      <dt>Hook</dt><dd>${esc(it.hook)}</dd><dt>เนื้อหา</dt><dd>${esc(it.content) || '<span class="muted">—</span>'}</dd>
+      <dt>Visual</dt><dd>${esc(it.visual) || '<span class="muted">—</span>'}</dd>
+      <dt>Pillar</dt><dd>${esc(pillarOf(it)?.name || '—')}</dd><dt>แคมเปญ</dt><dd>${esc(campOf(it)?.name || '—')}</dd>
+      <dt>ธีม</dt><dd>${esc(THEMES.find(t => t.id === it.theme)?.name || '—')}</dd>
+      <dt>สินค้า</dt><dd>${it.products.length ? it.products.map(esc).join(' · ') : '<span class="muted">ไม่ผูก</span>'}</dd>
+      <dt>คนทำภาพ</dt><dd>${PEOPLE[it.owner] || '—'}</dd></dl>
+      ${it.versions.length ? `<div style="margin-top:10px"><div class="eyebrow">ประวัติเวอร์ชัน</div>${it.versions.map(v => `<div class="xs muted">v${v.v} · ${v.when} · ${esc(v.note)}</div>`).join('')}<div class="xs">v${it.version} · ตอนนี้</div></div>` : ''}
+    </div>`;
+
+  const reviewCta = it.stage === 'review' ? `<div class="note lock"><div class="spread"><span><b>รอ Bay ตรวจ</b> · ภาพ + ข้อความทุกช่องทางในครั้งเดียว</span>
+     ${isBay ? `<button class="btn sm primary" data-act="goReview" data-id="${it.id}">ไปหน้าตรวจ</button>` : ''}</div></div>` : '';
+
+  return `<button class="back" data-act="back">← กลับ</button>
+  <div class="detail two">
+    <div class="stack">
+      <div class="spread"><div><div class="eyebrow">${BRANDS[it.brand]} · ${TYPES[it.type]}</div><h2>${esc(it.title)}</h2></div>${stagePill(it.stage)}</div>
+      <div class="progress">
+        <span class="step ${textDone ? 'done' : 'wait'}">ข้อความ ${textDone ? '✓' : '⏳'}</span>
+        ${needImg ? `<span class="step ${it.imagesDone ? 'done' : 'wait'}">ภาพ ${it.imagesDone ? '✓' : '⏳'}</span>` : ''}
+        <span class="step ${['review', 'ready', 'posted'].includes(it.stage) ? 'done' : ''}">Bay ตรวจ ${['ready', 'posted'].includes(it.stage) ? '✓' : ''}</span>
+      </div>
+      ${agentBox}${bounceBox}${lockBox}${reviewCta}
+      <div class="panel stack">
+        <div class="tabs" role="tablist">${chs.map(c => `<button role="tab" aria-selected="${S.tab === c}" data-act="tab" data-v="${c}">${CH[c]}</button>`).join('')}</div>
+        ${humanBadge}${tabBody}
+      </div>
+    </div>
+    <div class="stack">${chatBox(it)}${imgBox}${plcBox}${info}</div>
+  </div>`;
+}
+
+/* ============================================================
+   หน้าจอ: ตั้งงานใหม่
+   ============================================================ */
+const NEW = { type: 'album', ch: ['FB', 'IG'], products: [] };
+function viewNew() {
+  const pl = PILLARS[S.brand], cps = CAMPAIGNS.filter(c => c.brand === S.brand), ths = THEMES.filter(t => t.brand === S.brand);
+  if (NEW.type === 'text') NEW.ch = NEW.ch.filter(c => c !== 'IG');
+  return `<button class="back" data-act="back">← กลับ</button>
+  <form class="stack" id="newForm" style="max-width:720px" novalidate>
+    <div><div class="eyebrow">ตั้งงานใหม่ · ${BRANDS[S.brand]}</div><h2>เลือกประเภทและช่องทาง แล้ว agent เขียนให้</h2></div>
+    <div class="panel stack">
+      <div class="f" style="font-size:13px;font-weight:500">ประเภท
+        <div class="chips">${Object.entries(TYPES).map(([k, v]) => `<button type="button" class="chip" data-act="nType" data-v="${k}" aria-pressed="${NEW.type === k}">${v}</button>`).join('')}</div></div>
+      <div class="f" style="font-size:13px;font-weight:500">ลงที่ไหน
+        <div class="chips">${Object.entries(CH).map(([k, v]) => `<button type="button" class="chip" data-act="nCh" data-v="${k}" aria-pressed="${NEW.ch.includes(k)}" ${k === 'IG' && NEW.type === 'text' ? 'disabled' : ''}>${v}</button>`).join('')}</div>
+        ${NEW.type === 'text' ? '<span class="hint">ข้อความล้วนลง Instagram ไม่ได้ เพราะ IG ต้องมีภาพ</span>' : ''}</div>
+      <label class="f">วันลง <span class="hint">ตั้งแยกต่อช่องทางได้ในหน้าชิ้นงาน</span><input type="date" class="inp" id="n-date" value="2026-10-27" style="max-width:200px"></label>
+    </div>
+    <div class="panel stack">
+      <h3>Brief</h3>
+      <label class="f">Hook <span class="hint">ประโยคหรือภาพที่ทำให้หยุดดู</span><input class="inp" id="n-hook" required value="กลับบ้านมาแล้วอยากนั่งเลย"></label>
+      <label class="f">เนื้อหา <span class="hint">ข้อความหลักข้อเดียว · เว้นว่างได้ agent จะถามพี่ Bay</span><input class="inp" id="n-content" value=""></label>
+      <label class="f">Visual <span class="hint">ภาพที่ต้องได้</span><input class="inp" id="n-visual" value="มุมโซฟาตอนเย็น แสงอุ่น"></label>
+    </div>
+    <div class="panel grid2">
+      <label class="f">Pillar<select class="inp" id="n-pillar"><option value="">ไม่ผูก</option>${pl.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
+      <label class="f">ธีม<select class="inp" id="n-theme"><option value="">ไม่ผูก</option>${ths.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></label>
+      <label class="f">แคมเปญ<select class="inp" id="n-camp"><option value="">ไม่ผูก</option>${cps.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
+      <label class="f">คนทำภาพ<select class="inp" id="n-owner">${Object.entries(PEOPLE).map(([k, v]) => `<option value="${k}" ${k === 'ton' ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+      <div class="f" style="grid-column:1/-1;font-size:13px;font-weight:500">สินค้า <span class="hint">ไม่บังคับ</span>
+        <div class="chips">${PRODUCTS[S.brand].map(p => `<button type="button" class="chip" data-act="nProd" data-v="${esc(p)}" aria-pressed="${NEW.products.includes(p)}">${esc(p)}</button>`).join('')}</div></div>
+      <label class="f" style="grid-column:1/-1">ลิงก์ต้นทาง <span class="hint">ไอเดียมาจากเลขา AI หรือประชุม</span><input class="inp" id="n-src" placeholder="วางลิงก์สรุปจากเลขา AI"></label>
+    </div>
+    <div class="note"><b>เส้นทางของงานนี้:</b> 🤖 Content agent เขียน ${NEW.ch.map(c => CH[c]).join(' · ') || '—'}${NEW.type !== 'text' ? ' · 👤 กราฟิกทำภาพ' : ''} → ครบแล้วส่ง Bay ตรวจเลย</div>
+    <button class="btn primary" type="submit" style="min-height:48px" ${NEW.ch.length ? '' : 'disabled'}>ตั้งงานและส่งให้ agent</button>
+  </form>`;
+}
+
+/* ============================================================
+   หน้าจอ: ตรวจ (Bay)
+   ============================================================ */
+function viewReview() {
+  const list = items.filter(i => i.brand === S.brand && i.stage === 'review');
+  const note = S.pendingNote ? `<div class="ask"><div class="row"><span class="bot">AI</span><span class="q">จดลงสมุดความคิดไหม</span></div>
+      <div>“${esc(S.pendingNote.text)}”</div><div class="xs muted">มาจากเหตุผลที่พี่ตีกลับ “${esc(S.pendingNote.from)}”</div>
+      <div class="row"><select class="inp" id="nb-scope" style="max-width:200px"><option value="all">ใช้ทุกแบรนด์</option><option value="${S.brand}">เฉพาะ ${BRANDS[S.brand]}</option></select>
+      <button class="btn primary sm" data-act="nbYes">จดลงสมุด</button><button class="btn sm" data-act="nbNo">ไม่ต้องจด</button></div></div>` : '';
+  return `<div class="stack">
+    <div><div class="eyebrow">${BRANDS[S.brand]}</div><h2>รอ Bay ตรวจ · ${list.length} ชิ้น</h2></div>
+    ${S.role !== 'bay' ? `<div class="note lock">กำลังดูในฐานะการตลาด · อนุมัติได้เฉพาะ Bay (สลับบทบาทได้ที่มุมขวาบน)</div>` : ''}
+    ${note}
+    ${list.map(it => `<button class="card ${hasPic(it) ? '' : 'nothumb'}" style="--c:${colorOf(it)}" data-act="goReview" data-id="${it.id}">
+      ${hasPic(it) ? `<div class="thumb" style="--g:${grad(it.images[0].hue)}"></div>` : ''}
+      <div><div class="hook">${esc(it.hook)}</div><div class="meta">${[...new Set(it.place.map(p => p.ch))].map(chTag).join('')}<span class="xs muted">· ${TYPES[it.type]} · ลงวันแรก ${fmt(it.place.map(p => p.date).sort()[0])}</span></div></div></button>`).join('') || '<div class="panel muted">ไม่มีงานรอตรวจ</div>'}
+  </div>`;
+}
+
+function viewReviewItem() {
+  const it = itemById(S.itemId);
+  const isBay = S.role === 'bay';
+  const R = S.rv;
+  const d = it.drafts;
+  const parts = partsOf(it);
+  const open = parts.filter(p => !it.passed.includes(p.k));
+  const undecided = open.filter(p => !R.marks[p.k]).length;
+  const fixes = open.filter(p => R.marks[p.k] === 'fix');
+  const missingNote = fixes.some(p => !(R.notes[p.k] || '').trim());
+  const verdict = p => it.passed.includes(p.k) ? `<span class="pill t-ready">ผ่านแล้วรอบก่อน</span>` : `<div class="verdict">
+      <label class="${R.marks[p.k] === 'ok' ? 'on-ok' : ''}"><input type="checkbox" id="vk-${p.k}-ok" data-act="mark" data-k="${p.k}" data-v="ok" ${R.marks[p.k] === 'ok' ? 'checked' : ''} ${isBay ? '' : 'disabled'}>ผ่าน</label>
+      <label class="${R.marks[p.k] === 'fix' ? 'on-fix' : ''}"><input type="checkbox" id="vk-${p.k}-fix" data-act="mark" data-k="${p.k}" data-v="fix" ${R.marks[p.k] === 'fix' ? 'checked' : ''} ${isBay ? '' : 'disabled'}>ไม่ผ่าน</label></div>
+      ${R.marks[p.k] === 'fix' ? `<input class="inp" id="vn-${p.k}" data-vnote="${p.k}" placeholder="ต้องแก้อะไร (บังคับ)" value="${esc(R.notes[p.k] || '')}">` : ''}`;
+  const cls = p => it.passed.includes(p.k) ? 'prev' : R.marks[p.k] || '';
+  const imgParts = parts.filter(p => p.img), chParts = parts.filter(p => p.ch);
+  let btn;
+  if (!isBay) btn = `<button class="btn primary" disabled>ตรวจได้เฉพาะ Bay</button>`;
+  else if (undecided) btn = `<button class="btn primary" disabled>ยังไม่ได้ติ๊ก ${undecided} ส่วน</button>`;
+  else if (!fixes.length) btn = `<button class="btn primary" data-act="confirmReview">ผ่านทั้งหมด · อนุมัติ</button>`;
+  else btn = `<button class="btn danger" data-act="confirmReview" ${missingNote ? 'disabled' : ''}>${missingNote ? 'ใส่เหตุผลทุกข้อที่ไม่ผ่าน' : `ส่งกลับแก้ ${fixes.length} ส่วน · ผ่าน ${open.length - fixes.length}`}</button>`;
+  return `<button class="back" data-act="back">← กลับ</button>
+  <div class="detail two">
+    <div class="stack">
+      <div class="spread"><div><div class="eyebrow">ตรวจทีละส่วน · ${BRANDS[it.brand]} · ${TYPES[it.type]} · v${it.version}</div><h2>${esc(it.hook)}</h2></div>${stagePill(it.stage)}</div>
+      ${isBay && open.length > 1 ? `<div class="row"><button class="btn sm" data-act="markAll">ติ๊กผ่านทั้งหมด</button><span class="xs muted">แล้วค่อยติ๊ก “ไม่ผ่าน” เฉพาะส่วนที่ต้องแก้</span></div>` : ''}
+      ${imgParts.length ? `<div class="stack">${imgParts.map(p => `<div class="panel part ${cls(p)}"><div class="partimg"><div class="thumb" style="--g:${grad(p.img.hue)}"></div>
+        <div class="stack" style="gap:6px"><b>${p.label}${p.i === 0 ? ' · key visual' : ''}</b>${verdict(p)}</div></div></div>`).join('')}</div>` : ''}
+      ${chParts.map(p => `<div class="panel part ${cls(p)}"><div class="spread"><h3>${p.label}</h3><span class="xs muted">ลง ${it.place.filter(x => x.ch === p.ch).map(x => fmt(x.date)).join(', ')}</span></div>
+        ${p.ch === 'WEB' ? `<div class="kv"><dt>หัวเรื่อง</dt><dd>${esc(d.WEB.title)}</dd><dt>คำค้นหลัก</dt><dd>${esc(d.WEB.keyword)}</dd><dt>Meta</dt><dd>${esc(d.WEB.meta)}</dd></div><pre class="small" style="white-space:pre-wrap;font:inherit;margin:0">${esc(d.WEB.text)}</pre>`
+          : `<pre style="white-space:pre-wrap;font:inherit;margin:0">${esc(d[p.ch].text)}</pre>`}
+        ${verdict(p)}</div>`).join('')}
+      <div class="sticky-actions">${btn}</div>
+    </div>
+    <div class="stack">${chatBox(it)}</div>
+  </div>`;
+}
+
+/* ============================================================
+   หน้าจอ: หน้าแรก (Dashboard)
+   ============================================================ */
+function viewHome() {
+  const B = S.brand, isBay = S.role === 'bay';
+  const mine = items.filter(i => i.brand === B);
+  const lastOf = it => it.place.map(p => p.date).sort()[0];
+  // H1 รอตรวจ
+  const rv = mine.filter(i => i.stage === 'review').sort((a, b) => lastOf(a) < lastOf(b) ? -1 : 1);
+  // H2 agent ถาม
+  const asks = mine.filter(i => i.agent === 'asking');
+  // H3 สมุดรอยืนยัน
+  const nbp = notebook.filter(n => n.st === 'pending' && (n.scope === 'all' || n.scope === B));
+  // H4 แผนรออนุมัติ
+  const pls = plans.filter(p => p.brand === B && p.status !== 'approved');
+  // @ ถึงฉัน
+  const me = isBay ? 'bay' : 'mint';
+  const ments = mine.flatMap(i => i.chat.filter(m => m.mention === me && !m.read).map(m => ({ it: i, m })));
+  const line = (it, extra) => `<div class="line"><button data-act="${isBay && it.stage === 'review' ? 'goReview' : 'open'}" data-id="${it.id}">${esc(it.hook)}</button>${extra || ''}</div>`;
+
+  const tiles = `<div class="todo">
+    <div class="tile ${rv.length ? 'hot' : ''}"><div class="spread"><span class="lbl">รอพี่ตรวจ</span><span class="big num">${rv.length}</span></div>
+      ${rv.slice(0, 3).map(it => line(it, `<span class="xs muted">ลง ${fmt(lastOf(it))}</span>`)).join('') || '<span class="small muted">ไม่มี</span>'}
+      ${rv.length ? `<button class="btn sm primary" data-act="goReview" data-id="${rv[0].id}">ตรวจชิ้นที่ลงเร็วสุด</button>` : ''}</div>
+    <div class="tile ${asks.length ? 'hot' : ''}"><div class="spread"><span class="lbl">agent ถามพี่อยู่</span><span class="big num">${asks.length}</span></div>
+      ${asks.map(it => `<div class="small"><b>${esc(it.hook)}</b><div class="muted">${esc(it.question.q)}</div>
+        <div class="chips" style="margin-top:6px">${it.question.choices.map(c => `<button class="chip" data-act="homeAnswer" data-id="${it.id}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div></div>`).join('') || '<span class="small muted">ไม่มีคำถามค้าง</span>'}</div>
+    <div class="tile"><div class="spread"><span class="lbl">ข้อความถึงพี่ (@${isBay ? 'Bay' : 'มิ้นท์'})</span><span class="big num">${ments.length}</span></div>
+      ${ments.map(({ it, m }) => `<div class="small"><b>${esc(whoName(m.who))}</b> ใน “${esc(it.hook)}”<div>${esc(m.t)}</div><button class="btn sm" data-act="openMention" data-id="${it.id}">เปิดดู</button></div>`).join('') || '<span class="small muted">ไม่มีข้อความใหม่</span>'}</div>
+    <div class="tile"><div class="spread"><span class="lbl">สมุดความคิดรอยืนยัน</span><span class="big num">${nbp.length}</span></div>
+      ${nbp.map(n => `<div class="small">“${esc(n.text)}”<div class="row" style="margin-top:6px"><button class="btn sm primary" data-act="nbOk" data-v="${n.id}">ยืนยัน</button><button class="btn sm ghost" data-act="nbOff" data-v="${n.id}">ไม่ใช้</button></div></div>`).join('') || '<span class="small muted">ไม่มี</span>'}</div>
+    <div class="tile"><div class="spread"><span class="lbl">แผนเดือน</span><span class="big num">${pls.length}</span></div>
+      ${pls.map(p => { const [y, m] = p.month.split('-').map(Number); const due = add(`${p.month}-01`, -20);
+        return `<div class="small"><b>${TH_MON_FULL[m - 1]}</b> · ${p.status === 'draft' ? `ร่าง · ต้องส่งภายใน ${fmt(due)} (อีก ${daysBetween(TODAY, due)} วัน)` : 'รอพี่อนุมัติ'}<div><button class="btn sm" data-act="goPlan" data-v="${p.id}">เปิดแผน</button></div></div>`; }).join('') || '<span class="small muted">อนุมัติครบแล้ว</span>'}</div>
+  </div>`;
+
+  // H5 7 วันข้างหน้า + H6 ลงไม่ครบ
+  let week = '';
+  for (let i = 0; i < 7; i++) {
+    const d = add(TODAY, i), dd = D(d);
+    const gs = [];
+    mine.forEach(it => { const chs = it.place.filter(p => p.date === d && !p.skip).map(p => p.ch); if (chs.length) gs.push({ it, chs }); });
+    const risk = g => !['ready', 'posted'].includes(g.it.stage) && daysBetween(TODAY, d) <= 2;
+    week += `<div class="w7row"><div class="d"><b class="num">${dd.getDate()}</b>${TH_WD[dd.getDay()]}</div><div>${gs.map(g => `<button class="w7item ${risk(g) ? 'risk' : ''}" data-act="open" data-id="${g.it.id}">${g.chs.map(chTag).join('')}<span class="h">${esc(g.it.hook)}</span>${stagePill(g.it.stage)}${risk(g) ? '<span class="xs" style="color:var(--danger)">เสี่ยงไม่ทัน</span>' : ''}</button>`).join('') || '<span class="xs muted">—</span>'}</div></div>`;
+  }
+  const partial = mine.filter(i => ['ready', 'posted'].includes(i.stage) && i.place.some(p => !p.skip && !p.url) && i.place.some(p => p.url || p.date < TODAY));
+  const H56 = `<div class="panel stack"><div class="spread"><h3>7 วันข้างหน้า</h3><span class="xs muted">แดง = อีกไม่เกิน 2 วันจะลงแต่ยังไม่ผ่าน</span></div><div class="week7">${week}</div>
+    ${partial.length ? `<div class="note warn small"><b>ลงไม่ครบ</b> ${partial.map(it => `<div class="line" style="margin-top:4px"><button class="back" style="padding:0;color:var(--text)" data-act="open" data-id="${it.id}">${esc(it.hook)}</button> · ขาด ${it.place.filter(p => !p.skip && !p.url).map(p => CH[p.ch]).join(', ')}</div>`).join('')}</div>` : ''}</div>`;
+
+  // H9 สัดส่วน pillar เดือนนี้ vs เดือนก่อน (นับตามวันลงแรก)
+  const cnt = (mon) => { const c = {}; mine.forEach(it => { const f = lastOf(it); if (f.slice(0, 7) === mon) c[it.pillar || ''] = (c[it.pillar || ''] || 0) + 1; }); return c; };
+  const thisM = '2026-10', prevM = '2026-09';
+  const a = cnt(thisM), b = cnt(prevM);
+  const rows = [...PILLARS[B], { id: '', name: 'ไม่ผูก', c: 'var(--pn)' }];
+  const max = Math.max(1, ...rows.map(r => Math.max(a[r.id] || 0, b[r.id] || 0)));
+  const H9 = `<div class="panel stack"><div class="spread"><h3>สัดส่วน pillar</h3><span class="xs muted">ต.ค. (เข้ม) เทียบ ก.ย. (จาง)</span></div>
+    <div class="bars">${rows.map(r => `<div class="barrow"><span>${esc(r.name)}</span><div class="track" style="--c:${r.c}"><div class="b" style="width:${(a[r.id] || 0) / max * 100}%"></div><div class="b prev" style="width:${(b[r.id] || 0) / max * 100}%"></div></div><span class="n num">${a[r.id] || 0} · ${b[r.id] || 0}</span></div>`).join('')}</div>
+    ${(() => { const named = rows.filter(r => r.id); const hi = named.reduce((x, y) => (a[y.id] || 0) > (a[x.id] || 0) ? y : x); const lo = named.reduce((x, y) => (a[y.id] || 0) < (a[x.id] || 0) ? y : x); return `<p class="xs muted" style="margin:0">ต.ค. เล่นเรื่อง${esc(hi.name)}มากสุด · ${esc(lo.name)}น้อยสุด · ไอเดียจาก agent ช่วยเติมได้</p>`; })()}</div>`;
+
+  // H10 สินค้าที่ไม่ได้พูดถึงนาน
+  const stale = PRODUCTS[B].map(p => ({ p, d: LAST_TALK[p] })).map(x => ({ ...x, n: x.d ? daysBetween(x.d, TODAY) : 999 })).filter(x => x.n > 60).sort((x, y) => y.n - x.n);
+  const H10 = `<div class="panel stack"><div class="spread"><h3>สินค้าที่ไม่ได้พูดถึงเกิน 60 วัน</h3><span class="big num" style="font-size:20px">${stale.length}</span></div>
+    <div class="plist">${stale.map(x => `<div class="prow"><div><b>${esc(x.p)}</b><div class="xs muted num">${x.d ? `ล่าสุด ${fmt(x.d)} · ${x.n} วัน` : 'ยังไม่เคยมีคอนเทนต์'}</div></div><button class="btn sm" data-act="staleIdea" data-v="${esc(x.p)}">ให้ agent คิดไอเดีย</button></div>`).join('') || '<span class="small muted">พูดถึงครบทุกรุ่น</span>'}</div></div>`;
+
+  // H16 แฟ้มคู่แข่ง
+  const sw = swipes.filter(x => x.brand === B);
+  const H16 = `<div class="panel stack"><div class="spread"><h3>แฟ้มคู่แข่ง</h3><span class="xs muted">ทีมแปะลิงก์ · agent สรุป</span></div>
+    ${sw.map(x => `<div class="swipe"><div class="xs muted">${esc(x.who)} · ${esc(x.when)} · ${esc(x.link)}</div><div class="small"><span class="bot" style="width:20px;height:20px;font-size:10px;margin-right:6px">AI</span>${esc(x.sum)}</div></div>`).join('') || '<span class="small muted">ยังไม่มี</span>'}
+    <div class="row" style="flex-wrap:nowrap"><input class="inp" id="swipe-in" placeholder="วางลิงก์โพสต์คู่แข่ง"><button class="btn" data-act="addSwipe">เพิ่ม</button></div></div>`;
+
+  // H19 ไอเดียจาก agent
+  const ai = agentIdeas.filter(x => x.brand === B && !x.done);
+  const H19 = `<div class="panel stack"><div class="spread"><h3>ไอเดียจาก agent สัปดาห์นี้</h3><span class="xs muted">แตะ “เอา” = เป็นการ์ดในปฏิทิน</span></div>
+    ${ai.map((x, i) => `<div class="aidea"><div class="row">${x.ch.map(chTag).join('')}<b class="small">${esc(x.hook)}</b></div><div class="why">เพราะ ${esc(x.why)}</div>
+      <div class="row"><button class="btn sm primary" data-act="takeIdea" data-v="${agentIdeas.indexOf(x)}">เอา</button><button class="btn sm ghost" data-act="dropIdea" data-v="${agentIdeas.indexOf(x)}">ไม่เอา</button></div></div>`).join('') || '<span class="small muted">รับครบแล้ว · agent คิดชุดใหม่ทุกวันจันทร์</span>'}</div>`;
+
+  return `<div class="dash">
+    <div class="hello"><div class="eyebrow">${fmt(TODAY)} ${D(TODAY).getFullYear() + 543} · ${BRANDS[B]}</div><h2>สวัสดีครับ ${isBay ? 'พี่ Bay' : 'มิ้นท์'}</h2></div>
+    ${tiles}
+    <div class="dcols">${H56}${H19}</div>
+    <div class="dcols">${H9}${H10}</div>
+    ${H16}
+  </div>`;
+}
+
+/* ============================================================
+   หน้าจอ: แผน
+   ============================================================ */
+function viewPlan() {
+  const ths = THEMES.filter(t => t.brand === S.brand);
+  const from = '2026-10-01', span = daysBetween(from, '2027-01-01');
+  const bars = ths.map(t => {
+    const a = Math.max(0, daysBetween(from, t.from)), b = Math.min(span, daysBetween(from, t.to) + 1);
+    return b > 0 ? `<div class="tl-row"><div class="tl-bar" style="--c:${t.c};left:${a / span * 100}%;width:${(b - a) / span * 100}%" title="${esc(t.name)}">${esc(t.name)}</div></div>` : '';
+  }).join('');
+  const myPlans = plans.filter(p => p.brand === S.brand);
+  const plan = myPlans.find(p => p.id === S.planId) || myPlans[0];
+  let planBox = '<div class="panel muted">ยังไม่มีแผนของแบรนด์นี้</div>';
+  if (plan) {
+    const [y, m] = plan.month.split('-').map(Number);
+    const due = add(`${plan.month}-01`, -20);
+    const left = daysBetween(TODAY, due);
+    const late = plan.sentOn && daysBetween(plan.sentOn, due) < 0;
+    const status = { draft: ['ร่าง', 't-idea'], sent: ['ส่งให้ Bay แล้ว', 't-review'], approved: ['อนุมัติแล้ว', 't-ready'] }[plan.status];
+    const slotsHTML = plan.slots.length ? (plan.weeks || ['']).map((wn, wi) => {
+      const ss = plan.slots.filter(s => s.w === wi);
+      if (!ss.length) return '';
+      return `<div class="week-h">สัปดาห์ ${wi + 1} · ${esc(wn)}</div>${ss.map(s => {
+        const p = PILLARS[S.brand].find(x => x.id === s.pillar);
+        return `<div class="slot"><div class="d"><b class="num">${D(s.date).getDate()}</b>${TH_WD[D(s.date).getDay()]}</div>
+        <div class="stack" style="gap:6px"><div class="row">${s.ch.map(chTag).join('')}<span class="pill" style="background:color-mix(in srgb, ${p.c} 16%, transparent);color:${p.c}">${esc(p.name)}</span><span class="xs muted">${TYPES[s.type]}</span></div>
+        <div class="hcv"><div><b>HOOK</b>${esc(s.hook)}</div><div><b>เนื้อหา</b>${esc(s.content) || '—'}</div><div><b>VISUAL</b>${esc(s.visual) || '—'}</div></div></div></div>`;
+      }).join('')}`;
+    }).join('') : `<p class="small muted">แผนเดือนนี้อนุมัติแล้ว ชิ้นงานทั้งหมดอยู่ในปฏิทิน</p>`;
+    planBox = `<div class="panel stack">
+      <div class="spread"><div><div class="eyebrow">แผนเดือน</div><h3 style="font-size:18px">${TH_MON_FULL[m - 1]} ${y + 543}</h3></div>
+        <div class="row"><span class="pill ${status[1]}">${status[0]}</span>${late ? '<span class="pill t-bounce">ส่งช้า</span>' : ''}</div></div>
+      ${plan.status === 'draft' ? `<div class="note ${left < 5 ? 'bad' : 'warn'}">ต้องส่งให้ Bay ภายใน <b>${fmt(due)}</b> (ล่วงหน้า 20 วัน) · <b class="num">เหลือ ${left} วัน</b></div>` : ''}
+      ${plan.status === 'approved' ? `<div class="xs muted">ส่ง ${fmt(plan.sentOn)} · อนุมัติ ${fmt(plan.approvedOn)}</div>` : ''}
+      ${slotsHTML}
+      ${plan.log.length ? `<div><div class="eyebrow">เปลี่ยนหลังอนุมัติ (Bay เห็น)</div>${plan.log.map(l => `<div class="small">· ${esc(l)}</div>`).join('')}</div>` : ''}
+      ${plan.status === 'draft' ? `<button class="btn primary" data-act="sendPlan">ส่งแผนให้ Bay</button>` : ''}
+      ${plan.status === 'sent' ? (S.role === 'bay' ? `<button class="btn primary" data-act="approvePlan">อนุมัติแผนทั้งเดือน · สร้างการ์ด ${plan.slots.length} ใบ</button>` : `<div class="note lock">รอ Bay อนุมัติแผน</div>`) : ''}
+    </div>`;
+  }
+  return `<div class="stack">
+    <div><div class="eyebrow">${BRANDS[S.brand]}</div><h2>แผนคอนเทนต์</h2></div>
+    <div class="panel stack"><div class="spread"><h3>ธีม 3 เดือนข้างหน้า</h3><span class="xs muted">ธีมคร่อมเดือนได้</span></div>
+      <div class="timeline"><div class="tl-head"><span>ต.ค.</span><span>พ.ย.</span><span>ธ.ค.</span></div>${bars || '<p class="small muted">ยังไม่มีธีม</p>'}</div></div>
+    <div class="seg" role="group" aria-label="เลือกแผน">${myPlans.map(p => { const [y, m] = p.month.split('-').map(Number); return `<button data-act="planPick" data-v="${p.id}" aria-pressed="${plan && plan.id === p.id}">${TH_MON[m - 1]} ${String(y + 543).slice(2)}</button>`; }).join('')}</div>
+    ${planBox}
+  </div>`;
+}
+
+/* ============================================================
+   หน้าจอ: แบรนด์ (สมองของ agent)
+   ============================================================ */
+function viewBrand() {
+  const tabs = [['model', 'Brand model'], ['notebook', 'สมุดความคิด'], ['playbook', 'คู่มือแพลตฟอร์ม'], ['kit', 'Brand book / Kit'], ['routes', 'เส้นทาง agent']];
+  const bm = brandModel[S.brand];
+  let body = '';
+  if (S.brandTab === 'model') {
+    const done = MODEL_SECTIONS.filter(s => bm[s]).length;
+    body = S.chatSec ? viewInterview() : `<div class="panel">
+      <div class="spread" style="margin-bottom:6px"><div><h3>Brand model · ${BRANDS[S.brand]}</h3><div class="xs muted num">มีแล้ว ${done} / ${MODEL_SECTIONS.length} หัวข้อ · ยังไม่มีไฟล์ agent จึงสัมภาษณ์พี่ทีละข้อ</div></div>
+        <button class="btn primary" data-act="interview">${done ? 'สัมภาษณ์ต่อ' : 'เริ่มสัมภาษณ์'}</button></div>
+      ${MODEL_SECTIONS.map(s => `<div class="sec"><b class="small">${esc(s)}</b>${bm[s] ? `<span class="pill ${bm[s].st === 'ok' ? 't-ready' : 't-work'}">${bm[s].st === 'ok' ? 'Bay ยืนยัน' : 'ร่างจากสัมภาษณ์'}</span>` : '<span class="xs muted">ยังไม่มี</span>'}
+        ${bm[s] ? `<p>${esc(bm[s].text)}</p>` : ''}${bm[s]?.st === 'draft' ? `<p><button class="btn sm" data-act="confirmSec" data-v="${esc(s)}">ยืนยันร่างนี้</button></p>` : ''}</div>`).join('')}
+    </div>`;
+  } else if (S.brandTab === 'notebook') {
+    const nb = notebook.filter(n => n.scope === 'all' || n.scope === S.brand);
+    body = `<div class="panel"><div class="spread" style="margin-bottom:6px"><h3>สมุดความคิด Bay</h3><span class="xs muted">agent อ่านทุกครั้ง · ไม่มีความจำลับ</span></div>
+      ${nb.map(n => `<div class="nb"><div class="spread"><span class="small"><b>#${n.id}</b> ${esc(n.text)}</span>
+        <span class="pill ${n.st === 'ok' ? 't-ready' : n.st === 'off' ? 't-idea' : 't-work'}">${n.st === 'ok' ? 'ใช้อยู่' : n.st === 'off' ? 'เลิกใช้' : 'รอ Bay ยืนยัน'}</span></div>
+        <div class="xs muted">${n.scope === 'all' ? 'ทุกแบรนด์' : 'เฉพาะ ' + BRANDS[n.scope]} · ที่มา: ${esc(n.from)}</div>
+        <div class="row">${n.st === 'pending' ? `<button class="btn sm primary" data-act="nbOk" data-v="${n.id}">ยืนยัน</button>` : ''}${n.st !== 'off' ? `<button class="btn sm ghost" data-act="nbOff" data-v="${n.id}">เลิกใช้</button>` : `<button class="btn sm ghost" data-act="nbOk" data-v="${n.id}">ใช้อีกครั้ง</button>`}</div></div>`).join('')}
+    </div>`;
+  } else if (S.brandTab === 'playbook') {
+    body = `<div class="stack">${Object.entries(CH).map(([k, v]) => `<div class="panel"><label class="f"><span class="spread"><b style="font-size:15px">${v}</b><span class="hint">agent อ่านก่อนเขียนช่องนี้</span></span>
+      <textarea class="inp" id="pb-${k}" data-pb="${k}" rows="4">${esc(playbooks[S.brand][k])}</textarea></label></div>`).join('')}</div>`;
+  } else if (S.brandTab === 'kit') {
+    const k = kit[S.brand];
+    body = `<div class="grid2"><div class="panel"><h3>สี</h3>${k.colors.map(([n, h]) => `<div class="swatch"><i style="background:${h}"></i><div><div class="small">${esc(n)}</div><div class="xs muted num">${h}</div></div><button class="btn sm" data-act="copy" data-v="${h}">คัดลอก</button></div>`).join('')}</div>
+      <div class="panel stack"><h3>ฟอนต์ · โลโก้</h3><div class="small">${esc(k.fonts)}</div>
+        <label class="f">ลิงก์โลโก้ <span class="hint">Drive/Figma</span><input class="inp" id="kit-logo" placeholder="ยังไม่มีลิงก์"></label></div>
+      <div class="panel" style="grid-column:1/-1"><h3>ตัวอย่างที่ใช่ / ไม่ใช่</h3><div class="grid2" style="margin-top:8px">
+        <div><div class="thumb" style="--g:${grad(28)};aspect-ratio:16/9;border-radius:10px"></div><div class="small" style="margin-top:4px;color:var(--ok)">✓ ใช่ · แสงธรรมชาติ ของจริงในบ้าน</div></div>
+        <div><div class="thumb" style="--g:${grad(300)};aspect-ratio:16/9;border-radius:10px;filter:saturate(2)"></div><div class="small" style="margin-top:4px;color:var(--danger)">✗ ไม่ใช่ · สีจัด ตัวหนังสือเต็มภาพ (จาก “ตู้ Koontong” v1)</div></div></div></div></div>`;
+  } else {
+    body = `<div class="panel"><div class="spread" style="margin-bottom:8px"><h3>เส้นทางตามประเภท × ช่องทาง</h3><span class="xs muted">เฉพาะ Bay แก้ได้</span></div>
+      <div class="scroll-x"><table class="routes"><thead><tr><th>ประเภท</th>${Object.values(CH).map(c => `<th>${c}</th>`).join('')}<th>คน</th></tr></thead><tbody>
+      ${Object.entries(TYPES).map(([k, v]) => `<tr><td>${v}</td>${Object.keys(CH).map(c => `<td>${k === 'text' && c === 'IG' ? '<span class="muted">—</span>' : `<select class="inp" id="rt-${k}-${c}" style="padding:4px 8px;font-size:13px" ${S.role === 'bay' ? '' : 'disabled'}><option>Content agent</option></select>`}</td>`).join('')}<td class="small">${k === 'text' ? '<span class="muted">—</span>' : 'กราฟิกทำภาพ'}</td></tr>`).join('')}
+      </tbody></table></div><p class="xs muted" style="margin:8px 0 0">เฟส 1 ใช้ Content agent ตัวเดียวทุกช่อง · วันหน้าเพิ่ม agent แยกได้ในตารางนี้โดยไม่ต้องแก้โค้ด</p></div>`;
+  }
+  return `<div class="stack"><div><div class="eyebrow">สมองของ agent</div><h2>${BRANDS[S.brand]}</h2></div>
+    <div class="tabs" role="tablist">${tabs.map(([k, v]) => `<button role="tab" aria-selected="${S.brandTab === k}" data-act="btab" data-v="${k}">${v}</button>`).join('')}</div>${body}</div>`;
+}
+
+function viewInterview() {
+  const q = INTERVIEW[S.chatSec];
+  const left = MODEL_SECTIONS.filter(s => !brandModel[S.brand][s]).length;
+  return `<div class="panel stack"><div class="spread"><h3>สัมภาษณ์ · ${esc(S.chatSec)}</h3><button class="btn sm ghost" data-act="endInterview">พักไว้ก่อน</button></div>
+    <div class="xs muted num">เหลือ ${left} หัวข้อ · หยุดแล้วกลับมาต่อได้</div>
+    <div class="chat">${S.chat.map(m => `<div class="bub ${m.who}">${esc(m.t)}</div>`).join('')}
+      ${q ? `<div class="bub a">${esc(q.q)}</div>` : `<div class="bub a">ขอข้อมูลเพิ่มหัวข้อนี้หน่อยครับ พิมพ์ได้เลย</div>`}</div>
+    ${q ? `<div class="chips">${q.choices.map(c => `<button class="chip" data-act="say" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
+    <div class="row" style="flex-wrap:nowrap"><input class="inp" id="chat-in" placeholder="หรือพิมพ์คำตอบเอง"><button class="btn primary" data-act="sayTyped">ส่ง</button></div></div>`;
+}
+
+/* ============================================================
+   วาดหน้าจอ
+   ============================================================ */
+function render() {
+  const reviewCount = items.filter(i => i.brand === S.brand && i.stage === 'review').length;
+  const navs = [['home', 'หน้าแรก'], ['cal', 'ปฏิทิน'], ['plan', 'แผน'], ['review', 'ตรวจ'], ['brand', 'แบรนด์']];
+  const onScreen = { item: S.back, new: S.back, idea: S.back, reviewItem: 'review' }[S.screen] || S.screen;
+  $('#nav').innerHTML = `<div class="brandmark">Content Studio<small>Chaw Cher OS</small></div>` + navs.map(([k, v]) =>
+    `<button data-act="nav" data-v="${k}" aria-current="${onScreen === k ? 'page' : 'false'}">${svg(k)}<span>${v}</span>${k === 'review' && reviewCount ? `<span class="badge num">${reviewCount}</span>` : ''}</button>`).join('');
+  $('#top').innerHTML = `<h1>${{ home: 'หน้าแรก', cal: 'ปฏิทินคอนเทนต์', plan: 'แผน', review: 'ตรวจงาน', brand: 'แบรนด์', item: 'ชิ้นงาน', new: 'ตั้งงานใหม่', idea: 'ไอเดียด่วน', reviewItem: 'ตรวจงาน' }[S.screen]}</h1>
+    <div class="seg" role="group" aria-label="แบรนด์">${Object.entries(BRANDS).map(([k, v]) => `<button data-act="brand" data-v="${k}" aria-pressed="${S.brand === k}">${v}</button>`).join('')}</div>
+    <label class="xs muted" for="role">ดูในฐานะ</label><select id="role" class="inp" style="width:auto;padding:5px 8px;font-size:13px" data-role>
+      <option value="mkt" ${S.role === 'mkt' ? 'selected' : ''}>การตลาด</option><option value="bay" ${S.role === 'bay' ? 'selected' : ''}>Bay</option></select>`;
+  const V = { home: viewHome, idea: () => `<button class="back" data-act="back">← กลับ</button><div style="max-width:720px">${ideaBar()}</div>`, cal: viewCal, item: viewItem, new: viewNew, review: viewReview, reviewItem: viewReviewItem, plan: viewPlan, brand: viewBrand }[S.screen];
+  $('#main').innerHTML = V();
+  $('#fab').hidden = !['home', 'cal', 'plan'].includes(S.screen); $('#fabmenu').hidden = true;
+}
+const go = (screen, extra = {}) => { Object.assign(S, extra, { screen }); render(); window.scrollTo(0, 0); };
+
+/* ============================================================
+   การกระทำ
+   ============================================================ */
+function autoToReview(it) {
+  // Q-09b: ข้อความเสร็จ + ภาพเสร็จ → ส่งถึง Bay เลย ไม่มีขั้นคนเกลา
+  if (it.agent === 'done' && (it.type === 'text' || it.imagesDone) && ['idea', 'work'].includes(it.stage)) {
+    it.stage = 'review'; toast('ครบแล้ว · ส่งถึง Bay ตรวจเลย');
+  } else if (['idea'].includes(it.stage) && it.agent !== 'idle') it.stage = 'work';
+}
+function runAgent(it) {
+  it.stage = 'work';
+  if (!it.content) {
+    it.agent = 'asking';
+    it.question = { q: `“${it.hook}” ชิ้นนี้อยากให้เล่าแบบไหน`, choices: ['ขายตรง บอกรุ่นและราคา', 'เล่าเรื่อง ไม่พูดราคา', 'ให้ความรู้ แล้วค่อยพาไปหาสินค้า'] };
+  } else { it.agent = 'writing'; setTimeout(() => finishAgent(it), 1100); }
+}
+function finishAgent(it) {
+  it.drafts = draftFor(it); it.agent = 'done'; autoToReview(it);
+  if (S.screen === 'item' && S.itemId === it.id) render();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#fabmenu, #fab')) $('#fabmenu').hidden = true;
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act, v = b.dataset.v;
+  const it = S.itemId ? itemById(S.itemId) : null;
+  switch (a) {
+    case 'nav': go(v, { unlock: false, bounceRows: null, chatSec: null }); break;
+    case 'brand': S.brand = v; S.f = { ch: '', pillar: '', campaign: '', product: '', owner: '' }; S.planId = plans.find(p => p.brand === v)?.id; if (['item', 'reviewItem', 'new'].includes(S.screen)) S.screen = S.back; render(); break;
+    case 'view': S.view = v; render(); break;
+    case 'colorBy': S.colorBy = v; render(); break;
+    case 'calToday': S.cursor = TODAY; render(); break;
+    case 'calPrev': case 'calNext': {
+      const s = a === 'calNext' ? 1 : -1, d = D(S.cursor);
+      if (S.view === 'month' || S.view === 'agenda') { d.setMonth(d.getMonth() + s, 1); S.cursor = K(d); }
+      else S.cursor = add(S.cursor, s * ({ day: 1, '3day': 3, week: 7 }[S.view]));
+      render(); break;
+    }
+    case 'open': e.preventDefault(); go('item', { itemId: b.dataset.id, back: S.screen === 'item' ? S.back : S.screen, unlock: false, tab: 'FB' }); break;
+    case 'back': go(S.back || 'cal', { unlock: false, bounceRows: null }); break;
+    case 'fab': $('#fabmenu').hidden = !$('#fabmenu').hidden; return;
+    case 'homeAnswer': S.itemId = b.dataset.id; { const x = itemById(b.dataset.id); x.answer = v; x.content = v; x.agent = 'writing'; toast('ส่งคำตอบให้ agent แล้ว · กำลังเขียน'); setTimeout(() => { x.drafts = draftFor(x); x.agent = 'done'; autoToReview(x); if (S.screen === 'home') render(); }, 1100); render(); } break;
+    case 'openMention': { const x = itemById(b.dataset.id); x.chat.forEach(m => { if (m.mention) m.read = true; }); go('item', { itemId: x.id, back: 'home', tab: 'FB' }); break; }
+    case 'goPlan': go('plan', { planId: v }); break;
+    case 'staleIdea': S.idea = { text: `อยากเล่นเรื่อง ${v} ที่ไม่ได้พูดถึงนาน`, link: '', phase: 'idle' }; go('idea', { back: 'home' }); break;
+    case 'addSwipe': { const l = ($('#swipe-in')?.value || '').trim(); if (!l) { toast('วางลิงก์ก่อน'); break; } swipes.unshift({ brand: S.brand, who: S.role === 'bay' ? 'Bay' : 'มิ้นท์', link: l, sum: 'agent กำลังอ่านและสรุป… (ในของจริงใช้เวลาไม่กี่วินาที)', when: fmt(TODAY) }); render(); break; }
+    case 'takeIdea': { const x = agentIdeas[+v]; x.done = true; const d = add(TODAY, 7);
+      items.push({ id: 'g' + Date.now(), brand: x.brand, type: x.ch.includes('IG') ? 'album' : 'text', title: x.hook, stage: 'idea', hook: x.hook, content: '', visual: '',
+        pillar: x.pillar, campaign: null, theme: '', products: x.product ? [x.product] : [], owner: 'ton', images: [], imagesDone: false, offPlan: true,
+        place: x.ch.map(c => ({ ch: c, date: d })), comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' }, agent: 'idle', chat: [{ sys: 'รับจากไอเดียของ agent', when: fmt(TODAY) }], passed: [] });
+      toast(`เป็นการ์ดไอเดียแล้ว · ${fmt(d)}`); render(); break; }
+    case 'dropIdea': agentIdeas[+v].done = true; render(); break;
+    case 'goIdea': go('idea', { back: S.screen }); break;
+    case 'new': go('new', { back: S.screen }); break;
+    case 'tab': S.tab = v; render(); break;
+    case 'answer':
+      it.answer = v; it.content = v; it.agent = 'writing';
+      S.pendingNote = null; render(); setTimeout(() => finishAgent(it), 1100);
+      break;
+    case 'runAgent': runAgent(it); render(); break;
+    case 'simImages': it.images = img(Math.floor(Math.random() * 360), it.type === 'album' ? 4 : 1); it.imagesDone = true; autoToReview(it); render(); break;
+    case 'imgUp': { const i = +b.dataset.i; [it.images[i - 1], it.images[i]] = [it.images[i], it.images[i - 1]]; render(); break; }
+    case 'tick': it.comments[+b.dataset.i].done = b.checked; render(); break;
+    case 'resubmit': it.versions.push({ v: it.version, when: fmt(TODAY), note: `ตีกลับ ${it.comments.length} ข้อ · แก้ครบ` }); it.version++; it.comments = []; it.stage = 'review'; it.chat.push({ sys: `แก้ครบ · ส่ง v${it.version} ให้ Bay ตรวจเฉพาะส่วนที่แก้`, when: fmt(TODAY) }); toast('ส่งถึง Bay อีกครั้ง'); render(); break;
+    case 'unlock': S.unlock = true; render(); break;
+    case 'redo': { const x = S.tab === 'WEB' ? it.drafts.WEB : it.drafts[S.tab]; const fresh = draftFor(it); it.drafts[S.tab] = fresh[S.tab]; toast(`AI ร่าง ${CH[S.tab]} ใหม่แล้ว`); render(); void x; break; }
+    case 'skip': it.place[+b.dataset.i].skip = 'Bay/ทีมเลือกไม่ลง'; checkPosted(it); render(); break;
+    case 'posted': it.place[+b.dataset.i].url = 'แปะแล้ว'; checkPosted(it); render(); break;
+    case 'copy': copy(v); break;
+    case 'goReview': go('reviewItem', { itemId: b.dataset.id, rv: { marks: {}, notes: {} } }); break;
+    case 'mark': { const k = b.dataset.k; S.rv.marks[k] = S.rv.marks[k] === v ? undefined : v; render(); break; }
+    case 'markAll': partsOf(it).forEach(p => { if (!it.passed.includes(p.k)) S.rv.marks[p.k] = 'ok'; }); render(); break;
+    case 'confirmReview': {
+      const open = partsOf(it).filter(p => !it.passed.includes(p.k));
+      const fixes = open.filter(p => S.rv.marks[p.k] === 'fix');
+      const oks = open.filter(p => S.rv.marks[p.k] === 'ok');
+      if (!fixes.length) { it.stage = 'ready'; it.passed = []; it.chat.push({ sys: `Bay ตรวจ v${it.version} · ผ่านทั้งหมด · อนุมัติแล้ว`, when: fmt(TODAY) }); toast('อนุมัติแล้ว · พร้อมโพสต์'); go('review'); break; }
+      it.passed = [...it.passed, ...oks.map(p => p.k)];
+      it.comments = fixes.map(p => ({ target: p.label, text: S.rv.notes[p.k], done: false }));
+      it.stage = 'bounce';
+      it.chat.push({ sys: `Bay ตรวจ v${it.version} · ผ่าน ${oks.map(p => p.label).join(', ') || '—'} · ต้องแก้ ${fixes.map(p => p.label).join(', ')}`, when: fmt(TODAY) });
+      fixes.forEach(p => it.chat.push({ who: 'bay', ref: p.label, t: S.rv.notes[p.k], when: nowStr() }));
+      S.pendingNote = { text: `จากที่พี่ติ: ${S.rv.notes[fixes[0].k]}`, from: it.hook };
+      toast(`ส่งกลับแก้ ${fixes.length} ส่วน · ส่วนที่ผ่านไม่ต้องตรวจซ้ำ`); go('review'); break;
+    }
+    case 'chatSend': {
+      const t = ($('#chat-msg')?.value || '').trim(); if (!t) break;
+      const ref = $('#chat-ref')?.value || 'ทั้งชิ้น';
+      it.chat.push({ who: S.role === 'bay' ? 'bay' : 'mint', ref, t, when: nowStr() });
+      if (/@ai/i.test(t)) setTimeout(() => { it.chat.push({ who: 'ai', ref, t: `รับทราบ ร่าง${ref === 'ทั้งชิ้น' ? 'ทุกช่องทาง' : ref}ใหม่ตามที่ขอแล้ว · ช่องที่คนแก้เองไว้ไม่แตะ`, when: nowStr() }); render(); }, 900);
+      render(); const m = document.getElementById('msgs-' + it.id); if (m) m.scrollTop = m.scrollHeight; break;
+    }
+    case 'approve': it.stage = 'ready'; toast('อนุมัติทั้งชุดแล้ว · พร้อมโพสต์'); go('review'); break;
+    case 'startBounce': S.bounceRows = [{ target: 'ทั้งชิ้น', text: '' }]; render(); break;
+    case 'addRow': S.bounceRows.push({ target: 'ทั้งชิ้น', text: '' }); render(); break;
+    case 'cancelBounce': S.bounceRows = null; render(); break;
+    case 'doBounce': {
+      const rows = S.bounceRows.filter(r => r.text.trim());
+      if (!rows.length) { toast('ต้องบอกเหตุผลอย่างน้อย 1 ข้อ คนแก้จะได้รู้ว่าต้องแก้อะไร'); break; }
+      it.comments = rows.map(r => ({ ...r, done: false })); it.stage = 'bounce';
+      S.pendingNote = { text: `จากที่พี่ติ: ${rows[0].text}`, from: it.hook };
+      S.bounceRows = null; toast('ตีกลับแล้ว'); go('review'); break;
+    }
+    case 'nbYes': { const sc = $('#nb-scope')?.value || 'all'; notebook.push({ id: notebook.length + 1, text: S.pendingNote.text.replace('จากที่พี่ติ: ', ''), scope: sc, st: 'ok', from: `เหตุผลตีกลับ “${S.pendingNote.from}”` }); S.pendingNote = null; toast('จดลงสมุดแล้ว · agent ใช้ตั้งแต่งานถัดไป'); render(); break; }
+    case 'nbNo': S.pendingNote = null; render(); break;
+    case 'nbOk': notebook.find(n => n.id === +v).st = 'ok'; render(); break;
+    case 'nbOff': notebook.find(n => n.id === +v).st = 'off'; render(); break;
+    case 'planPick': S.planId = v; render(); break;
+    case 'sendPlan': { const p = plans.find(x => x.id === S.planId); p.status = 'sent'; p.sentOn = TODAY; toast('ส่งแผนให้ Bay แล้ว'); render(); break; }
+    case 'approvePlan': {
+      const p = plans.find(x => x.id === S.planId); p.status = 'approved'; p.approvedOn = TODAY;
+      p.slots.forEach((s, i) => items.push({
+        id: `n${p.id}${i}`, brand: p.brand, type: s.type, title: s.hook, stage: 'idea', hook: s.hook, content: s.content, visual: s.visual,
+        pillar: s.pillar, campaign: null, theme: s.date < '2026-11-16' ? 't1' : 't2', products: [], owner: 'ton', images: [], imagesDone: false,
+        place: s.ch.map(c => ({ ch: c, date: s.date })), agent: 'idle', comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' },
+      }));
+      const n = p.slots.length; p.slots = [];
+      toast(`อนุมัติแล้ว · สร้างการ์ดไอเดีย ${n} ใบในปฏิทิน`); render(); break;
+    }
+    case 'btab': S.brandTab = v; S.chatSec = null; render(); break;
+    case 'interview': { const next = MODEL_SECTIONS.find(s => !brandModel[S.brand][s]); if (!next) { toast('ครบทุกหัวข้อแล้ว'); break; } S.chatSec = next; S.chat = []; render(); break; }
+    case 'endInterview': S.chatSec = null; render(); break;
+    case 'say': case 'sayTyped': {
+      const ans = a === 'say' ? v : ($('#chat-in')?.value || '').trim(); if (!ans) break;
+      brandModel[S.brand][S.chatSec] = { st: 'draft', text: ans };
+      S.chat.push({ who: 'a', t: INTERVIEW[S.chatSec]?.q || S.chatSec }, { who: 'b', t: ans }, { who: 'a', t: `จดเป็นร่างหัวข้อ “${S.chatSec}” แล้ว · พี่ยืนยันทีหลังได้` });
+      const next = MODEL_SECTIONS.find(s => !brandModel[S.brand][s]);
+      S.chatSec = next || null; if (!next) toast('สัมภาษณ์ครบทุกหัวข้อแล้ว');
+      render(); break;
+    }
+    case 'confirmSec': brandModel[S.brand][v].st = 'ok'; render(); break;
+    case 'nType': NEW.type = v; render(); break;
+    case 'nCh': NEW.ch = NEW.ch.includes(v) ? NEW.ch.filter(x => x !== v) : [...NEW.ch, v]; render(); break;
+    case 'ideaGo': {
+      const I = S.idea; if (!I.text.trim()) { toast('พิมพ์ไอเดียก่อน'); break; }
+      I.phase = 'reading'; I.parsed = null; render();
+      setTimeout(() => { I.parsed = parseIdea(I.text); I.phase = I.parsed.products.length ? 'asking' : 'writing'; render(); if (I.phase === 'writing') setTimeout(ideaFinish, 1100); }, 700);
+      break;
+    }
+    case 'ideaAns': S.idea.answer = v; S.idea.phase = 'writing'; render(); setTimeout(ideaFinish, 1100); break;
+    case 'ideaNote': notebook.push({ id: notebook.length + 1, text: S.idea.note, scope: S.brand, st: 'ok', from: 'Bay ตอบในช่องไอเดีย' }); S.idea.note = null; toast('จดลงสมุดแล้ว'); render(); break;
+    case 'ideaReset': S.idea = { text: '', link: '', phase: 'idle' }; render(); break;
+    case 'nProd': NEW.products = NEW.products.includes(v) ? NEW.products.filter(x => x !== v) : [...NEW.products, v]; render(); break;
+  }
+});
+
+function ideaFinish() {
+  const I = S.idea, P = I.parsed;
+  const hookTopic = P.topic.replace(/^./, c => c.toUpperCase());
+  const it = {
+    id: 'q' + Date.now(), brand: S.brand, type: 'single', title: `${hookTopic}${P.products[0] ? ' · ' + P.products[0] : ''}`, stage: 'idea',
+    hook: P.products[0] ? `${P.products[0]} ความ ${hookTopic} ที่อยู่ได้ทุกยุค` : hookTopic,
+    content: I.answer ? `${I.answer} คือเสน่ห์ ${hookTopic} ของรุ่นนี้` : hookTopic, visual: I.link ? 'ภาพที่ Bay แนบมา' : '',
+    pillar: P.pillar, campaign: null, theme: '', products: P.products, owner: 'ton', offPlan: true,
+    images: I.link ? img(24, 1) : [], imagesDone: !!I.link,
+    place: P.ch.map(c => ({ ch: c, date: P.date })), comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' }, agent: 'done',
+    source: I.text,
+  };
+  it.drafts = draftFor(it); items.push(it); autoToReview(it);
+  I.itemId = it.id; I.phase = 'done';
+  I.note = I.answer && P.products[0] ? `${P.products[0]} = ${P.topic} เพราะ${I.answer}` : null;
+  S.cursor = P.date;
+  if (S.screen === 'idea') render();
+}
+function checkPosted(it) {
+  const live = it.place.filter(p => !p.skip);
+  if (it.stage === 'ready' && live.length && live.every(p => p.url)) { it.stage = 'posted'; toast('ลงครบทุกช่องทาง · โพสต์แล้ว'); }
+}
+function copy(text) {
+  if (!text) { toast('ยังไม่มีข้อความให้คัดลอก'); return; }
+  try { navigator.clipboard.writeText(text).then(() => toast('คัดลอกแล้ว'), () => toast(`คัดลอกไม่ได้ · เลือกข้อความเอง: ${text}`)); }
+  catch (e) { toast(`คัดลอกไม่ได้ · เลือกข้อความเอง: ${text}`); }
+}
+
+document.addEventListener('input', e => {
+  const t = e.target, it = S.itemId ? itemById(S.itemId) : null;
+  if (t.dataset.draft && it) {
+    const [ch, key] = t.dataset.draft.split('.');
+    it.drafts[ch][key] = t.value; it.drafts[ch].human = true;
+    if (it.passed.includes(ch)) { it.passed = it.passed.filter(k => k !== ch); toast(`${CH[ch]} ถูกแก้ · ต้องตรวจช่องนี้ใหม่`); }
+    if (S.unlock && ['ready', 'posted'].includes(it.stage)) {
+      it.versions.push({ v: it.version, when: fmt(TODAY), note: 'แก้หลังอนุมัติ · อนุมัติเป็นโมฆะ' });
+      it.version++; it.stage = 'review'; S.unlock = false; toast('การอนุมัติเป็นโมฆะ · กลับไปรอ Bay ตรวจ');
+      render(); const el = document.getElementById(t.id); if (el) { el.focus(); el.setSelectionRange?.(el.value.length, el.value.length); }
+    }
+    const lab = t.closest('label')?.querySelector('.counter');
+    if (lab) { const max = { 'WEB.title': LIMIT.WEBtitle, 'WEB.meta': LIMIT.WEBmeta }[t.dataset.draft] || LIMIT[ch]; if (max) lab.outerHTML = counter(t.value.length, max); }
+  }
+  if (t.dataset.idea) S.idea[t.dataset.idea] = t.value;
+  if (t.dataset.vnote) { S.rv.notes[t.dataset.vnote] = t.value; const btn = document.querySelector('.sticky-actions .btn'); const need = Object.entries(S.rv.marks).some(([k, m]) => m === 'fix' && !(S.rv.notes[k] || '').trim()); if (btn && btn.dataset.act === 'confirmReview') { btn.disabled = need; } }
+  if (t.dataset.fc && it) it.firstComment[t.dataset.fc] = t.value;
+  if (t.dataset.brow !== undefined) S.bounceRows[+t.dataset.brow][t.dataset.k] = t.value;
+  if (t.dataset.pb) playbooks[S.brand][t.dataset.pb] = t.value;
+});
+document.addEventListener('change', e => {
+  const t = e.target, it = S.itemId ? itemById(S.itemId) : null;
+  if (t.dataset.filter) { S.f[t.dataset.filter] = t.value; render(); }
+  if (t.hasAttribute('data-role')) { S.role = t.value; try { localStorage.setItem('cc-mock-role', t.value); } catch (x) {} render(); }
+  if (t.dataset.pdate !== undefined && it && t.value) { it.place[+t.dataset.pdate].date = t.value; toast(`ย้าย ${it.place[+t.dataset.pdate].ch} ไป ${fmt(t.value)}`); }
+  if (t.dataset.brow !== undefined) S.bounceRows[+t.dataset.brow][t.dataset.k] = t.value;
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'chat-msg') { e.preventDefault(); document.querySelector('[data-act="chatSend"]')?.click(); } });
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'newForm') return;
+  e.preventDefault();
+  const hook = $('#n-hook').value.trim();
+  if (!hook) { toast('ใส่ hook ก่อน agent จะได้รู้ว่าจะเล่าอะไร'); return; }
+  const date = $('#n-date').value || TODAY;
+  const it = {
+    id: 'x' + Date.now(), brand: S.brand, type: NEW.type, title: hook, stage: 'idea', hook,
+    content: $('#n-content').value.trim(), visual: $('#n-visual').value.trim(),
+    pillar: $('#n-pillar').value, theme: $('#n-theme').value, offPlan: true, campaign: $('#n-camp').value || null,
+    products: [...NEW.products], owner: $('#n-owner').value, images: [], imagesDone: NEW.type === 'text',
+    place: NEW.ch.map(c => ({ ch: c, date })), comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' }, agent: 'idle',
+  };
+  items.push(it); runAgent(it);
+  NEW.products = [];
+  go('item', { itemId: it.id, back: 'cal', tab: NEW.ch[0] });
+});
+
+/* ลากการ์ดในปฏิทินเดือน (คอม) */
+let drag = null;
+document.addEventListener('dragstart', e => { const c = e.target.closest('.mcard'); if (!c) return; drag = { id: c.dataset.id, from: c.dataset.date }; e.dataTransfer.effectAllowed = 'move'; });
+document.addEventListener('dragover', e => { const cell = e.target.closest('.mcell'); if (!cell || !drag) return; e.preventDefault(); document.querySelectorAll('.mcell.drop').forEach(x => x.classList.remove('drop')); cell.classList.add('drop'); });
+document.addEventListener('drop', e => {
+  const cell = e.target.closest('.mcell'); if (!cell || !drag) return; e.preventDefault();
+  const it = itemById(drag.id), to = cell.dataset.date;
+  it.place.forEach(p => { if (p.date === drag.from) p.date = to; });
+  toast(`ย้าย “${it.hook}” ไป ${fmt(to)}`); drag = null; render();
+});
+document.addEventListener('dragend', () => { drag = null; document.querySelectorAll('.mcell.drop').forEach(x => x.classList.remove('drop')); });
+
+render();
+})();
+</script>
