@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import {
   getItems, getContentToday, getGaps, getBrands, getPillars, getKeyVisuals, getUnread,
+  getCalendar, getCampaigns, getModels, getTeam,
 } from '@/modules/content/queries';
+import Calendar from '@/components/content/Calendar';
 import { STAGES, TONE, channelShort } from '@/modules/content/types';
 import NewMenu from '@/components/content/NewMenu';
 
@@ -10,8 +12,69 @@ export const metadata = { title: 'คอนเทนต์ · Chaw Cher OS' };
 
 const isDirectImage = (u: string) => /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(u);
 
+const todayBangkok = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date());
+
 export default async function ContentPage({ searchParams }: PageProps<'/content'>) {
-  const { brand } = await searchParams;
+  const { brand, view } = await searchParams;
+  const board = view === 'board';
+  const brandQ = typeof brand === 'string' && brand ? `brand=${brand}` : '';
+  const header = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">คอนเทนต์</h1>
+          <p className="mt-1 text-sm text-muted">ข้อความ · ภาพ · อัลบั้ม — ชิ้นเดียวลง Facebook, Instagram และบล็อก</p>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <Link href="/content/brain" className="rounded-xl border border-border px-3 py-2.5 text-sm">สมอง agent</Link>
+          <Link href="/content/settings" className="rounded-xl border border-border px-3 py-2.5 text-sm">ตั้งค่า</Link>
+        </div>
+      </div>
+      <nav className="mt-4 flex gap-1 rounded-xl border border-border bg-surface p-1 sm:w-fit" aria-label="แบบการดู">
+        <Link href={`/content${brandQ ? `?${brandQ}` : ''}`}
+          className={'flex-1 rounded-lg px-4 py-1.5 text-center text-sm ' + (!board ? 'bg-accent font-medium text-accent-fg' : 'text-muted')}>ปฏิทิน</Link>
+        <Link href={`/content?view=board${brandQ ? `&${brandQ}` : ''}`}
+          className={'flex-1 rounded-lg px-4 py-1.5 text-center text-sm ' + (board ? 'bg-accent font-medium text-accent-fg' : 'text-muted')}>กระดาน</Link>
+      </nav>
+    </>
+  );
+
+  // ── ปฏิทิน (R4) · หน้าเริ่มต้น ──
+  if (!board) {
+    const [cal, brands, pillars, campaigns, models, team] = await Promise.all([
+      getCalendar(), getBrands(), getPillars(), getCampaigns(), getModels(), getTeam(),
+    ]);
+    const b = typeof brand === 'string' && brand ? brand : '';
+    const items = b ? cal.items.filter((i) => i.brand_id === b) : cal.items;
+    const dated = new Set(cal.placements.map((p) => p.item_id));
+    const undated = items.filter((i) => !dated.has(i.id) && i.stage !== 'โพสต์แล้ว').length;
+    return (
+      <>
+        {header}
+        {brands.length > 1 && (
+          <nav className="mt-3 flex flex-wrap gap-2" aria-label="แบรนด์">
+            <Link href="/content" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
+            {brands.map((x) => (
+              <Link key={x.id} href={`/content?brand=${x.id}`}
+                className={'rounded-full border px-3 py-1.5 text-sm ' + (b === x.id ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>{x.name}</Link>
+            ))}
+          </nav>
+        )}
+        {undated > 0 && (
+          <Link href={`/content?view=board${b ? `&brand=${b}` : ''}`} className="mt-3 block rounded-xl border border-warn/40 bg-warn/5 px-3 py-2 text-sm">
+            ยังไม่มีวันลง {undated} ชิ้น · ไม่ขึ้นในปฏิทิน · ดูในกระดาน →
+          </Link>
+        )}
+        <div className="mt-4">
+          <Calendar items={items} placements={cal.placements}
+            pillars={b ? pillars.filter((p) => p.brand_id === b) : pillars}
+            campaigns={campaigns} models={b ? models.filter((m) => m.brand_id === b) : models} team={team} today={todayBangkok()} />
+        </div>
+        <NewMenu />
+      </>
+    );
+  }
+
   const supabase = await createClient();
   const [all, today, gaps, brands, pillars, unread, { data: plRows }] = await Promise.all([
     getItems(), getContentToday(), getGaps(), getBrands(), getPillars(), getUnread(),
@@ -33,25 +96,16 @@ export default async function ContentPage({ searchParams }: PageProps<'/content'
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">คอนเทนต์</h1>
-          <p className="mt-1 text-sm text-muted">ข้อความ · ภาพ · อัลบั้ม — ชิ้นเดียวลง Facebook, Instagram และบล็อก</p>
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <Link href="/content/brain" className="rounded-xl border border-border px-3 py-2.5 text-sm">สมอง agent</Link>
-          <Link href="/content/settings" className="rounded-xl border border-border px-3 py-2.5 text-sm">ตั้งค่า</Link>
-        </div>
-      </div>
+      {header}
 
       {brands.length > 1 && (
         <nav className="mt-4 flex flex-wrap gap-2" aria-label="แบรนด์">
-          <Link href="/content"
+          <Link href="/content?view=board"
             className={'rounded-full border px-3 py-1.5 text-sm ' + (!brand ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>
             ทุกแบรนด์
           </Link>
           {brands.map((b) => (
-            <Link key={b.id} href={`/content?brand=${b.id}`}
+            <Link key={b.id} href={`/content?view=board&brand=${b.id}`}
               className={'rounded-full border px-3 py-1.5 text-sm ' + (brand === b.id ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>
               {b.name}
             </Link>

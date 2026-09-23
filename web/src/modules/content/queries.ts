@@ -4,6 +4,7 @@ export * from './types';
 import type {
   Item, Placement, TodayItem, Gap, ItemImage, Brand, Pillar, Theme, Model, Person,
   ReviewNote, Message, Version, OpenPart,
+  CalItem, CalPlacement,
   AgentQuestion, AiBudget, AiRequest, BrandSection, NotebookEntry, Playbook, InterviewTurn,
 } from './types';
 
@@ -318,4 +319,30 @@ export async function isAdmin(): Promise<boolean> {
   const { data } = await supabase.schema('core').from('user_capabilities')
     .select('capability').eq('user_id', user.id).eq('capability', 'admin').is('revoked_at', null).maybeSingle();
   return !!data;
+}
+
+// ── ปฏิทิน (R4) ─────────────────────────────────────────────────────────────
+
+/** ทุกชิ้นงานเฟส 1 ที่มีวันลง · ปฏิทินกรองและจัดวันฝั่ง client */
+export async function getCalendar(): Promise<{ items: CalItem[]; placements: CalPlacement[] }> {
+  const supabase = await createClient();
+  const db = supabase.schema('content');
+  const [{ data: items }, { data: pl }, { data: models }, { data: images }] = await Promise.all([
+    db.from('items').select('id,title,hook,stage,brand_id,pillar_id,campaign_id,owner_id,off_plan')
+      .in('format', ['ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ']).neq('stage', 'พับไว้'),
+    db.from('placements').select('id,item_id,channel_id,planned_on,published_at')
+      .not('planned_on', 'is', null).is('skipped_reason', null),
+    db.from('item_models').select('item_id,product_id'),
+    db.from('item_images').select('item_id,url,position,created_at').is('removed_at', null)
+      .order('position').order('created_at'),
+  ]);
+  const kv: Record<string, string> = {};
+  for (const r of (images ?? []) as { item_id: string; url: string }[]) kv[r.item_id] ??= r.url;
+  const prods: Record<string, string[]> = {};
+  for (const r of (models ?? []) as { item_id: string; product_id: string }[]) (prods[r.item_id] ??= []).push(r.product_id);
+  const ids = new Set((items ?? []).map((i) => i.id));
+  return {
+    items: (items ?? []).map((i) => ({ ...i, visual: kv[i.id] ?? null, products: prods[i.id] ?? [] })) as CalItem[],
+    placements: ((pl ?? []) as CalPlacement[]).filter((p) => ids.has(p.item_id)),
+  };
 }
