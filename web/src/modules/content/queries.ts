@@ -5,6 +5,7 @@ import type {
   Item, Placement, TodayItem, Gap, ItemImage, Brand, Pillar, Theme, Model, Person,
   ReviewNote, Message, Version, OpenPart,
   CalItem, CalPlacement,
+  Plan, PlanSlot, PlanChange, ThemeWeek, BrandKit, BrandExample, AgentRoute,
   AgentQuestion, AiBudget, AiRequest, BrandSection, NotebookEntry, Playbook, InterviewTurn,
 } from './types';
 
@@ -118,9 +119,9 @@ export async function getCampaigns() {
   const { data } = await supabase
     .schema('marketing')
     .from('campaigns')
-    .select('id,name')
+    .select('id,name,color')
     .order('starts_on', { ascending: false });
-  return (data ?? []) as { id: string; name: string }[];
+  return (data ?? []) as { id: string; name: string; color: string | null }[];
 }
 
 /** แบรนด์ที่ยังใช้อยู่ · ตั้งงานคอนเทนต์ต้องเลือกแบรนด์ก่อน (Q-110) */
@@ -345,4 +346,81 @@ export async function getCalendar(): Promise<{ items: CalItem[]; placements: Cal
     items: (items ?? []).map((i) => ({ ...i, visual: kv[i.id] ?? null, products: prods[i.id] ?? [] })) as CalItem[],
     placements: ((pl ?? []) as CalPlacement[]).filter((p) => ids.has(p.item_id)),
   };
+}
+
+// ── แผนเดือน + แบรนด์ (R6) ──────────────────────────────────────────────────
+
+export async function getPlan(brandId: string, month: string) {
+  const supabase = await createClient();
+  const db = supabase.schema('content');
+  const { data: plan } = await db.from('plans')
+    .select('id,brand_id,month,status,note,review_note,submitted_at,approved_at')
+    .eq('brand_id', brandId).eq('month', month).maybeSingle();
+  if (!plan) return { plan: null, slots: [] as PlanSlot[], changes: [] as PlanChange[] };
+  const [{ data: slots }, { data: changes }] = await Promise.all([
+    db.from('plan_slots').select('id,plan_id,planned_on,format,channels,hook,key_message,visual,pillar_id,theme_id,campaign_id,owner_id,product_ids,item_id')
+      .eq('plan_id', plan.id).is('removed_at', null).order('planned_on'),
+    db.from('plan_changes').select('id,kind,summary,seen_at,created_at').eq('plan_id', plan.id).order('created_at', { ascending: false }),
+  ]);
+  const ids = (slots ?? []).map((s) => s.item_id).filter(Boolean) as string[];
+  const { data: stages } = ids.length ? await db.from('items').select('id,stage').in('id', ids) : { data: [] };
+  const stageOf = new Map((stages ?? []).map((i) => [i.id, i.stage]));
+  return {
+    plan: plan as Plan,
+    slots: (slots ?? []).map((s) => ({ ...s, item_stage: s.item_id ? stageOf.get(s.item_id) ?? null : null })) as PlanSlot[],
+    changes: (changes ?? []) as PlanChange[],
+  };
+}
+
+/** แผนทุกแบรนด์ที่รออนุมัติ หรือยังไม่อนุมัติของเดือนหน้า · ใช้บนหน้าแรก (H4) */
+export async function getOpenPlans(): Promise<Plan[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('plans')
+    .select('id,brand_id,month,status,note,review_note,submitted_at,approved_at')
+    .neq('status', 'อนุมัติแล้ว').order('month');
+  return (data ?? []) as Plan[];
+}
+
+export async function getThemeWeeks(themeIds: string[]): Promise<ThemeWeek[]> {
+  if (themeIds.length === 0) return [];
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('theme_weeks').select('theme_id,week_of,topic').in('theme_id', themeIds);
+  return (data ?? []) as ThemeWeek[];
+}
+
+export async function getBrandKit(brandId: string): Promise<BrandKit | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('brand_kits').select('brand_id,logo_url,fonts,colors').eq('brand_id', brandId).maybeSingle();
+  return (data ?? null) as BrandKit | null;
+}
+
+export async function getBrandExamples(brandId: string): Promise<BrandExample[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('brand_examples')
+    .select('id,brand_id,kind,item_id,url,note').eq('brand_id', brandId).is('removed_at', null).order('created_at', { ascending: false });
+  return (data ?? []) as BrandExample[];
+}
+
+export async function getAgentRoutes(): Promise<AgentRoute[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('agent_routes').select('format,channel_id,agent');
+  return (data ?? []) as AgentRoute[];
+}
+
+/** งานที่ผ่านแล้ว/โพสต์แล้ว/ตีกลับ · คลังงาน (Q-72) และตัวเลือกตัวอย่างใช่/ไม่ใช่ (Q-71) */
+export async function getArchive(brandId: string | null) {
+  const supabase = await createClient();
+  let q = supabase.schema('content').from('items')
+    .select('id,title,hook,stage,brand_id,pillar_id,theme_id,campaign_id,updated_at')
+    .in('format', ['ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ'])
+    .in('stage', ['พร้อมโพสต์', 'โพสต์แล้ว', 'ตีกลับแก้'])
+    .order('updated_at', { ascending: false }).limit(300);
+  if (brandId) q = q.eq('brand_id', brandId);
+  const [{ data: items }, { data: links }] = await Promise.all([q, supabase.schema('content').from('item_models').select('item_id,product_id')]);
+  const prods: Record<string, string[]> = {};
+  for (const l of links ?? []) (prods[l.item_id] ??= []).push(l.product_id);
+  return (items ?? []).map((i) => ({ ...i, products: prods[i.id] ?? [] })) as {
+    id: string; title: string; hook: string | null; stage: string; brand_id: string | null; pillar_id: string | null;
+    theme_id: string | null; campaign_id: string | null; updated_at: string; products: string[];
+  }[];
 }

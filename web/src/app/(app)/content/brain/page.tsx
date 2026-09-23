@@ -1,22 +1,27 @@
 import Link from 'next/link';
 import {
   getBrands, getBrandSections, getNotebook, getPlaybooks, getInterviewTurns, getAiBudget, getAiRequests,
-  getTeam, isAdmin,
+  getTeam, isAdmin, getBrandKit, getBrandExamples, getAgentRoutes, getArchive, getCampaigns, getPillars, getThemes, getModels,
 } from '@/modules/content/queries';
 import Brain from '@/components/content/Brain';
+import { KitTab, RoutesTab, ArchiveTab } from '@/components/content/BrandKit';
 
-export const metadata = { title: 'สมอง agent · Chaw Cher OS' };
+export const metadata = { title: 'แบรนด์ · Chaw Cher OS' };
 
 // สัมภาษณ์ brand model เรียก AI ทีละจังหวะ
 export const maxDuration = 300;
 
 const TABS = [
+  { id: 'kit', name: 'Brand Kit' },
   { id: 'model', name: 'Brand model' },
   { id: 'book', name: 'Brand book' },
   { id: 'notebook', name: 'สมุดความคิด' },
   { id: 'playbook', name: 'คู่มือแพลตฟอร์ม' },
+  { id: 'archive', name: 'คลังงาน' },
+  { id: 'routes', name: 'เส้นทาง agent' },
   { id: 'ai', name: 'งบ AI' },
 ] as const;
+const PER_BRAND = ['kit', 'model', 'book', 'playbook', 'archive'];
 
 export default async function BrainPage({ searchParams }: PageProps<'/content/brain'>) {
   const sp = await searchParams;
@@ -28,18 +33,28 @@ export default async function BrainPage({ searchParams }: PageProps<'/content/br
     getBrandSections(brandId), getNotebook(), getPlaybooks(brandId), getAiBudget(), getAiRequests(40), getTeam(), isAdmin(),
   ]);
   const turns = await getInterviewTurns(sections.map((s) => s.id));
+  const [kit, examples, routes, archive, campaigns, pillars, themes, models] = await Promise.all([
+    tab === 'kit' ? getBrandKit(brandId) : null,
+    tab === 'kit' ? getBrandExamples(brandId) : [],
+    tab === 'routes' ? getAgentRoutes() : [],
+    tab === 'kit' || tab === 'archive' ? getArchive(brandId) : [],
+    tab === 'kit' || tab === 'archive' ? getCampaigns() : [],
+    tab === 'archive' ? getPillars() : [],
+    tab === 'archive' ? getThemes() : [],
+    tab === 'archive' ? getModels() : [],
+  ]);
+  const voice = sections.find((x) => x.kind === 'model' && x.topic === 'น้ำเสียง' && x.confirmed_at)?.body ?? null;
   const pending = notebook.filter((n) => n.status === 'รอยืนยัน').length;
   const q = (patch: Record<string, string>) => `/content/brain?${new URLSearchParams({ brand: brandId, tab, ...patch })}`;
 
   return (
     <>
-      <Link href="/content" className="text-sm text-muted">← คอนเทนต์</Link>
-      <h1 className="mt-3 text-xl font-semibold tracking-tight">สมอง agent</h1>
+      <h1 className="text-xl font-semibold tracking-tight">แบรนด์</h1>
       <p className="mt-1 text-sm text-muted">
         agent อ่านทุกอย่างในหน้านี้ทุกครั้งที่เขียน · ใช้เฉพาะข้อที่ Bay ยืนยันแล้ว{admin ? '' : ' · แก้ได้เฉพาะ Bay'}
       </p>
 
-      {tab !== 'notebook' && tab !== 'ai' && brands.length > 1 && (
+      {PER_BRAND.includes(tab) && brands.length > 1 && (
         <nav className="mt-4 flex flex-wrap gap-2" aria-label="แบรนด์">
           {brands.map((b) => (
             <Link key={b.id} href={q({ brand: b.id })}
@@ -60,8 +75,17 @@ export default async function BrainPage({ searchParams }: PageProps<'/content/br
       </nav>
 
       <div className="mt-4">
-        <Brain tab={tab} brandId={brandId} brands={brands} sections={sections} turns={turns} notebook={notebook}
-          playbooks={playbooks} budget={budget} requests={requests} team={team} admin={admin} />
+        {tab === 'kit' ? (
+          <KitTab brandId={brandId} kit={kit} voice={voice} examples={examples} picks={archive} campaigns={campaigns} admin={admin} />
+        ) : tab === 'routes' ? (
+          <RoutesTab routes={routes} admin={admin} />
+        ) : tab === 'archive' ? (
+          <ArchiveTab items={archive} pillars={pillars.filter((x) => x.brand_id === brandId)} themes={themes.filter((x) => x.brand_id === brandId)}
+            campaigns={campaigns} models={models.filter((x) => x.brand_id === brandId)} />
+        ) : (
+          <Brain tab={tab} brandId={brandId} brands={brands} sections={sections} turns={turns} notebook={notebook}
+            playbooks={playbooks} budget={budget} requests={requests} team={team} admin={admin} />
+        )}
       </div>
     </>
   );

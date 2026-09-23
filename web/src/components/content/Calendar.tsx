@@ -42,7 +42,7 @@ const CAMPAIGN_COLORS = ['#b45309', '#0f766e', '#7c3aed', '#be185d', '#1d4ed8', 
 const hashColor = (id: string) => CAMPAIGN_COLORS[[...id].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 7) % CAMPAIGN_COLORS.length];
 
 export default function Calendar({ items, placements, pillars, campaigns, models, team, today }: {
-  items: CalItem[]; placements: CalPlacement[]; pillars: Pillar[]; campaigns: { id: string; name: string }[];
+  items: CalItem[]; placements: CalPlacement[]; pillars: Pillar[]; campaigns: { id: string; name: string; color?: string | null }[];
   models: Model[]; team: Person[]; today: string;
 }) {
   const [view, setView] = useState<View>('agenda');
@@ -70,10 +70,12 @@ export default function Calendar({ items, placements, pillars, campaigns, models
   }
 
   const pillarOf = useMemo(() => new Map(pillars.map((p) => [p.id, p])), [pillars]);
+  // สีแคมเปญที่ Bay ตั้งไว้ (R6) · ยังไม่ตั้งใช้สีจากรหัส
+  const campColor = (id: string) => campaigns.find((c) => c.id === id)?.color || hashColor(id);
   const colorOf = (it: CalItem) =>
     colorBy === 'pillar'
       ? (it.pillar_id && pillarOf.get(it.pillar_id)?.color) || 'var(--border)'
-      : it.campaign_id ? hashColor(it.campaign_id) : 'var(--border)';
+      : it.campaign_id ? campColor(it.campaign_id) : 'var(--border)';
 
   // การ์ด = ชิ้นงาน × วัน หลังผ่านตัวกรอง
   const cards = useMemo(() => {
@@ -258,7 +260,7 @@ export default function Calendar({ items, placements, pillars, campaigns, models
   const activeFilters = Object.values(f).filter(Boolean).length;
   const legend = colorBy === 'pillar'
     ? pillars.filter((p) => p.active).map((p) => ({ id: p.id, name: p.name, c: p.color }))
-    : campaigns.filter((c) => items.some((i) => i.campaign_id === c.id)).map((c) => ({ id: c.id, name: c.name, c: hashColor(c.id) }));
+    : campaigns.filter((c) => items.some((i) => i.campaign_id === c.id)).map((c) => ({ id: c.id, name: c.name, c: campColor(c.id) }));
 
   const openItem = open && items.find((i) => i.id === open.item.id);
 

@@ -37,12 +37,13 @@ type Brain = { text: string; refs: Record<string, string> };
 
 export async function loadBrain(supabase: Supa, brandId: string, channels: string[]): Promise<Brain> {
   const db = supabase.schema('content');
-  const [{ data: sections }, { data: notes }, { data: books }] = await Promise.all([
+  const [{ data: sections }, { data: notes }, { data: books }, { data: examples }] = await Promise.all([
     db.from('brand_sections').select('id,kind,topic,body').eq('brand_id', brandId).eq('active', true)
       .not('confirmed_at', 'is', null).order('kind').order('sort_order'),
     db.from('notebook').select('id,body,brand_id').eq('status', 'ใช้อยู่')
       .or(`brand_id.is.null,brand_id.eq.${brandId}`).order('created_at'),
     db.from('playbooks').select('id,channel_id,body').eq('brand_id', brandId).in('channel_id', channels),
+    db.from('brand_examples').select('id,kind,note,item_id,url').eq('brand_id', brandId).is('removed_at', null).limit(12),
   ]);
   const refs: Record<string, string> = {};
   const out: string[] = [];
@@ -55,6 +56,18 @@ export async function loadBrain(supabase: Supa, brandId: string, channels: strin
   out.push('', '## Brand book');
   if (book.length === 0) out.push('(ยังว่าง)');
   book.forEach((s, i) => { refs[`BB${i + 1}`] = s.id; out.push(`[BB${i + 1}] ${s.topic}: ${s.body}`); });
+  if (examples?.length) {
+    const ids = examples.map((x) => x.item_id).filter(Boolean) as string[];
+    const { data: its } = ids.length
+      ? await db.from('placements').select('item_id,channel_id,copy_text').in('item_id', ids).not('copy_text', 'is', null)
+      : { data: [] };
+    out.push('', '## ตัวอย่างที่ใช่ / ไม่ใช่ (Q-71)');
+    examples.forEach((x, i) => {
+      refs[`EX${i + 1}`] = x.id;
+      const text = (its ?? []).find((t) => t.item_id === x.item_id)?.copy_text;
+      out.push(`[EX${i + 1}] ${x.kind} · ${x.note}${text ? `\n  ข้อความ: ${text.slice(0, 400)}` : x.url ? ` · ${x.url}` : ''}`);
+    });
+  }
   out.push('', '## สมุดความคิด Bay');
   if (!notes?.length) out.push('(ยังไม่มีข้อ)');
   (notes ?? []).forEach((n, i) => {
@@ -147,7 +160,7 @@ export async function writeItem(
 
   const [{ data: placements }, { data: images }, { data: models }, { data: brand },
     { data: pillar }, { data: theme }, { data: questions }, { data: notes }, { data: chat }] = await Promise.all([
-    db.from('placements').select('id,channel_id,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_copy_text,skipped_reason,published_at')
+    db.from('placements').select('id,channel_id,planned_on,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_copy_text,skipped_reason,published_at')
       .eq('item_id', itemId),
     db.from('item_images').select('url').eq('item_id', itemId).is('removed_at', null).order('position'),
     db.from('item_models').select('product_id').eq('item_id', itemId),
@@ -166,15 +179,29 @@ export async function writeItem(
 
   const live = (placements ?? []).filter((p) => !p.skipped_reason && !p.published_at);
   const force = new Set(opts.force ?? []);
-  const targets = live.filter((p) => !p.human_edited || force.has(p.channel_id));
+  // เส้นทาง agent (Q-08) · ช่องที่ Bay ตั้งเป็น "คนทำเอง" agent ไม่เขียน
+  const { data: routes } = await db.from('agent_routes').select('channel_id,agent').eq('format', item.format);
+  const manual = new Set((routes ?? []).filter((r) => r.agent === 'คนทำเอง').map((r) => r.channel_id));
+  const targets = live.filter((p) => !manual.has(p.channel_id) && (!p.human_edited || force.has(p.channel_id)));
   if (targets.length === 0) {
-    return { ok: false, error: 'ทุกช่องทางคนแก้เองแล้ว · agent ไม่เขียนทับ · ถ้าต้องการให้กด "ให้ AI เขียนช่องนี้ใหม่" หรือสั่ง @AI พร้อมชื่อช่องทาง' };
+    return { ok: false, error: manual.size
+      ? 'ไม่มีช่องที่ agent ต้องเขียน · บางช่อง Bay ตั้งให้คนทำเอง (แบรนด์ → เส้นทาง agent) และช่องที่เหลือคนแก้เองแล้ว'
+      : 'ทุกช่องทางคนแก้เองแล้ว · agent ไม่เขียนทับ · ถ้าต้องการให้กด "ให้ AI เขียนช่องนี้ใหม่" หรือสั่ง @AI พร้อมชื่อช่องทาง' };
   }
   const targetIds = targets.map((t) => t.channel_id);
   const brain = await loadBrain(supabase, item.brand_id, targetIds);
   const facts = await productFacts(supabase, (models ?? []).map((m) => m.product_id));
 
   const edits = live.filter((p) => p.human_edited && p.ai_copy_text && p.ai_copy_text !== p.copy_text);
+  // หัวข้อรายสัปดาห์ของธีม (Q-12) · สัปดาห์ของวันลงแรก
+  let weekTopic: string | null = null;
+  const first = (placements ?? []).map((p) => (p as { planned_on?: string }).planned_on).filter(Boolean).sort()[0];
+  if (item.theme_id && first) {
+    const d = new Date(first + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    const { data: tw } = await db.from('theme_weeks').select('topic').eq('theme_id', item.theme_id).eq('week_of', d.toISOString().slice(0, 10)).maybeSingle();
+    weekTopic = tw?.topic ?? null;
+  }
   const brief = [
     `# ชิ้นงาน`,
     `แบรนด์: ${brand?.name ?? '-'} · ประเภท: ${item.format} · ภาพ ${images?.length ?? 0} ภาพ`,
@@ -184,7 +211,7 @@ export async function writeItem(
     `Visual: ${item.visual ?? '-'}`,
     item.brief ? `Brief เพิ่มเติม: ${item.brief}` : '',
     pillar ? `Pillar: ${pillar.name}` : '',
-    theme ? `ธีม: ${theme.name}${theme.goal ? ` · เป้าหมาย ${theme.goal}` : ''}` : '',
+    theme ? `ธีม: ${theme.name}${theme.goal ? ` · เป้าหมาย ${theme.goal}` : ''}${weekTopic ? ` · หัวข้อสัปดาห์นี้: ${weekTopic}` : ''}` : '',
     '',
     '# ข้อมูลสินค้าจากระบบ',
     facts,
