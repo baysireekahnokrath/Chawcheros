@@ -10,6 +10,9 @@ import ChatPanel from '@/components/content/ChatPanel';
 
 export const metadata = { title: 'ตรวจคอนเทนต์ · Chaw Cher OS' };
 
+// @AI ในแชทหน้านี้ให้ agent เขียน ใช้เวลาได้ถึง 90 วินาที
+export const maxDuration = 300;
+
 export default async function ReviewPage({ params }: PageProps<'/content/[id]/review'>) {
   const { id } = await params;
   const item = await getItem(id);

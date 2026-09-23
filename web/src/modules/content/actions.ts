@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { writeItem, channelsNamedIn } from './agent';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -387,7 +388,10 @@ export async function tickNote(noteId: string, done: boolean, itemId: string): P
   return { ok: true };
 }
 
-/** ส่งข้อความในงาน · @ชื่อคนในทีม = ขึ้นในหน้าแรกของคนนั้น (Y3) */
+/**
+ * ส่งข้อความในงาน · @ชื่อคนในทีม = ขึ้นในหน้าแรกของคนนั้น (Y3)
+ * @AI = สั่ง agent (Q-49f) · เอ่ยชื่อช่องทางตรงๆ = ขอเอง เขียนทับช่องที่คนแก้ได้
+ */
 export async function sendMessage(itemId: string, body: string, partLabel: string): Promise<ActionResult> {
   const supabase = await createClient();
   const text = body.trim();
@@ -412,6 +416,13 @@ export async function sendMessage(itemId: string, body: string, partLabel: strin
       mentions,
     });
   if (error) return { ok: false, error: error.message };
+
+  if (/@ai(?![a-z])/i.test(text)) {
+    const named = channelsNamedIn(partLabel && partLabel !== 'ทั้งชิ้น' ? `${text} ${partLabel}` : text);
+    const r = await writeItem(supabase, itemId, { instruction: text, force: named, kind: 'แชท @AI' });
+    refresh(itemId);
+    return r.ok ? { ok: true } : { ok: false, error: r.error };
+  }
   revalidatePath(`/content/${itemId}`);
   revalidatePath(`/content/${itemId}/review`);
   return { ok: true };

@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ChatPanel from './ChatPanel';
+import AgentPanel from './AgentPanel';
 import {
   updateBrief, saveCopy, submitForReview, markPosted, tickNote,
   addPlacement, setPlacementDate, skipPlacement, addImage, moveImageUp, removeImage,
@@ -11,7 +12,7 @@ import {
 import {
   PHASE1_WORK_STAGES, PHASE1_CHANNELS, LIMITS, MAX_ALBUM, TONE, channelName, channelShort,
   type Item, type Placement, type ItemImage, type Pillar, type Theme, type Model, type Person,
-  type ReviewNote, type Message, type Version,
+  type ReviewNote, type Message, type Version, type AgentQuestion,
 } from '@/modules/content/types';
 
 const input =
@@ -35,6 +36,7 @@ type Props = {
   notes: ReviewNote[];
   messages: Message[];
   versions: Version[];
+  questions: AgentQuestion[];
   me: string | null;
 };
 
@@ -53,7 +55,7 @@ function Counter({ len, max }: { len: number; max: number }) {
 }
 
 export default function ItemDetail(props: Props) {
-  const { item, brandName, placements, images, models, pillars, themes, campaigns, allModels, team, canApprove, notes, messages, versions, me } = props;
+  const { item, brandName, placements, images, models, pillars, themes, campaigns, allModels, team, canApprove, notes, messages, versions, questions, me } = props;
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -191,6 +193,9 @@ export default function ItemDetail(props: Props) {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-4">
+          <AgentPanel itemId={item.id} questions={questions} placements={placements} canAnswer={canApprove}
+            canWrite={['ไอเดีย', 'กำลังทำ', 'ตีกลับแก้', 'รอตรวจ'].includes(item.stage)} />
+
           {/* ── ข้อความต่อช่องทาง ── */}
           <section className={panel}>
             <div className="flex gap-1 overflow-x-auto border-b border-border" role="tablist">
@@ -205,7 +210,7 @@ export default function ItemDetail(props: Props) {
             {!current ? (
               <p className="mt-3 text-sm text-muted">ยังไม่ได้เลือกช่องทาง — เพิ่มได้ในกล่อง “ลงที่ไหน วันไหน”</p>
             ) : (
-              <CopyForm key={current.id} p={current} itemId={item.id} editable={editable} pending={pending} onSubmit={onSaveCopy} />
+              <CopyForm key={`${current.id}:${current.ai_request_id ?? ''}`} p={current} itemId={item.id} editable={editable} pending={pending} onSubmit={onSaveCopy} />
             )}
           </section>
 
@@ -452,7 +457,8 @@ function CopyForm({ p, itemId, editable, pending, onSubmit }: {
     <form onSubmit={onSubmit} className="mt-3 space-y-3">
       <input type="hidden" name="placement_id" value={p.id} />
       <input type="hidden" name="item_id" value={itemId} />
-      {p.human_edited && <p className="text-xs text-muted">คนแก้ช่องนี้แล้ว · agent จะไม่เขียนทับ</p>}
+      {p.human_edited ? <p className="text-xs text-muted">คนแก้ช่องนี้แล้ว · agent จะไม่เขียนทับ</p>
+        : p.ai_request_id && <p className="text-xs text-muted">ร่างโดย Content agent · แก้แล้วบันทึก = agent จะไม่เขียนทับ</p>}
 
       {web ? (
         <>

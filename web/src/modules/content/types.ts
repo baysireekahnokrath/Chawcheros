@@ -96,6 +96,7 @@ export type Placement = {
   web_keyword: string | null;
   web_meta: string | null;
   human_edited: boolean;
+  ai_request_id: string | null;
   skipped_reason: string | null;
   passed_at: string | null;
   channels: { name_th: string } | null;
@@ -143,4 +144,81 @@ export type Gap = {
   ลงแล้ว: number;
   ยังไม่ได้ลง: number;
   ที่ยังขาด: string | null;
+};
+
+// ── Content agent (R3) ─────────────────────────────────────────────────────
+
+/** รุ่นที่ Bay เลือกได้ · ราคา USD ต่อล้าน token (เข้า/ออก) · effort = รุ่นนี้ปรับความคิดได้ */
+export const AI_MODELS = [
+  { id: 'claude-opus-5', name: 'Claude Opus 5 · เขียนดีสุด', in: 5, out: 25, effort: true },
+  { id: 'claude-sonnet-5', name: 'Claude Sonnet 5 · ถูกลง ~2.5 เท่า', in: 2, out: 10, effort: true },
+  { id: 'claude-haiku-4-5', name: 'Claude Haiku 4.5 · ถูกสุด ~5 เท่า', in: 1, out: 5, effort: false },
+] as const;
+
+export type AiBudget = {
+  model: string;
+  monthly_budget_thb: number;
+  thb_per_usd: number;
+  paused: boolean;
+  spent_thb: number;
+  remaining_thb: number;
+  requests: number;
+};
+
+export type AiRequest = {
+  id: string;
+  requested_by: string;
+  kind: string;
+  item_id: string | null;
+  model: string;
+  status: string;
+  instruction: string | null;
+  error: string | null;
+  used_refs: Record<string, string>;
+  cost_thb: number;
+  created_at: string;
+};
+
+export type BrandSection = {
+  id: string;
+  brand_id: string;
+  kind: 'model' | 'book';
+  topic: string;
+  guide: string | null;
+  body: string | null;
+  sort_order: number;
+  active: boolean;
+  confirmed_at: string | null;
+};
+
+export type NotebookEntry = {
+  id: string;
+  brand_id: string | null;
+  body: string;
+  source: 'Bay เขียน' | 'agent เสนอ';
+  status: 'รอยืนยัน' | 'ใช้อยู่' | 'เลิกใช้';
+  reason: string | null;
+  from_item_id: string | null;
+  created_at: string;
+};
+
+export type Playbook = { id: string; brand_id: string; channel_id: string; body: string };
+
+export type AgentQuestion = {
+  id: string;
+  item_id: string;
+  question: string;
+  choices: string[];
+  answer: string | null;
+  answered_at: string | null;
+  created_at: string;
+};
+
+export type InterviewTurn = {
+  id: string;
+  section_id: string;
+  role: 'AI' | 'Bay';
+  body: string;
+  choices: string[];
+  created_at: string;
 };
