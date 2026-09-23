@@ -28,11 +28,12 @@ const panel = 'rounded-2xl border border-border bg-surface p-4';
  */
 export default async function ContentHome({ searchParams }: PageProps<'/content'>) {
   const { brand } = await searchParams;
-  const b = typeof brand === 'string' ? brand : '';
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const [d, brands, gaps, approver, admin, models] = await Promise.all([
-    getDashboard(user?.id ?? '', b || null), getBrands(), getGaps(), canApprove(), isAdmin(), getModels(),
+  const [{ data: { user } }, brands] = await Promise.all([supabase.auth.getUser(), getBrands()]);
+  // เปิดมาเป็นแบรนด์ตั้งต้น (ฌ เฌอ) · ?brand=all = ทุกแบรนด์
+  const b = brand === 'all' ? '' : typeof brand === 'string' && brands.some((x) => x.id === brand) ? brand : brands[0]?.id ?? '';
+  const [d, gaps, approver, admin, models] = await Promise.all([
+    getDashboard(user?.id ?? '', b || null), getGaps(), canApprove(), isAdmin(), getModels(),
   ]);
   const boss = approver || admin;
   // แผนเดือน (H4 · Q-125) · Bay เห็นแผนที่รออนุมัติ · การตลาดเห็นแผนเดือนหน้าที่ต้องส่ง
@@ -57,7 +58,7 @@ export default async function ContentHome({ searchParams }: PageProps<'/content'
 
       {brands.length > 1 && (
         <nav className="mt-3 flex flex-wrap gap-2" aria-label="แบรนด์">
-          <Link href="/content" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
+          <Link href="/content?brand=all" className={'rounded-full border px-3 py-1.5 text-sm ' + (!b ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>ทุกแบรนด์</Link>
           {brands.map((x) => (
             <Link key={x.id} href={`/content?brand=${x.id}`}
               className={'rounded-full border px-3 py-1.5 text-sm ' + (b === x.id ? 'border-accent bg-accent text-accent-fg' : 'border-border')}>{x.name}</Link>

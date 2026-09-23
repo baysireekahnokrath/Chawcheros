@@ -124,16 +124,21 @@ export async function getCampaigns() {
   return (data ?? []) as { id: string; name: string; color: string | null }[];
 }
 
-/** แบรนด์ที่ยังใช้อยู่ · ตั้งงานคอนเทนต์ต้องเลือกแบรนด์ก่อน (Q-110) */
-export async function getBrands(): Promise<Brand[]> {
+/**
+ * แบรนด์ในโมดูลคอนเทนต์ · แบรนด์ตั้งต้นขึ้นก่อน (ฌ เฌอ) · แบรนด์ที่ Bay ซ่อนไม่ขึ้น (content.brand_prefs)
+ * withHidden = ใช้ตอนแสดงชื่อแบรนด์ของงานเก่า
+ */
+export async function getBrands(withHidden = false): Promise<Brand[]> {
   const supabase = await createClient();
-  const { data } = await supabase
-    .schema('catalog')
-    .from('brands')
-    .select('id,name')
-    .neq('status', 'เลิกขาย')
-    .order('name');
-  return (data ?? []) as Brand[];
+  const [{ data }, { data: prefs }] = await Promise.all([
+    supabase.schema('catalog').from('brands').select('id,name').neq('status', 'เลิกขาย').order('name'),
+    supabase.schema('content').from('brand_prefs').select('brand_id,in_content,is_default,sort_order'),
+  ]);
+  const pref = new Map((prefs ?? []).map((p) => [p.brand_id, p]));
+  return ((data ?? []) as Brand[])
+    .filter((b) => withHidden || pref.get(b.id)?.in_content !== false)
+    .sort((a, b) => (pref.get(a.id)?.is_default ? -1 : 0) - (pref.get(b.id)?.is_default ? -1 : 0)
+      || (pref.get(a.id)?.sort_order ?? 100) - (pref.get(b.id)?.sort_order ?? 100));
 }
 
 export async function getPillars(): Promise<Pillar[]> {

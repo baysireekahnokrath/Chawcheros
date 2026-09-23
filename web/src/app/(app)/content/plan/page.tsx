@@ -25,7 +25,7 @@ export default async function PlanPage({ searchParams }: PageProps<'/content/pla
   const month = typeof sp.month === 'string' && /^\d{4}-\d{2}-01$/.test(sp.month) ? sp.month : shift(today.slice(0, 8) + '01', 1);
   const brands = await getBrands();
   const brandId = typeof sp.brand === 'string' && brands.some((b) => b.id === sp.brand)
-    ? sp.brand : brands.find((b) => b.name === 'ฌ เฌอ')?.id ?? brands[0]?.id ?? '';
+    ? sp.brand : brands[0]?.id ?? '';
 
   const supabase = await createClient();
   const [data, pillars, themes, campaigns, models, team, approver, admin, { data: caps }] = await Promise.all([
