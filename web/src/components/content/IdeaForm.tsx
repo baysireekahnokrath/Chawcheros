@@ -16,10 +16,10 @@ type Done = { ok: true; status: string; message: string; itemId?: string } | { o
  * 1) agent อ่านแล้วโชว์ว่าเข้าใจว่าอะไร (แก้ได้) · ถามถ้าข้อมูลไม่พอ
  * 2) กดเขียนเลย → สร้างชิ้นงาน (นอกแผน) → agent เขียนทุกช่องทาง → ภาพครบส่งตรวจเอง → ปุ่มตรวจเลย
  */
-export default function IdeaForm({ brands, pillars, models, canReview }: {
-  brands: Brand[]; pillars: Pillar[]; models: Model[]; canReview: boolean;
+export default function IdeaForm({ brands, pillars, models, canReview, initial = '' }: {
+  brands: Brand[]; pillars: Pillar[]; models: Model[]; canReview: boolean; initial?: string;
 }) {
-  const [idea, setIdea] = useState('');
+  const [idea, setIdea] = useState(initial);
   const [imgs, setImgs] = useState('');
   const [draft, setDraft] = useState<IdeaDraft | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});

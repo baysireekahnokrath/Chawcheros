@@ -6,13 +6,14 @@
  */
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { writeItem, parseIdea, interviewStep, type WriteOutcome, type IdeaDraft } from './agent';
+import { writeItem, parseIdea, interviewStep, summarizeSwipe, suggestIdeas, type WriteOutcome, type IdeaDraft } from './agent';
+import { getDashboard, mondayOf } from './dashboard';
 import { AI_MODELS } from './types';
 
 type Result = { ok: true } | { ok: false; error: string };
 
 function refreshItem(itemId: string) {
-  revalidatePath('/content');
+  revalidatePath('/content', 'layout');
   revalidatePath(`/content/${itemId}`);
   revalidatePath(`/content/${itemId}/review`);
 }
@@ -198,5 +199,66 @@ export async function saveAiSettings(formData: FormData): Promise<Result> {
   if (error) return { ok: false, error: error.message };
   if (!data?.length) return { ok: false, error: 'ตั้งค่าได้เฉพาะ Bay' };
   refreshBrain();
+  return { ok: true };
+}
+
+// ── หน้าแรก (R5) ─────────────────────────────────────────────────────────────
+
+const refreshHome = () => revalidatePath('/content');
+
+/** แปะโพสต์คู่แข่งเข้าแฟ้ม แล้วให้ agent สรุปเลยถ้ามีข้อความ */
+export async function addSwipe(formData: FormData): Promise<Result> {
+  const supabase = await createClient();
+  const url = String(formData.get('url') ?? '').trim();
+  if (!/^https?:\/\//.test(url)) return { ok: false, error: 'แปะลิงก์โพสต์ (ขึ้นต้น https://)' };
+  const seen = String(formData.get('seen_text') ?? '').trim();
+  const { data, error } = await supabase.schema('content').from('swipes').insert({
+    url,
+    competitor: String(formData.get('competitor') ?? '').trim() || null,
+    seen_text: seen || null,
+    note: String(formData.get('note') ?? '').trim() || null,
+    brand_id: String(formData.get('brand_id') ?? '') || null,
+  }).select('id').single();
+  if (error || !data) return { ok: false, error: error?.message ?? 'บันทึกไม่ได้' };
+  if (seen) {
+    const r = await summarizeSwipe(supabase, data.id);
+    refreshHome();
+    if (!r.ok) return { ok: false, error: 'เก็บเข้าแฟ้มแล้ว แต่สรุปไม่ได้: ' + r.error };
+  }
+  refreshHome();
+  return { ok: true };
+}
+
+export async function resummarizeSwipe(id: string): Promise<Result> {
+  const supabase = await createClient();
+  const r = await summarizeSwipe(supabase, id);
+  refreshHome();
+  return r.ok ? { ok: true } : { ok: false, error: r.error };
+}
+
+export async function archiveSwipe(id: string): Promise<Result> {
+  const supabase = await createClient();
+  const { error } = await supabase.schema('content').from('swipes').update({ archived_at: new Date().toISOString() }).eq('id', id);
+  if (error) return { ok: false, error: error.message };
+  refreshHome();
+  return { ok: true };
+}
+
+/** ให้ agent คิด 3 ไอเดียสัปดาห์นี้ */
+export async function makeIdeas(brandId: string): Promise<Result> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'ต้องล็อกอินก่อน' };
+  const d = await getDashboard(user.id, brandId);
+  const r = await suggestIdeas(supabase, brandId, mondayOf(d.today), d.stale);
+  refreshHome();
+  return r.ok ? { ok: true } : { ok: false, error: r.error };
+}
+
+export async function decideIdea(id: string, status: 'เอา' | 'ไม่เอา'): Promise<Result> {
+  const supabase = await createClient();
+  const { error } = await supabase.schema('content').from('idea_suggestions').update({ status }).eq('id', id);
+  if (error) return { ok: false, error: error.message };
+  refreshHome();
   return { ok: true };
 }

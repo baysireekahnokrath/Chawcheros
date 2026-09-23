@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function NewMenu() {
   const [open, setOpen] = useState(false);
   return (
-    <div className="fixed bottom-5 right-5 z-20 flex flex-col items-end gap-2">
+    <div className="fixed bottom-20 right-5 z-20 lg:bottom-5 flex flex-col items-end gap-2">
       {open && (
         <div className="w-56 overflow-hidden rounded-2xl border border-border bg-surface shadow-lg">
           <Link href="/content/idea" className="block px-4 py-3 text-sm hover:bg-bg">

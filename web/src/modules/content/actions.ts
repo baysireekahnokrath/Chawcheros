@@ -11,7 +11,7 @@ const str = (v: FormDataEntryValue | null) => String(v ?? '').trim();
 const orNull = (v: FormDataEntryValue | null) => str(v) || null;
 
 function refresh(itemId?: string) {
-  revalidatePath('/content');
+  revalidatePath('/content', 'layout');
   if (itemId) {
     revalidatePath(`/content/${itemId}`);
     revalidatePath(`/content/${itemId}/review`);

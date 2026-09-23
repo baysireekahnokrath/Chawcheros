@@ -443,3 +443,84 @@ export async function interviewStep(supabase: Supa, sectionId: string) {
   });
   return { ok: true as const, data: d };
 }
+
+// ── แฟ้มคู่แข่ง (H16) ─────────────────────────────────────────────────────────
+
+const SwipeSchema = z.object({ summary: z.string(), hook_type: z.string() });
+
+/** สรุปโพสต์คู่แข่งจากข้อความที่ทีมแปะ · agent เปิดลิงก์ Facebook/IG เองไม่ได้ */
+export async function summarizeSwipe(supabase: Supa, swipeId: string) {
+  const db = supabase.schema('content');
+  const { data: s } = await db.from('swipes').select('id,brand_id,url,competitor,seen_text,note').eq('id', swipeId).maybeSingle();
+  if (!s) return { ok: false as const, error: 'ไม่พบโพสต์ในแฟ้ม' };
+  if (!s.seen_text?.trim() && !s.note?.trim()) {
+    return { ok: false as const, error: 'แปะข้อความ/แคปชันที่เห็นในโพสต์ก่อน · agent เปิดลิงก์ Facebook/IG เองไม่ได้' };
+  }
+  const res = await runClaude({
+    supabase, kind: 'สรุปคู่แข่ง', brandId: s.brand_id, instruction: s.url, usedRefs: { swipe: swipeId },
+    system: 'คุณคือนักการตลาดคอนเทนต์ของแบรนด์เฟอร์นิเจอร์ไทย · สรุปโพสต์ของคู่แข่งให้ทีมเรียนรู้ · สรุปจากข้อความที่ให้มาเท่านั้น ห้ามเดาสิ่งที่ไม่เห็น',
+    content: [{ type: 'text', text: [
+      `คู่แข่ง: ${s.competitor ?? '-'}`, `ลิงก์: ${s.url}`,
+      `ข้อความในโพสต์:\n${s.seen_text ?? '-'}`, s.note ? `ทีมสังเกตว่า: ${s.note}` : '',
+      '',
+      'summary: 2-3 ประโยค เขาเล่นเรื่องอะไร ขายอะไร ทำไมน่าสนใจ และเราหยิบอะไรไปใช้ได้',
+      'hook_type: ชนิดของ hook สั้นๆ เช่น "ตั้งคำถาม" "ตัวเลข" "เปรียบเทียบก่อน-หลัง" "เล่าเรื่องลูกค้า" "ขัดความเชื่อ"',
+    ].filter(Boolean).join('\n') }],
+    schema: SwipeSchema, maxTokens: 2000, effort: 'low',
+  });
+  if (!res.ok) return res;
+  await db.from('swipes').update({ summary: res.data.summary, hook_type: res.data.hook_type, request_id: res.requestId }).eq('id', swipeId);
+  return { ok: true as const };
+}
+
+// ── ไอเดียจาก agent สัปดาห์นี้ (H19) ───────────────────────────────────────────
+
+const IdeasSchema = z.object({
+  ideas: z.array(z.object({ title: z.string(), hook: z.string(), reason: z.string(), product_ids: z.array(z.string()) })),
+});
+
+/** คิด 3 ไอเดียจาก สินค้าที่ไม่ได้พูดถึง + แฟ้มคู่แข่ง + brand model */
+export async function suggestIdeas(
+  supabase: Supa, brandId: string, weekOf: string, stale: { id: string; name: string; last: string | null }[],
+) {
+  const db = supabase.schema('content');
+  const [brain, { data: brand }, { data: swipes }, { data: recent }] = await Promise.all([
+    loadBrain(supabase, brandId, []),
+    supabase.schema('catalog').from('brands').select('name').eq('id', brandId).maybeSingle(),
+    db.from('swipes').select('competitor,summary,hook_type').is('archived_at', null).not('summary', 'is', null)
+      .order('created_at', { ascending: false }).limit(8),
+    db.from('items').select('title,hook').eq('brand_id', brandId).order('created_at', { ascending: false }).limit(15),
+  ]);
+  const pool = stale.slice(0, 20);
+  const res = await runClaude({
+    supabase, kind: 'คิดไอเดีย', brandId, usedRefs: { brain: brain.refs, products: pool.map((p) => p.id) },
+    system: RULES + '\n\n' + brain.text,
+    content: [{ type: 'text', text: [
+      `# คิดไอเดียคอนเทนต์ 3 ชิ้นสำหรับแบรนด์ ${brand?.name ?? ''} สัปดาห์นี้`,
+      '',
+      '# สินค้าที่ไม่ได้พูดถึงนาน (id · ชื่อ · ลงล่าสุด)',
+      ...(pool.length ? pool.map((p) => `${p.id} · ${p.name} · ${p.last ?? 'ไม่เคย'}`) : ['(ไม่มี)']),
+      '',
+      '# สรุปโพสต์คู่แข่งที่ทีมเก็บไว้',
+      ...(swipes?.length ? swipes.map((s) => `- ${s.competitor ?? '?'} · ${s.hook_type ?? ''} · ${s.summary}`) : ['(ยังไม่มี)']),
+      '',
+      '# ชิ้นที่ทำไปแล้วล่าสุด (อย่าซ้ำ)',
+      ...(recent?.length ? recent.map((r) => `- ${r.hook || r.title}`) : ['(ยังไม่มี)']),
+      '',
+      '# งานของคุณ',
+      '- 3 ไอเดีย · อย่างน้อย 2 ไอเดียหยิบสินค้าจากรายการด้านบน · ใส่ product_ids เฉพาะ id ในรายการ',
+      '- title สั้น · hook ประโยคเปิดที่หยุดคนดู · reason 1 ประโยคว่าทำไมควรทำสัปดาห์นี้',
+      '- ห้ามอ้างสเปกที่ไม่รู้ · ห้ามสัญญาโปรโมชัน',
+    ].join('\n') }],
+    schema: IdeasSchema, maxTokens: 4000, effort: 'low',
+  });
+  if (!res.ok) return res;
+  const valid = new Set(pool.map((p) => p.id));
+  const rows = res.data.ideas.slice(0, 3).filter((i) => i.title.trim()).map((i) => ({
+    brand_id: brandId, week_of: weekOf, title: i.title.trim(), hook: i.hook.trim() || null, reason: i.reason.trim() || null,
+    product_ids: i.product_ids.filter((id) => valid.has(id)), request_id: res.requestId,
+  }));
+  const { error } = await db.from('idea_suggestions').insert(rows);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
