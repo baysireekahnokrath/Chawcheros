@@ -3,11 +3,12 @@ import { createClient } from '@/lib/supabase/server';
 export * from './types';
 import type {
   Item, Placement, TodayItem, Gap, ItemImage, Brand, Pillar, Theme, Model, Person,
+  ReviewNote, Message, Version, OpenPart,
 } from './types';
 
 const ITEM_COLS =
   'id,title,format,stage,brief,campaign_id,script_url,raw_url,edit_url,thumbnail_url,due_on,approved_at,review_note,updated_at,' +
-  'brand_id,hook,key_message,visual,pillar_id,theme_id,owner_id,off_plan,source_url';
+  'brand_id,hook,key_message,visual,pillar_id,theme_id,owner_id,off_plan,source_url,created_by,version';
 
 export async function getItems(): Promise<Item[]> {
   const supabase = await createClient();
@@ -35,7 +36,7 @@ export async function getPlacements(itemId: string): Promise<Placement[]> {
   const { data } = await supabase
     .schema('content')
     .from('placements')
-    .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,skipped_reason,channels(name_th)')
+    .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,skipped_reason,passed_at,channels(name_th)')
     .eq('item_id', itemId);
   return (data ?? []) as unknown as Placement[];
 }
@@ -46,7 +47,7 @@ export async function getImages(itemId: string): Promise<ItemImage[]> {
   const { data } = await supabase
     .schema('content')
     .from('item_images')
-    .select('id,position,url')
+    .select('id,position,url,passed_at')
     .eq('item_id', itemId)
     .is('removed_at', null)
     .order('position')
@@ -182,4 +183,69 @@ export async function canApprove(): Promise<boolean> {
     .is('revoked_at', null)
     .maybeSingle();
   return !!data;
+}
+
+// ── ตรวจ · แชท · เวอร์ชัน (R2) ─────────────────────────────────────────────
+
+export async function getReviewNotes(itemId: string): Promise<ReviewNote[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('review_notes')
+    .select('id,version,part_key,part_label,note,done_at,created_at')
+    .eq('item_id', itemId)
+    .order('version', { ascending: false })
+    .order('created_at');
+  return (data ?? []) as ReviewNote[];
+}
+
+export async function getMessages(itemId: string): Promise<Message[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('messages')
+    .select('id,author_id,kind,part_label,body,mentions,created_at')
+    .eq('item_id', itemId)
+    .order('created_at');
+  return (data ?? []) as Message[];
+}
+
+export async function getVersions(itemId: string): Promise<Version[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .schema('content')
+    .from('item_versions')
+    .select('version,submitted_at,snapshot')
+    .eq('item_id', itemId)
+    .order('version', { ascending: false });
+  return (data ?? []) as Version[];
+}
+
+/** ส่วนที่ยังไม่ผ่าน · ฐานข้อมูลคิดให้ จะได้ตรงกับที่ฟังก์ชันตรวจบังคับ */
+export async function getOpenParts(itemId: string): Promise<OpenPart[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').rpc('open_parts', { p_item_id: itemId });
+  return (data ?? []) as OpenPart[];
+}
+
+/** ข้อความใหม่ของฉันต่องาน · แจ้งด้วยตัวเลขเท่านั้น (Y2) */
+export async function getUnread(): Promise<Record<string, { unread: number; mentions: number }>> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('v_my_unread').select('item_id,unread,mentions');
+  const out: Record<string, { unread: number; mentions: number }> = {};
+  for (const r of (data ?? []) as { item_id: string; unread: number; mentions: number }[]) {
+    out[r.item_id] = { unread: Number(r.unread), mentions: Number(r.mentions) };
+  }
+  return out;
+}
+
+/** เปิดงานแล้ว = อ่านแชทแล้ว */
+export async function markRead(itemId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase
+    .schema('content')
+    .from('message_reads')
+    .upsert({ user_id: user.id, item_id: itemId, last_read_at: new Date().toISOString() });
 }

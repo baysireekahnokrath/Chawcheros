@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ChatPanel from './ChatPanel';
 import {
-  updateBrief, saveCopy, submitForReview, approveItem, bounceItem, markPosted,
+  updateBrief, saveCopy, submitForReview, markPosted, tickNote,
   addPlacement, setPlacementDate, skipPlacement, addImage, moveImageUp, removeImage,
 } from '@/modules/content/actions';
 import {
   PHASE1_WORK_STAGES, PHASE1_CHANNELS, LIMITS, MAX_ALBUM, TONE, channelName, channelShort,
   type Item, type Placement, type ItemImage, type Pillar, type Theme, type Model, type Person,
+  type ReviewNote, type Message, type Version,
 } from '@/modules/content/types';
 
 const input =
@@ -29,6 +32,10 @@ type Props = {
   allModels: Model[];
   team: Person[];
   canApprove: boolean;
+  notes: ReviewNote[];
+  messages: Message[];
+  versions: Version[];
+  me: string | null;
 };
 
 type Result = { ok: true } | { ok: false; error: string };
@@ -46,7 +53,7 @@ function Counter({ len, max }: { len: number; max: number }) {
 }
 
 export default function ItemDetail(props: Props) {
-  const { item, brandName, placements, images, models, pillars, themes, campaigns, allModels, team, canApprove } = props;
+  const { item, brandName, placements, images, models, pillars, themes, campaigns, allModels, team, canApprove, notes, messages, versions, me } = props;
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -59,6 +66,11 @@ export default function ItemDetail(props: Props) {
   const approved = item.stage === 'พร้อมโพสต์' || item.stage === 'โพสต์แล้ว';
   const editable = item.stage !== 'โพสต์แล้ว' && item.stage !== 'พับไว้';
   const canSubmit = ['ไอเดีย', 'กำลังทำ', 'ตีกลับแก้'].includes(item.stage);
+  const currentNotes = item.stage === 'ตีกลับแก้' ? notes.filter((n) => n.version === item.version) : [];
+  const openNotes = notes.filter((n) => !n.done_at).length;
+  const imagesPassed = images.every((m) => m.passed_at);
+  const canPost = (p: Placement) => !!p.passed_at && imagesPassed;
+  const partLabels = [...images.map((_, i) => `ภาพ ${i + 1}`), ...placements.filter((p) => !p.skipped_reason).map((p) => channelName(p.channel_id))];
   const live = placements.filter((p) => !p.skipped_reason);
   const current = live.find((p) => p.channel_id === tab);
   const unused = PHASE1_CHANNELS.filter(
@@ -138,35 +150,42 @@ export default function ItemDetail(props: Props) {
       )}
       {note && <div className="rounded-2xl border border-ok/40 bg-ok/5 p-4 text-sm text-ok">{note}</div>}
 
-      {/* ── คนตรวจ (ตรวจทีละส่วนมาในรอบ R2) ── */}
+      {/* ── คนตรวจ ── */}
       {canApprove && item.stage === 'รอตรวจ' && (
-        <div className="rounded-2xl border border-locked/40 bg-locked/5 p-4">
-          <div className="text-sm font-medium text-locked">รอคุณตรวจ</div>
-          <p className="mt-1 text-xs text-muted">ดูภาพและข้อความทุกช่องทางข้างล่างก่อนกด</p>
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={() => {
-                const n = prompt('อนุมัติ — มีหมายเหตุอะไรไหม (เว้นว่างได้)', '');
-                if (n === null) return;
-                run(() => approveItem(item.id, n), 'อนุมัติแล้ว');
-              }}
-              disabled={pending}
-              className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg disabled:opacity-50"
-            >
-              อนุมัติ
-            </button>
-            <button
-              onClick={() => {
-                const r = prompt('ตีกลับ — ต้องบอกเหตุผล คนทำจะได้รู้ว่าต้องแก้อะไร', '');
-                if (r === null) return;
-                run(() => bounceItem(item.id, r), 'ตีกลับแล้ว');
-              }}
-              disabled={pending}
-              className="rounded-xl border border-border px-4 py-3.5 text-sm text-danger disabled:opacity-50"
-            >
-              ตีกลับ
-            </button>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-locked/40 bg-locked/5 p-4">
+          <div>
+            <div className="text-sm font-medium text-locked">รอคุณตรวจ · v{item.version}</div>
+            <p className="mt-0.5 text-xs text-muted">ติ๊กผ่านหรือไม่ผ่านทีละส่วน · ส่วนที่ผ่านแล้วไม่ต้องตรวจซ้ำ</p>
           </div>
+          <Link href={`/content/${item.id}/review`} className="rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-fg">ไปหน้าตรวจ</Link>
+        </div>
+      )}
+
+      {/* ── ต้องแก้ · ติ๊กทีละข้อ (Q-42) ── */}
+      {currentNotes.length > 0 && (
+        <div className="rounded-2xl border border-danger/40 bg-danger/5 p-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <div className="text-sm font-medium text-danger">ต้องแก้ · ติ๊กข้อที่แก้แล้ว</div>
+            <span className="text-xs text-muted">v{item.version}</span>
+          </div>
+          <ul className="mt-2 divide-y divide-danger/15">
+            {currentNotes.map((n) => (
+              <li key={n.id}>
+                <label className="flex cursor-pointer items-start gap-3 py-2">
+                  <input type="checkbox" checked={!!n.done_at} disabled={pending}
+                    onChange={(e) => run(() => tickNote(n.id, e.target.checked, item.id))}
+                    className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--accent)]" />
+                  <span className={'text-sm ' + (n.done_at ? 'text-muted line-through' : '')}>
+                    <b>{n.part_label}</b> · {n.note}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+          <button disabled={pending || openNotes > 0} onClick={() => run(() => submitForReview(item.id), 'ส่งตรวจอีกครั้งแล้ว')}
+            className="mt-2 w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-fg disabled:opacity-50">
+            {openNotes > 0 ? `ส่งตรวจอีกครั้ง · เหลือ ${openNotes} ข้อ` : 'ส่งตรวจอีกครั้ง'}
+          </button>
         </div>
       )}
 
@@ -178,7 +197,7 @@ export default function ItemDetail(props: Props) {
               {live.map((p) => (
                 <button key={p.id} role="tab" aria-selected={tab === p.channel_id} onClick={() => setTab(p.channel_id)}
                   className={'whitespace-nowrap border-b-2 px-3 py-2 text-sm ' + (tab === p.channel_id ? 'border-accent font-semibold' : 'border-transparent text-muted')}>
-                  {channelName(p.channel_id)}
+                  {channelName(p.channel_id)}{p.passed_at ? ' ✓' : ''}
                 </button>
               ))}
             </div>
@@ -273,8 +292,8 @@ export default function ItemDetail(props: Props) {
                   className="flex-1 rounded-xl border border-border px-4 py-3.5 text-sm font-medium disabled:opacity-50">
                   {pending ? 'กำลังบันทึก…' : 'บันทึก brief'}
                 </button>
-                {canSubmit && (
-                  <button type="button" disabled={pending}
+                {canSubmit && currentNotes.length === 0 && (
+                  <button type="button" disabled={pending || openNotes > 0}
                     onClick={() => run(() => submitForReview(item.id), 'ส่งตรวจแล้ว')}
                     className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg disabled:opacity-50">
                     ส่งตรวจ
@@ -286,6 +305,8 @@ export default function ItemDetail(props: Props) {
         </div>
 
         <div className="space-y-4">
+          <ChatPanel itemId={item.id} messages={messages} parts={partLabels} team={team} me={me} />
+
           {/* ── ภาพ ── */}
           {!textOnly && (
             <section className={panel}>
@@ -307,7 +328,7 @@ export default function ItemDetail(props: Props) {
                         : <span>เปิดภาพ ↗</span>}
                     </a>
                     <div className="flex items-center justify-between text-xs">
-                      <span>ภาพ {i + 1}{i === 0 ? ' ★' : ''}</span>
+                      <span>ภาพ {i + 1}{i === 0 ? ' ★' : ''}{m.passed_at ? <span className="text-ok"> ✓</span> : null}</span>
                       {editable && (
                         <span className="flex gap-1">
                           {i > 0 && (
@@ -360,7 +381,7 @@ export default function ItemDetail(props: Props) {
                       <span className="flex-1" />
                       {p.published_url ? (
                         <a href={p.published_url} target="_blank" rel="noreferrer" className="text-xs text-ok">ลงแล้ว ↗</a>
-                      ) : approved ? (
+                      ) : canPost(p) ? (
                         <button
                           onClick={() => {
                             const u = prompt(`ลง ${channelName(p.channel_id)} แล้ว — วางลิงก์โพสต์จริง`, '');
@@ -392,6 +413,23 @@ export default function ItemDetail(props: Props) {
               </div>
             )}
           </section>
+
+          {versions.length > 0 && (
+            <section className={panel}>
+              <h2 className="text-sm font-medium">ประวัติการส่งตรวจ</h2>
+              <ul className="mt-2 space-y-1.5 text-xs">
+                {versions.map((v) => {
+                  const vn = notes.filter((n) => n.version === v.version);
+                  return (
+                    <li key={v.version}>
+                      <b>v{v.version}</b> · {new Date(v.submitted_at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      {vn.length > 0 && <span className="text-muted"> · ไม่ผ่าน {vn.map((n) => n.part_label).join(', ')}</span>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
         </div>
       </div>
     </div>

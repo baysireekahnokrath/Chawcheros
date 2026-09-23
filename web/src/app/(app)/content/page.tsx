@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import {
-  getItems, getContentToday, getGaps, getBrands, getPillars, getKeyVisuals,
+  getItems, getContentToday, getGaps, getBrands, getPillars, getKeyVisuals, getUnread,
 } from '@/modules/content/queries';
 import { STAGES, TONE, channelShort } from '@/modules/content/types';
 
@@ -12,8 +12,8 @@ const isDirectImage = (u: string) => /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(u
 export default async function ContentPage({ searchParams }: PageProps<'/content'>) {
   const { brand } = await searchParams;
   const supabase = await createClient();
-  const [all, today, gaps, brands, pillars, { data: plRows }] = await Promise.all([
-    getItems(), getContentToday(), getGaps(), getBrands(), getPillars(),
+  const [all, today, gaps, brands, pillars, unread, { data: plRows }] = await Promise.all([
+    getItems(), getContentToday(), getGaps(), getBrands(), getPillars(), getUnread(),
     supabase.schema('content').from('placements').select('item_id,channel_id,skipped_reason'),
   ]);
 
@@ -138,6 +138,11 @@ export default async function ContentPage({ searchParams }: PageProps<'/content'
                               ))}
                               <span>{brandName(i.brand_id) ?? i.format}</span>
                               {pl && <span>· {pl.name}</span>}
+                              {unread[i.id] && (
+                                <span className={'rounded-full px-1.5 text-[11px] font-semibold text-white ' + (unread[i.id].mentions ? 'bg-danger' : 'bg-locked')}>
+                                  💬 {unread[i.id].unread}{unread[i.id].mentions ? ' · @' : ''}
+                                </span>
+                              )}
                               {i.off_plan && brandName(i.brand_id) && (
                                 <span className="rounded-md bg-warn/10 px-1 font-medium text-warn">นอกแผน</span>
                               )}

@@ -78,6 +78,8 @@ export type Item = {
   owner_id: string | null;
   off_plan: boolean;
   source_url: string | null;
+  created_by: string | null;
+  version: number;
 };
 
 export type Placement = {
@@ -95,10 +97,27 @@ export type Placement = {
   web_meta: string | null;
   human_edited: boolean;
   skipped_reason: string | null;
+  passed_at: string | null;
   channels: { name_th: string } | null;
 };
 
-export type ItemImage = { id: string; position: number; url: string };
+export type ItemImage = { id: string; position: number; url: string; passed_at: string | null };
+
+/** ส่วนที่ต้องแก้ · 1 แถว = 1 ส่วนที่ไม่ผ่าน (Q-42) */
+export type ReviewNote = {
+  id: string; version: number; part_key: string; part_label: string; note: string;
+  done_at: string | null; created_at: string;
+};
+
+export type Message = {
+  id: string; author_id: string | null; kind: 'คน' | 'ระบบ' | 'AI';
+  part_label: string | null; body: string; mentions: string[]; created_at: string;
+};
+
+export type Version = { version: number; submitted_at: string; snapshot: { images?: string[] } };
+
+/** ส่วนที่ยังต้องตรวจ · part_key = ch:<ช่องทาง> หรือ img:<id ภาพ> */
+export type OpenPart = { part_key: string; part_label: string };
 
 export type Brand = { id: string; name: string };
 export type Pillar = { id: string; brand_id: string; name: string; color: string; sort_order: number; active: boolean };

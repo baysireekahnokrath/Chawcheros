@@ -120,7 +120,7 @@ begin
   -- ── อนุมัติ แล้วแก้ = โมฆะ ────────────────────────────────────────────────
   perform content.submit_for_review(v_item);
   perform set_config('test.uid', '55555555-5555-5555-5555-555555555555', true);
-  perform content.approve_item(v_item);
+  perform content.review_item(v_item, (select jsonb_agg(jsonb_build_object('part', part_key, 'pass', true)) from content.open_parts(v_item)));
   perform set_config('test.uid', '44444444-4444-4444-4444-444444444444', true);
 
   update content.placements set copy_text = 'IG: แก้แคปชัน' where id = v_ig;
@@ -129,7 +129,7 @@ begin
   msg := msg || E'\n  ★ แก้ข้อความช่องทางไหนหลังอนุมัติ → อนุมัติเป็นโมฆะ';
 
   perform set_config('test.uid', '55555555-5555-5555-5555-555555555555', true);
-  perform content.approve_item(v_item);
+  perform content.review_item(v_item, (select jsonb_agg(jsonb_build_object('part', part_key, 'pass', true)) from content.open_parts(v_item)));
   perform set_config('test.uid', '44444444-4444-4444-4444-444444444444', true);
   update content.item_images set position = 0 where item_id = v_item and position = 5;
   select stage into v_stage from content.items where id = v_item;
@@ -137,7 +137,7 @@ begin
   msg := msg || E'\n  ★ เปลี่ยนภาพหรือลำดับภาพหลังอนุมัติ → อนุมัติเป็นโมฆะ (key visual เปลี่ยน)';
 
   perform set_config('test.uid', '55555555-5555-5555-5555-555555555555', true);
-  perform content.approve_item(v_item);
+  perform content.review_item(v_item, (select jsonb_agg(jsonb_build_object('part', part_key, 'pass', true)) from content.open_parts(v_item)));
   perform set_config('test.uid', '44444444-4444-4444-4444-444444444444', true);
   update content.items set hook = 'hook ใหม่' where id = v_item;
   select stage into v_stage from content.items where id = v_item;
@@ -146,7 +146,7 @@ begin
 
   -- ── ไม่ลงเว็บแล้ว · ลง FB IG ครบ = โพสต์แล้ว ────────────────────────────
   perform set_config('test.uid', '55555555-5555-5555-5555-555555555555', true);
-  perform content.approve_item(v_item);
+  perform content.review_item(v_item, (select jsonb_agg(jsonb_build_object('part', part_key, 'pass', true)) from content.open_parts(v_item)));
   perform set_config('test.uid', '44444444-4444-4444-4444-444444444444', true);
   update content.placements set skipped_reason = 'บทความซ้ำกับของเดือนก่อน' where id = v_web;
   select stage into v_stage from content.items where id = v_item;
