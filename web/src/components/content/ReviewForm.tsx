@@ -71,8 +71,13 @@ export default function ReviewForm({ itemId, placements, images, open, canReview
   const border = (k: string) =>
     !openKeys.has(k) ? 'border-border opacity-75' : marks[k] === 'ok' ? 'border-ok/50' : marks[k] === 'fix' ? 'border-danger/50' : 'border-border';
 
+  // กันกดผ่านส่วนที่มองไม่เห็น · ถ้าโหลดข้อความช่องทางไม่ขึ้น ห้ามอนุมัติ
+  const shown = new Set([...images.map((m) => `img:${m.id}`), ...placements.filter((p) => !p.skipped_reason).map((p) => `ch:${p.channel_id}`)]);
+  const hidden = open.filter((p) => !shown.has(p.part_key)).length;
+
   let button: React.ReactNode;
-  if (!canReview) button = <button disabled className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg opacity-50">{blockReason}</button>;
+  if (hidden) button = <button disabled className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg opacity-50">โหลดงานไม่ครบ {hidden} ส่วน · รีเฟรชหน้าแล้วลองใหม่</button>;
+  else if (!canReview) button = <button disabled className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg opacity-50">{blockReason}</button>;
   else if (open.length === 0) button = <button onClick={submit} disabled={pending} className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg disabled:opacity-50">ทุกส่วนผ่านแล้ว · อนุมัติ</button>;
   else if (undecided) button = <button disabled className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg opacity-50">ยังไม่ได้ติ๊ก {undecided} ส่วน</button>;
   else if (!fixes.length) button = <button onClick={submit} disabled={pending} className="flex-1 rounded-xl bg-accent px-4 py-3.5 text-sm font-medium text-accent-fg disabled:opacity-50">ผ่านทั้งหมด · อนุมัติ</button>;

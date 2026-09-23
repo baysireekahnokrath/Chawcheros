@@ -4,6 +4,7 @@ import {
   getItems, getContentToday, getGaps, getBrands, getPillars, getKeyVisuals, getUnread,
 } from '@/modules/content/queries';
 import { STAGES, TONE, channelShort } from '@/modules/content/types';
+import NewMenu from '@/components/content/NewMenu';
 
 export const metadata = { title: 'คอนเทนต์ · Chaw Cher OS' };
 
@@ -38,9 +39,8 @@ export default async function ContentPage({ searchParams }: PageProps<'/content'
           <p className="mt-1 text-sm text-muted">ข้อความ · ภาพ · อัลบั้ม — ชิ้นเดียวลง Facebook, Instagram และบล็อก</p>
         </div>
         <div className="flex shrink-0 gap-2">
+          <Link href="/content/brain" className="rounded-xl border border-border px-3 py-2.5 text-sm">สมอง agent</Link>
           <Link href="/content/settings" className="rounded-xl border border-border px-3 py-2.5 text-sm">ตั้งค่า</Link>
-          <Link href="/content/new" role="button"
-            className="rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg">+ ตั้งงาน</Link>
         </div>
       </div>
 
@@ -107,7 +107,7 @@ export default async function ContentPage({ searchParams }: PageProps<'/content'
 
         {items.length === 0 ? (
           <p className="rounded-2xl border border-border bg-surface p-6 text-center text-sm text-muted">
-            ยังไม่มีงานคอนเทนต์ — กด &ldquo;+ ตั้งงาน&rdquo; เพื่อเริ่ม
+            ยังไม่มีงานคอนเทนต์ — กดปุ่ม + มุมขวาล่างเพื่อเริ่ม
           </p>
         ) : (
           <div className="space-y-5">
@@ -159,6 +159,7 @@ export default async function ContentPage({ searchParams }: PageProps<'/content'
           </div>
         )}
       </section>
+      <NewMenu />
     </>
   );
 }

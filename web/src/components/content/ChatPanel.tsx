@@ -38,7 +38,7 @@ export default function ChatPanel({ itemId, messages, parts, team, me }: {
     <section className="rounded-2xl border border-border bg-surface p-4">
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-sm font-medium">คุยกันในงานนี้</h2>
-        <span className="text-xs text-muted">@ชื่อ เพื่อเรียกคนในทีม</span>
+        <span className="text-xs text-muted">@ชื่อ เรียกคนในทีม · @AI สั่ง agent</span>
       </div>
 
       <div ref={box} className="mt-3 max-h-80 space-y-3 overflow-y-auto pr-1">
@@ -72,11 +72,13 @@ export default function ChatPanel({ itemId, messages, parts, team, me }: {
           className="max-w-28 rounded-xl border border-border bg-bg px-2 text-sm">
           {['ทั้งชิ้น', ...parts].map((p) => <option key={p}>{p}</option>)}
         </select>
-        <input value={text} onChange={(e) => setText(e.target.value)} aria-label="ข้อความ" placeholder="พิมพ์ข้อความ"
+        <input value={text} onChange={(e) => setText(e.target.value)} aria-label="ข้อความ" placeholder="พิมพ์ข้อความ หรือ @AI …"
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing && text.trim()) { e.preventDefault(); send(); } }}
           className="min-w-0 flex-1 rounded-xl border border-border bg-bg px-3 py-2.5 text-sm outline-none focus:border-accent" />
         <button onClick={send} disabled={pending || !text.trim()}
-          className="rounded-xl bg-accent px-4 text-sm font-medium text-accent-fg disabled:opacity-50">ส่ง</button>
+          className="rounded-xl bg-accent px-4 text-sm font-medium text-accent-fg disabled:opacity-50">
+          {pending && /@ai/i.test(text) ? 'agent กำลังทำ…' : 'ส่ง'}
+        </button>
       </div>
     </section>
   );

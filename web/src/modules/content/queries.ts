@@ -4,6 +4,7 @@ export * from './types';
 import type {
   Item, Placement, TodayItem, Gap, ItemImage, Brand, Pillar, Theme, Model, Person,
   ReviewNote, Message, Version, OpenPart,
+  AgentQuestion, AiBudget, AiRequest, BrandSection, NotebookEntry, Playbook, InterviewTurn,
 } from './types';
 
 const ITEM_COLS =
@@ -33,12 +34,18 @@ export async function getItem(id: string): Promise<Item | null> {
 
 export async function getPlacements(itemId: string): Promise<Placement[]> {
   const supabase = await createClient();
-  const { data } = await supabase
-    .schema('content')
-    .from('placements')
-    .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,skipped_reason,passed_at,channels(name_th)')
-    .eq('item_id', itemId);
-  return (data ?? []) as unknown as Placement[];
+  // ชื่อช่องทางดึงแยก · embed ข้าม schema (content → marketing) ถูก PostgREST ปฏิเสธหลังเพิ่ม ai_request_id (R3)
+  const [{ data, error }, { data: chans }] = await Promise.all([
+    supabase
+      .schema('content')
+      .from('placements')
+      .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_request_id,skipped_reason,passed_at')
+      .eq('item_id', itemId),
+    supabase.schema('marketing').from('channels').select('id,name_th'),
+  ]);
+  if (error) console.error('getPlacements', error);
+  const name = new Map((chans ?? []).map((c) => [c.id as string, c.name_th as string]));
+  return (data ?? []).map((p) => ({ ...p, channels: { name_th: name.get(p.channel_id) ?? p.channel_id } })) as Placement[];
 }
 
 /** ภาพของชิ้นงาน เรียงตามลำดับ · ภาพแรก = key visual */
@@ -248,4 +255,67 @@ export async function markRead(itemId: string) {
     .schema('content')
     .from('message_reads')
     .upsert({ user_id: user.id, item_id: itemId, last_read_at: new Date().toISOString() });
+}
+
+// ── Content agent (R3) ─────────────────────────────────────────────────────
+
+export async function getAgentQuestions(itemId: string): Promise<AgentQuestion[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('agent_questions')
+    .select('id,item_id,question,choices,answer,answered_at,created_at').eq('item_id', itemId).order('created_at');
+  return (data ?? []) as AgentQuestion[];
+}
+
+export async function getAiBudget(): Promise<AiBudget | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('v_ai_budget').select('*').maybeSingle();
+  return (data ?? null) as AiBudget | null;
+}
+
+export async function getAiRequests(limit = 30): Promise<AiRequest[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('v_ai_requests')
+    .select('id,requested_by,kind,item_id,model,status,instruction,error,used_refs,cost_thb,created_at')
+    .order('created_at', { ascending: false }).limit(limit);
+  return (data ?? []) as AiRequest[];
+}
+
+export async function getBrandSections(brandId: string): Promise<BrandSection[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('brand_sections')
+    .select('id,brand_id,kind,topic,guide,body,sort_order,active,confirmed_at')
+    .eq('brand_id', brandId).order('kind', { ascending: false }).order('sort_order').order('created_at');
+  return (data ?? []) as BrandSection[];
+}
+
+export async function getNotebook(): Promise<NotebookEntry[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('notebook')
+    .select('id,brand_id,body,source,status,reason,from_item_id,created_at').order('created_at', { ascending: false });
+  return (data ?? []) as NotebookEntry[];
+}
+
+export async function getPlaybooks(brandId: string): Promise<Playbook[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('playbooks')
+    .select('id,brand_id,channel_id,body').eq('brand_id', brandId);
+  return (data ?? []) as Playbook[];
+}
+
+export async function getInterviewTurns(sectionIds: string[]): Promise<InterviewTurn[]> {
+  if (sectionIds.length === 0) return [];
+  const supabase = await createClient();
+  const { data } = await supabase.schema('content').from('interview_turns')
+    .select('id,section_id,role,body,choices,created_at').in('section_id', sectionIds).order('created_at');
+  return (data ?? []) as InterviewTurn[];
+}
+
+/** ฉันคือ Bay ไหม (สิทธิ์ admin) · แก้สมอง agent และตั้งค่า AI */
+export async function isAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data } = await supabase.schema('core').from('user_capabilities')
+    .select('capability').eq('user_id', user.id).eq('capability', 'admin').is('revoked_at', null).maybeSingle();
+  return !!data;
 }
