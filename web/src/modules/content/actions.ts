@@ -11,7 +11,10 @@ const orNull = (v: FormDataEntryValue | null) => str(v) || null;
 
 function refresh(itemId?: string) {
   revalidatePath('/content');
-  if (itemId) revalidatePath(`/content/${itemId}`);
+  if (itemId) {
+    revalidatePath(`/content/${itemId}`);
+    revalidatePath(`/content/${itemId}/review`);
+  }
 }
 
 /**
@@ -356,5 +359,60 @@ export async function setThemeActive(id: string, active: boolean): Promise<Actio
   const { error } = await supabase.schema('content').from('themes').update({ active }).eq('id', id);
   if (error) return { ok: false, error: error.message };
   revalidatePath('/content/settings');
+  return { ok: true };
+}
+
+// ── ตรวจทีละส่วน · ติ๊กแก้ · แชท (R2) ───────────────────────────────────────
+
+export type Verdict = { part: string; pass: boolean; note?: string };
+
+/** ตรวจทีละส่วน · ผ่านหมด = อนุมัติ · มีไม่ผ่าน = ส่งกลับแก้เฉพาะส่วนนั้น (กฎอยู่ใน content.review_item) */
+export async function reviewItem(itemId: string, verdicts: Verdict[], note: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .schema('content')
+    .rpc('review_item', { p_item_id: itemId, p_verdicts: verdicts, p_note: note.trim() || null });
+  if (error) return { ok: false, error: error.message };
+  refresh(itemId);
+  return { ok: true };
+}
+
+export async function tickNote(noteId: string, done: boolean, itemId: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .schema('content')
+    .rpc('tick_review_note', { p_note_id: noteId, p_done: done });
+  if (error) return { ok: false, error: error.message };
+  refresh(itemId);
+  return { ok: true };
+}
+
+/** ส่งข้อความในงาน · @ชื่อคนในทีม = ขึ้นในหน้าแรกของคนนั้น (Y3) */
+export async function sendMessage(itemId: string, body: string, partLabel: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const text = body.trim();
+  if (!text) return { ok: false, error: 'พิมพ์ข้อความก่อน' };
+  const [{ data: { user } }, { data: team }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.schema('core').from('app_users').select('id,full_name').eq('status', 'ใช้งาน'),
+  ]);
+  if (!user) return { ok: false, error: 'ต้องล็อกอินก่อน' };
+  const mentions = ((team ?? []) as { id: string; full_name: string }[])
+    .filter((p) => text.includes('@' + p.full_name))
+    .map((p) => p.id);
+
+  const { error } = await supabase
+    .schema('content')
+    .from('messages')
+    .insert({
+      item_id: itemId,
+      author_id: user.id,
+      part_label: partLabel && partLabel !== 'ทั้งชิ้น' ? partLabel : null,
+      body: text,
+      mentions,
+    });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(`/content/${itemId}`);
+  revalidatePath(`/content/${itemId}/review`);
   return { ok: true };
 }

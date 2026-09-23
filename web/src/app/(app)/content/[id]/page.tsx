@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import {
   getItem, getPlacements, getChannels, canApprove, getImages, getItemModels,
   getBrands, getPillars, getThemes, getCampaigns, getModels, getTeam, isPhase1,
+  getReviewNotes, getMessages, getVersions, markRead,
 } from '@/modules/content/queries';
 import ItemDetail from '@/components/content/ItemDetail';
 import LegacyItemDetail from '@/components/content/LegacyItemDetail';
@@ -29,10 +31,13 @@ export default async function ContentItemPage({ params }: PageProps<'/content/[i
     );
   }
 
-  const [placements, images, models, brands, pillars, themes, campaigns, allModels, team, approver] = await Promise.all([
+  const supabase = await createClient();
+  const [placements, images, models, brands, pillars, themes, campaigns, allModels, team, approver, notes, messages, versions, { data: { user } }] = await Promise.all([
     getPlacements(id), getImages(id), getItemModels(id), getBrands(), getPillars(), getThemes(),
-    getCampaigns(), getModels(), getTeam(), canApprove(),
+    getCampaigns(), getModels(), getTeam(), canApprove(), getReviewNotes(id), getMessages(id), getVersions(id),
+    supabase.auth.getUser(),
   ]);
+  await markRead(id);
   const order = ['facebook', 'instagram', 'website'];
   placements.sort((a, b) => order.indexOf(a.channel_id) - order.indexOf(b.channel_id));
 
@@ -52,6 +57,10 @@ export default async function ContentItemPage({ params }: PageProps<'/content/[i
           allModels={allModels}
           team={team}
           canApprove={approver}
+          notes={notes}
+          messages={messages}
+          versions={versions}
+          me={user?.id ?? null}
         />
       </div>
     </>
