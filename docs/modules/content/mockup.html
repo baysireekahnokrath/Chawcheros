@@ -66,7 +66,7 @@ main { padding: 16px 16px calc(96px + env(safe-area-inset-bottom, 0px)); max-wid
 .nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
   background: var(--surface); border-top: 1px solid var(--border);
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
 }
 .nav button {
@@ -291,6 +291,40 @@ textarea.inp { resize: vertical; min-height: 88px; line-height: 1.6; }
 .chatin { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; }
 .chatin select { width: auto; padding: 8px; font-size: 13px; }
 
+/* ---------- หน้าแรก ---------- */
+.dash { display: grid; gap: 14px; }
+.hello h2 { font-size: 22px; }
+.todo { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; display: grid; gap: 8px; align-content: start; }
+.tile.hot { border-color: color-mix(in srgb, var(--locked) 45%, transparent); }
+.tile .big { font-size: 28px; font-weight: 700; line-height: 1; }
+.tile .lbl { font-size: 13px; color: var(--muted); }
+.tile .line { font-size: 13.5px; display: flex; gap: 6px; align-items: baseline; }
+.tile .line button { border: 0; background: none; padding: 0; text-align: left; color: var(--text); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.dcols { display: grid; gap: 14px; }
+@media (min-width: 900px) { .dcols { grid-template-columns: 1fr 1fr; } }
+.week7 { display: grid; gap: 6px; }
+.w7row { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: start; padding: 6px 0; border-top: 1px solid var(--border); }
+.w7row:first-child { border-top: 0; }
+.w7row .d { font-size: 13px; color: var(--muted); }
+.w7row .d b { color: var(--text); font-size: 16px; margin-right: 3px; }
+.w7item { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13.5px; border: 0; background: none; padding: 2px 0; text-align: left; width: 100%; }
+.w7item.risk .h { color: var(--danger); font-weight: 600; }
+.bars { display: grid; gap: 8px; }
+.barrow { display: grid; grid-template-columns: 110px 1fr 64px; gap: 8px; align-items: center; font-size: 13px; }
+.barrow .track { display: grid; gap: 3px; }
+.barrow .b { height: 8px; border-radius: 4px; background: var(--c); }
+.barrow .b.prev { opacity: .35; }
+.barrow .n { text-align: right; color: var(--muted); }
+.plist { display: grid; }
+.prow { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
+.prow:first-child { border-top: 0; }
+.swipe { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--border); }
+.swipe:first-of-type { border-top: 0; }
+.aidea { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--border); }
+.aidea:first-of-type { border-top: 0; }
+.why { font-size: 12px; color: var(--muted); }
+
 /* ---------- แผน ---------- */
 .timeline { display: grid; gap: 6px; }
 .tl-head { display: grid; grid-template-columns: repeat(3, 1fr); font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
@@ -457,6 +491,37 @@ const items = [
   },
 ];
 
+items.push(
+  {
+    id: 'i11', brand: 'cc', type: 'single', title: 'เก้าอี้กีวี่ มุมอ่านหนังสือ', stage: 'work',
+    hook: 'มุมอ่านหนังสือ ใช้เก้าอี้ตัวเดียวก็พอ', content: 'พนักพิงรับหลังพอดี นั่งนานไม่เมื่อย', visual: 'มุมหน้าต่าง เก้าอี้ + โคมไฟ',
+    pillar: 'p1', campaign: null, theme: '', products: ['กีวี่ เก้าอี้'], owner: 'ton', images: [], imagesDone: false,
+    place: [{ ch: 'FB', date: '2026-09-25' }, { ch: 'IG', date: '2026-09-25' }],
+  },
+  {
+    id: 'i12', brand: 'cc', type: 'text', title: '5 วิธีดูไม้จริง', stage: 'review',
+    hook: 'ไม้จริงหรือไม้อัด ดูยังไงใน 10 วินาที', content: 'ดูลายไม้ปลายขอบ น้ำหนัก และรอยต่อ', visual: '',
+    pillar: 'p4', campaign: null, theme: '', products: [], owner: 'mint', images: [], imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-09-27' }, { ch: 'WEB', date: '2026-09-28' }],
+  },
+  {
+    id: 'i13', brand: 'cc', type: 'single', title: 'Emu Sofa มุมใหม่', stage: 'ready',
+    hook: 'Emu Sofa ในห้องโทนขาว', content: 'ผ้าสีครีมเข้ากับทุกห้อง', visual: 'ห้องโทนขาว แสงเช้า',
+    pillar: 'p1', campaign: null, theme: '', products: ['Emu Sofa'], owner: 'ton', images: img(30, 1), imagesDone: true,
+    place: [{ ch: 'FB', date: '2026-09-22', url: 'facebook.com/…' }, { ch: 'IG', date: '2026-09-22' }],
+  },
+);
+const LAST_TALK = { 'Emu Sofa': '2026-09-22', 'กระสา โซฟา 3 ที่นั่ง': '2026-07-10', 'กระเรียน โซฟา 2 ที่นั่ง': '2026-06-02', 'Koontong Sideboard': '2026-09-01', 'กีวี่ เก้าอี้': '2026-05-20', 'HOF ชุดโต๊ะกินข้าว 4 ที่': '2026-09-10', 'HOF ตู้เสื้อผ้า 2 บาน': '2026-04-15' };
+const swipes = [
+  { brand: 'cc', who: 'มิ้นท์', link: 'facebook.com/คู่แข่ง A/posts/…', sum: 'เล่าเรื่องช่างรุ่นพ่อสู่รุ่นลูก · hook เปิดด้วยคำถาม “ทำไมโต๊ะตัวนี้ราคา 3 หมื่น” · คอมเมนต์เยอะเพราะคนถกเรื่องราคา', when: '22 ก.ย.' },
+  { brand: 'cc', who: 'ต้น', link: 'instagram.com/คู่แข่ง B/p/…', sum: 'อัลบั้ม 8 ภาพ ก่อน/หลังจัดห้องคอนโด · ภาพแรกเป็นห้องรก · ใช้ข้อความบนภาพน้อยมาก', when: '20 ก.ย.' },
+];
+const agentIdeas = [
+  { brand: 'cc', hook: 'กระเรียน 2 ที่นั่ง โซฟาที่คนอยู่คนเดียวเลือกมากที่สุด', why: 'กระเรียนไม่มีคอนเทนต์มา 113 วัน · ตรงกับธีม “ห้องเล็กอยู่สบาย”', ch: ['FB', 'IG'], pillar: 'p1', product: 'กระเรียน โซฟา 2 ที่นั่ง' },
+  { brand: 'cc', hook: 'ทำไมโซฟาไม้จริงถึงแพงกว่า แล้วคุ้มไหม', why: 'คู่แข่ง A ได้คอมเมนต์เยอะจากเรื่องราคา · brand promise “ใช้ได้เป็นสิบปี”', ch: ['FB', 'WEB'], pillar: 'p4', product: '' },
+  { brand: 'cc', hook: 'ก่อน/หลัง ห้องคุณแพร เปลี่ยนแค่โซฟา', why: 'แบบอัลบั้มก่อน/หลังของคู่แข่ง B · มีภาพบ้านลูกค้าจริงในระบบแล้ว', ch: ['IG'], pillar: 'p3', product: 'กระเรียน โซฟา 2 ที่นั่ง' },
+];
+
 /* ข้อความที่ agent ร่าง */
 function draftFor(it) {
   const prod = it.products.length ? it.products.join(' · ') : '';
@@ -486,6 +551,7 @@ items.forEach(it => { it.chat ||= []; it.passed ||= []; });
 itemById('i4').chat = [
   { sys: 'Content agent ร่าง Facebook · Instagram · บล็อก SEO', when: '20 ก.ย.' },
   { who: 'mint', ref: 'ภาพ 3', t: 'ภาพนี้เห็นหน้าคุณแพร ต้องขออนุญาตก่อนไหม', when: '21 ก.ย. 10:12' },
+  { who: 'mint', ref: 'ทั้งชิ้น', t: '@Bay ชิ้นนี้อยากลง 14 ต.ค. ก่อน payday ได้ไหมครับ', when: '22 ก.ย. 09:30', mention: 'bay' },
   { who: 'ton', ref: 'ภาพ 3', t: 'ขอแล้วครับ คุณแพรโอเค แต่เบลอกรอบรูปครอบครัวให้แล้ว', when: '21 ก.ย. 10:40' },
   { sys: 'ภาพครบ → ส่งถึง Bay ตรวจ', when: '22 ก.ย.' },
 ];
@@ -494,6 +560,7 @@ itemById('i6').chat = [
   { who: 'ton', ref: 'ภาพ 1', t: 'ถ่ายใหม่พรุ่งนี้ 8 โมงครับ แสงเข้าหน้าต่างพอดี', when: '21 ก.ย. 16:05' },
 ];
 itemById('i6').passed = ['FB'];
+{ const x = itemById('i8'); x.stage = 'work'; x.agent = 'asking'; x.question = { q: `“${x.hook}” อยากให้จบที่อะไร`, choices: ['แนะนำบริการทำความสะอาดของร้าน', 'สอนวิธีเองทั้งหมด ไม่ขายของ', 'พาไปดูผ้ากันคราบรุ่นใหม่'] }; }
 function whoName(k) { return { mint: 'มิ้นท์', ton: 'ต้น', bay: 'Bay', ai: 'Content agent' }[k] || k; }
 function nowStr() { const d = new Date(); return `${fmt(TODAY)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
 function partsOf(it) {
@@ -572,7 +639,7 @@ const kit = {
    ============================================================ */
 const wide = () => matchMedia('(min-width: 900px)').matches;
 const S = {
-  screen: 'cal', role: 'bay', brand: 'cc',
+  screen: 'home', role: 'bay', brand: 'cc',
   view: wide() ? 'month' : 'agenda', cursor: '2026-10-01', colorBy: 'pillar',
   f: { ch: '', pillar: '', campaign: '', product: '', owner: '' },
   itemId: null, tab: 'FB', unlock: false, bounceRows: null, brandTab: 'model', planId: 'pl-nov',
@@ -591,7 +658,7 @@ const K = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-
 const add = (s, n) => { const d = D(s); d.setDate(d.getDate() + n); return K(d); };
 const fmt = s => { const d = D(s); return `${d.getDate()} ${TH_MON[d.getMonth()]}`; };
 const daysBetween = (a, b) => Math.round((D(b) - D(a)) / 864e5);
-const itemById = id => items.find(i => i.id === id);
+function itemById(id) { return items.find(i => i.id === id); }
 const pillarOf = it => (PILLARS[it.brand] || []).find(p => p.id === it.pillar);
 const campOf = it => CAMPAIGNS.find(c => c.id === it.campaign);
 const colorOf = it => S.colorBy === 'pillar' ? (pillarOf(it)?.c || 'var(--pn)') : (campOf(it)?.c || 'var(--pn)');
@@ -604,6 +671,7 @@ const ico = {
   cal: '<path d="M4 7h16M8 3v4M16 3v4"/><rect x="4" y="5" width="16" height="15" rx="3"/>',
   plan: '<path d="M5 6h14M5 12h10M5 18h6"/>',
   review: '<path d="M4 12l5 5L20 6"/>',
+  home: '<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
   brand: '<circle cx="12" cy="9" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/>',
   prev: '<path d="M15 5l-7 7 7 7"/>', next: '<path d="M9 5l7 7-7 7"/>',
 };
@@ -966,6 +1034,91 @@ function viewReviewItem() {
 }
 
 /* ============================================================
+   หน้าจอ: หน้าแรก (Dashboard)
+   ============================================================ */
+function viewHome() {
+  const B = S.brand, isBay = S.role === 'bay';
+  const mine = items.filter(i => i.brand === B);
+  const lastOf = it => it.place.map(p => p.date).sort()[0];
+  // H1 รอตรวจ
+  const rv = mine.filter(i => i.stage === 'review').sort((a, b) => lastOf(a) < lastOf(b) ? -1 : 1);
+  // H2 agent ถาม
+  const asks = mine.filter(i => i.agent === 'asking');
+  // H3 สมุดรอยืนยัน
+  const nbp = notebook.filter(n => n.st === 'pending' && (n.scope === 'all' || n.scope === B));
+  // H4 แผนรออนุมัติ
+  const pls = plans.filter(p => p.brand === B && p.status !== 'approved');
+  // @ ถึงฉัน
+  const me = isBay ? 'bay' : 'mint';
+  const ments = mine.flatMap(i => i.chat.filter(m => m.mention === me && !m.read).map(m => ({ it: i, m })));
+  const line = (it, extra) => `<div class="line"><button data-act="${isBay && it.stage === 'review' ? 'goReview' : 'open'}" data-id="${it.id}">${esc(it.hook)}</button>${extra || ''}</div>`;
+
+  const tiles = `<div class="todo">
+    <div class="tile ${rv.length ? 'hot' : ''}"><div class="spread"><span class="lbl">รอพี่ตรวจ</span><span class="big num">${rv.length}</span></div>
+      ${rv.slice(0, 3).map(it => line(it, `<span class="xs muted">ลง ${fmt(lastOf(it))}</span>`)).join('') || '<span class="small muted">ไม่มี</span>'}
+      ${rv.length ? `<button class="btn sm primary" data-act="goReview" data-id="${rv[0].id}">ตรวจชิ้นที่ลงเร็วสุด</button>` : ''}</div>
+    <div class="tile ${asks.length ? 'hot' : ''}"><div class="spread"><span class="lbl">agent ถามพี่อยู่</span><span class="big num">${asks.length}</span></div>
+      ${asks.map(it => `<div class="small"><b>${esc(it.hook)}</b><div class="muted">${esc(it.question.q)}</div>
+        <div class="chips" style="margin-top:6px">${it.question.choices.map(c => `<button class="chip" data-act="homeAnswer" data-id="${it.id}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div></div>`).join('') || '<span class="small muted">ไม่มีคำถามค้าง</span>'}</div>
+    <div class="tile"><div class="spread"><span class="lbl">ข้อความถึงพี่ (@${isBay ? 'Bay' : 'มิ้นท์'})</span><span class="big num">${ments.length}</span></div>
+      ${ments.map(({ it, m }) => `<div class="small"><b>${esc(whoName(m.who))}</b> ใน “${esc(it.hook)}”<div>${esc(m.t)}</div><button class="btn sm" data-act="openMention" data-id="${it.id}">เปิดดู</button></div>`).join('') || '<span class="small muted">ไม่มีข้อความใหม่</span>'}</div>
+    <div class="tile"><div class="spread"><span class="lbl">สมุดความคิดรอยืนยัน</span><span class="big num">${nbp.length}</span></div>
+      ${nbp.map(n => `<div class="small">“${esc(n.text)}”<div class="row" style="margin-top:6px"><button class="btn sm primary" data-act="nbOk" data-v="${n.id}">ยืนยัน</button><button class="btn sm ghost" data-act="nbOff" data-v="${n.id}">ไม่ใช้</button></div></div>`).join('') || '<span class="small muted">ไม่มี</span>'}</div>
+    <div class="tile"><div class="spread"><span class="lbl">แผนเดือน</span><span class="big num">${pls.length}</span></div>
+      ${pls.map(p => { const [y, m] = p.month.split('-').map(Number); const due = add(`${p.month}-01`, -20);
+        return `<div class="small"><b>${TH_MON_FULL[m - 1]}</b> · ${p.status === 'draft' ? `ร่าง · ต้องส่งภายใน ${fmt(due)} (อีก ${daysBetween(TODAY, due)} วัน)` : 'รอพี่อนุมัติ'}<div><button class="btn sm" data-act="goPlan" data-v="${p.id}">เปิดแผน</button></div></div>`; }).join('') || '<span class="small muted">อนุมัติครบแล้ว</span>'}</div>
+  </div>`;
+
+  // H5 7 วันข้างหน้า + H6 ลงไม่ครบ
+  let week = '';
+  for (let i = 0; i < 7; i++) {
+    const d = add(TODAY, i), dd = D(d);
+    const gs = [];
+    mine.forEach(it => { const chs = it.place.filter(p => p.date === d && !p.skip).map(p => p.ch); if (chs.length) gs.push({ it, chs }); });
+    const risk = g => !['ready', 'posted'].includes(g.it.stage) && daysBetween(TODAY, d) <= 2;
+    week += `<div class="w7row"><div class="d"><b class="num">${dd.getDate()}</b>${TH_WD[dd.getDay()]}</div><div>${gs.map(g => `<button class="w7item ${risk(g) ? 'risk' : ''}" data-act="open" data-id="${g.it.id}">${g.chs.map(chTag).join('')}<span class="h">${esc(g.it.hook)}</span>${stagePill(g.it.stage)}${risk(g) ? '<span class="xs" style="color:var(--danger)">เสี่ยงไม่ทัน</span>' : ''}</button>`).join('') || '<span class="xs muted">—</span>'}</div></div>`;
+  }
+  const partial = mine.filter(i => ['ready', 'posted'].includes(i.stage) && i.place.some(p => !p.skip && !p.url) && i.place.some(p => p.url || p.date < TODAY));
+  const H56 = `<div class="panel stack"><div class="spread"><h3>7 วันข้างหน้า</h3><span class="xs muted">แดง = อีกไม่เกิน 2 วันจะลงแต่ยังไม่ผ่าน</span></div><div class="week7">${week}</div>
+    ${partial.length ? `<div class="note warn small"><b>ลงไม่ครบ</b> ${partial.map(it => `<div class="line" style="margin-top:4px"><button class="back" style="padding:0;color:var(--text)" data-act="open" data-id="${it.id}">${esc(it.hook)}</button> · ขาด ${it.place.filter(p => !p.skip && !p.url).map(p => CH[p.ch]).join(', ')}</div>`).join('')}</div>` : ''}</div>`;
+
+  // H9 สัดส่วน pillar เดือนนี้ vs เดือนก่อน (นับตามวันลงแรก)
+  const cnt = (mon) => { const c = {}; mine.forEach(it => { const f = lastOf(it); if (f.slice(0, 7) === mon) c[it.pillar || ''] = (c[it.pillar || ''] || 0) + 1; }); return c; };
+  const thisM = '2026-10', prevM = '2026-09';
+  const a = cnt(thisM), b = cnt(prevM);
+  const rows = [...PILLARS[B], { id: '', name: 'ไม่ผูก', c: 'var(--pn)' }];
+  const max = Math.max(1, ...rows.map(r => Math.max(a[r.id] || 0, b[r.id] || 0)));
+  const H9 = `<div class="panel stack"><div class="spread"><h3>สัดส่วน pillar</h3><span class="xs muted">ต.ค. (เข้ม) เทียบ ก.ย. (จาง)</span></div>
+    <div class="bars">${rows.map(r => `<div class="barrow"><span>${esc(r.name)}</span><div class="track" style="--c:${r.c}"><div class="b" style="width:${(a[r.id] || 0) / max * 100}%"></div><div class="b prev" style="width:${(b[r.id] || 0) / max * 100}%"></div></div><span class="n num">${a[r.id] || 0} · ${b[r.id] || 0}</span></div>`).join('')}</div>
+    ${(() => { const named = rows.filter(r => r.id); const hi = named.reduce((x, y) => (a[y.id] || 0) > (a[x.id] || 0) ? y : x); const lo = named.reduce((x, y) => (a[y.id] || 0) < (a[x.id] || 0) ? y : x); return `<p class="xs muted" style="margin:0">ต.ค. เล่นเรื่อง${esc(hi.name)}มากสุด · ${esc(lo.name)}น้อยสุด · ไอเดียจาก agent ช่วยเติมได้</p>`; })()}</div>`;
+
+  // H10 สินค้าที่ไม่ได้พูดถึงนาน
+  const stale = PRODUCTS[B].map(p => ({ p, d: LAST_TALK[p] })).map(x => ({ ...x, n: x.d ? daysBetween(x.d, TODAY) : 999 })).filter(x => x.n > 60).sort((x, y) => y.n - x.n);
+  const H10 = `<div class="panel stack"><div class="spread"><h3>สินค้าที่ไม่ได้พูดถึงเกิน 60 วัน</h3><span class="big num" style="font-size:20px">${stale.length}</span></div>
+    <div class="plist">${stale.map(x => `<div class="prow"><div><b>${esc(x.p)}</b><div class="xs muted num">${x.d ? `ล่าสุด ${fmt(x.d)} · ${x.n} วัน` : 'ยังไม่เคยมีคอนเทนต์'}</div></div><button class="btn sm" data-act="staleIdea" data-v="${esc(x.p)}">ให้ agent คิดไอเดีย</button></div>`).join('') || '<span class="small muted">พูดถึงครบทุกรุ่น</span>'}</div></div>`;
+
+  // H16 แฟ้มคู่แข่ง
+  const sw = swipes.filter(x => x.brand === B);
+  const H16 = `<div class="panel stack"><div class="spread"><h3>แฟ้มคู่แข่ง</h3><span class="xs muted">ทีมแปะลิงก์ · agent สรุป</span></div>
+    ${sw.map(x => `<div class="swipe"><div class="xs muted">${esc(x.who)} · ${esc(x.when)} · ${esc(x.link)}</div><div class="small"><span class="bot" style="width:20px;height:20px;font-size:10px;margin-right:6px">AI</span>${esc(x.sum)}</div></div>`).join('') || '<span class="small muted">ยังไม่มี</span>'}
+    <div class="row" style="flex-wrap:nowrap"><input class="inp" id="swipe-in" placeholder="วางลิงก์โพสต์คู่แข่ง"><button class="btn" data-act="addSwipe">เพิ่ม</button></div></div>`;
+
+  // H19 ไอเดียจาก agent
+  const ai = agentIdeas.filter(x => x.brand === B && !x.done);
+  const H19 = `<div class="panel stack"><div class="spread"><h3>ไอเดียจาก agent สัปดาห์นี้</h3><span class="xs muted">แตะ “เอา” = เป็นการ์ดในปฏิทิน</span></div>
+    ${ai.map((x, i) => `<div class="aidea"><div class="row">${x.ch.map(chTag).join('')}<b class="small">${esc(x.hook)}</b></div><div class="why">เพราะ ${esc(x.why)}</div>
+      <div class="row"><button class="btn sm primary" data-act="takeIdea" data-v="${agentIdeas.indexOf(x)}">เอา</button><button class="btn sm ghost" data-act="dropIdea" data-v="${agentIdeas.indexOf(x)}">ไม่เอา</button></div></div>`).join('') || '<span class="small muted">รับครบแล้ว · agent คิดชุดใหม่ทุกวันจันทร์</span>'}</div>`;
+
+  return `<div class="dash">
+    <div class="hello"><div class="eyebrow">${fmt(TODAY)} ${D(TODAY).getFullYear() + 543} · ${BRANDS[B]}</div><h2>สวัสดีครับ ${isBay ? 'พี่ Bay' : 'มิ้นท์'}</h2></div>
+    ${tiles}
+    <div class="dcols">${H56}${H19}</div>
+    <div class="dcols">${H9}${H10}</div>
+    ${H16}
+  </div>`;
+}
+
+/* ============================================================
    หน้าจอ: แผน
    ============================================================ */
 function viewPlan() {
@@ -1074,17 +1227,17 @@ function viewInterview() {
    ============================================================ */
 function render() {
   const reviewCount = items.filter(i => i.brand === S.brand && i.stage === 'review').length;
-  const navs = [['cal', 'ปฏิทิน'], ['plan', 'แผน'], ['review', 'ตรวจ'], ['brand', 'แบรนด์']];
+  const navs = [['home', 'หน้าแรก'], ['cal', 'ปฏิทิน'], ['plan', 'แผน'], ['review', 'ตรวจ'], ['brand', 'แบรนด์']];
   const onScreen = { item: S.back, new: S.back, idea: S.back, reviewItem: 'review' }[S.screen] || S.screen;
   $('#nav').innerHTML = `<div class="brandmark">Content Studio<small>Chaw Cher OS</small></div>` + navs.map(([k, v]) =>
     `<button data-act="nav" data-v="${k}" aria-current="${onScreen === k ? 'page' : 'false'}">${svg(k)}<span>${v}</span>${k === 'review' && reviewCount ? `<span class="badge num">${reviewCount}</span>` : ''}</button>`).join('');
-  $('#top').innerHTML = `<h1>${{ cal: 'ปฏิทินคอนเทนต์', plan: 'แผน', review: 'ตรวจงาน', brand: 'แบรนด์', item: 'ชิ้นงาน', new: 'ตั้งงานใหม่', idea: 'ไอเดียด่วน', reviewItem: 'ตรวจงาน' }[S.screen]}</h1>
+  $('#top').innerHTML = `<h1>${{ home: 'หน้าแรก', cal: 'ปฏิทินคอนเทนต์', plan: 'แผน', review: 'ตรวจงาน', brand: 'แบรนด์', item: 'ชิ้นงาน', new: 'ตั้งงานใหม่', idea: 'ไอเดียด่วน', reviewItem: 'ตรวจงาน' }[S.screen]}</h1>
     <div class="seg" role="group" aria-label="แบรนด์">${Object.entries(BRANDS).map(([k, v]) => `<button data-act="brand" data-v="${k}" aria-pressed="${S.brand === k}">${v}</button>`).join('')}</div>
     <label class="xs muted" for="role">ดูในฐานะ</label><select id="role" class="inp" style="width:auto;padding:5px 8px;font-size:13px" data-role>
       <option value="mkt" ${S.role === 'mkt' ? 'selected' : ''}>การตลาด</option><option value="bay" ${S.role === 'bay' ? 'selected' : ''}>Bay</option></select>`;
-  const V = { idea: () => `<button class="back" data-act="back">← กลับ</button><div style="max-width:720px">${ideaBar()}</div>`, cal: viewCal, item: viewItem, new: viewNew, review: viewReview, reviewItem: viewReviewItem, plan: viewPlan, brand: viewBrand }[S.screen];
+  const V = { home: viewHome, idea: () => `<button class="back" data-act="back">← กลับ</button><div style="max-width:720px">${ideaBar()}</div>`, cal: viewCal, item: viewItem, new: viewNew, review: viewReview, reviewItem: viewReviewItem, plan: viewPlan, brand: viewBrand }[S.screen];
   $('#main').innerHTML = V();
-  $('#fab').hidden = !['cal', 'plan'].includes(S.screen); $('#fabmenu').hidden = true;
+  $('#fab').hidden = !['home', 'cal', 'plan'].includes(S.screen); $('#fabmenu').hidden = true;
 }
 const go = (screen, extra = {}) => { Object.assign(S, extra, { screen }); render(); window.scrollTo(0, 0); };
 
@@ -1129,6 +1282,17 @@ document.addEventListener('click', e => {
     case 'open': e.preventDefault(); go('item', { itemId: b.dataset.id, back: S.screen === 'item' ? S.back : S.screen, unlock: false, tab: 'FB' }); break;
     case 'back': go(S.back || 'cal', { unlock: false, bounceRows: null }); break;
     case 'fab': $('#fabmenu').hidden = !$('#fabmenu').hidden; return;
+    case 'homeAnswer': S.itemId = b.dataset.id; { const x = itemById(b.dataset.id); x.answer = v; x.content = v; x.agent = 'writing'; toast('ส่งคำตอบให้ agent แล้ว · กำลังเขียน'); setTimeout(() => { x.drafts = draftFor(x); x.agent = 'done'; autoToReview(x); if (S.screen === 'home') render(); }, 1100); render(); } break;
+    case 'openMention': { const x = itemById(b.dataset.id); x.chat.forEach(m => { if (m.mention) m.read = true; }); go('item', { itemId: x.id, back: 'home', tab: 'FB' }); break; }
+    case 'goPlan': go('plan', { planId: v }); break;
+    case 'staleIdea': S.idea = { text: `อยากเล่นเรื่อง ${v} ที่ไม่ได้พูดถึงนาน`, link: '', phase: 'idle' }; go('idea', { back: 'home' }); break;
+    case 'addSwipe': { const l = ($('#swipe-in')?.value || '').trim(); if (!l) { toast('วางลิงก์ก่อน'); break; } swipes.unshift({ brand: S.brand, who: S.role === 'bay' ? 'Bay' : 'มิ้นท์', link: l, sum: 'agent กำลังอ่านและสรุป… (ในของจริงใช้เวลาไม่กี่วินาที)', when: fmt(TODAY) }); render(); break; }
+    case 'takeIdea': { const x = agentIdeas[+v]; x.done = true; const d = add(TODAY, 7);
+      items.push({ id: 'g' + Date.now(), brand: x.brand, type: x.ch.includes('IG') ? 'album' : 'text', title: x.hook, stage: 'idea', hook: x.hook, content: '', visual: '',
+        pillar: x.pillar, campaign: null, theme: '', products: x.product ? [x.product] : [], owner: 'ton', images: [], imagesDone: false, offPlan: true,
+        place: x.ch.map(c => ({ ch: c, date: d })), comments: [], versions: [], version: 1, firstComment: { FB: '', IG: '' }, agent: 'idle', chat: [{ sys: 'รับจากไอเดียของ agent', when: fmt(TODAY) }], passed: [] });
+      toast(`เป็นการ์ดไอเดียแล้ว · ${fmt(d)}`); render(); break; }
+    case 'dropIdea': agentIdeas[+v].done = true; render(); break;
     case 'goIdea': go('idea', { back: S.screen }); break;
     case 'new': go('new', { back: S.screen }); break;
     case 'tab': S.tab = v; render(); break;
