@@ -162,3 +162,26 @@ agent เขียนบล็อก → Bay ตรวจผ่าน → กด
 - ⚠️ ถ้าเว็บมีปลั๊กอินความปลอดภัยที่ปิด REST API ต้องเปิดให้ผู้ใช้นี้
 
 > ถ้าพี่หมายถึงแค่ **ปุ่มลิงก์ไปหน้า wp-admin** ในระบบ ก็ทำได้ทันที บอกได้เลย
+
+---
+
+## ✅ Bay ตอบ C · W (2026-10-05) + ผลตรวจเว็บ
+
+> C1 **กด "นัดวันเข้าชม"** · C2 **conversion ÷ คนกดลิงก์** · C3 "น่าจะมี ช่วยเช็ก" · W1 **Draft** · W2 "ช่วยไปเช็ก"
+
+**ผลตรวจ (ผมเช็กเอง 2026-10-05):**
+
+| เรื่อง | ผล |
+|---|---|
+| W2 ปลั๊กอิน SEO | **Yoast SEO v28** · ใส่ meta title / description ผ่านช่องของ Yoast |
+| GA4 ของเว็บ | property **Chawcher - GA4 (312389270)** · tag `G-4GNDRC8VHH` ผ่าน Site Kit + GTM `GTM-PRC9NSH` |
+| ปุ่ม "นัดวันเข้าชม" | ลิงก์ไป Line `lin.ee/VwZJkcC` · มีป้าย `data-cc-appt` บนปุ่ม |
+| C3 event นัดวันเข้าชม | มี event `showroom_appointment_click` แต่ **⚠️ ยังไม่ได้ตั้งเป็น key event** และ **⚠️ นับไม่ครบ**: 30 วันล่าสุดมีคนกดลิงก์ Line 6 ครั้ง แต่ event นี้ขึ้นแค่ 2 (ยิงเฉพาะบางหน้า เช่น หน้าโปร Hook · หน้าโซฟากระทั่ว · หน้าแรกกับหน้าเก้าอี้กีวี่ไม่นับ) |
+| key event ที่มีอยู่ | `generate_lead` = ส่งฟอร์มหน้า /contact-us/ (15 ครั้งใน 30 วัน) |
+
+**ต้องแก้ใน GA4 (Bay ทำ 2 นาที · ไม่ต้องแตะ GTM):**
+1. GA4 → Admin → Events → **Create event** → ชื่อ `book_showroom` · เงื่อนไข `event_name equals click` และ `link_url contains lin.ee/VwZJkcC`
+2. Admin → **Key events** → New key event → `book_showroom`
+→ นับทุกปุ่มที่ลิงก์ไป Line นัดเข้าชม ทุกหน้า · ไม่ซ้ำกับตัวเดิมที่นับไม่ครบ (ตัวเดิมปล่อยไว้ได้)
+
+ระบบเราอ่านยอดจาก GA4 ด้วยตัวเดียวกันนี้ · conversion rate ต่อโพสต์ = `book_showroom` ÷ คนกดลิงก์จากโพสต์ (จับด้วย UTM ที่ agent ใส่)
