@@ -8,16 +8,51 @@
  */
 
 export const STAGES = [
-  'ไอเดีย', 'เขียนบท', 'ถ่ายแล้วรอตัด', 'ตัดเสร็จ',
+  'ไอเดีย', 'กำลังทำ', 'เขียนบท', 'ถ่ายแล้วรอตัด', 'ตัดเสร็จ',
   'รอตรวจ', 'ตีกลับแก้', 'พร้อมโพสต์', 'โพสต์แล้ว', 'พับไว้',
 ] as const;
 export type Stage = (typeof STAGES)[number];
 
-/** ขั้นที่คนทำงานเลื่อนเองได้ · ที่เหลือเลื่อนผ่านปุ่มส่งตรวจ/อนุมัติเท่านั้น */
+/** ขั้นที่คนทำงานเลื่อนเองได้ (งานคลิปเดิม) · ที่เหลือเลื่อนผ่านปุ่มส่งตรวจ/อนุมัติเท่านั้น */
 export const WORK_STAGES: Stage[] = ['ไอเดีย', 'เขียนบท', 'ถ่ายแล้วรอตัด', 'ตัดเสร็จ'];
 
-export const FORMATS = ['คลิปยาว', 'คลิปสั้น', 'หน้าเว็บ'] as const;
+/** ขั้นที่คนทำงานเลื่อนเองได้ของงานเฟส 1 · ผลิตไม่ได้แบ่ง 3 ขั้นแบบวิดีโอแล้ว (requirement Q1) */
+export const PHASE1_WORK_STAGES: Stage[] = ['ไอเดีย', 'กำลังทำ'];
+
+export const FORMATS = ['คลิปยาว', 'คลิปสั้น', 'หน้าเว็บ', 'ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ'] as const;
 export type Format = (typeof FORMATS)[number];
+
+/** เฟส 1 ทำแค่นี้ (decisions-log N1) · คลิปซ่อนไว้จนถึงเฟสวิดีโอ */
+export const PHASE1_FORMATS = ['ข้อความล้วน', 'ภาพเดี่ยว', 'อัลบั้มภาพ'] as const satisfies readonly Format[];
+export const isPhase1 = (f: string) => (PHASE1_FORMATS as readonly string[]).includes(f);
+
+/** เฟส 1 ลงแค่ 3 ช่องทาง (decisions-log N2) · ตัวย่อใช้บนการ์ด (K3) */
+export const PHASE1_CHANNELS = [
+  { id: 'facebook', short: 'FB', name: 'Facebook' },
+  { id: 'instagram', short: 'IG', name: 'Instagram' },
+  { id: 'website', short: 'WEB', name: 'บล็อก SEO' },
+] as const;
+export const channelShort = (id: string) => PHASE1_CHANNELS.find((c) => c.id === id)?.short ?? id;
+export const channelName = (id: string) => PHASE1_CHANNELS.find((c) => c.id === id)?.name ?? id;
+
+/** ความยาวที่แต่ละช่องทางรับ · เตือนเมื่อเกิน (Q-34) */
+export const LIMITS = { facebook: 63206, instagram: 2200, web_title: 60, web_meta: 155 } as const;
+
+/** Instagram รับอัลบั้มสูงสุด 20 ภาพ · ฐานข้อมูลบังคับซ้ำอีกชั้น */
+export const MAX_ALBUM = 20;
+
+export const TONE: Record<string, string> = {
+  ไอเดีย: 'bg-border text-muted',
+  กำลังทำ: 'bg-warn/10 text-warn',
+  เขียนบท: 'bg-accent/10 text-accent',
+  ถ่ายแล้วรอตัด: 'bg-warn/10 text-warn',
+  ตัดเสร็จ: 'bg-accent/10 text-accent',
+  รอตรวจ: 'bg-locked/10 text-locked',
+  ตีกลับแก้: 'bg-danger/10 text-danger',
+  พร้อมโพสต์: 'bg-ok/10 text-ok',
+  โพสต์แล้ว: 'bg-ok/10 text-ok',
+  พับไว้: 'bg-border text-muted',
+};
 
 export type Item = {
   id: string;
@@ -34,6 +69,17 @@ export type Item = {
   approved_at: string | null;
   review_note: string | null;
   updated_at: string;
+  brand_id: string | null;
+  hook: string | null;
+  key_message: string | null;
+  visual: string | null;
+  pillar_id: string | null;
+  theme_id: string | null;
+  owner_id: string | null;
+  off_plan: boolean;
+  source_url: string | null;
+  created_by: string | null;
+  version: number;
 };
 
 export type Placement = {
@@ -43,8 +89,42 @@ export type Placement = {
   planned_on: string | null;
   published_at: string | null;
   published_url: string | null;
+  hook: string | null;
+  copy_text: string | null;
+  first_comment: string | null;
+  web_title: string | null;
+  web_keyword: string | null;
+  web_meta: string | null;
+  human_edited: boolean;
+  ai_request_id: string | null;
+  skipped_reason: string | null;
+  passed_at: string | null;
   channels: { name_th: string } | null;
 };
+
+export type ItemImage = { id: string; position: number; url: string; passed_at: string | null };
+
+/** ส่วนที่ต้องแก้ · 1 แถว = 1 ส่วนที่ไม่ผ่าน (Q-42) */
+export type ReviewNote = {
+  id: string; version: number; part_key: string; part_label: string; note: string;
+  done_at: string | null; created_at: string;
+};
+
+export type Message = {
+  id: string; author_id: string | null; kind: 'คน' | 'ระบบ' | 'AI';
+  part_label: string | null; body: string; mentions: string[]; created_at: string;
+};
+
+export type Version = { version: number; submitted_at: string; snapshot: { images?: string[] } };
+
+/** ส่วนที่ยังต้องตรวจ · part_key = ch:<ช่องทาง> หรือ img:<id ภาพ> */
+export type OpenPart = { part_key: string; part_label: string };
+
+export type Brand = { id: string; name: string };
+export type Pillar = { id: string; brand_id: string; name: string; color: string; sort_order: number; active: boolean };
+export type Theme = { id: string; brand_id: string; name: string; goal: string | null; starts_on: string; ends_on: string; active: boolean };
+export type Model = { id: string; brand_id: string; collection: string; name_th: string | null };
+export type Person = { id: string; full_name: string };
 
 export type TodayItem = {
   หมวด: string;
@@ -64,4 +144,126 @@ export type Gap = {
   ลงแล้ว: number;
   ยังไม่ได้ลง: number;
   ที่ยังขาด: string | null;
+};
+
+// ── Content agent (R3) ─────────────────────────────────────────────────────
+
+/** รุ่นที่ Bay เลือกได้ · ราคา USD ต่อล้าน token (เข้า/ออก) · effort = รุ่นนี้ปรับความคิดได้ */
+export const AI_MODELS = [
+  { id: 'claude-opus-5', name: 'Claude Opus 5 · เขียนดีสุด', in: 5, out: 25, effort: true },
+  { id: 'claude-sonnet-5', name: 'Claude Sonnet 5 · ถูกลง ~2.5 เท่า', in: 2, out: 10, effort: true },
+  { id: 'claude-haiku-4-5', name: 'Claude Haiku 4.5 · ถูกสุด ~5 เท่า', in: 1, out: 5, effort: false },
+] as const;
+
+export type AiBudget = {
+  model: string;
+  monthly_budget_thb: number;
+  thb_per_usd: number;
+  paused: boolean;
+  spent_thb: number;
+  remaining_thb: number;
+  requests: number;
+};
+
+export type AiRequest = {
+  id: string;
+  requested_by: string;
+  kind: string;
+  item_id: string | null;
+  model: string;
+  status: string;
+  instruction: string | null;
+  error: string | null;
+  used_refs: Record<string, string>;
+  cost_thb: number;
+  created_at: string;
+};
+
+export type BrandSection = {
+  id: string;
+  brand_id: string;
+  kind: 'model' | 'book';
+  topic: string;
+  guide: string | null;
+  body: string | null;
+  sort_order: number;
+  active: boolean;
+  confirmed_at: string | null;
+};
+
+export type NotebookEntry = {
+  id: string;
+  brand_id: string | null;
+  body: string;
+  source: 'Bay เขียน' | 'agent เสนอ';
+  status: 'รอยืนยัน' | 'ใช้อยู่' | 'เลิกใช้';
+  reason: string | null;
+  from_item_id: string | null;
+  created_at: string;
+};
+
+export type Playbook = { id: string; brand_id: string; channel_id: string; body: string };
+
+export type AgentQuestion = {
+  id: string;
+  item_id: string;
+  question: string;
+  choices: string[];
+  answer: string | null;
+  answered_at: string | null;
+  created_at: string;
+};
+
+export type InterviewTurn = {
+  id: string;
+  section_id: string;
+  role: 'AI' | 'Bay';
+  body: string;
+  choices: string[];
+  created_at: string;
+};
+
+// ── ปฏิทิน (R4) ─────────────────────────────────────────────────────────────
+
+/** ชิ้นงานบนปฏิทิน · ข้อมูลพอสำหรับการ์ดและตัวกรอง */
+export type CalItem = {
+  id: string;
+  title: string;
+  hook: string | null;
+  stage: Stage;
+  brand_id: string | null;
+  pillar_id: string | null;
+  campaign_id: string | null;
+  owner_id: string | null;
+  off_plan: boolean;
+  visual: string | null;
+  products: string[];
+};
+
+/** ช่องทางที่มีวันลง · การ์ด 1 ใบ = ชิ้นงาน × วัน (Q-23) */
+export type CalPlacement = { id: string; item_id: string; channel_id: string; planned_on: string; published_at: string | null };
+
+// ── แผนเดือน + แบรนด์ (R6) ──────────────────────────────────────────────────
+
+export type Plan = {
+  id: string; brand_id: string; month: string; status: 'ร่าง' | 'รออนุมัติ' | 'ตีกลับ' | 'อนุมัติแล้ว';
+  note: string | null; review_note: string | null; submitted_at: string | null; approved_at: string | null;
+};
+export type PlanSlot = {
+  id: string; plan_id: string; planned_on: string; format: Format; channels: string[];
+  hook: string | null; key_message: string | null; visual: string | null;
+  pillar_id: string | null; theme_id: string | null; campaign_id: string | null; owner_id: string | null;
+  product_ids: string[]; item_id: string | null; item_stage: Stage | null;
+};
+export type PlanChange = { id: string; kind: 'เพิ่ม' | 'ตัด'; summary: string; seen_at: string | null; created_at: string };
+export type ThemeWeek = { theme_id: string; week_of: string; topic: string };
+export type BrandKit = { brand_id: string; logo_url: string | null; fonts: string | null; colors: { name: string; hex: string }[] };
+export type BrandExample = { id: string; brand_id: string; kind: 'ใช่' | 'ไม่ใช่'; item_id: string | null; url: string | null; note: string };
+export type AgentRoute = { format: Format; channel_id: string; agent: string };
+
+/** เส้นตายส่งแผน = วันแรกของเดือน − 20 วัน (Q-15) */
+export const planDeadline = (month: string) => {
+  const [y, m] = month.split('-').map(Number);
+  const d = new Date(Date.UTC(y, m - 1, 1 - 20));
+  return d.toISOString().slice(0, 10);
 };
