@@ -1,0 +1,512 @@
+<title>Content เฟส 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* โทเคนเดียวกับ web/src/app/globals.css ของ Chaw Cher OS */
+:root {
+  --bg: #faf9f7; --surface: #ffffff; --sunk: #f3f0ec; --border: #e7e2db;
+  --text: #1c1917; --muted: #78716c; --accent: #6b5b4a; --accent-fg: #ffffff;
+  --ok: #3f6f4f; --warn: #9a6b23; --danger: #9b3232; --locked: #7c3f58;
+  --p1: #a0673f; --p2: #5d7b58; --p3: #49698a; --p4: #9a7d2e; --p5: #8b4763; --p6: #2f7a74; --pn: #a8a29e;
+  --shadow: 0 1px 2px rgba(28,25,23,.06), 0 8px 24px rgba(28,25,23,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #171513; --surface: #211e1b; --sunk: #1b1917; --border: #38322c;
+    --text: #f5f2ee; --muted: #a8a29e; --accent: #c4ad94; --accent-fg: #1c1917;
+    --ok: #7fb08d; --warn: #d5a45c; --danger: #e08a8a; --locked: #d49bb6;
+    --p1: #cf9670; --p2: #93b38d; --p3: #86a7c8; --p4: #cdb163; --p5: #c98aa4; --p6: #6fb5ae; --pn: #78716c;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171513; --surface: #211e1b; --sunk: #1b1917; --border: #38322c;
+  --text: #f5f2ee; --muted: #a8a29e; --accent: #c4ad94; --accent-fg: #1c1917;
+  --ok: #7fb08d; --warn: #d5a45c; --danger: #e08a8a; --locked: #d49bb6;
+  --p1: #cf9670; --p2: #93b38d; --p3: #86a7c8; --p4: #cdb163; --p5: #c98aa4; --p6: #6fb5ae; --pn: #78716c;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- โครงแอป ---------- */
+.mock-flag {
+  background: var(--sunk); color: var(--muted); font-size: 12px; text-align: center;
+  padding: 6px 16px; border-bottom: 1px solid var(--border);
+}
+.app { display: grid; grid-template-columns: 1fr; min-height: calc(100% - 31px); }
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px; flex-wrap: wrap;
+}
+.top h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -.01em; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 600px) { .top h1 { flex-basis: 100%; } }
+.seg { display: inline-flex; background: var(--sunk); border: 1px solid var(--border); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; border-radius: 9px; padding: 5px 10px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 500; }
+main { padding: 16px 16px calc(96px + env(safe-area-inset-bottom, 0px)); max-width: 1180px; width: 100%; margin: 0 auto; }
+
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+}
+.nav button {
+  border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 12px; color: var(--muted); padding: 6px 0; position: relative; border-radius: 12px;
+}
+.nav button[aria-current="page"] { color: var(--accent); font-weight: 600; }
+.nav svg { width: 22px; height: 22px; }
+.badge { position: absolute; top: 2px; left: calc(50% + 6px); background: var(--locked); color: #fff; font-size: 10px; border-radius: 99px; padding: 0 5px; line-height: 16px; min-width: 16px; text-align: center; }
+.fab {
+  position: fixed; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 31;
+  width: 56px; height: 56px; border-radius: 18px; border: 0; background: var(--accent); color: var(--accent-fg);
+  box-shadow: var(--shadow); display: grid; place-items: center;
+}
+.fab svg { width: 26px; height: 26px; }
+.fabmenu { position: fixed; right: 16px; bottom: calc(142px + env(safe-area-inset-bottom, 0px)); z-index: 32; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 6px; display: grid; min-width: 230px; }
+.fabmenu button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; display: grid; gap: 1px; }
+.fabmenu button:hover { background: var(--sunk); }
+.fabmenu small { color: var(--muted); font-size: 12px; }
+@media (min-width: 900px) { .fabmenu { bottom: 90px; right: 24px; } }
+
+@media (min-width: 900px) {
+  .app { grid-template-columns: 208px 1fr; }
+  .nav {
+    position: sticky; top: 0; height: 100vh; grid-template-columns: 1fr; align-content: start; gap: 4px;
+    border-top: 0; border-right: 1px solid var(--border); padding: 16px 12px; grid-row: 1 / span 2;
+  }
+  .nav .brandmark { display: block; }
+  .nav button { flex-direction: row; justify-content: flex-start; gap: 10px; font-size: 14px; padding: 10px 12px; }
+  .nav button[aria-current="page"] { background: var(--sunk); }
+  .badge { position: static; margin-left: auto; }
+  .fab { bottom: 24px; right: 24px; }
+  main { padding-bottom: 48px; }
+}
+.brandmark { display: none; font-weight: 700; letter-spacing: -.01em; padding: 4px 12px 16px; font-size: 15px; }
+.brandmark small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+
+/* ---------- ชิ้นส่วนทั่วไป ---------- */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.stack { display: grid; gap: 12px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.spread { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.xs { font-size: 12px; }
+h2 { font-size: 20px; margin: 0; letter-spacing: -.01em; font-weight: 600; text-wrap: balance; }
+h3 { font-size: 15px; margin: 0; font-weight: 600; }
+.eyebrow { font-size: 12px; letter-spacing: .04em; color: var(--muted); font-weight: 500; }
+.btn { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 9px 14px; font-size: 14px; min-height: 40px; }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 500; }
+.btn.danger { color: var(--danger); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn.sm { min-height: 32px; padding: 5px 10px; font-size: 13px; border-radius: 10px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.t-idea { background: color-mix(in srgb, var(--muted) 14%, transparent); color: var(--muted); }
+.t-work { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+.t-review { background: color-mix(in srgb, var(--locked) 14%, transparent); color: var(--locked); }
+.t-bounce { background: color-mix(in srgb, var(--danger) 13%, transparent); color: var(--danger); }
+.t-ready { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+.t-posted { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+.ch { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; border: 1px solid var(--border); border-radius: 6px; padding: 0 4px; color: var(--muted); background: var(--surface); line-height: 16px; }
+label.f { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+label.f .hint { font-weight: 400; color: var(--muted); font-size: 12px; }
+.inp, select.inp, textarea.inp { width: 100%; border: 1px solid var(--border); background: var(--bg); border-radius: 12px; padding: 10px 12px; font-size: 15px; outline: none; }
+.inp:focus { border-color: var(--accent); }
+textarea.inp { resize: vertical; min-height: 88px; line-height: 1.6; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--border); background: var(--surface); border-radius: 99px; padding: 6px 12px; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.chip[disabled] { opacity: .4; cursor: not-allowed; }
+.note { border-radius: 14px; padding: 12px 14px; font-size: 13px; border: 1px solid; }
+.note.ok { border-color: color-mix(in srgb, var(--ok) 35%, transparent); background: color-mix(in srgb, var(--ok) 7%, transparent); }
+.note.warn { border-color: color-mix(in srgb, var(--warn) 40%, transparent); background: color-mix(in srgb, var(--warn) 8%, transparent); }
+.note.bad { border-color: color-mix(in srgb, var(--danger) 35%, transparent); background: color-mix(in srgb, var(--danger) 6%, transparent); }
+.note.lock { border-color: color-mix(in srgb, var(--locked) 35%, transparent); background: color-mix(in srgb, var(--locked) 6%, transparent); }
+.back { border: 0; background: none; color: var(--muted); padding: 4px 0; font-size: 14px; display: inline-flex; gap: 4px; align-items: center; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+  background: var(--text); color: var(--bg); border-radius: 12px; padding: 10px 16px; font-size: 14px; box-shadow: var(--shadow);
+  max-width: calc(100% - 32px);
+}
+@media (min-width: 900px) { .toast { bottom: 32px; } }
+
+
+/* ---------- เฟส 2 ---------- */
+main { min-width: 0; }
+code { word-break: break-all; }
+.grid2 > *, .grid3 > * { min-width: 0; }
+.top .viewseg { overflow-x: auto; min-width: 0; max-width: 100%; flex: 0 1 auto; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); overflow-x: auto; margin: 4px 0 14px; }
+.tabs button { border: 0; background: none; padding: 8px 12px; font-size: 14px; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--text); font-weight: 600; border-bottom-color: var(--accent); }
+.new { font-size: 10px; font-weight: 700; color: var(--locked); margin-left: 3px; vertical-align: 2px; }
+.grid2 { display: grid; gap: 16px; }
+@media (min-width: 900px) { .grid2 { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; } }
+.grid3 { display: grid; gap: 12px; }
+@media (min-width: 700px) { .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.kpi { display: grid; gap: 2px; align-content: start; }
+.kpi b { font-size: 24px; font-weight: 600; letter-spacing: -.02em; }
+.up { color: var(--ok); font-size: 12px; }
+.down { color: var(--danger); font-size: 12px; }
+.bar { height: 8px; border-radius: 99px; background: var(--sunk); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.bar.warn i { background: var(--warn); }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: left; font-weight: 500; color: var(--muted); padding: 6px 4px; border-bottom: 1px solid var(--border); }
+table.t td { padding: 8px 4px; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.t td.r, table.t th.r { text-align: right; }
+.tw { overflow-x: auto; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; vertical-align: 0; }
+
+/* มือถือจำลอง Line */
+.phone { width: 100%; max-width: 320px; margin: 0 auto; border: 1px solid var(--border); border-radius: 28px; padding: 10px; background: var(--surface); box-shadow: var(--shadow); }
+.phone .scr { border-radius: 20px; background: #8aa6c1; padding: 12px 10px; min-height: 380px; display: grid; align-content: start; gap: 8px; }
+.phone .oa { display: flex; gap: 8px; align-items: flex-start; }
+.phone .av { width: 30px; height: 30px; border-radius: 99px; background: #fff; color: #1c1917; font-size: 11px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.bubble { background: #fff; color: #1c1917; border-radius: 4px 16px 16px 16px; padding: 10px 12px; font-size: 13px; line-height: 1.5; max-width: 230px; }
+.limg { width: 230px; aspect-ratio: 1; border-radius: 14px; background: linear-gradient(135deg, #c9a27e, #7d5a3c); }
+.carousel { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-left: 38px; scroll-snap-type: x mandatory; }
+.lcard { flex: none; width: 170px; background: #fff; color: #1c1917; border-radius: 14px; overflow: hidden; scroll-snap-align: start; }
+.lcard .im { aspect-ratio: 4/3; }
+.lcard .bd { padding: 8px 10px; font-size: 12px; display: grid; gap: 2px; }
+.lcard .bd b { font-size: 13px; }
+.lcard .bt { border-top: 1px solid #e7e2db; text-align: center; padding: 8px; font-size: 12.5px; color: #3b6fb6; font-weight: 600; }
+.lbtn { margin-top: 8px; border-top: 1px solid #e7e2db; padding-top: 8px; text-align: center; color: #3b6fb6; font-weight: 600; }
+
+/* กราฟเส้นยอด */
+.chart { width: 100%; height: 150px; }
+.chart path.l { fill: none; stroke: var(--accent); stroke-width: 2; }
+.chart path.a { fill: color-mix(in srgb, var(--accent) 12%, transparent); stroke: none; }
+.chart line { stroke: var(--border); }
+.chart text { fill: var(--muted); font-size: 10px; }
+
+/* หน้าต่างยืนยัน */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 60; display: grid; place-items: end center; padding: 16px; }
+@media (min-width: 700px) { .scrim { place-items: center; } }
+.dialog { background: var(--surface); border-radius: 20px; padding: 18px; width: 100%; max-width: 420px; display: grid; gap: 12px; box-shadow: var(--shadow); }
+
+.conn { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.conn:last-child { border-bottom: 0; }
+.conn code { font-size: 12px; background: var(--sunk); border-radius: 6px; padding: 1px 6px; }
+.flowline { font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.flowline span.on { color: var(--ok); font-weight: 600; }
+.flowline span.cur { color: var(--text); font-weight: 600; }
+</style>
+
+<div class="mock-flag">Mockup เฟส 2 · ด่าน 3 · ข้อมูลสมมติ · กดได้แต่ไม่บันทึก · เลข L-xx W-xx S-xx X-xx ตรงกับ 2-requirements.md</div>
+
+<div class="top">
+  <h1>Content เฟส 2 · Line OA · ยอดโพสต์ · WordPress</h1>
+  <div class="seg viewseg" role="group" aria-label="หน้าจอ" id="screens">
+    <button aria-pressed="true" data-s="line">① การ์ด · Line</button>
+    <button aria-pressed="false" data-s="wp">② การ์ด · เว็บ</button>
+    <button aria-pressed="false" data-s="stats">③ การ์ด · ยอด</button>
+    <button aria-pressed="false" data-s="home">④ หน้าแรก</button>
+    <button aria-pressed="false" data-s="conn">⑤ เชื่อมต่อ</button>
+  </div>
+</div>
+
+<main>
+
+<!-- ============ ① Line ============ -->
+<section data-screen="line">
+  <div class="stack">
+    <div class="spread">
+      <div><div class="eyebrow">ฌ เฌอ · อัลบั้มภาพ · แผนตุลาคม สัปดาห์ 2</div><h2>โซฟากระทั่ว · นั่งลึก นอนได้ทั้งบ่าย</h2></div>
+      <span class="pill t-ready">ตรวจผ่าน · รอส่ง</span>
+    </div>
+    <div class="tabs" role="tablist">
+      <button>Facebook</button><button>Instagram</button><button>บล็อก</button>
+      <button aria-selected="true">Line OA<span class="new">ใหม่</span></button><button>VOOM<span class="new">ใหม่</span></button><button>ยอด<span class="new">ใหม่</span></button>
+    </div>
+
+    <div class="grid2">
+      <div class="stack">
+        <div class="panel stack">
+          <div class="spread"><h3>รูปแบบ <span class="xs muted">L-04 · agent เลือกให้ เปลี่ยนได้</span></h3></div>
+          <div class="chips" id="lfmt">
+            <button class="chip" aria-pressed="false" data-f="single">ข้อความ + รูป</button>
+            <button class="chip" aria-pressed="true" data-f="car">การ์ดเลื่อน · 3 ใบ</button>
+          </div>
+          <label class="f">ข้อความนำ <span class="hint">agent เขียนตามคู่มือ Line: สั้น · 1 ประเด็น · ปุ่มเดียว (L-03)</span>
+            <textarea class="inp" rows="3">บ่ายวันหยุดแบบไม่ต้องลุกไปไหน 🛋️ โซฟากระทั่ว เบาะลึก 62 ซม. นั่งไขว่ห้าง หรือเอนนอนก็พอดีตัว · มาลองนั่งของจริงที่โชว์รูมได้ทุกวัน</textarea>
+          </label>
+          <div class="xs muted">ลิงก์ในปุ่มติด UTM เองแล้ว (L-11): <code>chawcher.com/kratua-sofa/?utm_source=line&amp;utm_medium=line&amp;utm_campaign=oct-living&amp;utm_content=c-1042</code></div>
+        </div>
+
+        <div class="panel stack">
+          <h3>ก่อนส่ง <span class="xs muted">L-05 · L-08</span></h3>
+          <div class="grid3">
+            <div class="kpi"><span class="xs muted">เพื่อนที่จะได้รับ</span><b class="num">1,284</b></div>
+            <div class="kpi"><span class="xs muted">ใช้โควตา</span><b class="num">1,284</b><span class="xs muted">ข้อความ</span></div>
+            <div class="kpi"><span class="xs muted">เหลือเดือนนี้ (หลังส่ง)</span><b class="num">3,716</b><span class="xs muted">จากเพดาน 5,000</span></div>
+          </div>
+          <div class="bar"><i style="width:26%"></i></div>
+          <div class="xs muted">ใช้ไปแล้ว 0 · ส่งชิ้นนี้แล้วเป็น 26% · เตือนเมื่อถึง 80% · ถึง 100% ปุ่มส่งปิด</div>
+          <div class="row">
+            <label class="f" style="flex:1;min-width:180px">ส่งเมื่อ (L-07)
+              <select class="inp"><option>ส่งทันที</option><option selected>ตั้งเวลา · ศ. 10 ต.ค. 19:00</option></select>
+            </label>
+          </div>
+          <div class="row">
+            <button class="btn primary" id="sendLine">ส่ง Line ถึงเพื่อน 1,284 คน</button>
+            <button class="btn ghost">ให้ agent เขียนใหม่</button>
+          </div>
+          <div class="xs muted">เฉพาะคนที่มีสิทธิ์ส่ง · AI ส่งเองไม่ได้ (L-06) · ส่งสำเร็จการ์ดเป็น "โพสต์แล้ว" เอง ไม่ต้องแปะลิงก์ (L-09)</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="xs muted" style="text-align:center;margin-bottom:6px">ตัวอย่างบนมือถือลูกค้า</div>
+        <div class="phone"><div class="scr" id="lprev"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ② WordPress ============ -->
+<section data-screen="wp" hidden>
+  <div class="stack">
+    <div class="spread">
+      <div><div class="eyebrow">ฌ เฌอ · บล็อก SEO · แผนตุลาคม สัปดาห์ 2</div><h2>เลือกโซฟาให้ห้องนั่งเล่นเล็ก: วัด 3 จุดก่อนซื้อ</h2></div>
+      <span class="pill t-ready">ตรวจผ่าน · รอส่ง</span>
+    </div>
+    <div class="tabs"><button>Facebook</button><button>Instagram</button><button aria-selected="true">บล็อก</button><button>ยอด</button></div>
+
+    <div class="grid2">
+      <div class="stack">
+        <div class="panel stack">
+          <div class="flowline" id="wpflow"></div>
+          <div id="wpbody"></div>
+        </div>
+        <div class="panel stack">
+          <h3>ส่งอะไรไปบ้าง <span class="xs muted">W-02 · W-03 · W-04</span></h3>
+          <div class="tw"><table class="t">
+            <tr><th>ช่องใน WordPress</th><th>ค่า</th></tr>
+            <tr><td>หัวเรื่อง</td><td>เลือกโซฟาให้ห้องนั่งเล่นเล็ก: วัด 3 จุดก่อนซื้อ</td></tr>
+            <tr><td>Yoast · SEO title</td><td>เลือกโซฟาห้องเล็ก วัด 3 จุดก่อนซื้อ | ฌ เฌอ <span class="xs muted num">· 52 ตัวอักษร ✓</span></td></tr>
+            <tr><td>Yoast · Meta description</td><td>ห้องนั่งเล่นไม่ถึง 12 ตร.ม. ก็มีโซฟานั่งสบายได้ วัดความกว้างผนัง ทางเดิน และความลึกเบาะให้ถูก… <span class="xs muted num">· 148 ✓</span></td></tr>
+            <tr><td>Yoast · คำค้นหลัก</td><td>โซฟาห้องเล็ก</td></tr>
+            <tr><td>Slug</td><td>sofa-small-living-room</td></tr>
+            <tr><td>หมวด</td><td><select class="inp" style="padding:4px 8px;font-size:13px"><option selected>ไอเดียแต่งบ้าน</option><option>คู่มือเลือกเฟอร์นิเจอร์</option><option>ข่าวสาร</option></select><div class="xs muted">agent เลือกจากหมวดที่มีบนเว็บ · ไม่สร้างใหม่</div></td></tr>
+            <tr><td>ภาพปก</td><td>key visual ของการ์ด <span class="xs muted">· + ภาพในบทความ 3 ภาพ ใส่ alt ให้</span></td></tr>
+            <tr><td>ผู้เขียน</td><td>Content agent <span class="xs muted">· สิทธิ์ Author · Publish ไม่ได้ (W-05)</span></td></tr>
+          </table></div>
+        </div>
+      </div>
+      <div class="panel stack">
+        <h3>ทดลองกด</h3>
+        <div class="xs muted">ดูว่าการ์ดเปลี่ยนยังไงในแต่ละขั้น</div>
+        <div class="chips" id="wpstep">
+          <button class="chip" aria-pressed="true" data-w="0">ยังไม่ส่ง</button>
+          <button class="chip" aria-pressed="false" data-w="1">เป็น Draft แล้ว</button>
+          <button class="chip" aria-pressed="false" data-w="2">Publish แล้ว</button>
+        </div>
+        <div class="note lock xs">ระบบเช็กทุกชั่วโมงว่า Draft ถูก Publish หรือยัง · ถ้าแล้วใส่ลิงก์ + เปลี่ยนเป็น "โพสต์แล้ว" + เริ่มดึงยอดเอง (W-07)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ③ ยอด ============ -->
+<section data-screen="stats" hidden>
+  <div class="stack">
+    <div class="spread">
+      <div><div class="eyebrow">ฌ เฌอ · อัลบั้มภาพ · โพสต์ 2 ต.ค.</div><h2>เก้าอี้กีวี่ · มุมอ่านหนังสือที่นั่งได้นาน</h2></div>
+      <span class="pill t-posted">โพสต์แล้ว</span>
+    </div>
+    <div class="tabs"><button>Facebook</button><button>Instagram</button><button>Line OA</button><button aria-selected="true">ยอด</button></div>
+
+    <div class="note warn xs">⚠️ Instagram ดึงยอดไม่ได้ตั้งแต่ 5 ต.ค. · token Meta หมดอายุ · ไปที่ แบรนด์ → เชื่อมต่อ (S-11)</div>
+
+    <div class="panel stack">
+      <div class="spread"><h3>รวมทุกช่องทาง</h3><span class="xs muted">ดึงล่าสุด 6 ต.ค. 09:00 · วันที่ 4 จาก 30 · ตอนนี้ดึงวันละครั้ง</span></div>
+      <div class="grid3">
+        <div class="kpi"><span class="xs muted">Conversion rate · ตัวหลัก (S-05)</span><b class="num">6.3%</b><span class="xs muted">กดนัดเข้าชม 5 ÷ คนกดลิงก์ 79</span></div>
+        <div class="kpi"><span class="xs muted">กดนัดเข้าชม</span><b class="num">5</b><span class="up">สูงกว่าค่าเฉลี่ยแบรนด์ 2.1 เท่า</span></div>
+        <div class="kpi"><span class="xs muted">เทียบคนเข้าถึง</span><b class="num">0.12%</b><span class="xs muted">5 ÷ 4,210</span></div>
+      </div>
+      <svg class="chart" viewBox="0 0 600 150" preserveAspectRatio="none" role="img" aria-label="คนกดลิงก์สะสม 4 วัน">
+        <line x1="0" y1="130" x2="600" y2="130"/>
+        <path class="a" d="M0,130 L0,120 L50,92 L100,70 L150,58 L200,52 L300,40 L450,34 L600,30 L600,130 Z"/>
+        <path class="l" d="M0,120 L50,92 L100,70 L150,58 L200,52 L300,40 L450,34 L600,30"/>
+        <text x="2" y="145">โพสต์</text><text x="190" y="145">48 ชม.</text><text x="560" y="145">วันที่ 4</text>
+      </svg>
+      <div class="xs muted">คนกดลิงก์สะสม · 48 ชม.แรกดึงทุกชั่วโมง แล้ววันละครั้ง (S-01)</div>
+    </div>
+
+    <div class="panel tw">
+      <table class="t">
+        <tr><th>ช่องทาง</th><th class="r">เข้าถึง</th><th class="r">ปฏิสัมพันธ์</th><th class="r">กดลิงก์</th><th class="r">นัดเข้าชม</th><th class="r">Conv. rate</th></tr>
+        <tr><td>Facebook</td><td class="r num">2,960</td><td class="r num">184</td><td class="r num">41</td><td class="r num">2</td><td class="r num">4.9%</td></tr>
+        <tr><td>Instagram <span class="pill t-bounce">⚠️ ค้าง 5 ต.ค.</span></td><td class="r num">1,250</td><td class="r num">212 <span class="xs muted">เซฟ 38</span></td><td class="r num">9</td><td class="r num">0</td><td class="r num">0%</td></tr>
+        <tr><td>Line OA</td><td class="r num">1,284 <span class="xs muted">เปิด 702</span></td><td class="r num">—</td><td class="r num">29</td><td class="r num">3</td><td class="r num"><b>10.3%</b></td></tr>
+      </table>
+      <div class="xs muted" style="margin-top:8px">นัดเข้าชมนับจาก GA4 (<code>book_showroom</code>) จับคู่กับโพสต์ด้วย UTM ที่ agent ใส่ · ตัวเลข % คำนวณตอนแสดง ไม่เก็บ</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ④ หน้าแรก ============ -->
+<section data-screen="home" hidden>
+  <div class="stack">
+    <div><div class="eyebrow">อ. 6 ต.ค. 2569 · ฌ เฌอ</div><h2>สวัสดีครับ พี่ Bay</h2></div>
+    <div class="xs muted">กล่องเดิมจากเฟส 1 (งานวันนี้ · รอตรวจ · แผน · งบ AI) อยู่ครบ · ด้านล่างคือกล่องใหม่</div>
+
+    <div class="note bad xs">⚠️ การเชื่อมต่อเสีย 1 ตัว: Meta (Instagram) token หมดอายุ · ยอด IG 3 โพสต์ค้าง → <u>แบรนด์ → เชื่อมต่อ</u> (S-11)</div>
+
+    <div class="grid3">
+      <div class="panel kpi"><span class="xs muted">Conversion rate เดือนนี้</span><b class="num">3.8%</b><span class="up">▲ 1.1 จุด จาก ก.ย.</span></div>
+      <div class="panel kpi"><span class="xs muted">กดนัดเข้าชมจากโพสต์</span><b class="num">14</b><span class="up">▲ 6 จาก ก.ย.</span></div>
+      <div class="panel kpi"><span class="xs muted">โควตา Line เดือนนี้</span><b class="num">2,568 / 5,000</b><div class="bar" style="margin-top:6px"><i style="width:51%"></i></div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel stack">
+        <div class="spread"><h3>โพสต์ดีสุดสัปดาห์ <span class="xs muted">S-07</span></h3><span class="xs muted">เรียงตาม conv. rate · กดลิงก์ ≥ 20</span></div>
+        <div class="tw"><table class="t">
+          <tr><th>#</th><th>โพสต์</th><th class="r">กดลิงก์</th><th class="r">นัด</th><th class="r">Conv.</th></tr>
+          <tr><td>1</td><td><span class="ch">LINE</span> เก้าอี้กีวี่ · มุมอ่านหนังสือ</td><td class="r num">29</td><td class="r num">3</td><td class="r num"><b>10.3%</b></td></tr>
+          <tr><td>2</td><td><span class="ch">FB</span> เก้าอี้กีวี่ · มุมอ่านหนังสือ</td><td class="r num">41</td><td class="r num">2</td><td class="r num">4.9%</td></tr>
+          <tr><td>3</td><td><span class="ch">WEB</span> วัด 3 จุดก่อนซื้อโซฟา</td><td class="r num">56</td><td class="r num">2</td><td class="r num">3.6%</td></tr>
+          <tr><td class="muted">—</td><td class="muted"><span class="ch">IG</span> Hook cozy chair · โปร <span class="xs">(กดลิงก์ 12 ยังไม่จัดอันดับ)</span></td><td class="r num muted">12</td><td class="r num muted">1</td><td class="r num muted">—</td></tr>
+        </table></div>
+      </div>
+
+      <div class="panel stack">
+        <h3>agent เรียนจากยอด <span class="xs muted">S-09</span></h3>
+        <div class="xs muted">สรุปทุกวันจันทร์ · เสนอเข้าสมุดความคิด · พี่ยืนยันก่อนใช้</div>
+        <div class="note lock small stack" style="gap:6px">
+          <div>"โพสต์ที่เปิดด้วย <b>ขนาดห้องจริง</b> (เช่น 'ห้อง 12 ตร.ม.') ได้ conv. rate 5.2% เทียบกับเปิดด้วยอารมณ์ 1.9% · 4 สัปดาห์ 11 โพสต์"</div>
+          <div class="row"><button class="btn sm primary">ยืนยันเข้าสมุด</button><button class="btn sm">ยังไม่ใช่</button></div>
+        </div>
+        <div class="note lock small stack" style="gap:6px">
+          <div>"Line แบบการ์ดเลื่อน ได้คนกดลิงก์มากกว่าข้อความ+รูป 1.8 เท่า"</div>
+          <div class="row"><button class="btn sm primary">ยืนยันเข้าสมุด</button><button class="btn sm">ยังไม่ใช่</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel stack">
+      <div class="spread"><h3>อะไรได้ผล · ต.ค. เทียบ ก.ย. <span class="xs muted">S-08</span></h3>
+        <div class="seg" id="cut"><button aria-pressed="true">pillar</button><button aria-pressed="false">ช่องทาง</button><button aria-pressed="false">รูปแบบ</button></div></div>
+      <div class="tw"><table class="t">
+        <tr><th>pillar</th><th class="r">โพสต์</th><th class="r">กดลิงก์</th><th class="r">นัด</th><th class="r">Conv.</th><th class="r">เทียบ ก.ย.</th></tr>
+        <tr><td><i class="dot" style="background:var(--p1)"></i>แต่งห้องเล็ก</td><td class="r num">6</td><td class="r num">168</td><td class="r num">8</td><td class="r num">4.8%</td><td class="r up">▲ 1.6</td></tr>
+        <tr><td><i class="dot" style="background:var(--p2)"></i>เบื้องหลังงานไม้</td><td class="r num">4</td><td class="r num">71</td><td class="r num">3</td><td class="r num">4.2%</td><td class="r up">▲ 0.4</td></tr>
+        <tr><td><i class="dot" style="background:var(--p3)"></i>บ้านลูกค้า</td><td class="r num">3</td><td class="r num">88</td><td class="r num">2</td><td class="r num">2.3%</td><td class="r down">▼ 0.7</td></tr>
+        <tr><td><i class="dot" style="background:var(--p4)"></i>โปรโมชัน</td><td class="r num">2</td><td class="r num">45</td><td class="r num">1</td><td class="r num">2.2%</td><td class="r muted">—</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑤ เชื่อมต่อ ============ -->
+<section data-screen="conn" hidden>
+  <div class="stack">
+    <div><div class="eyebrow">แบรนด์ · ฌ เฌอ</div><h2>เชื่อมต่อ</h2></div>
+    <div class="tabs"><button>ชุดแบรนด์</button><button>โมเดล</button><button>สมุด</button><button>คู่มือ</button><button aria-selected="true">เชื่อมต่อ<span class="new">ใหม่</span></button><button>AI</button></div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="conn"><div><h3>Meta · Facebook Page</h3><div class="xs muted">เพจ ฌ เฌอ · ดึงยอดล่าสุด 09:00</div></div><div class="row"><span class="pill t-ready">✅ ใช้ได้</span><button class="btn sm test">ทดสอบ</button></div></div>
+        <div class="conn"><div><h3>Meta · Instagram</h3><div class="xs" style="color:var(--danger)">token หมดอายุ 5 ต.ค. · ใส่ใหม่ใน Vercel ชื่อ <code>META_TOKEN_CHAWCHER</code></div></div><div class="row"><span class="pill t-bounce">⚠️ เสีย</span><button class="btn sm test">ทดสอบ</button></div></div>
+        <div class="conn"><div><h3>Line OA</h3><div class="xs muted">@chawcher · เพื่อน 1,284 · <code>LINE_TOKEN_CHAWCHER</code></div></div><div class="row"><span class="pill t-ready">✅ ใช้ได้</span><button class="btn sm test">ทดสอบ</button></div></div>
+        <div class="conn"><div><h3>Google Analytics 4</h3><div class="xs muted">Chawcher - GA4 · key event <code>book_showroom</code> ✓</div></div><div class="row"><span class="pill t-ready">✅ ใช้ได้</span><button class="btn sm test">ทดสอบ</button></div></div>
+        <div class="conn"><div><h3>Search Console</h3><div class="xs muted">chawcher.com</div></div><div class="row"><span class="pill t-ready">✅ ใช้ได้</span><button class="btn sm test">ทดสอบ</button></div></div>
+        <div class="conn"><div><h3>WordPress</h3><div class="xs muted">chawcher.com · ผู้ใช้ Content agent (Author) · <code>WP_APP_PASSWORD</code> · <a href="#" style="color:var(--accent)">เปิด wp-admin ↗</a></div></div><div class="row"><span class="pill t-ready">✅ ใช้ได้</span><button class="btn sm test">ทดสอบ</button></div></div>
+        <div class="xs muted" style="padding-top:10px">ไม่มีช่องพิมพ์ token ในระบบ · token อยู่ใน Vercel เท่านั้น หน้านี้บอกแค่ชื่อตัวแปร (X-03)</div>
+      </div>
+
+      <div class="panel stack">
+        <h3>เพดานโควตา Line <span class="xs muted">X-04 · admin</span></h3>
+        <label class="f">ข้อความต่อเดือน · ฌ เฌอ<input class="inp num" value="5,000"></label>
+        <div class="xs muted">≈ ส่งถึงเพื่อนทุกคนได้ 3 ครั้ง/เดือน · เกินเพดานปุ่มส่งปิด · เตือนที่ 80%</div>
+        <button class="btn primary">บันทึก</button>
+        <hr style="border:0;border-top:1px solid var(--border);width:100%">
+        <h3>HOF</h3>
+        <div class="xs muted">ยังไม่ต่อ Line OA · การ์ด HOF จึงไม่มีช่อง Line ให้ติ๊ก (L-01)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="scrim" id="dlg" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgt">
+    <h3 id="dlgt">ยืนยันส่ง Line</h3>
+    <div class="small">ส่ง <b>"โซฟากระทั่ว · นั่งลึก นอนได้ทั้งบ่าย"</b> แบบการ์ดเลื่อน 3 ใบ<br>ถึงเพื่อน <b class="num">1,284</b> คน · ศ. 10 ต.ค. 19:00<br>ใช้โควตา 1,284 · เหลือ 3,716</div>
+    <div class="note warn xs">ส่งแล้วเรียกคืนไม่ได้ · ตั้งเวลาไว้ยกเลิกได้จนถึงเวลาส่ง</div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" id="dlgNo">ยกเลิก</button><button class="btn primary" id="dlgYes">ยืนยันส่ง</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const toast = m => { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => t.hidden = true, 2600); };
+const press = (btns, on) => btns.forEach(b => b.setAttribute('aria-pressed', b === on ? 'true' : 'false'));
+
+$$('#screens button').forEach(b => b.onclick = () => {
+  press($$('#screens button'), b);
+  $$('[data-screen]').forEach(s => s.hidden = s.dataset.screen !== b.dataset.s);
+  scrollTo(0, 0);
+});
+
+const LINE_TEXT = 'บ่ายวันหยุดแบบไม่ต้องลุกไปไหน 🛋️ โซฟากระทั่ว เบาะลึก 62 ซม. นั่งไขว่ห้าง หรือเอนนอนก็พอดีตัว · มาลองนั่งของจริงที่โชว์รูมได้ทุกวัน';
+const CARDS = [['โซฟากระทั่ว 3 ที่นั่ง', 'ไม้สักทอง · ผ้าลินิน', '#c9a27e,#7d5a3c'], ['สีครีม · ผ้ากันน้ำ', 'เลือกได้ 6 สี', '#e8dcc8,#b8a283'], ['ลองนั่งที่โชว์รูม', 'เปิดทุกวัน 10:00–19:00', '#8fa58a,#4f6a4b']];
+function linePreview(f) {
+  const av = '<div class="av">ฌ</div>';
+  let h = `<div class="oa">${av}<div class="bubble">${LINE_TEXT}${f === 'single' ? '<div class="lbtn">ดูโซฟากระทั่ว</div>' : ''}</div></div>`;
+  if (f === 'single') h += `<div class="oa"><div style="width:30px"></div><div class="limg"></div></div>`;
+  else h += `<div class="carousel">${CARDS.map(c => `<div class="lcard"><div class="im" style="background:linear-gradient(135deg,${c[2]})"></div><div class="bd"><b>${c[0]}</b><span>${c[1]}</span></div><div class="bt">${c === CARDS[2] ? 'นัดวันเข้าชม' : 'ดูสินค้า'}</div></div>`).join('')}</div>`;
+  $('#lprev').innerHTML = h;
+}
+$$('#lfmt .chip').forEach(b => b.onclick = () => { press($$('#lfmt .chip'), b); linePreview(b.dataset.f); });
+linePreview('car');
+
+$('#sendLine').onclick = () => $('#dlg').hidden = false;
+$('#dlgNo').onclick = () => $('#dlg').hidden = true;
+$('#dlgYes').onclick = () => { $('#dlg').hidden = true; toast('ตั้งเวลาส่งแล้ว · ศ. 10 ต.ค. 19:00 · ยกเลิกได้จนถึงเวลาส่ง'); };
+
+const WP = [
+  { flow: ['ตรวจผ่าน', 'ส่งเข้า WordPress', 'Draft', 'Publish (คนกด)', 'ดึงยอด'], cur: 1,
+    body: `<div class="row"><button class="btn primary" onclick="toast('ส่งแล้ว · เป็น Draft ใน wp-admin')">ส่งเข้า WordPress เป็น Draft</button></div><div class="xs muted">W-01 · ยังไม่ขึ้นเว็บ · คนเปิดดูหน้าตาใน wp-admin แล้วกด Publish เอง</div>` },
+  { flow: ['ตรวจผ่าน', 'ส่งเข้า WordPress', 'Draft', 'Publish (คนกด)', 'ดึงยอด'], cur: 3,
+    body: `<div class="note ok small">✓ เป็น Draft ใน chawcher.com แล้ว · 6 ต.ค. 14:20</div><div class="row"><button class="btn primary">เปิดใน wp-admin ↗</button><button class="btn" onclick="toast('อัปเดต Draft เดิมแล้ว ไม่สร้างซ้ำ')">ส่งซ้ำ (แก้แล้ว)</button></div><div class="xs muted">W-06 ลิงก์ไปหน้าแก้ Draft ตรงๆ · W-08 แก้ในระบบแล้วส่งซ้ำ = อัปเดต Draft เดิม</div>` },
+  { flow: ['ตรวจผ่าน', 'ส่งเข้า WordPress', 'Draft', 'Publish (คนกด)', 'ดึงยอด'], cur: 5,
+    body: `<div class="note ok small">✓ Publish แล้ว 6 ต.ค. 16:05 · ระบบเจอเอง ใส่ลิงก์ให้แล้ว<br><a href="#" style="color:var(--accent)">chawcher.com/sofa-small-living-room/</a></div><div class="row"><span class="pill t-posted">โพสต์แล้ว</span><span class="xs muted">เริ่มดึงยอด GA4 + Search Console แล้ว</span></div><div class="xs muted">หลัง Publish ระบบไม่ทับบทความบนเว็บ · ต้องแก้ใน wp-admin (W-08)</div>` },
+];
+function wp(i) {
+  const s = WP[i];
+  $('#wpflow').innerHTML = s.flow.map((x, k) => `<span class="${k < s.cur ? 'on' : k === s.cur ? 'cur' : ''}">${k < s.cur ? '✓ ' : ''}${x}</span>`).join('<span>→</span>');
+  $('#wpbody').innerHTML = s.body;
+}
+$$('#wpstep .chip').forEach(b => b.onclick = () => { press($$('#wpstep .chip'), b); wp(+b.dataset.w); });
+wp(0);
+
+$$('#cut button').forEach(b => b.onclick = () => { press($$('#cut button'), b); toast('mockup: ตารางเปลี่ยนเป็นมุมมอง ' + b.textContent); });
+$$('.test').forEach(b => b.onclick = () => toast(b.closest('.conn').querySelector('h3').textContent + (b.closest('.conn').querySelector('.t-bounce') ? ' · ⚠️ token หมดอายุ' : ' · ✅ ต่อได้')));
+</script>
