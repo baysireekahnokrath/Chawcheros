@@ -23,8 +23,25 @@ function authHeader() {
   return 'Basic ' + Buffer.from(`${user}:${pass}`).toString('base64');
 }
 
+/** ตรวจรูปแบบโดยไม่เปิดเผยรหัส · Application Password = ตัวอักษร/ตัวเลข 24 ตัว (มีช่องว่างคั่นได้) */
+function credentialHint(): string {
+  const user = process.env.WP_USER?.trim() ?? '';
+  const pass = (process.env.WP_APP_PASSWORD ?? '').replace(/\s+/g, '');
+  const shape = /^[A-Za-z0-9]{24}$/.test(pass) ? 'รูปแบบรหัสถูก (24 ตัว)' : `⚠️ รูปแบบรหัสไม่ใช่ Application Password (ได้ ${pass.length} ตัว ควรเป็น 24)`;
+  return `WP_USER = "${user}" · ${shape}`;
+}
+
 function explain(status: number, code: string, message: string): string {
-  if (status === 401) return 'WordPress ไม่รับรหัส · เช็ก WP_USER / WP_APP_PASSWORD ใน Vercel (รหัสอาจถูกลบใน wp-admin)';
+  if (status === 401) {
+    const why = code === 'invalid_username' || code === 'invalid_email'
+      ? 'ไม่พบผู้ใช้ชื่อนี้ใน WordPress · WP_USER ต้องตรงกับ Username ใน wp-admin → Users'
+      : code === 'incorrect_password'
+        ? 'รหัสไม่ถูก · สร้าง Application Password ใหม่แล้วใส่ใน Vercel อีกครั้ง'
+        : code === 'rest_not_logged_in'
+          ? 'เว็บไม่ส่งรหัสต่อให้ WordPress (โฮสต์ตัดหัว Authorization ทิ้ง) · ต้องเพิ่ม 1 บรรทัดใน .htaccess'
+          : `WordPress ไม่รับรหัส (${code || 'ไม่มีรหัสข้อผิดพลาด'})`;
+    return `${why} · ${credentialHint()}`;
+  }
   if (status === 403) return `WordPress ไม่ให้สิทธิ์ (${code}) · ผู้ใช้ content-agent ต้องเป็น Author ขึ้นไป`;
   if (status === 404) return 'ไม่พบใน WordPress (อาจถูกลบไปแล้ว)';
   return `WordPress ตอบ ${status}${code ? ` · ${code}` : ''}${message ? ` · ${message}` : ''}`;
