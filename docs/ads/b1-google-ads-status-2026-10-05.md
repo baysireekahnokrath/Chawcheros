@@ -7,7 +7,7 @@
 
 | # | งาน | สถานะที่ตรวจได้ |
 |---|-----|-----------------|
-| 1 | negative keywords ระดับแคมเปญ | ยังไม่ได้ใส่ (search terms ถึง 4 ต.ค. ยังมี ikea, muji, โฮม โปร, บาร์, ล้อเลื่อน, พลาสติก, สแตนเลส, กินข้าว) |
+| 1 | negative keywords ระดับแคมเปญ | ✅ ใส่แล้ว 6 ต.ค. 2026 ผ่าน Supermetrics (Bay อนุมัติ) ครบ 9 คำ phrase · พื้นที่ ภาษา งบ คีย์เวิร์ด ไม่เปลี่ยน |
 | 2 | `showroom_appointment_click` เป็น Key Event ใน GA4 | ยังไม่ได้ตั้ง (Is key event = not set, ต่างจาก generate_lead ที่เป็น true) |
 | 3 | import เข้า Google Ads + เปลี่ยนเป้าหมายแคมเปญ 4 | ยังไม่มี conversion action ตัวนี้ในบัญชี |
 
