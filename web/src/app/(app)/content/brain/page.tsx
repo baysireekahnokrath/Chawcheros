@@ -5,6 +5,8 @@ import {
 } from '@/modules/content/queries';
 import Brain from '@/components/content/Brain';
 import { KitTab, RoutesTab, ArchiveTab } from '@/components/content/BrandKit';
+import ConnectTab from '@/components/content/ConnectTab';
+import { wpConfigured, WP_SITE } from '@/modules/content/wordpress';
 
 export const metadata = { title: 'แบรนด์ · Chaw Cher OS' };
 
@@ -19,6 +21,7 @@ const TABS = [
   { id: 'playbook', name: 'คู่มือแพลตฟอร์ม' },
   { id: 'archive', name: 'คลังงาน' },
   { id: 'routes', name: 'เส้นทาง agent' },
+  { id: 'connect', name: 'เชื่อมต่อ' },
   { id: 'ai', name: 'งบ AI' },
 ] as const;
 const PER_BRAND = ['kit', 'model', 'book', 'playbook', 'archive'];
@@ -77,6 +80,8 @@ export default async function BrainPage({ searchParams }: PageProps<'/content/br
       <div className="mt-4">
         {tab === 'kit' ? (
           <KitTab brandId={brandId} kit={kit} voice={voice} examples={examples} picks={archive} campaigns={campaigns} admin={admin} />
+        ) : tab === 'connect' ? (
+          <ConnectTab wp={{ connected: wpConfigured(), site: WP_SITE }} />
         ) : tab === 'routes' ? (
           <RoutesTab routes={routes} admin={admin} />
         ) : tab === 'archive' ? (

@@ -23,6 +23,9 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
             ฌ เฌอ <span className="text-muted font-normal">OS</span>
           </Link>
           <div className="flex items-center gap-3 text-sm">
+            <a href="https://chawcher.com/wp-admin/" target="_blank" rel="noreferrer" className="whitespace-nowrap text-muted hover:text-text">
+              แอดมินเว็บ ↗
+            </a>
             <span className="text-muted truncate max-w-[9rem]">
               {me?.full_name ?? user?.email}
             </span>

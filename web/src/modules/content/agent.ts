@@ -12,6 +12,8 @@
 import * as z from 'zod/v4';
 import { runClaude, isDirectImage, todayBangkok } from './ai';
 import { PHASE1_CHANNELS, LIMITS, channelName } from './types';
+import { withUtm, utmCampaign, utmContent } from './utm';
+import { wpCategories } from './wordpress';
 import type Anthropic from '@anthropic-ai/sdk';
 
 type Supa = Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>;
@@ -128,6 +130,8 @@ const WriteSchema = z.object({
     web_title: z.string(),
     web_keyword: z.string(),
     web_meta: z.string(),
+    web_category: z.string(),
+    web_slug: z.string(),
   })),
   notebook_proposals: z.array(z.object({ body: z.string(), this_brand_only: z.boolean(), reason: z.string() })),
   used_refs: z.array(z.string()),
@@ -189,7 +193,14 @@ export async function writeItem(
       : 'ทุกช่องทางคนแก้เองแล้ว · agent ไม่เขียนทับ · ถ้าต้องการให้กด "ให้ AI เขียนช่องนี้ใหม่" หรือสั่ง @AI พร้อมชื่อช่องทาง' };
   }
   const targetIds = targets.map((t) => t.channel_id);
-  const brain = await loadBrain(supabase, item.brand_id, targetIds);
+  const [brain, cats, { data: campaign }] = await Promise.all([
+    loadBrain(supabase, item.brand_id, targetIds),
+    targetIds.includes('website') ? wpCategories() : Promise.resolve([]),
+    item.campaign_id
+      ? supabase.schema('marketing').from('campaigns').select('name').eq('id', item.campaign_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+  const utm = { campaign: utmCampaign(campaign?.name), content: utmContent(itemId) };
   const facts = await productFacts(supabase, (models ?? []).map((m) => m.product_id));
 
   const edits = live.filter((p) => p.human_edited && p.ai_copy_text && p.ai_copy_text !== p.copy_text);
@@ -233,7 +244,11 @@ export async function writeItem(
         `ถ้าเป็นคำถามหรือคุยเฉยๆ: decision = "reply" แล้วตอบใน note_to_team · channels = []`
       : `เขียนข้อความใหม่ให้ช่องทาง: ${targetIds.join(', ')} · ส่งครบทุกช่องในรายการนี้`,
     `ความยาว: Instagram ไม่เกิน ${LIMITS.instagram} ตัวอักษร · web_title ไม่เกิน ${LIMITS.web_title} · web_meta ไม่เกิน ${LIMITS.web_meta}`,
-    'ช่อง web_title web_keyword web_meta ใช้กับ website เท่านั้น ช่องทางอื่นส่ง "" · first_comment ส่ง "" ถ้าไม่ใช้',
+    'ช่อง web_title web_keyword web_meta web_category web_slug ใช้กับ website เท่านั้น ช่องทางอื่นส่ง "" · first_comment ส่ง "" ถ้าไม่ใช้',
+    targetIds.includes('website')
+      ? `website: web_category เลือก 1 หมวดจาก ${cats.length ? cats.map((c) => `"${c.name}"`).join(' ') : '(ยังดึงหมวดไม่ได้ ส่ง "")'} · web_slug เป็นภาษาอังกฤษตัวเล็ก คั่นด้วยขีด 3-6 คำ ตามคำค้นหลัก เช่น small-living-room-sofa · เนื้อบทความเขียนเป็น markdown (## หัวข้อย่อย · **ตัวหนา** · - รายการ)`
+      : '',
+    'ถ้าใส่ลิงก์ไปเว็บ chawcher.com ระบบติดป้าย UTM ให้เอง ไม่ต้องใส่เอง',
     'note_to_team: สรุปสั้นๆ 1-2 ประโยคถึงทีมว่าเขียนอะไรไป หรือตอบคำถาม',
   ].filter((l) => l !== '').join('\n');
 
@@ -297,15 +312,21 @@ export async function writeItem(
     const p = targets.find((t) => t.channel_id === c.channel);
     if (!p || !c.copy_text.trim()) continue;
     const web = c.channel === 'website';
+    const copy = withUtm(c.copy_text.trim(), c.channel, utm)!;
+    const slug = c.web_slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
     const { error } = await db.from('placements').update({
       hook: c.hook.trim() || null,
-      copy_text: c.copy_text.trim(),
-      first_comment: c.first_comment.trim() || null,
+      copy_text: copy,
       web_title: web ? c.web_title.trim() || null : null,
       web_keyword: web ? c.web_keyword.trim() || null : null,
       web_meta: web ? c.web_meta.trim() || null : null,
+      ...(web ? {
+        web_category: cats.find((k) => k.name.toLowerCase() === c.web_category.trim().toLowerCase())?.name ?? null,
+        web_slug: slug || null,
+      } : {}),
+      first_comment: withUtm(c.first_comment.trim() || null, c.channel, utm),
       human_edited: false,
-      ai_copy_text: c.copy_text.trim(),
+      ai_copy_text: copy,
       ai_request_id: res.requestId,
     }).eq('id', p.id);
     if (error) return { ok: false, error: `บันทึก ${channelName(c.channel)} ไม่ได้: ${error.message}` };

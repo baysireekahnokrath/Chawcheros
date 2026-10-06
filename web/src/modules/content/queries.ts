@@ -41,7 +41,7 @@ export async function getPlacements(itemId: string): Promise<Placement[]> {
     supabase
       .schema('content')
       .from('placements')
-      .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_request_id,skipped_reason,passed_at')
+      .select('id,item_id,channel_id,planned_on,published_at,published_url,hook,copy_text,first_comment,web_title,web_keyword,web_meta,human_edited,ai_request_id,skipped_reason,passed_at,web_category,web_slug,wp_post_id,wp_sent_at,wp_note,wp_checked_at')
       .eq('item_id', itemId),
     supabase.schema('marketing').from('channels').select('id,name_th'),
   ]);

@@ -99,6 +99,12 @@ export type Placement = {
   ai_request_id: string | null;
   skipped_reason: string | null;
   passed_at: string | null;
+  web_category: string | null;
+  web_slug: string | null;
+  wp_post_id: number | null;
+  wp_sent_at: string | null;
+  wp_note: string | null;
+  wp_checked_at: string | null;
   channels: { name_th: string } | null;
 };
 

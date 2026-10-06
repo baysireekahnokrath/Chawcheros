@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { getBrands, getGaps, canApprove, isAdmin, getModels, getOpenPlans, getPlan } from '@/modules/content/queries';
 import { getDashboard } from '@/modules/content/dashboard';
+import { syncWpPublished } from '@/modules/content/wp-sync';
 import { channelShort, TONE, planDeadline } from '@/modules/content/types';
 import NewMenu from '@/components/content/NewMenu';
 import { AsksBox, NotebookBox, SwipeBox, IdeasBox } from '@/components/content/HomeBoxes';
@@ -29,7 +30,13 @@ const panel = 'rounded-2xl border border-border bg-surface p-4';
 export default async function ContentHome({ searchParams }: PageProps<'/content'>) {
   const { brand } = await searchParams;
   const supabase = await createClient();
-  const [{ data: { user } }, brands] = await Promise.all([supabase.auth.getUser(), getBrands()]);
+  const [{ data: { user } }, brands, { data: drafts }] = await Promise.all([
+    supabase.auth.getUser(), getBrands(),
+    supabase.schema('content').from('placements').select('id,wp_post_id,published_url,wp_checked_at')
+      .not('wp_post_id', 'is', null).is('published_url', null).limit(20),
+  ]);
+  // บทความที่ส่งเป็น Draft แล้ว · Publish ใน wp-admin หรือยัง (W-07)
+  await syncWpPublished(supabase, drafts ?? []);
   // เปิดมาเป็นแบรนด์ตั้งต้น (ฌ เฌอ) · ?brand=all = ทุกแบรนด์
   const b = brand === 'all' ? '' : typeof brand === 'string' && brands.some((x) => x.id === brand) ? brand : brands[0]?.id ?? '';
   const [d, gaps, approver, admin, models] = await Promise.all([

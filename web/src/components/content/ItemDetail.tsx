@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ChatPanel from './ChatPanel';
 import AgentPanel from './AgentPanel';
+import WordpressPanel from './WordpressPanel';
 import {
   updateBrief, saveCopy, submitForReview, markPosted, tickNote,
   addPlacement, setPlacementDate, skipPlacement, addImage, moveImageUp, removeImage,
@@ -38,6 +39,7 @@ type Props = {
   versions: Version[];
   questions: AgentQuestion[];
   me: string | null;
+  wp: { connected: boolean; site: string; categories: string[] };
 };
 
 type Result = { ok: true } | { ok: false; error: string };
@@ -55,7 +57,7 @@ function Counter({ len, max }: { len: number; max: number }) {
 }
 
 export default function ItemDetail(props: Props) {
-  const { item, brandName, placements, images, models, pillars, themes, campaigns, allModels, team, canApprove, notes, messages, versions, questions, me } = props;
+  const { item, brandName, placements, images, models, pillars, themes, campaigns, allModels, team, canApprove, notes, messages, versions, questions, me, wp } = props;
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -213,6 +215,11 @@ export default function ItemDetail(props: Props) {
               <CopyForm key={`${current.id}:${current.ai_request_id ?? ''}`} p={current} itemId={item.id} editable={editable} pending={pending} onSubmit={onSaveCopy} />
             )}
           </section>
+
+          {current?.channel_id === 'website' && (
+            <WordpressPanel key={`${current.id}:${current.wp_post_id ?? ''}:${current.web_category ?? ''}`} p={current} itemId={item.id}
+              readyToSend={canPost(current)} categories={wp.categories} connected={wp.connected} site={wp.site} />
+          )}
 
           {/* ── brief ── */}
           {editable && (

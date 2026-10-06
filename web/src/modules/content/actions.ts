@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { writeItem, channelsNamedIn } from './agent';
+import { withUtm, utmCampaign, utmContent } from './utm';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -129,13 +130,24 @@ export async function saveCopy(formData: FormData): Promise<ActionResult> {
   const itemId = str(formData.get('item_id'));
   const web = formData.has('web_title');
 
+  // คนแก้ลิงก์เองแล้ว UTM ยังอยู่ (S-04)
+  const [{ data: pl }, { data: item }] = await Promise.all([
+    supabase.schema('content').from('placements').select('channel_id').eq('id', id).maybeSingle(),
+    supabase.schema('content').from('items').select('campaign_id').eq('id', itemId).maybeSingle(),
+  ]);
+  const { data: campaign } = item?.campaign_id
+    ? await supabase.schema('marketing').from('campaigns').select('name').eq('id', item.campaign_id).maybeSingle()
+    : { data: null };
+  const utm = { campaign: utmCampaign(campaign?.name), content: utmContent(itemId) };
+  const ch = pl?.channel_id ?? '';
+
   const { error } = await supabase
     .schema('content')
     .from('placements')
     .update({
       hook: orNull(formData.get('hook')),
-      copy_text: orNull(formData.get('copy_text')),
-      first_comment: orNull(formData.get('first_comment')),
+      copy_text: withUtm(orNull(formData.get('copy_text')), ch, utm),
+      first_comment: withUtm(orNull(formData.get('first_comment')), ch, utm),
       ...(web
         ? {
             web_title: orNull(formData.get('web_title')),

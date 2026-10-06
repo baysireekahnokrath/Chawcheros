@@ -7,6 +7,8 @@ import {
   getReviewNotes, getMessages, getVersions, markRead, getAgentQuestions,
 } from '@/modules/content/queries';
 import ItemDetail from '@/components/content/ItemDetail';
+import { wpCategories, wpConfigured, WP_SITE } from '@/modules/content/wordpress';
+import { syncWpPublished } from '@/modules/content/wp-sync';
 import LegacyItemDetail from '@/components/content/LegacyItemDetail';
 
 export const metadata = { title: 'งานคอนเทนต์ · Chaw Cher OS' };
@@ -35,11 +37,16 @@ export default async function ContentItemPage({ params }: PageProps<'/content/[i
   }
 
   const supabase = await createClient();
+  // Draft ที่ส่งไปแล้ว ถูก Publish หรือยัง (W-07) · เช็กก่อนอ่านข้อมูล จะได้เห็นสถานะล่าสุด
+  const pre = await getPlacements(id);
+  await syncWpPublished(supabase, pre);
+  const hasWeb = pre.some((p) => p.channel_id === 'website' && !p.skipped_reason);
   const [placements, images, models, brands, pillars, themes, campaigns, allModels, team, approver, notes, messages, versions, questions, { data: { user } }] = await Promise.all([
     getPlacements(id), getImages(id), getItemModels(id), getBrands(true), getPillars(), getThemes(),
     getCampaigns(), getModels(), getTeam(), canApprove(), getReviewNotes(id), getMessages(id), getVersions(id), getAgentQuestions(id),
     supabase.auth.getUser(),
   ]);
+  const categories = hasWeb ? (await wpCategories()).map((c) => c.name) : [];
   await markRead(id);
   const order = ['facebook', 'instagram', 'website'];
   placements.sort((a, b) => order.indexOf(a.channel_id) - order.indexOf(b.channel_id));
@@ -65,6 +72,7 @@ export default async function ContentItemPage({ params }: PageProps<'/content/[i
           versions={versions}
           questions={questions}
           me={user?.id ?? null}
+          wp={{ connected: wpConfigured(), site: WP_SITE, categories }}
         />
       </div>
     </>
