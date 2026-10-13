@@ -1,0 +1,697 @@
+<title>ฌ เฌอ · Showroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Noto+Serif+Thai:wght@500;600&display=swap">
+<style>
+/* Layout: one phone-width column, sticky top bar, thumb-zone actions pinned to the bottom. Earth tones: oat ground, teak-green accent, walnut secondary. */
+:root{
+  --bg:#E6E1D8; --surface:#F6F3EE; --raised:#FFFDF9; --ink:#2A2520; --muted:#6B6258; --line:#D6CEC2;
+  --accent:#3D5A4B; --accent-ink:#F5F2EC; --accent-soft:#DCE5DD;
+  --walnut:#7A583C; --walnut-soft:#EDE2D6;
+  --warn:#A65F14; --warn-bg:#F5E3CB; --danger:#97352A; --danger-bg:#F2DAD4; --on-danger:#FFFFFF; --ok:#3B7350; --ok-bg:#DBE9DE;
+  --shadow:0 1px 2px rgba(42,37,32,.08),0 6px 18px rgba(42,37,32,.08);
+  --f-display:"Noto Serif Thai",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans Thai Looped","Noto Sans Thai",Tahoma,system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#191714; --surface:#221F1B; --raised:#2B2722; --ink:#EEE7DC; --muted:#A79C8E; --line:#3B352E;
+  --accent:#8DB49C; --accent-ink:#14201A; --accent-soft:#2A3A31;
+  --walnut:#C9A07A; --walnut-soft:#3A2F25;
+  --warn:#E3A35A; --warn-bg:#3D2C17; --danger:#E58C7E; --danger-bg:#41231E; --on-danger:#2A0F0B; --ok:#8CC49F; --ok-bg:#1F3326;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#191714; --surface:#221F1B; --raised:#2B2722; --ink:#EEE7DC; --muted:#A79C8E; --line:#3B352E;
+  --accent:#8DB49C; --accent-ink:#14201A; --accent-soft:#2A3A31;
+  --walnut:#C9A07A; --walnut-soft:#3A2F25;
+  --warn:#E3A35A; --warn-bg:#3D2C17; --danger:#E58C7E; --danger-bg:#41231E; --on-danger:#2A0F0B; --ok:#8CC49F; --ok-bg:#1F3326;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme:dark;}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.app{max-width:480px;margin:0 auto;min-height:100%;background:var(--surface);display:flex;flex-direction:column;position:relative}
+.mockbar{background:var(--walnut-soft);color:var(--walnut);font-size:13px;padding:6px 16px;display:flex;gap:8px;justify-content:space-between;align-items:center}
+.mockbar button{background:none;border:0;color:inherit;text-decoration:underline;font-size:13px;padding:4px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;min-height:60px}
+.top h1{font-family:var(--f-display);font-weight:600;font-size:20px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-wrap:balance}
+.top .sub{font-size:13px;color:var(--muted);font-family:var(--f-body);font-weight:400}
+.back{border:0;background:var(--raised);border-radius:12px;width:44px;height:44px;font-size:22px;flex:none;box-shadow:var(--shadow)}
+.sync{border:1px solid var(--line);background:var(--raised);border-radius:999px;padding:6px 12px;font-size:13px;display:flex;align-items:center;gap:6px;flex:none}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.sync.pending .dot{background:var(--warn)}
+main{flex:1;padding:16px 16px 120px;display:flex;flex-direction:column;gap:16px}
+.hello{font-family:var(--f-display);font-size:26px;margin:4px 0 0;font-weight:600}
+.date{color:var(--muted);margin-top:-12px}
+.big2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bigbtn{border:0;border-radius:18px;min-height:112px;padding:16px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;font-size:19px;font-weight:600;line-height:1.3;box-shadow:var(--shadow)}
+.bigbtn small{font-weight:400;font-size:14px;opacity:.85}
+.bigbtn.a{background:var(--accent);color:var(--accent-ink)}
+.bigbtn.b{background:var(--walnut);color:var(--accent-ink)}
+.sec-h{font-size:14px;letter-spacing:.06em;color:var(--muted);margin:8px 0 -6px;display:flex;justify-content:space-between;align-items:baseline}
+.sec-h button{border:0;background:none;color:var(--accent);font-size:15px;padding:6px}
+.card{background:var(--raised);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);border:0;text-align:left;width:100%;display:flex;flex-direction:column;gap:4px}
+button.card{min-height:64px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.row > *{min-width:0}
+.name{font-family:var(--f-display);font-size:19px;font-weight:600}
+.meta{color:var(--muted);font-size:15px}
+.time{font-family:var(--f-num);font-size:17px;color:var(--walnut);flex:none}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:500;white-space:nowrap}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.danger{background:var(--danger-bg);color:var(--danger)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.soft{background:var(--accent-soft);color:var(--accent)}
+.pill.wal{background:var(--walnut-soft);color:var(--walnut)}
+.status{display:flex;gap:10px;flex-wrap:wrap}
+.statbtn{flex:1 1 140px;border:0;border-radius:var(--r);padding:12px 14px;text-align:left;background:var(--raised);box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;min-height:64px}
+.statbtn b{font-family:var(--f-num);font-size:24px}
+.statbtn.warn b{color:var(--warn)} .statbtn.danger b{color:var(--danger)}
+.ghost{border:1.5px dashed var(--line);background:none;border-radius:var(--r);min-height:56px;color:var(--muted);font-size:16px}
+
+/* bottom nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--raised);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom,0px);z-index:30}
+.nav button{border:0;background:none;min-height:66px;font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);position:relative}
+.nav button[aria-current="page"]{color:var(--accent);font-weight:600}
+.nav .ico{font-size:22px;line-height:1}
+.badge{position:absolute;top:8px;left:calc(50% + 8px);background:var(--danger);color:var(--on-danger);border-radius:999px;font-size:12px;min-width:20px;height:20px;display:grid;place-items:center;padding:0 5px;font-family:var(--f-num)}
+
+/* visit */
+.banner{padding:10px 16px;font-weight:600;font-size:15px;display:flex;gap:8px;align-items:center;border:0;width:100%;text-align:left}
+.banner.b4{background:var(--danger);color:var(--on-danger)}
+.banner.a6{background:var(--warn-bg);color:var(--warn)}
+.steps{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;background:var(--surface);border-bottom:1px solid var(--line)}
+.steps::-webkit-scrollbar{display:none}
+.step{flex:none;border:1.5px solid var(--line);background:var(--raised);border-radius:12px;min-width:58px;height:52px;font-family:var(--f-num);font-size:16px;position:relative}
+.step[aria-current="step"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.step.touched::after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.step.hot{border-color:var(--warn);color:var(--warn)}
+.step.hot[aria-current="step"]{background:var(--warn);color:var(--raised)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg);padding:4px;border-radius:12px}
+.tabs button{border:0;background:none;border-radius:9px;min-height:44px;font-size:15px;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--raised);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.stepcard{background:var(--raised);border-radius:18px;padding:18px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.stepcard.hot{outline:3px solid var(--warn)}
+.stepcard h2{font-family:var(--f-display);font-size:22px;margin:0;font-weight:600;text-wrap:balance}
+.stepcard .code{font-family:var(--f-num);font-size:14px;color:var(--muted)}
+.hint{background:var(--walnut-soft);color:var(--walnut);border-radius:12px;padding:10px 12px;font-size:16px}
+.hint.red{background:var(--danger-bg);color:var(--danger)}
+.glabel{font-size:14px;color:var(--muted);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;min-height:48px;padding:6px 18px;font-size:17px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:500}
+
+.facts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.fact{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;min-height:52px;padding:10px 14px;text-align:left;display:flex;gap:10px;align-items:center;width:100%;font-size:16px}
+.fact[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.fact .box{width:24px;height:24px;border-radius:6px;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:15px}
+.fact[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fact.bad .box{background:var(--danger);border-color:var(--danger);color:var(--on-danger)}
+.notes{display:flex;flex-direction:column;gap:6px}
+.note{background:var(--surface);border-left:3px solid var(--walnut);padding:6px 10px;border-radius:4px;font-size:15px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumbs img,.thumbs .ph{width:72px;height:72px;object-fit:cover;border-radius:10px;background:var(--walnut-soft);display:grid;place-items:center;color:var(--walnut);font-size:12px}
+.num{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:14px;color:var(--muted)}
+.field input,.field textarea,.field select{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;min-height:50px;padding:10px 12px;font-size:17px;width:100%}
+.field textarea{min-height:110px;resize:vertical}
+.actionbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--raised);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));z-index:30}
+.act{border:0;border-radius:14px;min-height:64px;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;position:relative}
+.act .ico{font-size:24px;line-height:1}
+.act.end{background:var(--ink);color:var(--surface)}
+.act .badge{top:4px;left:calc(50% + 10px)}
+.timeline{display:flex;flex-direction:column;gap:0;list-style:none;padding:0;margin:0}
+.timeline li{display:grid;grid-template-columns:52px 44px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.timeline .t{font-family:var(--f-num);color:var(--muted)}
+.timeline .s{font-family:var(--f-num);color:var(--walnut)}
+.price{display:inline-block;border-radius:8px;background:var(--surface);border:1px dashed var(--line);padding:4px 10px;font-size:14px;color:var(--muted);user-select:none;-webkit-user-select:none;touch-action:none}
+.price.on{background:var(--ink);color:var(--surface);border-style:solid;font-family:var(--f-num);font-size:16px}
+.prodrow{display:flex;gap:12px;align-items:center}
+.qr{width:44px;height:44px;flex:none;border-radius:8px;background:
+ repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 8px),repeating-linear-gradient(0deg,var(--ink) 0 4px,transparent 4px 8px);opacity:.75;border:3px solid var(--raised);outline:1px solid var(--line)}
+.primary{border:0;border-radius:16px;min-height:60px;background:var(--accent);color:var(--accent-ink);font-size:18px;font-weight:600;width:100%}
+.primary:disabled{background:var(--line);color:var(--muted)}
+.secondary{border:1.5px solid var(--line);border-radius:16px;min-height:56px;background:var(--raised);font-size:17px;width:100%}
+
+.missing{font-size:14px;color:var(--danger);text-align:center}
+
+/* sheet & modal */
+.scrim{position:fixed;inset:0;background:rgba(20,17,14,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:480px;border-radius:22px 22px 0 0;max-height:92%;overflow-y:auto;padding:10px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 4px}
+.sheet h3{font-family:var(--f-display);font-size:22px;margin:0;font-weight:600}
+.huge2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.huge{border:2px solid var(--line);background:var(--raised);border-radius:18px;min-height:96px;font-size:22px;font-weight:600}
+.huge[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.huge.no[aria-pressed="true"]{background:var(--walnut);border-color:var(--walnut)}
+.modal{position:fixed;inset:0;z-index:60;background:var(--danger);color:var(--on-danger);display:flex;flex-direction:column;padding:calc(24px + env(safe-area-inset-top,0px)) 20px calc(24px + env(safe-area-inset-bottom,0px));gap:16px;overflow-y:auto}
+.modal h2{font-family:var(--f-display);font-size:28px;margin:0;line-height:1.3;text-wrap:balance}
+.modal ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:12px;font-size:19px}
+.modal .lead{font-size:17px;opacity:.9}
+.modal button{margin-top:auto;border:0;border-radius:16px;min-height:64px;background:var(--on-danger);color:var(--danger);font-size:19px;font-weight:600}
+.sig{width:100%;height:160px;background:var(--raised);border:1.5px dashed var(--line);border-radius:12px;touch-action:none;display:block}
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:999px;font-size:15px;z-index:70;max-width:90%;text-align:center}
+.empty{color:var(--muted);text-align:center;padding:16px}
+.search{border:1.5px solid var(--line);background:var(--raised);border-radius:14px;min-height:54px;padding:10px 14px;font-size:17px;width:100%}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:16px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.lock{background:var(--danger-bg);color:var(--danger);border-radius:12px;padding:10px 12px;font-size:15px}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}
+@media (min-width:520px){body{padding-block:16px}.app{border-radius:24px;overflow:hidden;min-height:calc(100% - 32px);box-shadow:var(--shadow)}}
+</style>
+
+<div class="app" id="app"></div>
+
+<script>
+(function(){
+const KEY='cc-showroom-mock-v2';
+const TODAY=new Date(2026,9,13,10,40);
+const DAY=86400000;
+const fmtD=d=>{const m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];d=new Date(d);return d.getDate()+' '+m[d.getMonth()]};
+const fmtT=d=>{d=new Date(d);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const baht=n=>n.toLocaleString('th-TH');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const daysFrom=d=>Math.round((new Date(d).setHours(0,0,0,0)-new Date(TODAY).setHours(0,0,0,0))/DAY);
+
+const UNITS=[
+ {code:'U0000042',name:'โซฟา 2.5 ที่นั่ง กีวี่',en:'Kiwi Sofa',spec:'ไม้โอ๊ค · W158 D82 H77',price:55900},
+ {code:'U0000043',name:'อาร์มแชร์ กีวี่',en:'Kiwi Armchair',spec:'ไม้โอ๊ค · W66 D82 H77',price:33600},
+ {code:'U0000051',name:'โซฟา 2.5 ที่นั่ง อีมู',en:'Emu Sofa',spec:'ผ้า A · W170 D82 H83',price:55200},
+ {code:'U0000057',name:'โซฟา 3 ที่นั่ง กระสา',en:'Krasa Sofa',spec:'ไม้วอลนัท · W210 D88 H78',price:68900},
+ {code:'U0000063',name:'สตูล Size S ขอนไม้',en:'Khonmai Stool',spec:'ผ้า A · W41 D41 H45',price:9300},
+ {code:'U0000070',name:'โต๊ะกลาง นางนวล',en:'Nangnuan Coffee Table',spec:'ไม้เบิร์ช · W110 D60 H35',price:13500}
+];
+const CHECK=['ไฟเปิดครบทุกดวง','อุณหภูมิเย็นพอให้นั่งนานๆ','ไม่มีกล่องหรือของรอส่งในสายตาลูกค้า','เบาะตบเข้ารูป หมอนจัดตรง','ผ้าตัวอย่างเรียงครบ','ป้ายราคาตรงกับระบบทุกตัว','ที่จอดรถว่าง ทางเข้าชัด','น้ำดื่มพร้อมเสิร์ฟ','ห้องน้ำสะอาด'];
+const SOURCES=['Google','Google Maps','Facebook','Instagram','TikTok','LINE','เพื่อน/ครอบครัวแนะนำ','ดีไซเนอร์พามา','ลูกค้าเก่า','ผ่านหน้าร้าน','งานแฟร์','อื่นๆ'];
+const REASONS=['ราคา','ต้องปรึกษาคนที่บ้าน','ระยะผลิตนานเกิน','ยังไม่แน่ใจขนาดห้อง','ยังเลือกผ้าไม่ได้','บ้านยังไม่เสร็จ','ทางเข้า/ลิฟต์อาจไม่ผ่าน','ไปดูเจ้าอื่นก่อน','อื่นๆ'];
+
+const STEPS_A=[
+ {k:'A1',t:'โจทย์จากตอนนัด',hint:'คำตอบ 4 ข้อจากตอนนัดในไลน์ · แก้ได้ถ้าคุยแล้วเปลี่ยน',groups:[
+   {g:'room',l:'ห้องประมาณ',o:['< 20','20-35','35-50','50+ ตร.ม.'],one:1},
+   {g:'users',l:'ใครใช้',o:['เด็กเล็ก','ผู้สูงอายุ','สัตว์เลี้ยง']},
+   {g:'when',l:'อยากได้ใช้',o:['ภายใน 1 เดือน','1-3 เดือน','ไม่รีบ'],one:1},
+   {g:'seen',l:'เคยดูรุ่น',o:['Kiwi','Emu','Krasa','Khonmai','ยังไม่เคย']}]},
+ {k:'A2',t:'5 นาทีแรก · ห้ามขาย',hint:'เริ่มด้วย "บ้านคุณตอนนี้เป็นแบบไหน" ไม่ใช่ "สนใจตัวไหน" · ปล่อยเดินดูเอง อยู่ในระยะที่เรียกได้',groups:[
+   {g:'done',l:'ทำแล้ว',o:['เสนอน้ำแล้ว','ถามถึงบ้านแล้ว','ปล่อยเดินดูเอง']},
+   {g:'home',l:'บ้านเขา',o:['คอนโด','ทาวน์โฮม','บ้านเดี่ยว','ยังสร้างไม่เสร็จ'],one:1},
+   {g:'style',l:'สไตล์ที่บ้าน',o:['มินิมอล','ไม้อุ่น','โมเดิร์น','ยังไม่มีธีม']}]},
+ {k:'A3',t:'ให้นั่งจริง',hint:'ชวนนั่งอย่างน้อย 5 นาที · ถอดรองเท้า เอน ยกขาได้ · ให้ลองท่าที่ใช้จริงที่บ้าน',groups:[
+   {g:'sat',l:'ลองแล้ว',o:['นั่งเกิน 5 นาที','ลองท่าดูทีวี','ลองท่างีบ','นั่งพร้อมกันหลายคน']},
+   {g:'feel',l:'ชอบแบบ',o:['นุ่ม','แน่น','เบาะลึก','เบาะตื้น','พนักสูง']}]},
+ {k:'A4',t:'เล่าเรื่องโรงงาน',hint:'เล่าตอนเขากำลังนั่ง · พูดได้เฉพาะเรื่องที่ยืนยันแล้ว',facts:['โรงงานของเราเอง ผลิตในไทย','ส่งออก 20 ประเทศ และผลิตให้โรงแรม','สั่งทำได้ · ขนาด ผ้า ความลึกเบาะ','หนังแท้ทุกรุ่น ไม่มีหนังเทียม','ไม้จริงที่มองเห็นได้ มีเฉพาะ Kiwi กับ Krasa'],
+   ban:'ห้ามพูด: สรรพคุณวัสดุที่ไม่มีในเอกสาร · ระยะผลิตที่ยังไม่เช็ก · ส่วนลดที่ยังไม่อนุมัติ'},
+ {k:'A5',t:'เลือกผ้า',hint:'วางผ้าบนโซฟาตัวจริง · พาไปดูใต้แสงธรรมชาติ · ให้จับ ขยี้ ลองเล็บ · ไม่ส่งผ้าตัวอย่างออกนอกร้าน ถ่ายรูปส่งไลน์แทน',groups:[
+   {g:'grade',l:'เกรดผ้า',o:['ผ้า A','ผ้า B','ผ้า C','หนังแท้']},
+   {g:'tone',l:'โทนสี',o:['อ่อน','กลาง','เข้ม']},
+   {g:'did',l:'ทำแล้ว',o:['ดูใต้แสงธรรมชาติ','ให้ขยี้/ลองเล็บ','คุยเรื่องทำความสะอาด']}],photo:1},
+ {k:'A6',t:'เช็กทางเข้า · ห้ามข้าม',hot:1},
+ {k:'A7',t:'เสนอของที่เข้าชุด',hint:'เสนอหลังตัดสินใจเรื่องโซฟาแล้วเท่านั้น · "ตัวนี้คนมักเอาคู่กับโต๊ะกลางตัวนี้ ลองวางดูก่อนไหม"',groups:[
+   {g:'offer',l:'เสนอแล้ว',o:['โต๊ะกลาง','สตูล','โต๊ะข้าง','อาร์มแชร์']},
+   {g:'res',l:'ลูกค้า',o:['สนใจ','ไว้ก่อน','ไม่สนใจ'],one:1}],scan:1},
+ {k:'A8',t:'ถ้ายังไม่ตัดสินใจ',hint:'ห้ามเร่ง · ถ่ายรูปตัวที่สนใจส่งไลน์ก่อนเขาออกจากร้าน · ถาม "ยังติดอะไรอยู่" · นัดวันติดต่อกลับให้ชัด',groups:[
+   {g:'did',l:'ทำแล้ว',o:['ถ่ายรูปส่งไลน์แล้ว','ถามว่าติดอะไรแล้ว']}],photo:1},
+ {k:'A9',t:'สรุปก่อนจบ',summary:1}
+];
+const STEPS_B=[
+ {k:'B1',t:'มาแบบไหน',bmode:1},
+ {k:'B2',t:'สิ่งที่ต้องมีให้เขา',hint:'สิ่งที่สำคัญที่สุดสำหรับดีไซเนอร์คือระยะผลิตที่รับปากได้จริง',groups:[
+   {g:'gave',l:'ให้แล้ว / ต้องส่งตาม',o:['สเปกชีต','ราคาเทรด','ระยะผลิต','ภาพไปพรีเซนต์','ไฟล์ CAD/3D']}],clientHide:'ราคาเทรด'},
+ {k:'B3',t:'คำถามที่ต้องถาม',hint:'ข้อ 4 บอกเราว่าจะชนะเจ้าอื่นด้วยอะไร',groups:[
+   {g:'proj',l:'1 · โปรเจกต์',o:['บ้าน','คอนโด','โรงแรม','ออฟฟิศ'],one:1},
+   {g:'due',l:'2 · ต้องส่งของ',o:['ภายใน 1 เดือน','1-3 เดือน','3 เดือนขึ้นไป'],one:1},
+   {g:'mod',l:'3 · ต้องปรับจากมาตรฐาน',o:['ขนาด','ผ้า/หนัง','ความลึกเบาะ','ไม่ต้องปรับ']},
+   {g:'pain',l:'4 · เคยมีปัญหากับเจ้าอื่น',o:['ส่งช้า','ของไม่ตรงสเปก','ติดต่อยาก','ราคาไม่นิ่ง']}],scan:1},
+ {k:'B4',t:'กฎเหล็กเมื่อมีลูกค้าของเขา',rules:1},
+ {k:'B5',t:'ยืมของไปจัดโชว์',loan:1},
+ {k:'B6',t:'ข้อตกลง 3 บรรทัด',agree:1},
+ {k:'B7',t:'หลังดีไซเนอร์กลับ',hint:'ส่งสเปกชีตและภาพภายใน 24 ชั่วโมง · ติดต่อกลับตามรอบ ไม่ต้องรอเขาทัก',groups:[
+   {g:'after',l:'ทำแล้ว',o:['ส่งสเปกชีตแล้ว','ส่งภาพแล้ว']},
+   {g:'cycle',l:'รอบติดต่อ',o:['ทุก 14 วัน','ทุก 30 วัน','ทุก 60 วัน'],one:1}]}
+];
+
+function seed(){
+  const t=TODAY.getTime();
+  return {
+    view:'home',online:true,pending:0,visitId:null,step:null,vtab:'steps',custId:null,custFilter:'all',q:'',
+    checklist:{date:'2026-10-13',items:{},by:null,at:null},
+    customers:[
+      {id:'c1',type:'person',name:'คุณภัทร',line:'phat.s',phone:'081-234-5678',source:'Google Maps'},
+      {id:'c2',type:'person',name:'คุณวรรณ',line:'wann_d',phone:'089-555-1212',source:'Instagram'},
+      {id:'c3',type:'person',name:'คุณต้น',line:'ton.k',phone:'086-777-3030',source:'ผ่านหน้าร้าน'},
+      {id:'d0',type:'company',name:'Studio Lamun',isDesigner:1,taxId:'0105565000000',branch:'สำนักงานใหญ่',work:'บ้าน · คอนโด',cycle:30,agree:['ลูกค้าที่พามาเป็นของ Studio Lamun 12 เดือน','ราคา designer (เท่ากันทุกคน)','งานหน้าคิดแบบเดิม']},
+      {id:'d1',type:'person',name:'คุณมิ้นท์',isDesigner:1,companyId:'d0',line:'mint.lamun',phone:'092-111-2222',work:'บ้าน · คอนโด',projects:'คอนโดริเวอร์ไซด์ 2 ห้อง',interest:'Kiwi · หนังแท้',cycle:30},
+      {id:'d2',type:'person',name:'คุณโอ๊ต',isDesigner:1,line:'oat.arch',phone:'095-333-4444',work:'โรงแรม',projects:'บูทีคโฮเทล เชียงใหม่',interest:'Krasa · สตูล',cycle:30},
+      {id:'c4',type:'person',name:'คุณเอ',designerId:'d1',line:'a.client',phone:'081-000-9999',source:'ดีไซเนอร์พามา'}
+    ],
+    appts:[
+      {id:'p1',custId:'c1',at:new Date(2026,9,13,11,0).getTime(),path:'A',sel:{'A1:room':['20-35'],'A1:users':['สัตว์เลี้ยง'],'A1:when':['1-3 เดือน'],'A1:seen':['Kiwi']}},
+      {id:'p2',custId:'d1',at:new Date(2026,9,13,14,30).getTime(),path:'B',bmode:'client',clientId:'c4'}
+    ],
+    visits:[],
+    callbacks:[
+      {id:'k1',custId:'c2',due:t-2*DAY,about:'Emu Sofa · ผ้า B',reasons:['ราคา','ต้องปรึกษาคนที่บ้าน'],last:'เข้าชม 3 ต.ค.'},
+      {id:'k2',custId:'c3',due:t,about:'Krasa Sofa · หนังแท้',reasons:['บ้านยังไม่เสร็จ'],last:'เข้าชม 29 ก.ย.'},
+      {id:'k3',custId:'d2',due:t+3*DAY,about:'รอบดีไซเนอร์ 30 วัน',reasons:[],last:'มาโชว์รูม 16 ก.ย.'}
+    ],
+    loans:[
+      {id:'l1',unit:'U0000043',custId:'d1',out:t-10*DAY,due:t+5*DAY,cond:'สมบูรณ์',signed:1},
+      {id:'l2',unit:'U0000063',custId:'d2',out:t-3*DAY,due:t+18*DAY,cond:'มีรอยเล็กน้อยที่ขา',signed:1}
+    ]
+  };
+}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+if(!S||!S.customers)S=seed();
+const photos={};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function touch(){ if(!S.online)S.pending++; save(); }
+
+const $app=document.getElementById('app');
+const cust=id=>S.customers.find(c=>c.id===id);
+const visit=()=>S.visits.find(v=>v.id===S.visitId);
+const unit=c=>UNITS.find(u=>u.code===c);
+const cname=c=>c?c.name:'ลูกค้าใหม่';
+
+function toast(msg){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+
+function syncPill(){
+  const p=S.pending>0;
+  return `<button class="sync ${p?'pending':''}" data-act="net" aria-label="สถานะการส่งข้อมูล แตะเพื่อจำลองเน็ตหลุด"><span class="dot"></span>${p?'รอส่ง '+S.pending:(S.online?'ส่งแล้ว':'ออฟไลน์')}</button>`;
+}
+function mockbar(){return `<div class="mockbar"><span>ตัวอย่าง · ข้อมูลสมมติทั้งหมด</span><button data-act="reset">เริ่มใหม่</button></div>`}
+function nav(cur){
+  const due=S.callbacks.filter(k=>!k.done&&daysFrom(k.due)<=0).length;
+  const loanDue=S.loans.filter(l=>!l.back&&daysFrom(l.due)<=7).length;
+  const it=[['home','◐','วันนี้',0],['callbacks','☏','ติดต่อกลับ',due],['customers','☰','ลูกค้า',0],['loans','⇄','ยืมของ',loanDue]];
+  return `<nav class="nav" aria-label="เมนูหลัก">${it.map(([v,i,l,b])=>`<button data-act="go" data-v="${v}" ${cur===v?'aria-current="page"':''}><span class="ico" aria-hidden="true">${i}</span>${l}${b?`<span class="badge">${b}</span>`:''}</button>`).join('')}</nav>`;
+}
+
+/* ---------- HOME ---------- */
+function vHome(){
+  const ck=S.checklist; const done=!!ck.by;
+  const due=S.callbacks.filter(k=>!k.done&&daysFrom(k.due)<=0).length;
+  const loanDue=S.loans.filter(l=>!l.back&&daysFrom(l.due)<=7).length;
+  const open=S.visits.filter(v=>!v.closed);
+  const appts=S.appts.filter(a=>!a.started).sort((a,b)=>a.at-b.at);
+  return `${mockbar()}<header class="top"><h1>ฌ เฌอ · Showroom</h1>${syncPill()}</header>
+  <main>
+   <div><p class="hello">สวัสดีครับ คุณ Bay</p></div>
+   <p class="date">อังคาร 13 ต.ค. 2569 · เจริญนคร</p>
+   <button class="card" data-act="go" data-v="checklist"><div class="row"><span class="name" style="font-size:17px">เช็กลิสต์เปิดร้าน</span>${done?`<span class="pill ok">✓ ${esc(ck.by)} ${fmtT(ck.at)}</span>`:`<span class="pill warn">ยังไม่ทำ</span>`}</div><span class="meta">9 ข้อ · ไม่เกิน 10 นาที</span></button>
+   <div class="big2">
+     <button class="bigbtn a" data-act="startA">รับลูกค้าทั่วไป<small>ไม่ได้นัด · เดินเข้ามา</small></button>
+     <button class="bigbtn b" data-act="startB">รับดีไซเนอร์<small>สถาปนิก · ดีไซเนอร์</small></button>
+   </div>
+   ${open.length?`<div class="sec-h"><span>กำลังรับ / ค้างกรอก</span></div>${open.map(v=>{const c=cust(v.custId);return `<button class="card" data-act="openVisit" data-id="${v.id}"><div class="row"><span class="name">${esc(cname(c))}</span>${v.deferred?'<span class="pill warn">ค้างกรอกตอนจบ</span>':'<span class="pill soft">กำลังรับ</span>'}</div><span class="meta">เส้นทาง ${v.path} · มาถึง ${fmtT(v.arrivedAt)}</span></button>`}).join('')}`:''}
+   <div class="sec-h"><span>นัดวันนี้</span><button data-act="go" data-v="appt">+ บันทึกนัด</button></div>
+   ${appts.length?appts.map(a=>{const c=cust(a.custId);const brief=a.path==='A'?[...(a.sel['A1:room']||[]).map(x=>'ห้อง '+x),...(a.sel['A1:users']||[]),...(a.sel['A1:seen']||[]).map(x=>'ดู '+x)].join(' · '):'ดีไซเนอร์ · มากับลูกค้าของเขา';
+     const prep=(a.at-TODAY.getTime())/60000;
+     return `<button class="card" data-act="startAppt" data-id="${a.id}"><div class="row"><span class="name">${esc(c.name)}${c.companyId?` <span class="meta">${esc(cust(c.companyId).name)}</span>`:''}</span><span class="time">${fmtT(a.at)}</span></div><span class="meta">${esc(brief)}</span>${prep>0&&prep<=30?'<span class="pill warn">เตรียมของตอนนี้</span>':prep>30?`<span class="meta" style="font-size:13px">เตรียมของก่อน ${fmtT(a.at-30*60000)} · แตะเพื่อเริ่มรับ</span>`:''}</button>`}).join(''):'<p class="empty">วันนี้ไม่มีนัดแล้ว</p>'}
+   <div class="status">
+     <button class="statbtn ${due?'danger':''}" data-act="go" data-v="callbacks"><b>${due}</b><span>ต้องติดต่อ<br>วันนี้</span></button>
+     <button class="statbtn ${loanDue?'warn':''}" data-act="go" data-v="loans"><b>${loanDue}</b><span>ของยืม<br>ใกล้ครบกำหนด</span></button>
+   </div>
+  </main>${nav('home')}`;
+}
+
+/* ---------- CHECKLIST ---------- */
+function vChecklist(){
+  const it=S.checklist.items; const n=Object.values(it).filter(x=>x&&x.ok!==undefined).length;
+  return `${mockbar()}<header class="top"><button class="back" data-act="go" data-v="home" aria-label="กลับ">‹</button><h1>เช็กลิสต์เปิดร้าน<div class="sub">${n}/9 · แตะ = ผ่าน · ✗ = ไม่ผ่าน</div></h1>${syncPill()}</header>
+  <main><ul class="facts">${CHECK.map((c,i)=>{const r=it[i]||{};const hot=i===5;return `<li><div class="row" style="gap:8px"><button class="fact ${r.ok===false?'bad':''}" style="flex:1;${hot?'border-color:var(--warn)':''}" data-act="ck" data-i="${i}" aria-pressed="${r.ok===true}"><span class="box">${r.ok===true?'✓':r.ok===false?'✗':''}</span><span>${esc(c)}${r.note?`<br><span class="meta">${esc(r.note)}</span>`:''}</span></button><button class="back" data-act="ckbad" data-i="${i}" aria-label="ไม่ผ่าน: ${esc(c)}">✗</button></div>${hot?'<p class="hint" style="margin:6px 0 0;font-size:14px">ป้ายไม่ตรงระบบ = เอาป้ายออกทันที</p>':''}</li>`}).join('')}</ul>
+  <button class="primary" data-act="ckdone" ${n<9?'disabled':''}>${S.checklist.by?'บันทึกแล้ว · '+fmtT(S.checklist.at):'เสร็จแล้ว'}</button>
+  ${n<9?`<p class="missing">เหลืออีก ${9-n} ข้อ</p>`:''}</main>${nav('home')}`;
+}
+
+/* ---------- APPOINTMENT ---------- */
+let draft=null;
+function vAppt(){
+  if(!draft)draft={name:'',line:'',day:'พรุ่งนี้',time:'11:00',sel:{}};
+  const ch=(g,o,one)=>`<div class="chips">${o.map(v=>`<button class="chip" data-act="dchip" data-g="${g}" data-v="${esc(v)}" ${one?'data-one="1"':''} aria-pressed="${(draft.sel[g]||[]).includes(v)}">${esc(v)}</button>`).join('')}</div>`;
+  const a1=STEPS_A[0].groups;
+  return `${mockbar()}<header class="top"><button class="back" data-act="go" data-v="home" aria-label="กลับ">‹</button><h1>บันทึกนัด<div class="sub">จากแชตไลน์ · ถามแค่ 4 ข้อ</div></h1>${syncPill()}</header>
+  <main>
+   <div class="field"><label for="ap-name">ชื่อลูกค้า</label><input id="ap-name" data-draft="name" value="${esc(draft.name)}" placeholder="เช่น คุณแพร"></div>
+   <div class="field"><label for="ap-line">ชื่อไลน์</label><input id="ap-line" data-draft="line" value="${esc(draft.line)}" placeholder="ชื่อที่เห็นในแชต"></div>
+   <div><div class="glabel">วัน</div>${ch('day',['วันนี้','พรุ่งนี้','เสาร์ (นัด)','เลือกวัน'],1)}</div>
+   <div><div class="glabel">เวลา</div>${ch('time',['10:00','11:00','13:00','14:30','16:00'],1)}</div>
+   ${a1.map(g=>`<div><div class="glabel">${g.l}</div>${ch('A1:'+g.g,g.o,g.one)}</div>`).join('')}
+   <button class="secondary" data-act="copyConfirm">คัดลอกข้อความยืนยันนัด</button>
+   <button class="primary" data-act="saveAppt">บันทึกนัด</button>
+  </main>${nav('home')}`;
+}
+
+/* ---------- VISIT ---------- */
+function stepsOf(v){return v.path==='A'?STEPS_A:STEPS_B}
+function isSel(v,key,val){return (v.sel[key]||[]).includes(val)}
+function touchedStep(v,k){return Object.keys(v.sel).some(x=>x.startsWith(k+':')&&v.sel[x].length)||(v.notes[k]||[]).length||(k==='A6'&&(v.a6.done||v.a6.later))}
+function vVisit(){
+  const v=visit(); if(!v){S.view='home';return vHome()}
+  const c=cust(v.custId); const steps=stepsOf(v); const cur=steps.find(s=>s.k===S.step)||steps[0];
+  const b4=v.path==='B'&&v.bmode==='client';
+  const a6warn=v.path==='A'&&!v.a6.done&&!v.a6.later;
+  const mins=Math.max(1,Math.round((Date.now()-v.arrivedAt)/60000));
+  let body='';
+  if(S.vtab==='steps'){
+    body=`<nav class="steps" aria-label="ขั้นตอน">${steps.map(s=>`<button class="step ${touchedStep(v,s.k)?'touched':''} ${s.hot?'hot':''}" data-act="step" data-k="${s.k}" ${s.k===cur.k?'aria-current="step"':''}>${s.k}</button>`).join('')}</nav>
+    <main>${stepCard(v,cur,b4)}</main>`;
+  }else if(S.vtab==='time'){
+    body=`<main><ul class="timeline">${v.events.slice().reverse().map(e=>`<li><span class="t">${fmtT(e.at)}</span><span class="s">${esc(e.step)}</span><span>${esc(e.text)}</span></li>`).join('')||'<p class="empty">ยังไม่มีบันทึก</p>'}</ul><p class="meta" style="font-size:13px">ทุกการแตะเป็นบรรทัดใหม่ ไม่เขียนทับของเดิม</p></main>`;
+  }else{
+    body=`<main>${custForm(v,c)}</main>`;
+  }
+  return `${mockbar()}<header class="top"><button class="back" data-act="go" data-v="home" aria-label="กลับหน้าแรก">‹</button><h1>${esc(cname(c))}<div class="sub">เส้นทาง ${v.path}${v.path==='B'&&v.bmode?' · '+{alone:'มาคนเดียว',client:'มากับลูกค้าของเขา',loan:'มายืมของ'}[v.bmode]:''} · ${mins} นาที</div></h1>${syncPill()}</header>
+  ${b4?`<button class="banner b4" data-act="b4again">⛔ มีลูกค้าของ${esc(cname(c))}อยู่ด้วย · พูดราคาปลีกเท่านั้น</button>`:''}
+  ${a6warn?`<button class="banner a6" data-act="step" data-k="A6">⚠ ยังไม่เช็กทางเข้า / ลิฟต์ (A6) · แตะเพื่อเช็ก</button>`:''}
+  <div style="padding:12px 16px 0"><div class="tabs" role="tablist"><button role="tab" data-act="vtab" data-t="steps" aria-selected="${S.vtab==='steps'}">ระหว่างคุย</button><button role="tab" data-act="vtab" data-t="time" aria-selected="${S.vtab==='time'}">ไทม์ไลน์</button><button role="tab" data-act="vtab" data-t="cust" aria-selected="${S.vtab==='cust'}">หลังลูกค้ากลับ</button></div></div>
+  ${body}
+  <div class="actionbar">
+    <label class="act" for="photo-in"><span class="ico" aria-hidden="true">◉</span>ถ่ายรูป</label>
+    <button class="act" data-act="scan"><span class="ico" aria-hidden="true">⌖</span>สแกนสินค้า</button>
+    <button class="act" data-act="interests"><span class="ico" aria-hidden="true">▤</span>ที่สนใจ${v.interests.length?`<span class="badge" style="background:var(--accent)">${v.interests.length}</span>`:''}</button>
+    <button class="act end" data-act="close"><span class="ico" aria-hidden="true">✓</span>จบ</button>
+  </div>
+  <input type="file" id="photo-in" accept="image/*" capture="environment" hidden>`;
+}
+function chipsFor(v,s,g,b4){
+  return `<div><div class="glabel">${esc(g.l)}</div><div class="chips">${g.o.filter(o=>!(b4&&s.clientHide===o)).map(o=>`<button class="chip" data-act="chip" data-k="${s.k}" data-g="${g.g}" data-v="${esc(o)}" ${g.one?'data-one="1"':''} aria-pressed="${isSel(v,s.k+':'+g.g,o)}">${esc(o)}</button>`).join('')}</div></div>`;
+}
+function notesFor(v,k){
+  const n=v.notes[k]||[]; const ph=(v.photos||[]).filter(p=>p.step===k);
+  return `${ph.length?`<div class="thumbs">${ph.map(p=>photos[p.id]?`<img src="${photos[p.id]}" alt="รูปที่ถ่ายใน ${k}">`:`<span class="ph">รูป ${fmtT(p.at)}</span>`).join('')}</div>`:''}
+  ${n.length?`<div class="notes">${n.map(x=>`<div class="note">${esc(x.text)}</div>`).join('')}</div>`:''}
+  <button class="ghost" data-act="note" data-k="${k}">+ จดเพิ่ม (ไม่บังคับ)</button>`;
+}
+function stepCard(v,s,b4){
+  let inner='';
+  if(s.hint)inner+=`<p class="hint">${esc(s.hint)}</p>`;
+  if(s.groups)inner+=s.groups.map(g=>chipsFor(v,s,g,b4)).join('');
+  if(s.facts){inner+=`<ul class="facts">${s.facts.map(f=>`<li><button class="fact" data-act="chip" data-k="${s.k}" data-g="told" data-v="${esc(f)}" aria-pressed="${isSel(v,s.k+':told',f)}"><span class="box">${isSel(v,s.k+':told',f)?'✓':''}</span>${esc(f)}</button></li>`).join('')}</ul><p class="hint red">${esc(s.ban)}</p>`}
+  if(s.k==='A6')inner+=a6Card(v);
+  if(s.scan)inner+=`<button class="secondary" data-act="scan">⌖ สแกนของที่วางคู่กัน</button>`;
+  if(s.photo)inner+=`<label class="secondary" for="photo-in" style="display:grid;place-items:center">◉ ถ่ายรูป${s.k==='A5'?'ผ้าที่เลือก':'ตัวที่สนใจ'}</label>`;
+  if(s.summary)inner+=summary(v);
+  if(s.bmode)inner+=bmodeCard(v);
+  if(s.rules)inner+=rulesCard(v);
+  if(s.loan)inner+=`<p class="hint">ต้องมีใบยืมทุกครั้ง · ถ่ายรูปสภาพก่อนออก · ผู้ยืมเซ็นชื่อ · ระบบเตือนก่อนครบ 7 วัน</p><button class="primary" data-act="newLoan" data-c="${v.custId}">เปิดใบยืม</button>`;
+  if(s.agree)inner+=agreeCard(v);
+  return `<section class="stepcard ${s.hot?'hot':''}"><div><div class="code">${s.k}</div><h2>${esc(s.t)}</h2></div>${inner}${s.summary||s.bmode||s.rules?'':notesFor(v,s.k)}</section>`;
+}
+function a6Card(v){
+  const a=v.a6; const sel=(g,o)=>`<div class="chips">${o.map(x=>`<button class="chip" data-act="a6" data-g="${g}" data-v="${esc(x)}" aria-pressed="${a[g]===x}">${esc(x)}</button>`).join('')}</div>`;
+  return `<p class="hint" style="background:var(--warn-bg);color:var(--warn)">ลูกค้าจ่ายเงินแล้วของขึ้นบ้านไม่ได้ คือเรื่องที่แก้ไม่ได้ · ยังไม่เช็ก = ออก PO ไม่ได้</p>
+  <div><div class="glabel">ที่พัก</div>${sel('home',['คอนโด','ทาวน์โฮม','บ้านเดี่ยว'])}</div>
+  <div><div class="glabel">ชั้น</div>${sel('floor',['1','2','3','4-10','11+'])}</div>
+  <div><div class="glabel">ลิฟต์</div>${sel('lift',['มีลิฟต์','ไม่มี ใช้บันได'])}</div>
+  ${a.lift==='มีลิฟต์'?`<div><div class="glabel">ขนาดลิฟต์ (ซม.) · ถ้ารู้</div><div class="num">${[['lw','กว้าง'],['ld','ลึก'],['lh','สูง']].map(([k,l])=>`<div class="field"><label for="a6-${k}">${l}</label><input id="a6-${k}" inputmode="numeric" data-a6="${k}" value="${esc(a[k]||'')}"></div>`).join('')}</div></div>`:''}
+  <div><div class="glabel">ทางเข้า</div>${sel('path',['ตรง ไม่มีเลี้ยว','มีทางเลี้ยวแคบ','บันไดวน'])}</div>
+  <div class="huge2"><button class="huge" data-act="a6done" aria-pressed="${!!a.done}" style="font-size:18px;min-height:72px">✓ เช็กแล้ว ผ่าน</button><button class="huge no" data-act="a6later" aria-pressed="${!!a.later}" style="font-size:16px;min-height:72px">ลูกค้าจะส่งรูปมาทีหลัง</button></div>`;
+}
+function summary(v){
+  const pick=k=>Object.entries(v.sel).filter(([x,a])=>x.startsWith(k)&&a.length).map(([x,a])=>a.join(', ')).join(' · ');
+  return `<dl class="kv"><dt>โจทย์</dt><dd>${esc(pick('A1:')||'-')}</dd><dt>บ้าน</dt><dd>${esc(pick('A2:home')||'-')}</dd><dt>ผ้า</dt><dd>${esc(pick('A5:grade')||'-')}</dd><dt>ที่สนใจ</dt><dd>${esc(v.interests.map(i=>unit(i.code).en).join(', ')||'-')}</dd><dt>ทางเข้า</dt><dd>${v.a6.done?'✓ เช็กแล้ว':v.a6.later?'รอรูปจากลูกค้า':'<span class="pill warn">ยังไม่เช็ก</span>'}</dd></dl>
+  <button class="primary" data-act="close">จบการเข้าชม</button>`;
+}
+function bmodeCard(v){
+  const o=[['alone','มาคนเดียว','สำรวจของ · คุยสเปก ราคาเทรด ระยะผลิตได้เต็มที่'],['client','มากับลูกค้าของเขา','⚠ มีกฎเหล็ก B4'],['loan','มาขอยืมของ','ไปจัดโชว์ · ต้องมีใบยืม']];
+  return `<div style="display:flex;flex-direction:column;gap:10px">${o.map(([k,l,d])=>`<button class="fact" style="min-height:72px" data-act="bmode" data-m="${k}" aria-pressed="${v.bmode===k}"><span class="box">${v.bmode===k?'✓':''}</span><span><b>${l}</b><br><span class="meta">${d}</span></span></button>`).join('')}</div>`;
+}
+function rulesCard(v){
+  return `${v.bmode!=='client'?'<p class="hint">ครั้งนี้ดีไซเนอร์ไม่ได้พาลูกค้ามา · อ่านทวนไว้ได้</p>':''}<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:17px"><li><b>ห้ามพูดราคาเทรดต่อหน้าลูกค้าของเขา</b> พูดราคาปลีกอย่างเดียว</li><li><b>ห้ามรับติดต่อลูกค้าของเขาโดยตรง</b> ขอไลน์ = "ประสานผ่าน${esc(cname(cust(v.custId)))}ได้เลย"</li><li><b>ห้ามแย้งดีไซเนอร์ต่อหน้าลูกค้า</b> คุยส่วนตัวทีหลัง</li><li>ให้ดีไซเนอร์นำ เราเป็นฝ่ายสนับสนุน</li></ol>`;
+}
+function agreeCard(v){
+  const c=cust(v.custId); const co=c.companyId?cust(c.companyId):null; const ag=(co&&co.agree)||c.agree;
+  return ag?`<p class="hint" style="background:var(--ok-bg);color:var(--ok)">มีข้อตกลงแล้ว${co?' (ของ '+esc(co.name)+')':''}</p><ol style="margin:0;padding-left:20px">${ag.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:
+  `<p class="hint" style="background:var(--warn-bg);color:var(--warn)">ยังไม่มีข้อตกลงกับดีไซเนอร์คนนี้ · ทำก่อนเริ่มงานแรก</p><p class="meta">1 · ลูกค้ารายนี้เป็นของใคร นานแค่ไหน<br>2 · ส่วนลดเทรดเท่าไหร่<br>3 · งานหน้าคิดแบบเดิมไหม</p>`;
+}
+function custForm(v,c){
+  if(!c)return '';
+  const linked=c.designerId?cust(c.designerId):null;
+  const f=(k,l,ph,mode)=>`<div class="field"><label for="cf-${k}">${l}</label><input id="cf-${k}" data-cf="${k}" value="${esc(c[k]||'')}" placeholder="${ph||''}" ${mode?`inputmode="${mode}"`:''}></div>`;
+  return `<p class="hint">พิมพ์ได้เต็มที่หลังลูกค้ากลับ · ทุกช่องบันทึกเองระหว่างพิมพ์</p>
+  ${linked?`<p class="lock">ลูกค้าของ${esc(linked.name)} · เก็บข้อมูลไว้ แต่ติดต่อผ่านดีไซเนอร์เท่านั้น</p>`:''}
+  ${f('name','ชื่อ','')}${f('phone','โทร','','tel')}${f('line','LINE / Facebook','')}${f('email','อีเมล (ไม่บังคับ)','','email')}
+  ${f('billAddr','ที่อยู่ออกบิล','')}${f('shipAddr','ที่อยู่ส่งของ','ถ้าต่างจากที่อยู่ออกบิล')}
+  ${f('taxId','TAX ID (บริษัท)','','numeric')}${f('branch','สาขา','สำนักงานใหญ่ / สาขาที่ ...')}
+  <div><div class="glabel">รู้จักเราจากไหน</div><div class="chips">${SOURCES.map(s=>`<button class="chip" data-act="src" data-v="${esc(s)}" aria-pressed="${c.source===s}">${esc(s)}</button>`).join('')}</div></div>
+  <button class="fact" data-act="consent" aria-pressed="${!!c.consent}"><span class="box">${c.consent?'✓':''}</span>ยินยอมรับข่าวสารจาก ฌ เฌอ</button>
+  <div class="field"><label for="cf-memo">โน้ตเพิ่มเติม</label><textarea id="cf-memo" data-vmemo="1">${esc(v.memo||'')}</textarea></div>`;
+}
+
+/* ---------- CALLBACKS ---------- */
+function vCallbacks(){
+  const open=S.callbacks.filter(k=>!k.done).sort((a,b)=>a.due-b.due);
+  const grp=[['เลยกำหนด',k=>daysFrom(k.due)<0,'danger'],['วันนี้',k=>daysFrom(k.due)===0,'warn'],['เร็วๆ นี้',k=>daysFrom(k.due)>0,'soft']];
+  const loanAlerts=S.loans.filter(l=>!l.back&&daysFrom(l.due)<=7);
+  return `${mockbar()}<header class="top"><h1>ติดต่อกลับ<div class="sub">เรียงตามวันที่ใกล้สุด</div></h1>${syncPill()}</header><main>
+  ${grp.map(([l,fn,cls])=>{const it=open.filter(fn);return it.length?`<div class="sec-h"><span>${l}</span></div>${it.map(k=>{const c=cust(k.custId);const d=daysFrom(k.due);return `<button class="card" data-act="cb" data-id="${k.id}"><div class="row"><span class="name">${esc(c.name)}${c.isDesigner?' <span class="pill wal">ดีไซเนอร์</span>':''}</span><span class="pill ${cls}">${d<0?'เลย '+(-d)+' วัน':d===0?'วันนี้':fmtD(k.due)}</span></div><span class="meta">${esc(k.about)}</span>${k.reasons.length?`<span class="meta">ติด: ${esc(k.reasons.join(' · '))}</span>`:''}<span class="meta" style="font-size:13px">${esc(k.last)}</span></button>`}).join('')}`:''}).join('')||'<p class="empty">ไม่มีใครรอติดต่อ</p>'}
+  ${loanAlerts.length?`<div class="sec-h"><span>ของยืมใกล้ครบกำหนด</span></div>${loanAlerts.map(loanCard).join('')}`:''}
+  </main>${nav('callbacks')}`;
+}
+
+/* ---------- CUSTOMERS ---------- */
+function vCustomers(){
+  const f=S.custFilter; const q=S.q.trim().toLowerCase();
+  let list=S.customers.filter(c=>f==='all'||(f==='des'&&c.isDesigner)||(f==='cus'&&!c.isDesigner));
+  if(q)list=list.filter(c=>(c.name+' '+(c.phone||'')+' '+(c.line||'')+' '+(c.designerId?cust(c.designerId).name:'')).toLowerCase().includes(q));
+  return `${mockbar()}<header class="top"><h1>ลูกค้า<div class="sub">ประวัติ · ค้นหาด้วยชื่อ เบอร์ หรือชื่อดีไซเนอร์</div></h1>${syncPill()}</header><main>
+  <input class="search" id="q" type="search" placeholder="ค้นหา..." value="${esc(S.q)}" aria-label="ค้นหาลูกค้า">
+  <div class="chips">${[['all','ทั้งหมด'],['cus','ลูกค้า'],['des','ดีไซเนอร์']].map(([k,l])=>`<button class="chip" data-act="cf" data-v="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
+  ${list.map(c=>{const vs=S.visits.filter(v=>v.custId===c.id).length;const co=c.companyId?cust(c.companyId):null;const d=c.designerId?cust(c.designerId):null;
+    return `<button class="card" data-act="cust" data-id="${c.id}"><div class="row"><span class="name">${esc(c.name)}</span>${c.isDesigner?`<span class="pill wal">${c.type==='company'?'บริษัทดีไซน์':'ดีไซเนอร์'}</span>`:''}</div><span class="meta">${co?esc(co.name)+' · ':''}${d?'ลูกค้าของคุณ'+esc(d.name)+' · ':''}${esc(c.phone||c.work||'')}${vs?' · มา '+vs+' ครั้ง':''}</span></button>`}).join('')||'<p class="empty">ไม่พบ</p>'}
+  </main>${nav('customers')}`;
+}
+function vCust(){
+  const c=cust(S.custId); const co=c.companyId?cust(c.companyId):null; const d=c.designerId?cust(c.designerId):null;
+  const members=S.customers.filter(x=>x.companyId===c.id);
+  const clients=S.customers.filter(x=>x.designerId===c.id||members.some(m=>m.id===x.designerId));
+  const loans=S.loans.filter(l=>l.custId===c.id||members.some(m=>m.id===l.custId));
+  const vs=S.visits.filter(v=>v.custId===c.id);
+  return `${mockbar()}<header class="top"><button class="back" data-act="go" data-v="customers" aria-label="กลับ">‹</button><h1>${esc(c.name)}<div class="sub">${c.isDesigner?(c.type==='company'?'บริษัทดีไซน์':'ดีไซเนอร์'+(co?' · '+esc(co.name):'')):'ลูกค้า'}</div></h1>${syncPill()}</header><main>
+  ${d?`<p class="lock">⛔ ลูกค้าของ${esc(d.name)} · ไม่มีปุ่มโทร/ไลน์ · ติดต่อผ่านดีไซเนอร์</p>`:(c.phone?`<div class="big2"><button class="secondary" data-act="fake" data-m="โทร ${esc(c.phone)} (จำลอง)">โทร</button><button class="secondary" data-act="fake" data-m="เปิดไลน์ ${esc(c.line)} (จำลอง)">เปิดไลน์</button></div>`:'')}
+  <dl class="kv">${[['โทร',c.phone],['LINE',c.line],['TAX ID',c.taxId],['สาขา',c.branch],['ประเภทงาน',c.work],['โปรเจกต์ที่ทำ',c.projects],['สนใจ',c.interest],['รู้จักจาก',c.source],['รอบติดต่อ',c.cycle?'ทุก '+c.cycle+' วัน':'']].filter(x=>x[1]).map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+  ${c.agree?`<div class="sec-h"><span>ข้อตกลง 3 บรรทัด (B6)</span></div><ol class="card" style="padding-left:34px;margin:0">${c.agree.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:''}
+  ${members.length?`<div class="sec-h"><span>ดีไซเนอร์ในบริษัท</span></div>${members.map(m=>`<button class="card" data-act="cust" data-id="${m.id}"><span class="name">${esc(m.name)}</span><span class="meta">${esc(m.projects||'')}</span></button>`).join('')}`:''}
+  ${clients.length?`<div class="sec-h"><span>ลูกค้าที่พามา</span></div>${clients.map(m=>`<button class="card" data-act="cust" data-id="${m.id}"><span class="name">${esc(m.name)}</span><span class="meta">ผ่าน${esc(cust(m.designerId).name)}</span></button>`).join('')}`:''}
+  ${loans.length?`<div class="sec-h"><span>ของที่ยืมอยู่</span></div>${loans.map(loanCard).join('')}`:''}
+  <div class="sec-h"><span>การเข้าชม</span></div>${vs.map(v=>`<button class="card" data-act="openVisit" data-id="${v.id}"><div class="row"><span>${fmtD(v.arrivedAt)} · ${fmtT(v.arrivedAt)}</span>${v.closed?`<span class="pill ${v.outcome==='buy'?'ok':'wal'}">${v.outcome==='buy'?'ซื้อ':'ยังไม่ซื้อ'}</span>`:'<span class="pill warn">ยังไม่จบ</span>'}</div><span class="meta">${v.interests.map(i=>unit(i.code).en).join(', ')||'—'}</span></button>`).join('')||'<p class="empty">ยังไม่มีในแอปนี้</p>'}
+  </main>${nav('customers')}`;
+}
+
+/* ---------- LOANS ---------- */
+function loanCard(l){
+  const u=unit(l.unit);const c=cust(l.custId);const d=daysFrom(l.due);
+  const pill=l.back?'<span class="pill ok">คืนแล้ว</span>':d<0?`<span class="pill danger">เกิน ${-d} วัน</span>`:d<=7?`<span class="pill warn">เหลือ ${d} วัน</span>`:`<span class="pill soft">คืน ${fmtD(l.due)}</span>`;
+  return `<button class="card" data-act="loan" data-id="${l.id}"><div class="row"><span class="name" style="font-size:17px">${esc(u.en)}</span>${pill}</div><span class="meta">${esc(c.name)} · ออก ${fmtD(l.out)} · ${esc(u.code)}</span><span class="meta" style="font-size:13px">สภาพตอนออก: ${esc(l.cond)}${l.signed?' · เซ็นแล้ว':''}</span></button>`;
+}
+function vLoans(){
+  const open=S.loans.filter(l=>!l.back).sort((a,b)=>a.due-b.due); const back=S.loans.filter(l=>l.back);
+  return `${mockbar()}<header class="top"><h1>ยืมของ<div class="sub">B5 · เตือนก่อนครบกำหนด 7 วัน</div></h1>${syncPill()}</header><main>
+  <button class="primary" data-act="newLoan">+ เปิดใบยืม</button>
+  <div class="sec-h"><span>ยืมอยู่ · เรียงตามวันคืน</span></div>${open.map(loanCard).join('')||'<p class="empty">ไม่มีของที่ยืมออก</p>'}
+  ${back.length?`<div class="sec-h"><span>คืนแล้ว</span></div>${back.map(loanCard).join('')}`:''}
+  </main>${nav('loans')}`;
+}
+
+/* ---------- sheets ---------- */
+let scrim=null;
+function sheet(html,onMount){closeSheet();scrim=document.createElement('div');scrim.className='scrim';scrim.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;scrim.addEventListener('click',e=>{if(e.target===scrim)closeSheet()});document.body.appendChild(scrim);if(onMount)onMount(scrim)}
+function closeSheet(){if(scrim){scrim.remove();scrim=null}}
+
+function scanSheet(){
+  const v=visit();
+  sheet(`<h3>สแกนสินค้า</h3><p class="meta">ของจริงใช้กล้องส่องสติกเกอร์ QR บนตัวสินค้า · ใน mockup แตะเลือกแทน</p>${UNITS.map(u=>`<button class="card" data-act="pickUnit" data-code="${u.code}"><div class="prodrow"><span class="qr" aria-hidden="true"></span><span style="min-width:0"><span class="name" style="font-size:17px">${esc(u.en)}</span><br><span class="meta">${esc(u.name)} · ${u.code}</span></span></div></button>`).join('')}`);
+}
+function interestsSheet(){
+  const v=visit(); const b4=v.path==='B'&&v.bmode==='client';
+  sheet(`<h3>ที่สนใจ (${v.interests.length})</h3>
+  <p class="meta">ราคาซ่อนไว้ · กดค้างเพื่อดู ปล่อยแล้วหาย${b4?' · โหมดนี้แสดงราคาปลีกเท่านั้น':''}</p>
+  ${v.interests.map((it,i)=>{const u=unit(it.code);return `<div class="card"><div class="row"><span class="name" style="font-size:17px">${esc(u.en)}</span><button class="back" style="width:40px;height:40px;font-size:16px" data-act="rmInt" data-i="${i}" aria-label="เอาออก">✕</button></div><span class="meta">${esc(u.spec)}</span>
+   <div class="chips">${['ผ้า A','ผ้า B','ผ้า C','หนังแท้'].map(g=>`<button class="chip" style="min-height:40px;padding:4px 14px;font-size:15px" data-act="intGrade" data-i="${i}" data-v="${g}" aria-pressed="${it.grade===g}">${g}</button>`).join('')}</div>
+   <div class="row"><span class="price" data-hold="${baht(u.price)}" data-showdes="${v.path==='B'&&v.bmode!=='client'?1:0}" data-des="${baht(Math.round(u.price*0.8))}">●●●●● กดค้างดูราคา</span><span class="row" style="gap:6px"><button class="back" style="width:40px;height:40px" data-act="qty" data-i="${i}" data-d="-1" aria-label="ลดจำนวน">−</button><b style="font-family:var(--f-num)">${it.qty}</b><button class="back" style="width:40px;height:40px" data-act="qty" data-i="${i}" data-d="1" aria-label="เพิ่มจำนวน">+</button></span></div></div>`}).join('')||'<p class="empty">ยังไม่มี · กด "สแกนสินค้า"</p>'}
+  <button class="secondary" data-act="scan">⌖ สแกนเพิ่ม</button>
+  <button class="secondary" data-act="fake" data-m="ใบเสนอราคาอยู่ในรอบ 2">ทำใบเสนอราคา (รอบ 2)</button>`);
+}
+function closeVisitSheet(){
+  const v=visit(); v._c=v._c||{outcome:v.outcome,reasons:v.reasons.slice(),cb:v.callback};
+  const c=v._c; const b4=v.path==='B'&&v.bmode==='client';
+  const miss=[]; if(!c.outcome)miss.push('ซื้อ / ยังไม่ซื้อ'); if(c.outcome==='no'&&!c.reasons.length)miss.push('ติดอะไร'); if(!c.cb)miss.push('วันติดต่อกลับ');
+  const cbOpt=[['พรุ่งนี้',1],['3 วัน',3],['1 สัปดาห์',7],['2 สัปดาห์',14]];
+  sheet(`<h3>จบการเข้าชม</h3>
+  <div class="huge2"><button class="huge" data-act="oc" data-v="buy" aria-pressed="${c.outcome==='buy'}">ซื้อ</button><button class="huge no" data-act="oc" data-v="no" aria-pressed="${c.outcome==='no'}">ยังไม่ซื้อ</button></div>
+  ${c.outcome==='no'?`<div><div class="glabel">ยังติดอะไร · เลือกได้หลายข้อ</div><div class="chips">${REASONS.map(r=>`<button class="chip" data-act="rs" data-v="${esc(r)}" aria-pressed="${c.reasons.includes(r)}">${esc(r)}</button>`).join('')}</div></div>`:''}
+  ${c.outcome?`<div><div class="glabel">${c.outcome==='buy'?'นัดติดต่อ (ยืนยันผ้า / มัดจำ)':'ติดต่อกลับวันไหน'}${b4?' · ติดต่อที่ดีไซเนอร์':''}</div><div class="chips">${cbOpt.map(([l,d])=>`<button class="chip" data-act="cbd" data-d="${d}" aria-pressed="${c.cb===d}">${l}</button>`).join('')}</div></div>`:''}
+  ${v.path==='A'&&!v.a6.done&&!v.a6.later?'<p class="hint" style="background:var(--warn-bg);color:var(--warn)">ยังไม่เช็กทางเข้า · ปิดการเข้าชมได้ แต่ออก PO ไม่ได้จนกว่าจะเช็ก</p>':''}
+  ${miss.length?`<p class="missing">ยังขาด: ${miss.join(' · ')}</p>`:''}
+  <button class="primary" data-act="confirmClose" ${miss.length?'disabled':''}>บันทึกและจบ</button>
+  <button class="secondary" data-act="defer">ไว้เติมทีหลัง</button>`);
+}
+function noteSheet(k){
+  sheet(`<h3>จดโน้ต · ${k}</h3><div class="field"><label for="note-t">พิมพ์สั้นๆ ก็พอ</label><textarea id="note-t"></textarea></div><button class="primary" data-act="saveNote" data-k="${k}">บันทึก</button>`,s=>s.querySelector('textarea').focus());
+}
+function cbSheet(id){
+  const k=S.callbacks.find(x=>x.id===id); const c=cust(k.custId); k._r=k._r||{};
+  const r=k._r;
+  sheet(`<h3>${esc(c.name)}</h3><p class="meta">${esc(k.about)}${k.reasons.length?' · ติด: '+esc(k.reasons.join(', ')):''}</p>
+  <div class="big2"><button class="secondary" data-act="fake" data-m="โทร ${esc(c.phone)} (จำลอง)">โทร ${esc(c.phone||'')}</button><button class="secondary" data-act="fake" data-m="เปิดไลน์ ${esc(c.line)} (จำลอง)">เปิดไลน์</button></div>
+  <div><div class="glabel">ผลการติดต่อ</div><div class="chips">${['สนใจต่อ','ซื้อแล้ว','ไม่ซื้อแล้ว','ติดต่อไม่ได้'].map(x=>`<button class="chip" data-act="cbr" data-id="${id}" data-v="${x}" aria-pressed="${r.res===x}">${x}</button>`).join('')}</div></div>
+  ${r.res==='สนใจต่อ'||r.res==='ติดต่อไม่ได้'?`<div><div class="glabel">ติดต่อครั้งถัดไป</div><div class="chips">${[['2 วัน',2],['1 สัปดาห์',7],['2 สัปดาห์',14]].map(([l,d])=>`<button class="chip" data-act="cbn" data-id="${id}" data-d="${d}" aria-pressed="${r.next===d}">${l}</button>`).join('')}</div></div>`:''}
+  <button class="primary" data-act="cbSave" data-id="${id}" ${!r.res||((r.res==='สนใจต่อ'||r.res==='ติดต่อไม่ได้')&&!r.next)?'disabled':''}>บันทึก</button>`);
+}
+let loanDraft=null;
+function loanSheet(preCust){
+  loanDraft=loanDraft||{unit:null,cust:preCust||null,days:14,cond:null,photo:false,sig:false};
+  const L=loanDraft; const des=S.customers.filter(c=>c.isDesigner&&c.type==='person');
+  const free=UNITS.filter(u=>!S.loans.some(l=>!l.back&&l.unit===u.code));
+  const miss=[]; if(!L.unit)miss.push('สินค้า'); if(!L.cust)miss.push('ผู้ยืม'); if(!L.cond)miss.push('สภาพ'); if(!L.photo)miss.push('รูปสภาพ'); if(!L.sig)miss.push('ลายเซ็น');
+  sheet(`<h3>ใบยืมสินค้า</h3>
+  <div><div class="glabel">สินค้า (ของจริงสแกน QR)</div><div class="chips">${free.map(u=>`<button class="chip" data-act="lu" data-v="${u.code}" aria-pressed="${L.unit===u.code}">${esc(u.en)}</button>`).join('')}</div></div>
+  <div><div class="glabel">ผู้ยืม</div><div class="chips">${des.map(c=>`<button class="chip" data-act="lc" data-v="${c.id}" aria-pressed="${L.cust===c.id}">${esc(c.name)}</button>`).join('')}</div></div>
+  <div><div class="glabel">กำหนดคืน</div><div class="chips">${[7,14,30].map(d=>`<button class="chip" data-act="ld" data-v="${d}" aria-pressed="${L.days===d}">${d} วัน · ${fmtD(TODAY.getTime()+d*DAY)}</button>`).join('')}</div></div>
+  <div><div class="glabel">สภาพตอนออก</div><div class="chips">${['สมบูรณ์','มีรอยเล็กน้อย','มีตำหนิ'].map(x=>`<button class="chip" data-act="lk" data-v="${x}" aria-pressed="${L.cond===x}">${x}</button>`).join('')}</div></div>
+  <div class="big2"><label class="secondary" for="loan-photo" style="display:grid;place-items:center">${L.photo?'✓ ถ่ายรูปแล้ว':'◉ ถ่ายรูปสภาพ'}</label><button class="secondary" data-act="lphotoFake">${L.photo?'✓':'ใช้รูปตัวอย่าง'}</button></div>
+  <input type="file" id="loan-photo" accept="image/*" capture="environment" hidden>
+  <div><div class="glabel">ผู้ยืมเซ็นชื่อ ${L.sig?'<span class="pill ok">✓ เซ็นแล้ว</span>':''}</div><canvas class="sig" id="sig" aria-label="ช่องเซ็นชื่อ"></canvas><button class="ghost" style="margin-top:6px;width:100%" data-act="sigClear">ล้างลายเซ็น</button></div>
+  ${miss.length?`<p class="missing">ยังขาด: ${miss.join(' · ')}</p>`:''}
+  <button class="primary" data-act="loanSave" ${miss.length?'disabled':''}>บันทึกใบยืม</button>`,s=>{
+    const cv=s.querySelector('#sig'); const r=cv.getBoundingClientRect(); cv.width=r.width*2; cv.height=r.height*2; const x=cv.getContext('2d'); x.scale(2,2); x.lineWidth=2.4; x.lineCap='round'; x.strokeStyle=getComputedStyle(document.body).color;
+    let drawing=false;
+    cv.addEventListener('pointerdown',e=>{drawing=true;x.beginPath();x.moveTo(e.offsetX,e.offsetY);cv.setPointerCapture(e.pointerId)});
+    cv.addEventListener('pointermove',e=>{if(!drawing)return;x.lineTo(e.offsetX,e.offsetY);x.stroke()});
+    cv.addEventListener('pointerup',()=>{if(drawing){drawing=false;if(!L.sig){L.sig=true;refreshLoanMissing(s)}}});
+    s.querySelector('#loan-photo').addEventListener('change',e=>{if(e.target.files[0]){L.photo=true;loanSheet()}});
+  });
+}
+function refreshLoanMissing(s){const L=loanDraft;const ok=L.unit&&L.cust&&L.cond&&L.photo&&L.sig;const b=s.querySelector('[data-act="loanSave"]');b.disabled=!ok;const m=s.querySelector('.missing');if(m){const miss=[];if(!L.unit)miss.push('สินค้า');if(!L.cust)miss.push('ผู้ยืม');if(!L.cond)miss.push('สภาพ');if(!L.photo)miss.push('รูปสภาพ');if(!L.sig)miss.push('ลายเซ็น');m.textContent=miss.length?'ยังขาด: '+miss.join(' · '):'';}}
+function loanDetail(id){
+  const l=S.loans.find(x=>x.id===id); const u=unit(l.unit); const c=cust(l.custId);
+  sheet(`<h3>${esc(u.en)}</h3><dl class="kv"><dt>รหัส</dt><dd>${u.code}</dd><dt>ผู้ยืม</dt><dd>${esc(c.name)}</dd><dt>ออก</dt><dd>${fmtD(l.out)}</dd><dt>กำหนดคืน</dt><dd>${fmtD(l.due)}</dd><dt>สภาพตอนออก</dt><dd>${esc(l.cond)}</dd></dl>
+  ${l.back?`<p class="hint" style="background:var(--ok-bg);color:var(--ok)">คืนแล้ว ${fmtD(l.back)} · สภาพ: ${esc(l.backCond)}</p>`:`<div><div class="glabel">รับคืน · สภาพตอนคืน</div><div class="chips">${['สมบูรณ์เหมือนเดิม','มีรอยเพิ่ม','เสียหาย'].map(x=>`<button class="chip" data-act="ret" data-id="${id}" data-v="${x}">${x}</button>`).join('')}</div></div><p class="meta">ของจริง: สแกน QR + ถ่ายรูปสภาพตอนคืน</p>`}`);
+}
+
+/* ---------- B start ---------- */
+function startBSheet(){
+  const des=S.customers.filter(c=>c.isDesigner&&c.type==='person');
+  sheet(`<h3>รับดีไซเนอร์</h3><div class="glabel">ใครมา</div>${des.map(c=>`<button class="card" data-act="pickDes" data-id="${c.id}"><span class="name" style="font-size:17px">${esc(c.name)}</span><span class="meta">${c.companyId?esc(cust(c.companyId).name)+' · ':''}${esc(c.work||'')}</span></button>`).join('')}<button class="ghost" data-act="pickDes" data-id="new">+ ดีไซเนอร์ใหม่</button>`);
+}
+function b4Modal(desName,after){
+  const m=document.createElement('div');m.className='modal';m.setAttribute('role','alertdialog');m.setAttribute('aria-labelledby','b4h');
+  m.innerHTML=`<h2 id="b4h">⛔ ดีไซเนอร์พาลูกค้ามาด้วย</h2><p class="lead">ผิดข้อเดียว = เสีย${esc(desName)}ตลอดไป</p><ol><li><b>ห้ามพูดราคาเทรด</b>ต่อหน้าลูกค้าของเขา · พูดราคาปลีกอย่างเดียว</li><li><b>ห้ามรับติดต่อลูกค้าของเขาโดยตรง</b> · ขอไลน์ = "ประสานผ่าน${esc(desName)}ได้เลย"</li><li><b>ห้ามแย้งดีไซเนอร์</b>ต่อหน้าลูกค้า · คุยส่วนตัวทีหลัง</li><li>ให้ดีไซเนอร์นำ · เราสนับสนุน</li></ol><button>เข้าใจแล้ว เริ่มรับ</button>`;
+  m.querySelector('button').addEventListener('click',()=>{m.remove();after&&after()});
+  document.body.appendChild(m); m.querySelector('button').focus();
+}
+
+/* ---------- actions ---------- */
+function newVisit(o){
+  const v=Object.assign({id:uid(),path:'A',bmode:null,arrivedAt:Date.now(),sel:{},notes:{},interests:[],photos:[],events:[],a6:{},outcome:null,reasons:[],callback:null,closed:false},o);
+  S.visits.push(v); S.visitId=v.id; S.vtab='steps'; S.step=v.path==='A'?'A2':'B1'; S.view='visit';
+  log(v,v.path==='A'?'A1':'B1','เริ่มรับลูกค้า'+(o.apptId?' (จากนัด)':' (ไม่ได้นัด)'));
+  if(v.bmode==='client')S.step='B4';
+  return v;
+}
+function log(v,step,text){v.events.push({at:Date.now(),step,text});touch()}
+function go(view){S.view=view;closeSheet();render();window.scrollTo(0,0)}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b)return;
+  const a=b.dataset.act; const v=visit();
+  switch(a){
+   case 'go': if(b.dataset.v==='appt')draft=null; go(b.dataset.v); break;
+   case 'reset': try{localStorage.removeItem(KEY)}catch(_){ } S=seed(); draft=null; loanDraft=null; go('home'); toast('เริ่มข้อมูลตัวอย่างใหม่'); break;
+   case 'net': S.online=!S.online; if(S.online&&S.pending){toast('เน็ตกลับมา · ส่งขึ้นครบ '+S.pending+' รายการ');S.pending=0}else if(!S.online)toast('จำลองเน็ตหลุด · ทุกการแตะยังบันทึกลงเครื่อง'); save(); render(); break;
+   case 'fake': toast(b.dataset.m); break;
+   case 'ck': {const i=b.dataset.i;const r=S.checklist.items[i]||{};S.checklist.items[i]=r.ok===true?{}:{ok:true};touch();render();break}
+   case 'ckbad': {const i=b.dataset.i;sheet(`<h3>ไม่ผ่าน · ${esc(CHECK[i])}</h3><div class="field"><label for="ck-note">เป็นอะไร (สั้นๆ)</label><textarea id="ck-note"></textarea></div><label class="secondary" for="ck-photo" style="display:grid;place-items:center">◉ ถ่ายรูป</label><input type="file" id="ck-photo" accept="image/*" capture="environment" hidden><button class="primary" data-act="ckbadSave" data-i="${i}">บันทึก</button>`);break}
+   case 'ckbadSave': {const t=document.getElementById('ck-note').value.trim();S.checklist.items[b.dataset.i]={ok:false,note:t||'ไม่ผ่าน'};touch();closeSheet();render();break}
+   case 'ckdone': S.checklist.by='Bay';S.checklist.at=Date.now();touch();toast('บันทึกเช็กลิสต์แล้ว');go('home');break;
+   case 'dchip': {const g=b.dataset.g;const val=b.dataset.v;const cur=draft.sel[g]||[];draft.sel[g]=b.dataset.one?(cur.includes(val)?[]:[val]):(cur.includes(val)?cur.filter(x=>x!==val):[...cur,val]);if(g==='day')draft.day=val;if(g==='time')draft.time=val;b.setAttribute('aria-pressed',(draft.sel[g]||[]).includes(val));if(b.dataset.one)b.parentElement.querySelectorAll('.chip').forEach(x=>{if(x!==b)x.setAttribute('aria-pressed','false')});break}
+   case 'copyConfirm': {const t=`ยืนยันนัดดูโซฟาที่โชว์รูม ฌ เฌอ เจริญนคร\nวัน: ${draft.day} เวลา ${draft.time}\nที่อยู่: เจริญนคร 32/1 คลองสาน\nแผนที่: (ลิงก์ Google Maps)\nที่จอดรถ: (รายละเอียดที่จอด)\nเบอร์ติดต่อวันนัด: (เบอร์โชว์รูม)`;
+     const done=()=>toast('คัดลอกแล้ว · วางในแชตไลน์ได้เลย');
+     try{navigator.clipboard.writeText(t).then(done,()=>sheet(`<h3>ข้อความยืนยันนัด</h3><textarea class="search" style="min-height:180px" readonly>${esc(t)}</textarea>`,s=>s.querySelector('textarea').select()))}catch(_){sheet(`<h3>ข้อความยืนยันนัด</h3><textarea class="search" style="min-height:180px" readonly>${esc(t)}</textarea>`)}break}
+   case 'saveAppt': {if(!draft.name.trim()){toast('ใส่ชื่อลูกค้าก่อน');break}const c={id:uid(),type:'person',name:draft.name.trim(),line:draft.line.trim()};S.customers.push(c);const [h,m]=draft.time.split(':').map(Number);const at=new Date(2026,9,draft.day==='วันนี้'?13:14,h,m).getTime();const sel={};Object.keys(draft.sel).filter(k=>k.startsWith('A1:')).forEach(k=>sel[k]=draft.sel[k]);S.appts.push({id:uid(),custId:c.id,at,path:'A',sel});touch();draft=null;toast('บันทึกนัดแล้ว');go('home');break}
+   case 'startA': {const c={id:uid(),type:'person',name:'ลูกค้าไม่ได้นัด '+fmtT(Date.now())};S.customers.push(c);newVisit({custId:c.id,path:'A',walkin:true});render();break}
+   case 'startB': startBSheet();break;
+   case 'pickDes': {let id=b.dataset.id;if(id==='new'){const c={id:uid(),type:'person',name:'ดีไซเนอร์ใหม่',isDesigner:1,cycle:30};S.customers.push(c);id=c.id}closeSheet();newVisit({custId:id,path:'B'});S.step='B1';render();break}
+   case 'startAppt': {const ap=S.appts.find(x=>x.id===b.dataset.id);ap.started=1;
+     if(ap.path==='B'){const d=cust(ap.custId);b4Modal(d.name,()=>{const v2=newVisit({custId:ap.custId,path:'B',bmode:'client',clientId:ap.clientId,apptId:ap.id});log(v2,'B4','อ่านกฎเหล็ก B4 แล้ว');render()})}
+     else{const v2=newVisit({custId:ap.custId,path:'A',sel:JSON.parse(JSON.stringify(ap.sel||{})),apptId:ap.id});render()}break}
+   case 'openVisit': S.visitId=b.dataset.id;S.vtab='steps';S.step=null;go('visit');break;
+   case 'step': S.step=b.dataset.k;S.vtab='steps';render();{const el=document.querySelector('.step[aria-current="step"]');el&&el.scrollIntoView({inline:'center',block:'nearest'})}break;
+   case 'vtab': S.vtab=b.dataset.t;render();break;
+   case 'chip': {const key=b.dataset.k+':'+b.dataset.g;const val=b.dataset.v;const cur=v.sel[key]||[];const on=!cur.includes(val);v.sel[key]=b.dataset.one?(on?[val]:[]):(on?[...cur,val]:cur.filter(x=>x!==val));log(v,b.dataset.k,(on?'':'ยกเลิก ')+val);render();break}
+   case 'a6': {const g=b.dataset.g;v.a6[g]=v.a6[g]===b.dataset.v?null:b.dataset.v;log(v,'A6',b.dataset.v);render();break}
+   case 'a6done': v.a6.done=!v.a6.done;if(v.a6.done)v.a6.later=false;log(v,'A6',v.a6.done?'เช็กทางเข้าแล้ว ผ่าน':'ยกเลิกเช็กทางเข้า');render();break;
+   case 'a6later': v.a6.later=!v.a6.later;if(v.a6.later){v.a6.done=false;S.callbacks.push({id:uid(),custId:v.custId,due:TODAY.getTime()+2*DAY,about:'ตามรูปลิฟต์/ทางเข้า (A6)',reasons:[],last:'เข้าชมวันนี้'})}log(v,'A6',v.a6.later?'ลูกค้าจะส่งรูปทางเข้ามาทีหลัง · ตั้งเตือนตาม 2 วัน':'ยกเลิกรอรูป');render();break;
+   case 'bmode': {const m=b.dataset.m;v.bmode=m;log(v,'B1',{alone:'มาคนเดียว',client:'มากับลูกค้าของเขา',loan:'มาขอยืมของ'}[m]);if(m==='client'){b4Modal(cname(cust(v.custId)),()=>{log(v,'B4','อ่านกฎเหล็ก B4 แล้ว');S.step='B4';render()})}else{S.step=m==='loan'?'B5':'B2';render()}break}
+   case 'b4again': b4Modal(cname(cust(v.custId)));break;
+   case 'note': noteSheet(b.dataset.k);break;
+   case 'saveNote': {const t=document.getElementById('note-t').value.trim();if(t){(v.notes[b.dataset.k]=v.notes[b.dataset.k]||[]).push({text:t});log(v,b.dataset.k,'โน้ต: '+t)}closeSheet();render();break}
+   case 'scan': scanSheet();break;
+   case 'pickUnit': {const code=b.dataset.code;const ex=v.interests.find(i=>i.code===code);if(ex)ex.qty++;else v.interests.push({code,qty:1,grade:null});log(v,S.step||'-','สแกน '+unit(code).en);closeSheet();toast('เพิ่ม '+unit(code).en+' แล้ว');render();break}
+   case 'interests': interestsSheet();break;
+   case 'rmInt': {const it=v.interests.splice(+b.dataset.i,1)[0];log(v,'-','เอาออก '+unit(it.code).en);interestsSheet();render();break}
+   case 'intGrade': {const it=v.interests[+b.dataset.i];it.grade=it.grade===b.dataset.v?null:b.dataset.v;log(v,'A5',unit(it.code).en+' · '+b.dataset.v);interestsSheet();break}
+   case 'qty': {const it=v.interests[+b.dataset.i];it.qty=Math.max(1,it.qty+ +b.dataset.d);touch();interestsSheet();render();break}
+   case 'close': v._c=null;closeVisitSheet();break;
+   case 'oc': v._c.outcome=b.dataset.v;if(v._c.outcome==='buy')v._c.reasons=[];closeVisitSheet();break;
+   case 'rs': {const r=v._c.reasons;const i=r.indexOf(b.dataset.v);i<0?r.push(b.dataset.v):r.splice(i,1);closeVisitSheet();break}
+   case 'cbd': v._c.cb=+b.dataset.d;closeVisitSheet();break;
+   case 'confirmClose': {const c=v._c;v.outcome=c.outcome;v.reasons=c.reasons;v.callback=c.cb;v.closed=true;v.deferred=false;
+     const to=v.custId; const about=(v.interests.map(i=>unit(i.code).en+(i.grade?' · '+i.grade:'')).join(', ')||'เข้าชมโชว์รูม');
+     S.callbacks.push({id:uid(),custId:to,due:TODAY.getTime()+c.cb*DAY,about:c.outcome==='buy'?'ยืนยันผ้า / มัดจำ · '+about:about,reasons:c.reasons,last:'เข้าชม '+fmtD(v.arrivedAt)});
+     log(v,v.path==='A'?'A9':'B7','จบ: '+(c.outcome==='buy'?'ซื้อ':'ยังไม่ซื้อ')+(c.reasons.length?' · ติด '+c.reasons.join(', '):'')+' · ติดต่อกลับ '+fmtD(TODAY.getTime()+c.cb*DAY));
+     toast('บันทึกแล้ว · ตั้งวันติดต่อกลับ '+fmtD(TODAY.getTime()+c.cb*DAY));go('home');break}
+   case 'defer': v.deferred=true;touch();toast('ค้างไว้ที่หน้าแรก · กลับมากรอกได้ตลอด');go('home');break;
+   case 'src': {const c=cust(v.custId);c.source=c.source===b.dataset.v?null:b.dataset.v;touch();render();break}
+   case 'consent': {const c=cust(v.custId);c.consent=!c.consent;touch();render();break}
+   case 'cf': S.custFilter=b.dataset.v;render();break;
+   case 'cust': S.custId=b.dataset.id;go('cust');break;
+   case 'cb': cbSheet(b.dataset.id);break;
+   case 'cbr': {const k=S.callbacks.find(x=>x.id===b.dataset.id);k._r.res=b.dataset.v;cbSheet(k.id);break}
+   case 'cbn': {const k=S.callbacks.find(x=>x.id===b.dataset.id);k._r.next=+b.dataset.d;cbSheet(k.id);break}
+   case 'cbSave': {const k=S.callbacks.find(x=>x.id===b.dataset.id);k.done=k._r.res;if(k._r.next)S.callbacks.push({id:uid(),custId:k.custId,due:TODAY.getTime()+k._r.next*DAY,about:k.about,reasons:k.reasons,last:k._r.res+' '+fmtD(TODAY)});delete k._r;touch();closeSheet();toast('บันทึกผลแล้ว');render();break}
+   case 'newLoan': loanDraft=null;loanSheet(b.dataset.c&&cust(b.dataset.c).isDesigner&&cust(b.dataset.c).type==='person'?b.dataset.c:null);break;
+   case 'lu': loanDraft.unit=b.dataset.v;loanSheet();break;
+   case 'lc': loanDraft.cust=b.dataset.v;loanSheet();break;
+   case 'ld': loanDraft.days=+b.dataset.v;loanSheet();break;
+   case 'lk': loanDraft.cond=b.dataset.v;loanSheet();break;
+   case 'lphotoFake': loanDraft.photo=true;loanSheet();break;
+   case 'sigClear': loanDraft.sig=false;loanSheet();break;
+   case 'loanSave': {const L=loanDraft;S.loans.push({id:uid(),unit:L.unit,custId:L.cust,out:TODAY.getTime(),due:TODAY.getTime()+L.days*DAY,cond:L.cond,signed:1});if(v&&S.view==='visit')log(v,'B5','ยืม '+unit(L.unit).en+' คืน '+fmtD(TODAY.getTime()+L.days*DAY));touch();loanDraft=null;closeSheet();toast('บันทึกใบยืมแล้ว · เตือนก่อนครบ 7 วัน');render();break}
+   case 'loan': loanDetail(b.dataset.id);break;
+   case 'ret': {const l=S.loans.find(x=>x.id===b.dataset.id);l.back=TODAY.getTime();l.backCond=b.dataset.v;touch();closeSheet();toast('รับคืนแล้ว');render();break}
+  }
+});
+document.addEventListener('input',e=>{
+  const t=e.target; const v=visit();
+  if(t.dataset.draft){draft[t.dataset.draft]=t.value}
+  else if(t.dataset.cf&&v){cust(v.custId)[t.dataset.cf]=t.value;touchLater()}
+  else if(t.dataset.vmemo&&v){v.memo=t.value;touchLater()}
+  else if(t.dataset.a6&&v){v.a6[t.dataset.a6]=t.value;touchLater()}
+  else if(t.id==='q'){S.q=t.value;const pos=t.selectionStart;render();const q=document.getElementById('q');q.focus();q.setSelectionRange(pos,pos)}
+});
+let tl=null; function touchLater(){clearTimeout(tl);tl=setTimeout(()=>{touch();const p=document.querySelector('.sync');if(p)p.outerHTML=syncPill()},500)}
+document.addEventListener('change',e=>{
+  if(e.target.id==='photo-in'&&e.target.files[0]){const v=visit();const f=e.target.files[0];const id=uid();const step=S.step||'-';v.photos.push({id,step,at:Date.now()});const r=new FileReader();r.onload=()=>{photos[id]=r.result;render()};r.readAsDataURL(f);log(v,step,'ถ่ายรูป');toast('เก็บรูปแล้ว · ติดกับขั้น '+step)}
+});
+/* hold-to-reveal price */
+function reveal(el,on){if(!el)return;if(on){el.classList.add('on');el.textContent=`ปลีก ${el.dataset.hold}${el.dataset.showdes==='1'?` · designer ${el.dataset.des}`:''}`}else{el.classList.remove('on');el.textContent='●●●●● กดค้างดูราคา'}}
+document.addEventListener('pointerdown',e=>{const p=e.target.closest('.price');if(p){e.preventDefault();reveal(p,true)}});
+['pointerup','pointercancel','pointerleave'].forEach(t=>document.addEventListener(t,()=>document.querySelectorAll('.price.on').forEach(p=>reveal(p,false)),true));
+document.addEventListener('contextmenu',e=>{if(e.target.closest('.price'))e.preventDefault()});
+
+function render(){
+  const views={home:vHome,checklist:vChecklist,appt:vAppt,visit:vVisit,callbacks:vCallbacks,customers:vCustomers,cust:vCust,loans:vLoans};
+  $app.innerHTML=(views[S.view]||vHome)();
+  if(S.view==='visit'){const el=document.querySelector('.step[aria-current="step"]');el&&el.scrollIntoView({inline:'center',block:'nearest'})}
+}
+setInterval(()=>{if(S.view==='visit'){const s=document.querySelector('.top .sub');const v=visit();if(s&&v)s.textContent=s.textContent.replace(/\d+ นาที$/,Math.max(1,Math.round((Date.now()-v.arrivedAt)/60000))+' นาที')}},30000);
+render();
+})();
+</script>
