@@ -103,6 +103,14 @@ button.card{min-height:64px}
 .glabel{font-size:14px;color:var(--muted);margin-bottom:6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;min-height:48px;padding:6px 18px;font-size:17px}
+.chip.sm{min-height:44px;padding:4px 14px;font-size:16px}
+.chip.sym{min-width:56px;font-size:20px;padding:4px 10px}
+.person{border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.person .sym{font-size:18px;color:var(--walnut);letter-spacing:.15em}
+.stepnav{display:grid;grid-template-columns:64px 1fr;gap:10px;margin-top:4px}
+.stepnav .secondary{font-size:24px}
+.stepnav .primary{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.25;padding:6px 10px}
+.stepnav .primary small{font-size:13px;font-weight:400;opacity:.85}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:500}
 
 .facts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
@@ -191,7 +199,12 @@ const CHECK=['ไฟเปิดครบทุกดวง','อุณหภู
 const SOURCES=['Google','Google Maps','Facebook','Instagram','TikTok','LINE','เพื่อน/ครอบครัวแนะนำ','ดีไซเนอร์พามา','ลูกค้าเก่า','ผ่านหน้าร้าน','งานแฟร์','อื่นๆ'];
 const REASONS=['ราคา','ต้องปรึกษาคนที่บ้าน','ระยะผลิตนานเกิน','ยังไม่แน่ใจขนาดห้อง','ยังเลือกผ้าไม่ได้','บ้านยังไม่เสร็จ','ทางเข้า/ลิฟต์อาจไม่ผ่าน','ไปดูเจ้าอื่นก่อน','อื่นๆ'];
 
-const STEPS_A=[
+const WHO=['ตัวลูกค้า','สามี','ภรรยา','แฟน','พ่อ','แม่','ลูก','เพื่อน','ญาติ'];
+const ROLES=[['★','ตัดสินใจ'],['◆','มีอิทธิพล'],['♥','ต้องเอาใจ'],['฿','จ่ายเงิน']];
+const CARS=['Toyota','Honda','Mercedes-Benz','BMW','Lexus','Volvo','Porsche','Tesla','BYD','MG','Mazda','อื่นๆ'];
+const CONTACTS=[['line','LINE'],['phone','โทร'],['fb','Facebook'],['ig','Instagram'],['email','อีเมล']];
+const STEP_P={k:'P',t:'ใครมา',who:1};
+const STEPS_A=[STEP_P,
  {k:'A1',t:'โจทย์จากตอนนัด',hint:'คำตอบ 4 ข้อจากตอนนัดในไลน์ · แก้ได้ถ้าคุยแล้วเปลี่ยน',groups:[
    {g:'room',l:'ห้องประมาณ',o:['< 20','20-35','35-50','50+ ตร.ม.'],one:1},
    {g:'users',l:'ใครใช้',o:['เด็กเล็ก','ผู้สูงอายุ','สัตว์เลี้ยง']},
@@ -218,7 +231,7 @@ const STEPS_A=[
    {g:'did',l:'ทำแล้ว',o:['ถ่ายรูปส่งไลน์แล้ว','ถามว่าติดอะไรแล้ว']}],photo:1},
  {k:'A9',t:'สรุปก่อนจบ',summary:1}
 ];
-const STEPS_B=[
+const STEPS_B=[STEP_P,
  {k:'B1',t:'มาแบบไหน',bmode:1},
  {k:'B2',t:'สิ่งที่ต้องมีให้เขา',hint:'สิ่งที่สำคัญที่สุดสำหรับดีไซเนอร์คือระยะผลิตที่รับปากได้จริง',groups:[
    {g:'gave',l:'ให้แล้ว / ต้องส่งตาม',o:['สเปกชีต','ราคาเทรด','ระยะผลิต','ภาพไปพรีเซนต์','ไฟล์ CAD/3D']}],clientHide:'ราคาเทรด'},
@@ -350,7 +363,7 @@ function vAppt(){
 /* ---------- VISIT ---------- */
 function stepsOf(v){return v.path==='A'?STEPS_A:STEPS_B}
 function isSel(v,key,val){return (v.sel[key]||[]).includes(val)}
-function touchedStep(v,k){return Object.keys(v.sel).some(x=>x.startsWith(k+':')&&v.sel[x].length)||(v.notes[k]||[]).length||(k==='A6'&&(v.a6.done||v.a6.later))}
+function touchedStep(v,k){if(k==='P')return !!((v.party&&v.party.length)||(v.car&&v.car.brand)||!cust(v.custId).tempName);return Object.keys(v.sel).some(x=>x.startsWith(k+':')&&v.sel[x].length)||(v.notes[k]||[]).length||(k==='A6'&&(v.a6.done||v.a6.later))}
 function vVisit(){
   const v=visit(); if(!v){S.view='home';return vHome()}
   const c=cust(v.custId); const steps=stepsOf(v); const cur=steps.find(s=>s.k===S.step)||steps[0];
@@ -359,7 +372,7 @@ function vVisit(){
   const mins=Math.max(1,Math.round((Date.now()-v.arrivedAt)/60000));
   let body='';
   if(S.vtab==='steps'){
-    body=`<nav class="steps" aria-label="ขั้นตอน">${steps.map(s=>`<button class="step ${touchedStep(v,s.k)?'touched':''} ${s.hot?'hot':''}" data-act="step" data-k="${s.k}" ${s.k===cur.k?'aria-current="step"':''}>${s.k}</button>`).join('')}</nav>
+    body=`<nav class="steps" aria-label="ขั้นตอน">${steps.map(s=>`<button class="step ${touchedStep(v,s.k)?'touched':''} ${s.hot?'hot':''}" data-act="step" data-k="${s.k}" ${s.k===cur.k?'aria-current="step"':''} ${s.k==='P'?'style="font-family:var(--f-body);padding:0 14px"':''}>${s.k==='P'?'ใครมา':s.k}</button>`).join('')}</nav>
     <main>${stepCard(v,cur,b4)}</main>`;
   }else if(S.vtab==='time'){
     body=`<main><ul class="timeline">${v.events.slice().reverse().map(e=>`<li><span class="t">${fmtT(e.at)}</span><span class="s">${esc(e.step)}</span><span>${esc(e.text)}</span></li>`).join('')||'<p class="empty">ยังไม่มีบันทึก</p>'}</ul><p class="meta" style="font-size:13px">ทุกการแตะเป็นบรรทัดใหม่ ไม่เขียนทับของเดิม</p></main>`;
@@ -401,7 +414,25 @@ function stepCard(v,s,b4){
   if(s.rules)inner+=rulesCard(v);
   if(s.loan)inner+=`<p class="hint">ต้องมีใบยืมทุกครั้ง · ถ่ายรูปสภาพก่อนออก · ผู้ยืมเซ็นชื่อ · ระบบเตือนก่อนครบ 7 วัน</p><button class="primary" data-act="newLoan" data-c="${v.custId}">เปิดใบยืม</button>`;
   if(s.agree)inner+=agreeCard(v);
-  return `<section class="stepcard ${s.hot?'hot':''}"><div><div class="code">${s.k}</div><h2>${esc(s.t)}</h2></div>${inner}${s.summary||s.bmode||s.rules?'':notesFor(v,s.k)}</section>`;
+  if(s.who)inner+=whoCard(v);
+  const st=stepsOf(v); const i=st.findIndex(x=>x.k===s.k); const prev=st[i-1], next=st[i+1];
+  const lab=x=>(x.k==='P'?'':x.k+' · ')+x.t;
+  const navr=`<div class="stepnav">${prev?`<button class="secondary" data-act="step" data-k="${prev.k}" aria-label="ก่อนหน้า: ${esc(lab(prev))}">‹</button>`:'<span></span>'}${next?`<button class="primary" data-act="step" data-k="${next.k}">ถัดไป ›<small>${esc(lab(next))}</small></button>`:`<button class="primary" data-act="close">จบการเข้าชม ›</button>`}</div>`;
+  return `<section class="stepcard ${s.hot?'hot':''}"><div><div class="code">${s.k==='P'?'เริ่ม':s.k}</div><h2>${esc(s.t)}</h2></div>${inner}${s.summary||s.bmode||s.rules||s.who?'':notesFor(v,s.k)}${s.summary?'':navr}</section>`;
+}
+function whoCard(v){
+  const c=cust(v.custId); v.party=v.party||[]; v.car=v.car||{}; v.chan=v.chan||CONTACTS.filter(([k])=>c[k]).map(([k])=>k);
+  const nm=c.tempName?'':c.name;
+  return `<div class="field"><label for="w-name">ชื่อลูกค้า</label><input id="w-name" data-cf="name" value="${esc(nm)}" placeholder="แตะเพื่อพิมพ์ เช่น คุณแพร" autocomplete="off"></div>
+  <div><div class="glabel">ช่องทางติดต่อ · ไม่บังคับ</div><div class="chips">${CONTACTS.map(([k,l])=>`<button class="chip" data-act="chan" data-v="${k}" aria-pressed="${v.chan.includes(k)}">${l}</button>`).join('')}</div></div>
+  ${v.chan.map(k=>{const l=CONTACTS.find(x=>x[0]===k)[1];return `<div class="field"><label for="w-${k}">${l}</label><input id="w-${k}" data-cf="${k}" value="${esc(c[k]||'')}" ${k==='phone'?'inputmode="tel"':k==='email'?'inputmode="email"':''} autocomplete="off"></div>`}).join('')}
+  <div><div class="glabel">มากี่คน</div><div class="chips">${[1,2,3,4,5].map(n=>`<button class="chip" data-act="pcount" data-n="${n}" aria-pressed="${v.party.length===n}">${n===5?'5+':n}</button>`).join('')}</div></div>
+  ${v.party.map((p,i)=>`<div class="person"><div class="row"><b>คนที่ ${i+1}</b><span class="sym" aria-label="บทบาท">${p.roles.map(r=>ROLES.find(x=>x[1]===r)[0]).join(' ')||'—'}</span></div>
+    <div class="chips">${WHO.map(w=>`<button class="chip sm" data-act="pwho" data-i="${i}" data-v="${w}" aria-pressed="${p.who===w}">${w}</button>`).join('')}</div>
+    <div class="chips">${ROLES.map(([sy,w])=>`<button class="chip sym" data-act="prole" data-i="${i}" data-v="${w}" aria-pressed="${p.roles.includes(w)}" aria-label="${w}">${sy}</button>`).join('')}</div></div>`).join('')}
+  ${v.party.length?'<p class="meta" style="font-size:13px;margin:0">บนจอโชว์แค่สัญลักษณ์ · แตะแล้วคำเต็มขึ้นแวบเดียว · ความหมายอยู่ในแท็บ "หลังลูกค้ากลับ"</p>':''}
+  <div><div class="glabel">ขับรถอะไรมา</div><div class="chips">${['ไม่ได้ขับมา',...CARS].map(b=>`<button class="chip sm" data-act="car" data-v="${b}" aria-pressed="${v.car.brand===b}">${b}</button>`).join('')}</div></div>
+  ${v.car.brand&&v.car.brand!=='ไม่ได้ขับมา'?`<div class="field"><label for="w-model">รุ่น (ถ้าเห็น)</label><input id="w-model" data-car="model" value="${esc(v.car.model||'')}" placeholder="เช่น X5, Alphard" autocomplete="off"></div>`:''}`;
 }
 function a6Card(v){
   const a=v.a6; const sel=(g,o)=>`<div class="chips">${o.map(x=>`<button class="chip" data-act="a6" data-g="${g}" data-v="${esc(x)}" aria-pressed="${a[g]===x}">${esc(x)}</button>`).join('')}</div>`;
@@ -441,6 +472,7 @@ function custForm(v,c){
   ${f('taxId','TAX ID (บริษัท)','','numeric')}${f('branch','สาขา','สำนักงานใหญ่ / สาขาที่ ...')}
   <div><div class="glabel">รู้จักเราจากไหน</div><div class="chips">${SOURCES.map(s=>`<button class="chip" data-act="src" data-v="${esc(s)}" aria-pressed="${c.source===s}">${esc(s)}</button>`).join('')}</div></div>
   <button class="fact" data-act="consent" aria-pressed="${!!c.consent}"><span class="box">${c.consent?'✓':''}</span>ยินยอมรับข่าวสารจาก ฌ เฌอ</button>
+  ${(v.party||[]).length||(v.car&&v.car.brand)?`<div><div class="glabel">ใครมา</div><dl class="kv">${(v.party||[]).map((p,i)=>`<dt>${esc(p.who||'คนที่ '+(i+1))}</dt><dd>${esc(p.roles.join(' · ')||'—')}</dd>`).join('')}${v.car&&v.car.brand?`<dt>รถ</dt><dd>${esc(v.car.brand+(v.car.model?' '+v.car.model:''))}</dd>`:''}</dl><p class="meta" style="font-size:13px">★ ตัดสินใจ · ◆ มีอิทธิพล · ♥ ต้องเอาใจ · ฿ จ่ายเงิน</p></div>`:''}
   <div class="field"><label for="cf-memo">โน้ตเพิ่มเติม</label><textarea id="cf-memo" data-vmemo="1">${esc(v.memo||'')}</textarea></div>`;
 }
 
@@ -521,7 +553,7 @@ function interestsSheet(){
 function closeVisitSheet(){
   const v=visit(); v._c=v._c||{outcome:v.outcome,reasons:v.reasons.slice(),cb:v.callback};
   const c=v._c; const b4=v.path==='B'&&v.bmode==='client';
-  const miss=[]; if(!c.outcome)miss.push('ซื้อ / ยังไม่ซื้อ'); if(c.outcome==='no'&&!c.reasons.length)miss.push('ติดอะไร'); if(!c.cb)miss.push('วันติดต่อกลับ');
+  const miss=[]; if(cust(v.custId).tempName)miss.push('ชื่อลูกค้า (แท็บ ใครมา)'); if(!c.outcome)miss.push('ซื้อ / ยังไม่ซื้อ'); if(c.outcome==='no'&&!c.reasons.length)miss.push('ติดอะไร'); if(!c.cb)miss.push('วันติดต่อกลับ');
   const cbOpt=[['พรุ่งนี้',1],['3 วัน',3],['1 สัปดาห์',7],['2 สัปดาห์',14]];
   sheet(`<h3>จบการเข้าชม</h3>
   <div class="huge2"><button class="huge" data-act="oc" data-v="buy" aria-pressed="${c.outcome==='buy'}">ซื้อ</button><button class="huge no" data-act="oc" data-v="no" aria-pressed="${c.outcome==='no'}">ยังไม่ซื้อ</button></div>
@@ -590,7 +622,7 @@ function b4Modal(desName,after){
 /* ---------- actions ---------- */
 function newVisit(o){
   const v=Object.assign({id:uid(),path:'A',bmode:null,arrivedAt:Date.now(),sel:{},notes:{},interests:[],photos:[],events:[],a6:{},outcome:null,reasons:[],callback:null,closed:false},o);
-  S.visits.push(v); S.visitId=v.id; S.vtab='steps'; S.step=v.path==='A'?'A2':'B1'; S.view='visit';
+  S.visits.push(v); S.visitId=v.id; S.vtab='steps'; S.step=v.path==='A'?'P':'B1'; S.view='visit';
   log(v,v.path==='A'?'A1':'B1','เริ่มรับลูกค้า'+(o.apptId?' (จากนัด)':' (ไม่ได้นัด)'));
   if(v.bmode==='client')S.step='B4';
   return v;
@@ -615,9 +647,9 @@ document.addEventListener('click',e=>{
      const done=()=>toast('คัดลอกแล้ว · วางในแชตไลน์ได้เลย');
      try{navigator.clipboard.writeText(t).then(done,()=>sheet(`<h3>ข้อความยืนยันนัด</h3><textarea class="search" style="min-height:180px" readonly>${esc(t)}</textarea>`,s=>s.querySelector('textarea').select()))}catch(_){sheet(`<h3>ข้อความยืนยันนัด</h3><textarea class="search" style="min-height:180px" readonly>${esc(t)}</textarea>`)}break}
    case 'saveAppt': {if(!draft.name.trim()){toast('ใส่ชื่อลูกค้าก่อน');break}const c={id:uid(),type:'person',name:draft.name.trim(),line:draft.line.trim()};S.customers.push(c);const [h,m]=draft.time.split(':').map(Number);const at=new Date(2026,9,draft.day==='วันนี้'?13:14,h,m).getTime();const sel={};Object.keys(draft.sel).filter(k=>k.startsWith('A1:')).forEach(k=>sel[k]=draft.sel[k]);S.appts.push({id:uid(),custId:c.id,at,path:'A',sel});touch();draft=null;toast('บันทึกนัดแล้ว');go('home');break}
-   case 'startA': {const c={id:uid(),type:'person',name:'ลูกค้าไม่ได้นัด '+fmtT(Date.now())};S.customers.push(c);newVisit({custId:c.id,path:'A',walkin:true});render();break}
+   case 'startA': {const c={id:uid(),type:'person',name:'ลูกค้าไม่ได้นัด '+fmtT(Date.now()),tempName:1};S.customers.push(c);newVisit({custId:c.id,path:'A',walkin:true});render();break}
    case 'startB': startBSheet();break;
-   case 'pickDes': {let id=b.dataset.id;if(id==='new'){const c={id:uid(),type:'person',name:'ดีไซเนอร์ใหม่',isDesigner:1,cycle:30};S.customers.push(c);id=c.id}closeSheet();newVisit({custId:id,path:'B'});S.step='B1';render();break}
+   case 'pickDes': {let id=b.dataset.id;if(id==='new'){const c={id:uid(),type:'person',name:'ดีไซเนอร์ใหม่',isDesigner:1,cycle:30,tempName:1};S.customers.push(c);id=c.id}closeSheet();newVisit({custId:id,path:'B'});S.step='B1';render();break}
    case 'startAppt': {const ap=S.appts.find(x=>x.id===b.dataset.id);ap.started=1;
      if(ap.path==='B'){const d=cust(ap.custId);b4Modal(d.name,()=>{const v2=newVisit({custId:ap.custId,path:'B',bmode:'client',clientId:ap.clientId,apptId:ap.id});log(v2,'B4','อ่านกฎเหล็ก B4 แล้ว');render()})}
      else{const v2=newVisit({custId:ap.custId,path:'A',sel:JSON.parse(JSON.stringify(ap.sel||{})),apptId:ap.id});render()}break}
@@ -625,6 +657,11 @@ document.addEventListener('click',e=>{
    case 'step': S.step=b.dataset.k;S.vtab='steps';render();{const el=document.querySelector('.step[aria-current="step"]');el&&el.scrollIntoView({inline:'center',block:'nearest'})}break;
    case 'vtab': S.vtab=b.dataset.t;render();break;
    case 'chip': {const key=b.dataset.k+':'+b.dataset.g;const val=b.dataset.v;const cur=v.sel[key]||[];const on=!cur.includes(val);v.sel[key]=b.dataset.one?(on?[val]:[]):(on?[...cur,val]:cur.filter(x=>x!==val));log(v,b.dataset.k,(on?'':'ยกเลิก ')+val);render();break}
+   case 'chan': {const k=b.dataset.v;v.chan=v.chan.includes(k)?v.chan.filter(x=>x!==k):[...v.chan,k];render();const el=document.getElementById('w-'+k);el&&el.focus();break}
+   case 'pcount': {const n=+b.dataset.n;while(v.party.length<n)v.party.push({who:null,roles:[]});v.party.length=n;log(v,'P','มา '+(n===5?'5+':n)+' คน');render();break}
+   case 'pwho': {const p=v.party[+b.dataset.i];p.who=p.who===b.dataset.v?null:b.dataset.v;log(v,'P','คนที่ '+(+b.dataset.i+1)+': '+(p.who||'-'));render();break}
+   case 'prole': {const p=v.party[+b.dataset.i];const w=b.dataset.v;const on=!p.roles.includes(w);p.roles=on?[...p.roles,w]:p.roles.filter(x=>x!==w);log(v,'P',(p.who||'คนที่ '+(+b.dataset.i+1))+(on?' · ':' · ยกเลิก ')+w);render();toast((p.who||'คนที่ '+(+b.dataset.i+1))+(on?': ':': ยกเลิก ')+w);break}
+   case 'car': {v.car.brand=v.car.brand===b.dataset.v?null:b.dataset.v;log(v,'P','รถ: '+(v.car.brand||'-'));render();break}
    case 'a6': {const g=b.dataset.g;v.a6[g]=v.a6[g]===b.dataset.v?null:b.dataset.v;log(v,'A6',b.dataset.v);render();break}
    case 'a6done': v.a6.done=!v.a6.done;if(v.a6.done)v.a6.later=false;log(v,'A6',v.a6.done?'เช็กทางเข้าแล้ว ผ่าน':'ยกเลิกเช็กทางเข้า');render();break;
    case 'a6later': v.a6.later=!v.a6.later;if(v.a6.later){v.a6.done=false;S.callbacks.push({id:uid(),custId:v.custId,due:TODAY.getTime()+2*DAY,about:'ตามรูปลิฟต์/ทางเข้า (A6)',reasons:[],last:'เข้าชมวันนี้'})}log(v,'A6',v.a6.later?'ลูกค้าจะส่งรูปทางเข้ามาทีหลัง · ตั้งเตือนตาม 2 วัน':'ยกเลิกรอรูป');render();break;
@@ -671,7 +708,8 @@ document.addEventListener('click',e=>{
 document.addEventListener('input',e=>{
   const t=e.target; const v=visit();
   if(t.dataset.draft){draft[t.dataset.draft]=t.value}
-  else if(t.dataset.cf&&v){cust(v.custId)[t.dataset.cf]=t.value;touchLater()}
+  else if(t.dataset.cf&&v){const c=cust(v.custId);c[t.dataset.cf]=t.value;if(t.dataset.cf==='name'){c.tempName=!t.value.trim();if(c.tempName)c.name='ลูกค้าใหม่';const h=document.querySelector('.top h1');if(h&&h.firstChild)h.firstChild.nodeValue=t.value.trim()||'ลูกค้าใหม่'}touchLater()}
+  else if(t.dataset.car&&v){v.car.model=t.value;touchLater()}
   else if(t.dataset.vmemo&&v){v.memo=t.value;touchLater()}
   else if(t.dataset.a6&&v){v.a6[t.dataset.a6]=t.value;touchLater()}
   else if(t.id==='q'){S.q=t.value;const pos=t.selectionStart;render();const q=document.getElementById('q');q.focus();q.setSelectionRange(pos,pos)}
