@@ -88,7 +88,7 @@ export async function productFacts(supabase: Supa, productIds: string[]): Promis
   const { data: products } = await supabase.schema('catalog').from('products')
     .select('id,collection,name_th,name_en,description,categories(name)').in('id', productIds);
   const { data: variants } = await supabase.schema('catalog').from('product_variants')
-    .select('id,product_id,sku,configuration,seat_count,width_cm,depth_cm,height_cm,seat_height_cm,material_grade,wood_type,wood_colour')
+    .select('id,product_id,sku,configuration,seat_count,width_cm,depth_cm,height_cm,seat_height_cm,seat_depth_cm,material_grade,wood_type,wood_colour')
     .in('product_id', productIds).neq('status', 'เลิกขาย').limit(60);
   const skus = (variants ?? []).map((v) => v.sku);
   const { data: prices } = skus.length
@@ -103,7 +103,8 @@ export async function productFacts(supabase: Supa, productIds: string[]): Promis
     const vs = (variants ?? []).filter((v) => v.product_id === p.id).slice(0, 15).map((v) => {
       const pr = priceOf.get(v.id);
       const dims = [v.width_cm && `กว้าง ${v.width_cm}`, v.depth_cm && `ลึก ${v.depth_cm}`, v.height_cm && `สูง ${v.height_cm}`,
-        v.seat_height_cm && `สูงถึงที่นั่ง ${v.seat_height_cm}`].filter(Boolean).join(' ');
+        v.seat_height_cm && `สูงถึงที่นั่ง ${v.seat_height_cm}`,
+        v.seat_depth_cm && `ลึกที่นั่ง ${v.seat_depth_cm}`].filter(Boolean).join(' ');
       return `  - ${[v.configuration, v.seat_count && `${v.seat_count} ที่นั่ง`, dims && `${dims} ซม.`, v.material_grade && `หนัง/ผ้า ${v.material_grade}`,
         v.wood_type && `ไม้ ${v.wood_type}`, v.wood_colour && `สี ${v.wood_colour}`,
         pr?.ราคาขายรวม_vat && `ราคาขาย ${Number(pr.ราคาขายรวม_vat).toLocaleString('th-TH')} บาท (รวม VAT)`]

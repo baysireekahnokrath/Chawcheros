@@ -23,9 +23,15 @@ const ATTRS = [
   ['sub_category', 'รูปทรง'],
 ] as const;
 
+/** ขนาดที่นั่งมาจากวงเล็บในไฟล์ราคา มีเฉพาะบางตัว ตัวที่ไม่มีไม่ต้องขึ้นอะไร */
+const seatOf = (d: number | null, h: number | null) => {
+  const parts = [d !== null && `ลึก ${d}`, h !== null && `สูง ${h}`].filter(Boolean);
+  return parts.length > 0 ? ` (นั่ง ${parts.join(' · ')})` : '';
+};
+
 const dimsOf = (r: ImportRow) =>
   [r.width_cm, r.depth_cm, r.height_cm].map((v) => v ?? '—').join('×') +
-  (r.seat_height_cm !== null ? ` (นั่ง ${r.seat_height_cm})` : '');
+  seatOf(r.seat_depth_cm, r.seat_height_cm);
 
 /** ช่องไหนในกลุ่มนี้ที่ค่าไม่เหมือนกัน — ช่องพวกนั้นคือตัวที่ทำให้แต่ละตัวต่างกัน */
 function varyingFields(rows: ImportRow[]): Set<string> {
