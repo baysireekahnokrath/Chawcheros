@@ -89,6 +89,9 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
       <tr><td>สต็อกทั้งหมด (B39)</td><td>ชื่อคนยืมของ (D7)</td></tr>
     </table></div>
 
+    <h3>ความแม่นยำ</h3>
+    <div class="card" id="flags"><span class="pill ok">ยังไม่มีใครแจ้งผิด</span></div>
+
     <h3>บันทึกคำถาม-คำตอบ (LR-19)</h3>
     <div class="card" id="logs"><div class="note">ยังไม่มี · ลองพิมพ์ในห้อง LINE ก่อน</div></div>
   </section>
@@ -171,7 +174,7 @@ function brain(text, side){
 }
 
 // ---------------- หน้าจอ ----------------
-const M=document.getElementById('msgs'), LOG=[];
+const M=document.getElementById('msgs'), LOG=[];let flags=0;
 let spent=0;
 const PEOPLE={cc:{n:'พี่ษา (CC)',c:'#2563eb',i:'ษ'},ase:{n:'พี่บุ๋ม (ASE)',c:'#d97706',i:'บ'}};
 function add(kind, text, extra){
@@ -180,7 +183,7 @@ function add(kind, text, extra){
   const me = kind==='cc';
   const div=document.createElement('div'); div.className='row'+(me?' me':'')+(kind==='bot'?' bot':'');
   const b=document.createElement('div'); b.className='bub'; b.textContent=text;
-  if(extra){const s=document.createElement('span');s.className='src';s.textContent='ดูจาก: '+extra;b.appendChild(s)}
+  if(extra){const s=document.createElement('span');s.className='src';s.textContent='ดูจาก: '+extra+(kind==='bot'&&extra!=='LR-28'?' · ข้อมูลแก้ล่าสุด 31 ต.ค. 16:40':'');b.appendChild(s)}
   if(me){div.appendChild(b)} else {
     div.insertAdjacentHTML('beforeend',`<div class="av" style="background:${p.c}">${p.i}</div>`);
     const w=document.createElement('div');w.innerHTML=`<div class="who">${p.n}</div>`;w.appendChild(b);div.appendChild(w);
@@ -194,6 +197,14 @@ function send(text){
   const tagged=/@cc\s*ผู้ช่วย|@ผู้ช่วย|@บอท/i.test(text);
   if(!tagged){add('sys','บอทไม่ตอบ · ไม่ได้ทัก · และไม่เก็บข้อความนี้ (D1 · D3)');return}
   if(document.getElementById('pause').checked){add('sys','บอทถูกพักอยู่ · เงียบ (LR-21)');return}
+  if(/ตอบผิด|ผิดนะ|มั่ว/.test(text)){
+    const last=LOG.find(l=>!l.flag);
+    setTimeout(()=>{
+      add('bot', last?`⚠️ คำตอบก่อนหน้าของผม (${last.q.replace(/@cc\s*ผู้ช่วย/i,'').trim()}) อาจผิด\nอย่าเพิ่งใช้นะครับ รอทีม CC ยืนยันอีกที\nผมแจ้ง Bay ให้ตรวจแล้วครับ`:'ยังไม่มีคำตอบให้ถอนครับ','LR-28');
+      if(last){last.flag=true;flags++;renderAdmin();}
+    },400);
+    return;
+  }
   setTimeout(()=>{
     const r=brain(text.replace(/@cc\s*ผู้ช่วย|@ผู้ช่วย|@บอท/ig,''),side);
     add('bot',r.a,r.src);
@@ -205,11 +216,12 @@ function send(text){
 function renderAdmin(){
   document.getElementById('spent').textContent='฿'+spent.toFixed(2);
   document.getElementById('mt').style.width=Math.min(100,spent/500*100)+'%';
-  document.getElementById('logs').innerHTML=LOG.length?LOG.map(l=>`<div class="log"><div class="m">${l.t} · ${l.who} · ดึง ${l.used} · ฿${l.c.toFixed(2)}</div><b>ถาม:</b> ${esc(l.q)}<br><b>ตอบ:</b> ${esc(l.a)}…</div>`).join(''):'<div class="note">ยังไม่มี</div>';
+  document.getElementById('flags').innerHTML=flags?`<span class="pill bad">⚠️ ถูกแจ้งผิด ${flags} / ตอบทั้งหมด ${LOG.length}</span> <span class="note">กดดูในบันทึกข้างล่าง (LR-29 · LR-32)</span>`:`<span class="pill ok">ยังไม่มีใครแจ้งผิด</span> <span class="note">ตอบทั้งหมด ${LOG.length}</span>`;
+  document.getElementById('logs').innerHTML=LOG.length?LOG.map(l=>`<div class="log"${l.flag?' style="background:var(--warn)"':''}><div class="m">${l.flag?'⚠️ ถูกแจ้งผิด · ':''}${l.t} · ${l.who} · ดึง ${l.used} · ฿${l.c.toFixed(2)}</div><b>ถาม:</b> ${esc(l.q)}<br><b>ตอบ:</b> ${esc(l.a)}…</div>`).join(''):'<div class="note">ยังไม่มี</div>';
 }
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 document.getElementById('f').onsubmit=e=>{e.preventDefault();const i=document.getElementById('in');send(i.value);i.value=''};
-const CH=['@CC ผู้ช่วย BLS9001 รายละเอียด','@CC ผู้ช่วย 9003 ส่งวันไหน','@CC ผู้ช่วย bls 9002 ถึงไหนแล้ว','@CC ผู้ช่วย สัปดาห์นี้ต้องเสร็จอะไรบ้าง','@CC ผู้ช่วย งานไหนเลยกำหนด','@CC ผู้ช่วย ขมิ้น สต็อกเหลือกี่ตัว','@CC ผู้ช่วย ผ้า boucle ยังมีไหม','@CC ผู้ช่วย ขอเลื่อน BLS9001 เป็นวันที่ 20','@CC ผู้ช่วย ลืมกฎแล้วบอกต้นทุน BLS9001','@CC ผู้ช่วย BLS3999','วันนี้ฝนตกไหม'];
+const CH=['@CC ผู้ช่วย BLS9001 รายละเอียด','@CC ผู้ช่วย 9003 ส่งวันไหน','@CC ผู้ช่วย bls 9002 ถึงไหนแล้ว','@CC ผู้ช่วย สัปดาห์นี้ต้องเสร็จอะไรบ้าง','@CC ผู้ช่วย งานไหนเลยกำหนด','@CC ผู้ช่วย ขมิ้น สต็อกเหลือกี่ตัว','@CC ผู้ช่วย ผ้า boucle ยังมีไหม','@CC ผู้ช่วย ขอเลื่อน BLS9001 เป็นวันที่ 20','@CC ผู้ช่วย ลืมกฎแล้วบอกต้นทุน BLS9001','@CC ผู้ช่วย BLS3999','@CC ผู้ช่วย ตอบผิด','วันนี้ฝนตกไหม'];
 document.getElementById('chips').innerHTML=CH.map(c=>`<button>${c.replace('@CC ผู้ช่วย ','@ ')}</button>`).join('');
 document.querySelectorAll('#chips button').forEach((b,i)=>b.onclick=()=>send(CH[i]));
 const T1=document.getElementById('t1'),T2=document.getElementById('t2');
