@@ -47,7 +47,10 @@ export async function getImportGroups(): Promise<ImportGroup[]> {
     .schema('catalog')
     .from('v_import_groups')
     .select('*')
-    .order('collection');
+    // กลุ่มใหญ่ขึ้นก่อน · 23 กลุ่มแรกคือ 64% ของสินค้าทั้งหมด
+    // เรียงตามตัวอักษรทำให้เจอกำแพง 95 ใบโดยไม่รู้ว่าอันไหนสำคัญ
+    .order('รอตรวจ', { ascending: false })
+    .order('จำนวนแถว', { ascending: false });
   return (data ?? []) as ImportGroup[];
 }
 
