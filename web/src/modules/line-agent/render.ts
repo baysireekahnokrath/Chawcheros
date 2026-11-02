@@ -117,7 +117,7 @@ export async function render(it: Intent): Promise<Rendered> {
     case 'orders_due':
     case 'orders_overdue': {
       const today = todayBkk();
-      const days = Math.min(Math.max(it.days ?? 7, 0), 60);
+      const days = Math.min(Math.max(Math.round(it.days ?? 7), 0), 60);
       const rows = it.intent === 'orders_overdue'
         ? await call<DueRow[]>('room_orders_overdue')
         : await call<DueRow[]>('room_orders_due', { p_from: today, p_to: addDays(today, days) });

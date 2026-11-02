@@ -28,7 +28,7 @@ export const Intent = z.object({
     'unknown',        // LR-10
   ]),
   order_no: z.string().nullable(),
-  days: z.number().int().nullable(),
+  days: z.number().nullable(),   // ห้าม .int() · Claude ไม่รับ minimum/maximum ที่ zod ใส่ให้
   query: z.string().nullable(),
 });
 export type Intent = z.infer<typeof Intent>;
