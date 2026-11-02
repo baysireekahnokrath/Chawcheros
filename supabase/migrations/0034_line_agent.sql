@@ -357,3 +357,5 @@ insert into core.modules
 -- ⚠️ ขาดบรรทัดนี้ = REST API มองไม่เห็น schema line_agent
 alter role authenticator
   set pgrst.db_schemas = 'public, graphql_public, core, catalog, materials, pricing, cost, marketing, stock, content, crm, sales, line_agent';
+
+notify pgrst, 'reload config';
