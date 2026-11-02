@@ -9,6 +9,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const ALLOWED = [
   'room_order', 'room_orders_due', 'room_orders_overdue', 'room_stock',
+  'room_orders_undated', 'room_clearance', 'sheets_age_minutes',
   'room_join', 'room_leave', 'claim_event', 'finish_request', 'flag_last', 'room_state',
 ] as const;
 type Fn = (typeof ALLOWED)[number];

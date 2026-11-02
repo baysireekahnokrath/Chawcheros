@@ -1,5 +1,5 @@
 /**
- * LR-26 · ชุดทดสอบ 30 คำถาม · รันทุกครั้งก่อนแก้บอท · ไม่ผ่านครบ = ไม่ขึ้นของจริง
+ * LR-26 · ชุดทดสอบ 36 คำถาม · รันทุกครั้งก่อนแก้บอท · ไม่ผ่านครบ = ไม่ขึ้นของจริง
  *
  * ทดสอบเฉพาะ "Claude เข้าใจคำถามถูกไหม" (คำตอบจริงโค้ดเป็นคนเขียน ทดสอบใน supabase/tests/15)
  * มีค่าใช้จ่ายจริง ~30 ครั้ง · ราว 10 บาทกับ Opus 5.5
@@ -11,7 +11,7 @@
 // @ts-expect-error -- node --experimental-strip-types ต้องการนามสกุล .ts
 import { classify, LINE_MODELS } from '../src/modules/line-agent/intent.ts';
 
-type Case = [question: string, intent: string, check?: { order_no?: string; days?: number; query?: RegExp }];
+type Case = [question: string, intent: string, check?: { order_no?: string; days?: number; query?: RegExp; count?: number; rush?: boolean }];
 
 const CASES: Case[] = [
   ['BLS3230 รายละเอียด', 'order_detail', { order_no: '3230' }],
@@ -44,6 +44,13 @@ const CASES: Case[] = [
   ['ทำอะไรได้บ้าง', 'help'],
   ['สวัสดีครับ', 'help'],
   ['วันนี้ฝนจะตกไหม', 'unknown'],
+  // ชุด 1 · 2026-11-02
+  ['ราคา clearance ขุนทองเท่าไหร่', 'clearance', { query: /ขุนทอง|koontong/i }],
+  ['Kamin stool ผลิตกี่วัน', 'lead_time', { rush: false }],
+  ['ลูกค้ารีบมาก ได้เร็วสุดกี่วัน', 'lead_time', { rush: true }],
+  ['3230 ราคาเท่าไหร่', 'order_detail', { order_no: '3230' }],
+  ['ทำอะไรได้บ้าง สัปดาห์นี้ต้องส่งอะไร และ bls3230 รายละเอียด', 'help', { count: 3 }],
+  ['3230 กับ 3225 ส่งวันไหน', 'order_dates', { order_no: '3230', count: 2 }],
 ];
 
 const id = process.argv[2] ?? 'claude-opus-5-5';
@@ -57,12 +64,14 @@ for (const [q, want, chk] of CASES) {
   const r = await classify(model, q);
   if (!r.ok) { console.log(`✗ ${q}  → ล้มเหลว ${r.error}`); continue; }
   tokIn += r.usage.input_tokens; tokOut += r.usage.output_tokens;
-  const it = r.intent;
+  const it = r.items[0];
+  if (chk?.count !== undefined && r.items.length !== chk.count) { console.log(`✗ ${q}  → แยกได้ ${r.items.length} เรื่อง ≠ ${chk.count}`); continue; }
   const bad: string[] = [];
   if (it.intent !== want) bad.push(`intent ${it.intent} ≠ ${want}`);
   if (chk?.order_no && !(it.order_no ?? '').toUpperCase().includes(chk.order_no)) bad.push(`order_no ${it.order_no}`);
   if (chk?.days !== undefined && it.days !== chk.days) bad.push(`days ${it.days} ≠ ${chk.days}`);
   if (chk?.query && !chk.query.test(it.query ?? '')) bad.push(`query "${it.query}"`);
+  if (chk?.rush !== undefined && it.rush !== chk.rush) bad.push(`rush ${it.rush}`);
   if (bad.length === 0) pass++;
   console.log(`${bad.length ? '✗' : '✓'} ${q}${bad.length ? '  → ' + bad.join(' · ') : ''}`);
 }

@@ -47,3 +47,12 @@ export async function setFlag(formData: FormData) {
     .update({ flagged, flagged_at: flagged ? new Date().toISOString() : null }).eq('id', id);
   done();
 }
+
+/** ปุ่ม "ดึงตอนนี้" · Bay เท่านั้น */
+export async function syncSheetsNow() {
+  const { getMyCapabilities } = await import('@/modules/registry');
+  if (!(await getMyCapabilities()).has('admin')) return;
+  const { syncAll } = await import('@/modules/sheets/sync');
+  try { await syncAll(); } catch (e) { console.error('sync now', e); }
+  done();
+}
