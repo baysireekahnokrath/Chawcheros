@@ -50,7 +50,7 @@ begin
     values ('BLS9009', v_cust, t + 2, 'ร่าง');
 
   -- ===== ข้อ 2 =====
-  j := line_agent.room_order('9001');
+  j := line_agent._order_full('9001');
   if j is null then raise exception 'ข้อ 2 พัง: หา 9001 ไม่เจอ'; end if;
   if j::text ~ '(ลูกค้าลับ|099-999|ที่อยู่ลับ|คนรับลับ|customer|address|cost)' then
     raise exception 'ข้อ 2 พัง: ข้อมูลลับหลุดออกมา %', j;
@@ -61,14 +61,14 @@ begin
   if j->>'wo' <> '78/26' or (j->'lines'->0->>'note') <> 'Linen-08 เทา' then
     raise exception 'ข้อ 2 พัง: ข้อมูลงานผลิตไม่ครบ %', j;
   end if;
-  if line_agent.room_order('BLS0000') is not null then raise exception 'ข้อ 2 พัง: เลขที่ไม่มีควรได้ null'; end if;
+  if line_agent._order_full('BLS0000') is not null then raise exception 'ข้อ 2 พัง: เลขที่ไม่มีควรได้ null'; end if;
   if (j->'lines'->0->>'unit_price')::numeric <> 55555 then raise exception 'ข้อ 2 พัง: ราคาขายควรมา'; end if;
   raise notice 'ข้อ 2 ผ่าน · มีสเปก หมายเหตุ w/o ราคาขาย · ไม่มีลูกค้า ที่อยู่ · ตัดบรรทัดค่าขนส่ง';
 
   -- ===== ข้อ 3 =====
-  select count(*) into n from line_agent.room_orders_due(t, t + 7);
+  select count(*) into n from line_agent._orders_due_full(t, t + 7);
   if n <> 1 then raise exception 'ข้อ 3 พัง: งาน 7 วันควรมี 1 (BLS9001 · ไม่นับใบร่าง) แต่ได้ %', n; end if;
-  select count(*) into n from line_agent.room_orders_overdue() where order_no = 'BLS9003';
+  select count(*) into n from line_agent._orders_due_full(t - 30, t - 1) where order_no = 'BLS9003';
   if n <> 1 then raise exception 'ข้อ 3 พัง: BLS9003 ควรเลยกำหนด'; end if;
   raise notice 'ข้อ 3 ผ่าน · งานใกล้ครบ/เลยกำหนด นับเฉพาะใบยืนยันแล้ว';
 
@@ -123,7 +123,7 @@ set local role authenticated;
 do $$
 begin
   begin
-    perform line_agent.room_order('BLS9001');
+    perform line_agent.room_order('BLS9001', 'Cgroup1');
     raise exception 'ข้อ 4 พัง: authenticated เรียก room_order ได้';
   exception when insufficient_privilege then null;
   end;
@@ -149,7 +149,12 @@ reset role;
 set local role service_role;
 do $$
 begin
-  if line_agent.room_order('BLS9001') is null then raise exception 'ข้อ 4 พัง: service_role ต้องเรียกได้'; end if;
-  raise notice 'ข้อ 4 ผ่าน · มีแค่ webhook (service_role) ที่เรียกได้';
+  perform line_agent.room_stock('ผ้า');
+  begin
+    perform line_agent._order_full('BLS9001');
+    raise exception 'ข้อ 4 พัง: service_role เรียกตัวในที่ไม่ตัดข้อมูลได้';
+  exception when insufficient_privilege then null;
+  end;
+  raise notice 'ข้อ 4 ผ่าน · webhook เรียกได้แค่ประตู · ตัวในที่ไม่ตัดข้อมูลเรียกไม่ได้';
 end $$;
 reset role;
