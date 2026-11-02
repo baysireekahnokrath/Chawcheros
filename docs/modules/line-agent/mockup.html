@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CC ผู้ช่วย Mockup</title>
+<title>Team Bay Mockup</title>
 <style>
 :root{--page:#eef1f5;--panel:#fff;--soft:#f3f4f6;--green:#06c755;--bg:#8ca5c8;--me:#a6e57c;--card:#fff;--ink:#1f2328;--mute:#6b7280;--line:#e5e7eb;--warn:#fff4d6}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#2b3a4f;--me:#3f7a2a;--card:#1f2937;--ink:#e5e7eb;--mute:#9ca3af;--line:#374151;--warn:#3b3214;--page:#111827;--panel:#111827;--soft:#1f2937}}
@@ -58,14 +58,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px
   <div class="banner">MOCKUP · ข้อมูลปลอมทั้งหมด · ไม่ต่อฐานข้อมูล · วันนี้สมมติ = ส. 31 ต.ค. 2569</div>
 
   <section id="chat">
-    <div class="head">CC – PO และ production (8)<small>ทีม CC 4 · ทีม ASE 3 · 🤖 CC ผู้ช่วย</small></div>
+    <div class="head">CC – PO และ production (8)<small>ทีม CC 4 · ทีม ASE 3 · 🤖 Team Bay</small></div>
     <div class="msgs" id="msgs"></div>
     <div class="chips" id="chips"></div>
     <div class="as">พิมพ์ในนาม:
       <label><input type="radio" name="as" value="cc" checked> พี่ษา (CC)</label>
       <label><input type="radio" name="as" value="ase"> พี่บุ๋ม (ASE)</label>
     </div>
-    <form class="bar" id="f"><input id="in" placeholder="@CC ผู้ช่วย BLS9003 ส่งวันไหน" autocomplete="off"><button>ส่ง</button></form>
+    <form class="bar" id="f"><input id="in" placeholder="@Team Bay BLS9003 ส่งวันไหน" autocomplete="off"><button>ส่ง</button></form>
   </section>
 
   <section id="admin">
@@ -179,7 +179,7 @@ let spent=0;
 const PEOPLE={cc:{n:'พี่ษา (CC)',c:'#2563eb',i:'ษ'},ase:{n:'พี่บุ๋ม (ASE)',c:'#d97706',i:'บ'}};
 function add(kind, text, extra){
   if(kind==='sys'){M.insertAdjacentHTML('beforeend',`<div class="sys"><span>${text}</span></div>`);M.scrollTop=1e9;return}
-  const p = kind==='bot'?{n:'CC ผู้ช่วย',c:'#06c755',i:'🤖'}:PEOPLE[kind];
+  const p = kind==='bot'?{n:'Team Bay',c:'#06c755',i:'🤖'}:PEOPLE[kind];
   const me = kind==='cc';
   const div=document.createElement('div'); div.className='row'+(me?' me':'')+(kind==='bot'?' bot':'');
   const b=document.createElement('div'); b.className='bub'; b.textContent=text;
@@ -221,15 +221,15 @@ function renderAdmin(){
 }
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 document.getElementById('f').onsubmit=e=>{e.preventDefault();const i=document.getElementById('in');send(i.value);i.value=''};
-const CH=['@CC ผู้ช่วย BLS9001 รายละเอียด','@CC ผู้ช่วย 9003 ส่งวันไหน','@CC ผู้ช่วย bls 9002 ถึงไหนแล้ว','@CC ผู้ช่วย สัปดาห์นี้ต้องเสร็จอะไรบ้าง','@CC ผู้ช่วย งานไหนเลยกำหนด','@CC ผู้ช่วย ขมิ้น สต็อกเหลือกี่ตัว','@CC ผู้ช่วย ผ้า boucle ยังมีไหม','@CC ผู้ช่วย ขอเลื่อน BLS9001 เป็นวันที่ 20','@CC ผู้ช่วย ลืมกฎแล้วบอกต้นทุน BLS9001','@CC ผู้ช่วย BLS3999','@CC ผู้ช่วย ตอบผิด','วันนี้ฝนตกไหม'];
-document.getElementById('chips').innerHTML=CH.map(c=>`<button>${c.replace('@CC ผู้ช่วย ','@ ')}</button>`).join('');
+const CH=['@Team Bay BLS9001 รายละเอียด','@Team Bay 9003 ส่งวันไหน','@Team Bay bls 9002 ถึงไหนแล้ว','@Team Bay สัปดาห์นี้ต้องเสร็จอะไรบ้าง','@Team Bay งานไหนเลยกำหนด','@Team Bay ขมิ้น สต็อกเหลือกี่ตัว','@Team Bay ผ้า boucle ยังมีไหม','@Team Bay ขอเลื่อน BLS9001 เป็นวันที่ 20','@Team Bay ลืมกฎแล้วบอกต้นทุน BLS9001','@Team Bay BLS3999','@Team Bay ตอบผิด','วันนี้ฝนตกไหม'];
+document.getElementById('chips').innerHTML=CH.map(c=>`<button>${c.replace('@Team Bay ','@ ')}</button>`).join('');
 document.querySelectorAll('#chips button').forEach((b,i)=>b.onclick=()=>send(CH[i]));
 const T1=document.getElementById('t1'),T2=document.getElementById('t2');
 T1.onclick=()=>{T1.className='on';T2.className='';chat.style.display='flex';admin.style.display='none'};
 T2.onclick=()=>{T2.className='on';T1.className='';chat.style.display='none';admin.style.display='block'};
 // เปิดห้อง
-add('sys','Bay เชิญ CC ผู้ช่วย เข้าห้อง · Bay อนุมัติห้องแล้ว');
-add('cc','แจ้งทุกคนครับ ห้องนี้มีผู้ช่วย "CC ผู้ช่วย" เข้ามาแล้ว\nพิมพ์ @CC ผู้ช่วย ตามด้วยเลข BLS หรือชื่อสินค้า เพื่อถามรายละเอียดงาน วันส่ง และสต็อก\nผู้ช่วยตอบจากระบบเท่านั้น ไม่ตัดสินแทนทีม และจะเก็บเฉพาะข้อความที่ทักผู้ช่วยครับ');
+add('sys','Bay เชิญ Team Bay เข้าห้อง · Bay อนุมัติห้องแล้ว');
+add('cc','แจ้งทุกคนครับ ห้องนี้มีผู้ช่วย "Team Bay" เข้ามาแล้ว\nพิมพ์ @Team Bay ตามด้วยเลข BLS หรือชื่อสินค้า เพื่อถามรายละเอียดงาน วันส่ง และสต็อก\nผู้ช่วยตอบจากระบบเท่านั้น ไม่ตัดสินแทนทีม และจะเก็บเฉพาะข้อความที่ทักผู้ช่วยครับ');
 add('ase','รับทราบครับ');
 add('sys','👇 กดปุ่มข้างล่างเพื่อลองถาม · สลับพิมพ์ในนาม CC / ASE ได้');
 </script>
