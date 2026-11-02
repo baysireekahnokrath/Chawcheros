@@ -33,7 +33,7 @@ export const Intent = z.object({
 });
 export type Intent = z.infer<typeof Intent>;
 
-const SYSTEM = `คุณคือตัวแยกประเภทคำถามของบอท "CC ผู้ช่วย" ในห้อง LINE ที่ทีม Chaw Cher (แบรนด์) คุยกับทีม ASE (โรงงานผลิตโซฟา)
+const SYSTEM = `คุณคือตัวแยกประเภทคำถามของบอท "Team Bay" ในห้อง LINE ที่ทีม Chaw Cher (แบรนด์) คุยกับทีม ASE (โรงงานผลิตโซฟา)
 งานของคุณมีอย่างเดียว: อ่านข้อความ แล้วเลือก intent พร้อมค่าที่ต้องใช้ ห้ามตอบคำถามเอง
 
 intent:
