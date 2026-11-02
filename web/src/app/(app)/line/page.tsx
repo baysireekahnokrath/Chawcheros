@@ -2,7 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getMyCapabilities } from '@/modules/registry';
 import { LINE_MODELS } from '@/modules/line-agent/intent';
 import { botInfo, lineSecrets } from '@/modules/line-agent/line';
-import { decideRoom, saveSettings, setFlag, togglePause } from '@/modules/line-agent/admin';
+import { decideRoom, saveSettings, setFlag, syncSheetsNow, togglePause } from '@/modules/line-agent/admin';
+import { serviceEmail } from '@/modules/sheets/google';
 
 export const metadata = { title: 'ผู้ช่วย LINE · Chaw Cher OS' };
 
@@ -12,6 +13,10 @@ type Req = {
   status: string; error: string | null; data_used: string | null; flagged: boolean;
   input_tokens: number | null; output_tokens: number | null;
   usd_per_mtok_in: number | null; usd_per_mtok_out: number | null; thb_per_usd: number | null;
+};
+type Source = {
+  id: string; name_th: string; tab: string | null; rows: number | null; expires_on: string | null;
+  last_ok_at: string | null; last_try_at: string | null; last_error: string | null; warnings: string[];
 };
 type Budget = {
   model: string; monthly_budget_thb: number; thb_per_usd: number; paused: boolean;
@@ -39,11 +44,13 @@ export default async function LinePage({ searchParams }: PageProps<'/line'>) {
   const db = supabase.schema('line_agent');
   let reqQ = db.from('requests').select('*').order('created_at', { ascending: false }).limit(50);
   if (only === 'flagged') reqQ = reqQ.eq('flagged', true);
-  const [{ data: rooms }, { data: budget }, { data: reqs }] = await Promise.all([
+  const [{ data: rooms }, { data: budget }, { data: reqs }, { data: sources }] = await Promise.all([
     db.from('rooms').select('*').order('joined_at', { ascending: false }),
     db.from('v_budget').select('*').maybeSingle(),
     reqQ,
+    supabase.schema('sheets').from('sources').select('*').order('id'),
   ]);
+  const gEmail = serviceEmail();
   const b = budget as Budget | null;
   const keys = lineSecrets();
   const info = keys ? await botInfo(keys.token) : null;
@@ -79,6 +86,37 @@ export default async function LinePage({ searchParams }: PageProps<'/line'>) {
           <span className={pill(hasSecret ? 'ok' : 'bad')}>{hasSecret ? 'มีแล้ว' : 'ยังไม่ได้ใส่'}</span></div>
         <div className="flex justify-between"><span>Claude (ANTHROPIC_API_KEY)</span>
           <span className={pill(hasClaude ? 'ok' : 'bad')}>{hasClaude ? 'มีแล้ว' : 'ยังไม่ได้ใส่'}</span></div>
+      </div>
+
+      {/* ข้อมูลจาก Google Sheet · ชุด 1 */}
+      <div className="mt-6 mb-2 flex items-center justify-between gap-3">
+        <h2 className="font-semibold">ข้อมูลจาก Google Sheet</h2>
+        <form action={syncSheetsNow}><button className="rounded-xl border border-border px-3 py-1.5 text-sm">ดึงตอนนี้</button></form>
+      </div>
+      <div className={card + ' space-y-2 text-sm'}>
+        <p className="text-xs text-muted">
+          อ่านอย่างเดียว ไม่แก้ชีต · ดึงเองเมื่อมีคนถามบอทและข้อมูลเก่ากว่า 10 นาที + ทุกเช้า 6 โมง
+          {gEmail ? <> · แชร์ชีตให้ <span className="select-all font-mono">{gEmail}</span> แบบผู้ดู</> : <span className="text-danger"> · ยังไม่ได้ใส่ GOOGLE_SERVICE_ACCOUNT_JSON</span>}
+        </p>
+        {((sources as Source[] | null) ?? []).map((s) => (
+          <div key={s.id} className="border-t border-border pt-2">
+            <div className="flex justify-between gap-2">
+              <span className="min-w-0 truncate">{s.name_th}{s.tab ? <span className="text-muted"> · {s.tab}</span> : null}</span>
+              {s.last_error
+                ? <span className={pill('bad')}>ดึงไม่ได้</span>
+                : s.last_ok_at ? <span className={pill('ok')}>{s.rows ?? 0} แถว · {when(s.last_ok_at)}</span>
+                : <span className={pill('warn')}>ยังไม่เคยดึง</span>}
+            </div>
+            {s.last_error && <div className="mt-1 text-xs text-danger">{s.last_error}</div>}
+            {s.expires_on && <div className="mt-1 text-xs text-muted">ราคาหมดอายุ {s.expires_on}</div>}
+            {s.warnings?.length > 0 && (
+              <details className="mt-1 text-xs text-muted">
+                <summary>อ่านไม่ออก {s.warnings.length} จุด</summary>
+                <ul className="mt-1 list-disc pl-5">{s.warnings.map((w, i) => <li key={i}>{w}</li>)}</ul>
+              </details>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* LR-3 · ห้อง */}

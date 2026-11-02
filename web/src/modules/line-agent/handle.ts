@@ -5,7 +5,8 @@
  *        → Claude เลือกว่าจะดึงอะไร → โค้ดดึงและเขียนคำตอบ → reply → บันทึก
  */
 import { call } from './db';
-import { classify, LINE_MODELS, worstThb, type Intent } from './intent';
+import { syncAll } from '@/modules/sheets/sync';
+import { classify, LINE_MODELS, worstThb } from './intent';
 import { groupName, memberName, mentionedText, reply, type LineEvent } from './line';
 import { HELP, render } from './render';
 
@@ -82,7 +83,11 @@ export async function handleEvent(ev: LineEvent, token: string) {
     return;
   }
 
-  const c = await classify(price, question);
+  // ข้อมูลชีตเก่ากว่า 10 นาที → ดึงใหม่ระหว่างรอ Claude (S3) · ดึงไม่ได้ก็ตอบจากข้อมูลเดิม
+  const sync = call<number>('sheets_age_minutes')
+    .then((age) => (age > 10 ? syncAll().then(() => undefined) : undefined))
+    .catch((e) => console.error('sheets sync', e));
+  const [c] = await Promise.all([classify(price, question), sync]);
   if (!c.ok) {
     const answer = 'ขอโทษครับ ตอนนี้ผมตอบไม่ได้ ลองใหม่อีกครั้งนะครับ';
     const r = await reply(token, ev.replyToken, answer);
@@ -92,18 +97,18 @@ export async function handleEvent(ev: LineEvent, token: string) {
 
   let out: Awaited<ReturnType<typeof render>>;
   try {
-    out = await render(c.intent as Intent);
+    out = await render(c.items);
   } catch (e) {
     const answer = 'ขอโทษครับ ดึงข้อมูลจากระบบไม่ได้ ลองใหม่อีกครั้งนะครับ';
     await reply(token, ev.replyToken, answer);
-    await finish({ status: 'ล้มเหลว', answer, intent: c.intent, error: String(e), ...cost, ...c.usage });
+    await finish({ status: 'ล้มเหลว', answer, intent: c.items, error: String(e), ...cost, ...c.usage });
     return;
   }
 
   const r = await reply(token, ev.replyToken, out.answer);
   await finish({
     status: r.ok ? out.status : 'ไม่ทัน',
-    answer: out.answer, intent: c.intent, data_used: out.dataUsed, error: r.error ?? null,
+    answer: out.answer, intent: c.items, data_used: out.dataUsed, error: r.error ?? null,
     ...cost, ...c.usage,
   });
 }
