@@ -46,27 +46,27 @@ begin
   ), '{}');
 
   -- ===== ข้อ 2 =====
-  j := line_agent.room_order('7001');
+  j := line_agent._order_full('7001');
   if j is null or j->>'source' <> 'ชีต' then raise exception 'ข้อ 2 พัง: หา BLS7001 จากชีตไม่เจอ %', j; end if;
   if (j->'lines'->0->>'unit_price')::numeric <> 35680 then raise exception 'ข้อ 2 พัง: ราคาไม่มา %', j; end if;
   if j->>'wo' <> '83/26' then raise exception 'ข้อ 2 พัง: w/o'; end if;
   if j::text ~ '(customer|ลูกค้า|address)' then raise exception 'ข้อ 2 พัง: มีช่องข้อมูลลูกค้า %', j; end if;
-  if (line_agent.room_order('BLS7003')->>'items_text') <> 'Bird (S)' then
+  if (line_agent._order_full('BLS7003')->>'items_text') <> 'Bird (S)' then
     raise exception 'ข้อ 2 พัง: ไม่มี PO tab ต้องใช้ช่องรายการแทน';
   end if;
   raise notice 'ข้อ 2 ผ่าน · ตอบจากชีตได้ · มีราคา · ไม่มีข้อมูลลูกค้า';
 
   -- ===== ข้อ 3 =====
-  j := line_agent.room_order('7002');
+  j := line_agent._order_full('7002');
   if j->>'delivery_text' <> 'ดูในชีต' then raise exception 'ข้อ 3 พัง: ชื่อคนรับหลุด %', j->>'delivery_text'; end if;
-  if (line_agent.room_order('7003')->>'delivery_text') <> 'ปลายเดือน พ.ค./69' then raise exception 'ข้อ 3 พัง: ข้อความสั้นควรผ่าน'; end if;
+  if (line_agent._order_full('7003')->>'delivery_text') <> 'ปลายเดือน พ.ค./69' then raise exception 'ข้อ 3 พัง: ข้อความสั้นควรผ่าน'; end if;
   raise notice 'ข้อ 3 ผ่าน · ข้อความที่มีชื่อคน/ชั้น/ตึก ไม่เข้าห้อง';
 
   -- ===== ข้อ 4 =====
   insert into crm.customers (kind, name) values ('บุคคล', 'ทดสอบ') returning id into v_cust;
   insert into sales.orders (order_no, customer_id, work_order_no, status)
     values ('BLS7001', v_cust, '99/26', 'ยืนยันแล้ว');
-  if (line_agent.room_order('BLS7001')->>'source') <> 'ระบบ' then raise exception 'ข้อ 4 พัง: ระบบต้องชนะชีต'; end if;
+  if (line_agent._order_full('BLS7001')->>'source') <> 'ระบบ' then raise exception 'ข้อ 4 พัง: ระบบต้องชนะชีต'; end if;
   raise notice 'ข้อ 4 ผ่าน · เลขเดียวกัน ระบบชนะชีต';
 end $$;
 
@@ -75,7 +75,7 @@ declare n int; t date := line_agent.today(); j jsonb;
 begin
   -- ===== ข้อ 5 · BLS7001 อยู่ในระบบแล้ว (ไม่มีวันต้องเสร็จ) จึงไม่นับจากชีตซ้ำ =====
   update sheets.orders set bls = 'BLS7004' where bls = 'BLS7001';
-  select count(*) into n from line_agent.room_orders_due(t, t + 7) where source = 'ชีต' and due_kind = 'ส่ง';
+  select count(*) into n from line_agent._orders_due_full(t, t + 7) where source = 'ชีต' and due_kind = 'ส่ง';
   if n <> 1 then raise exception 'ข้อ 5 พัง: งานส่งใน 7 วันจากชีตควรมี 1 ได้ %', n; end if;
   if line_agent.room_orders_undated() <> 2 then raise exception 'ข้อ 5 พัง: งานวันส่งเป็นข้อความควรมี 2'; end if;
   raise notice 'ข้อ 5 ผ่าน · รวมงานระบบ+ชีต · นับงานที่ไม่มีวันชัดได้';
@@ -85,10 +85,10 @@ begin
     jsonb_build_object('row_no',2,'full_name','ฌ เฌอ | ชั้นวางทีวี ขุนทอง (Koontong TV cabinet) สีวอลนัท',
                        'collection','ขุนทอง','retail',49900,'disc_pct','40%','price',29940)), '{}');
   update sheets.sources set expires_on = t + 10 where id = 'clearance';
-  j := line_agent.room_clearance('ขุนทอง');
+  j := line_agent._clearance_full('ขุนทอง');
   if jsonb_array_length(j->'items') <> 1 then raise exception 'ข้อ 6 พัง: ยังไม่หมดอายุควรเจอ %', j; end if;
   update sheets.sources set expires_on = t - 1 where id = 'clearance';
-  j := line_agent.room_clearance('ขุนทอง');
+  j := line_agent._clearance_full('ขุนทอง');
   if jsonb_array_length(j->'items') <> 0 or not (j->>'expired')::boolean then
     raise exception 'ข้อ 6 พัง: หมดอายุแล้วยังคืนราคา %', j;
   end if;
@@ -121,7 +121,7 @@ begin
   exception when insufficient_privilege then null;
   end;
   begin
-    perform line_agent.room_clearance('x');
+    perform line_agent.room_clearance('x', 'g');
     raise exception 'ข้อ 8 พัง: คนทั่วไปเรียกประตูบอทได้';
   exception when insufficient_privilege then null;
   end;
