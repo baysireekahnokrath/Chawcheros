@@ -6,7 +6,8 @@
 --
 -- สิ่งที่ต้องพิสูจน์
 --   1 เลข BLS พิมพ์หลายแบบ เทียบกันได้ (D9 · S3)
---   2 ★ room_order ไม่มีราคา ไม่มีลูกค้า ไม่มีที่ส่ง · ไม่แสดงบรรทัดค่าขนส่ง (LR-11)
+--   2 ★ room_order ไม่มีลูกค้า ไม่มีที่ส่ง · ไม่แสดงบรรทัดค่าขนส่ง (LR-11)
+--     ราคาขายเปิดแล้ว (Bay 2026-11-02 · 0035) · ต้นทุนยังไม่มีในประตูนี้
 --   3 งานใกล้ครบกำหนด / เลยกำหนด เฉพาะออเดอร์ยืนยันแล้ว
 --   4 ★ คนล็อกอินทั่วไปและ anon เรียกประตูของบอทไม่ได้
 --   5 webhook ซ้ำ = รับครั้งเดียว (LR-4)
@@ -51,7 +52,7 @@ begin
   -- ===== ข้อ 2 =====
   j := line_agent.room_order('9001');
   if j is null then raise exception 'ข้อ 2 พัง: หา 9001 ไม่เจอ'; end if;
-  if j::text ~ '(55555|365|ลูกค้าลับ|099-999|ที่อยู่ลับ|คนรับลับ|price|customer|address)' then
+  if j::text ~ '(ลูกค้าลับ|099-999|ที่อยู่ลับ|คนรับลับ|customer|address|cost)' then
     raise exception 'ข้อ 2 พัง: ข้อมูลลับหลุดออกมา %', j;
   end if;
   if jsonb_array_length(j->'lines') <> 1 then
@@ -61,7 +62,8 @@ begin
     raise exception 'ข้อ 2 พัง: ข้อมูลงานผลิตไม่ครบ %', j;
   end if;
   if line_agent.room_order('BLS0000') is not null then raise exception 'ข้อ 2 พัง: เลขที่ไม่มีควรได้ null'; end if;
-  raise notice 'ข้อ 2 ผ่าน · มีสเปก หมายเหตุ w/o · ไม่มีราคา ลูกค้า ที่อยู่ · ตัดบรรทัดค่าขนส่ง';
+  if (j->'lines'->0->>'unit_price')::numeric <> 55555 then raise exception 'ข้อ 2 พัง: ราคาขายควรมา'; end if;
+  raise notice 'ข้อ 2 ผ่าน · มีสเปก หมายเหตุ w/o ราคาขาย · ไม่มีลูกค้า ที่อยู่ · ตัดบรรทัดค่าขนส่ง';
 
   -- ===== ข้อ 3 =====
   select count(*) into n from line_agent.room_orders_due(t, t + 7);
