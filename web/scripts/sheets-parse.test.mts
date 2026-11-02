@@ -29,7 +29,8 @@ const o = P.parseOrders(ot, 2026);
 eq(o.rows.map(r => r.bls), ['BLS3167','BLS3175','BLS606'], 'orders bls');
 eq(o.rows[0], {bls:'BLS3167',label:null,wo:'10/26',ordered_on:'2026-01-06',delivery_text:'จัดส่งวันที่  5/3/2569',delivery_on:'2026-03-05',items_text:'Sofa A x 1\nChair B x 2',sheet_rows:'2-4'}, 'order merge');
 eq(o.rows[2].label, 'งานซ่อม', 'repair label');
-eq(JSON.stringify(o.rows).includes('ลับ'), false, 'no customer');
+eq(JSON.stringify(o.rows).includes('ลับ'), false, 'no customer in orders');
+eq(o.money[0], {bls:'BLS3167',customer_name:'ลับ',total_sales:null,balance:null}, 'money separate');
 // PO 3230 shape (ชื่อลูกค้าเป็นของปลอม)
 const po = [['PURCHASE ORDER '],['','','','','วันที่ Date:','31/10/2569'],['ใบสั่งซื้อ','','','','เลขที่ No:','BLS3230'],[],
   ['addr','','ชื่อ','คนปลอม'],[],[],[],[],[],[],['สถานที่จัดส่ง Place of delivery','','','','กำหนดส่ง Delivery date'],['บ้านคนปลอม','','','','10 พฤศจิกายน 2569'],[],
