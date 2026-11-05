@@ -43,3 +43,6 @@ CHAW CHER HOME SALES GALLERY · โทร 062 601 8045
 
 ## ไฟล์สำหรับโค้ด
 `tokens.json` — สีและฟอนต์ชุดเดียวกับตารางข้างบน
+
+## LINE OA
+`line-oa-qr.png` — QR เพิ่มเพื่อน LINE (จากไฟล์ 2dbarcodes_GW.zip ใน Drive, 5 พ.ย. 2569)
