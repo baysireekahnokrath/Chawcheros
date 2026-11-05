@@ -1,0 +1,298 @@
+<title>หน่วยคาร์บอน ฌ เฌอ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@500;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: workbench — form + calculation on the left, live certificate sheet on the right; stacks on phones */
+:root {
+  --bg: #eef1ec;
+  --panel: #ffffff;
+  --ink: #17241c;
+  --muted: #5b6a60;
+  --line: #d3dbd3;
+  --forest: #1f4d36;
+  --leaf: #3d7a52;
+  --seal: #8a6d2b;
+  --paper: #fbfcf8;
+  --paper-ink: #17241c;
+  --warn-bg: #fbf3de;
+  --warn-ink: #6b4f12;
+  --display: "Noto Serif Thai", "Thonburi", Georgia, serif;
+  --body: "IBM Plex Sans Thai", "Sukhumvit Set", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111814; --panel: #18221c; --ink: #e3ebe5; --muted: #9aab9f; --line: #2c3a31;
+  --forest: #7fc49a; --leaf: #8fd0a6; --seal: #d6b56a; --warn-bg: #2e2716; --warn-ink: #e8cf8f;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111814; --panel: #18221c; --ink: #e3ebe5; --muted: #9aab9f; --line: #2c3a31;
+  --forest: #7fc49a; --leaf: #8fd0a6; --seal: #d6b56a; --warn-bg: #2e2716; --warn-ink: #e8cf8f;
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 24px; }
+header h1 { font-family: var(--display); font-size: clamp(24px, 3.2vw, 34px); margin: 0; color: var(--forest); text-wrap: balance; line-height: 1.3; }
+header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-family: var(--mono); }
+
+.grid { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 920px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.panel h2 { font-size: 15px; margin: 0; font-weight: 600; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 13px; color: var(--muted); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+input, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; }
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
+.hint { font-size: 12px; color: var(--muted); }
+
+.calc { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 8px; }
+.calc table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.calc td { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.calc td:last-child { text-align: right; font-family: var(--mono); }
+.calc tr.total td { font-weight: 600; border-bottom: 0; color: var(--forest); font-size: 15px; }
+.method { font-size: 12.5px; color: var(--muted); }
+.method summary { cursor: pointer; color: var(--ink); }
+.method code { font-family: var(--mono); font-size: 12px; }
+
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 12px 14px; font-size: 13px; }
+.warn strong { display: block; margin-bottom: 2px; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 500; border-radius: 6px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--forest); background: var(--forest); color: var(--panel); }
+button.ghost { background: transparent; color: var(--forest); }
+.toast { font-size: 13px; color: var(--leaf); min-height: 1.2em; }
+
+/* ---------- Certificate sheet (fixed light paper in both themes) ---------- */
+.sheet-wrap { min-width: 0; display: grid; gap: 10px; }
+.sheet { container-type: inline-size; width: 100%; aspect-ratio: 1.414 / 1; max-width: 100%;
+  background: var(--paper); color: var(--paper-ink); border-radius: 4px; position: relative; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 12px 32px rgba(23,36,28,.14); }
+.sheet canvas.guilloche { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sheet .frame { position: absolute; inset: 3.2cqw; border: .25cqw solid #1f4d36; outline: .1cqw solid #1f4d36; outline-offset: -.9cqw;
+  padding: 3.4cqw 5cqw 3cqw; display: grid; grid-template-rows: auto auto 1fr auto; text-align: center; background: rgba(251,252,248,.86); }
+.c-org { font-family: var(--mono); font-size: 1.25cqw; letter-spacing: .3em; color: #3d7a52; text-transform: uppercase; }
+.c-title { font-family: var(--display); font-weight: 700; color: #1f4d36; font-size: 3.6cqw; line-height: 1.25; margin-top: .8cqw; }
+.c-sub { font-size: 1.45cqw; color: #4d5c52; margin-top: .3cqw; }
+.c-body { align-self: center; display: grid; gap: 1cqw; }
+.c-given { font-size: 1.5cqw; color: #4d5c52; }
+.c-name { font-family: var(--display); font-size: 4cqw; font-weight: 500; color: #17241c; border-bottom: .12cqw solid #8a6d2b; padding-bottom: .4cqw; margin: 0 auto; min-width: 50%; line-height: 1.35; }
+.c-text { font-size: 1.55cqw; line-height: 1.7; max-width: 78%; margin: 0 auto; }
+.c-text b { color: #1f4d36; }
+.c-big { display: flex; justify-content: center; gap: 4cqw; margin-top: .4cqw; }
+.c-big div { display: grid; }
+.c-big .n { font-family: var(--display); font-size: 3.3cqw; color: #1f4d36; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.c-big .u { font-size: 1.15cqw; color: #4d5c52; }
+.c-foot { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 2cqw; font-size: 1.1cqw; color: #4d5c52; }
+.c-foot .sig { border-top: .1cqw solid #17241c; padding-top: .4cqw; text-align: center; }
+.c-foot .meta { text-align: left; font-family: var(--mono); line-height: 1.6; }
+.c-seal { width: 9cqw; height: 9cqw; border-radius: 50%; border: .3cqw solid #8a6d2b; color: #8a6d2b; display: grid; place-items: center;
+  font-family: var(--mono); font-size: .95cqw; line-height: 1.3; letter-spacing: .08em; text-align: center; transform: rotate(-8deg); }
+.c-seal b { font-family: var(--display); font-size: 1.9cqw; letter-spacing: 0; display: block; }
+.c-note { position: absolute; left: 5cqw; right: 5cqw; bottom: 1cqw; font-size: .95cqw; color: #6b5a33; text-align: center; line-height: 1.4; }
+.caption { font-size: 12.5px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .sheet { transition: box-shadow .2s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Chawcher Carbon Unit · หน่วยคาร์บอน</div>
+    <h1>หน่วยคาร์บอน ฌ เฌอ</h1>
+    <p>คำนวณปริมาณคาร์บอนที่ต้นไม้ของลูกค้าจะกักเก็บได้ แล้วออกใบรับรองการปลูกต้นไม้ที่แชร์ได้ ตัวอย่างข้างล่างกรอกไว้ให้แล้ว แก้ช่องไหน ใบรับรองจะเปลี่ยนตามทันที</p>
+  </header>
+
+  <div class="grid">
+    <form class="panel" id="f" autocomplete="off">
+      <h2>ข้อมูลผู้รับใบรับรอง</h2>
+      <div class="field"><label for="name">ชื่อผู้รับ</label><input id="name" value="ครอบครัวสิริกาญจน์"></div>
+      <div class="field"><label for="item">สินค้าที่ซื้อ / เลขออเดอร์</label><input id="item" value="โซฟากีวี่ ไม้โอ๊ค · PO 3225"></div>
+
+      <h2>ต้นไม้ที่ปลูก</h2>
+      <div class="row">
+        <div class="field"><label for="species">พันธุ์</label><select id="species"></select></div>
+        <div class="field"><label for="count">จำนวนต้น</label><input id="count" type="number" min="1" max="10000" value="2"></div>
+      </div>
+      <div class="field"><label for="treeName">ชื่อต้นไม้ (ไม่บังคับ)</label><input id="treeName" value="เจ้าอ้วน"></div>
+      <div class="row">
+        <div class="field"><label for="site">แปลงปลูก</label>
+          <select id="site"><option>แปลงเพาะ โรงงาน ฌ เฌอ</option><option selected>บางกระเจ้า สมุทรปราการ</option><option>เขาใหญ่ นครราชสีมา</option></select></div>
+        <div class="field"><label for="date">วันที่ปลูก</label><input id="date" type="date" value="2026-11-05"></div>
+      </div>
+
+      <h2>สมมติฐานการคำนวณ</h2>
+      <div class="row">
+        <div class="field"><label for="years">ระยะประเมิน</label>
+          <select id="years"><option value="10">10 ปี</option><option value="20" selected>20 ปี</option><option value="30">30 ปี</option></select></div>
+        <div class="field"><label for="survival">อัตรารอด (%)</label><input id="survival" type="number" min="10" max="100" value="80"></div>
+      </div>
+      <div class="field"><label for="serial">เลขที่ใบรับรอง</label><input id="serial"><span class="hint">ตั้งให้อัตโนมัติจากวันที่และข้อมูลข้างบน แก้เองได้</span></div>
+
+      <div class="calc" aria-live="polite">
+        <h2>ผลการคำนวณ</h2>
+        <table><tbody id="calcRows"></tbody></table>
+        <details class="method">
+          <summary>วิธีคำนวณ</summary>
+          <p>ต่อต้นต่อปี ใช้อัตราดูดซับเฉลี่ยของพันธุ์ (ช่วงต่ำ–สูง) ปีที่ 1–5 ต้นยังเล็ก จึงคิดแบบไล่ขึ้น <code>ปีที่ y × อัตรา × min(1, y/5)</code> ตั้งแต่ปีที่ 5 คิดเต็มอัตรา แล้วคูณจำนวนต้นและอัตรารอด</p>
+          <p>ใบรับรองแสดง<b>ค่าต่ำ</b>ของช่วงเสมอ เพื่อไม่ให้เคลมเกินจริง อัตราของแต่ละพันธุ์เป็นค่าตั้งต้นโดยประมาณ ควรแทนด้วยค่าจากการวัดเส้นรอบวงและความสูงจริงในแปลงเมื่อมีข้อมูล</p>
+        </details>
+      </div>
+
+      <div class="warn"><strong>ใบนี้ไม่ใช่คาร์บอนเครดิต</strong>คาร์บอนเครดิตที่ซื้อขายหรือใช้ชดเชยได้ต้องขึ้นทะเบียนโครงการและทวนสอบโดยผู้ตรวจภายนอกตามมาตรฐาน T-VER ของ อบก. หน่วยงานนี้ออกได้แค่ใบรับรองการปลูกพร้อมค่าประมาณการ ห้ามใช้คำว่า carbon neutral หรือ "ชดเชยโซฟาหมดแล้ว"</div>
+
+      <div class="actions">
+        <button type="button" id="copy">คัดลอกข้อความสำหรับส่งลูกค้า</button>
+        <button type="button" class="ghost" id="reset">เริ่มใบใหม่</button>
+      </div>
+      <div class="toast" id="toast"></div>
+    </form>
+
+    <div class="sheet-wrap">
+      <div class="sheet" id="sheet">
+        <canvas class="guilloche" id="g"></canvas>
+        <div class="frame">
+          <div>
+            <div class="c-org">Chawcher Carbon Unit · หน่วยคาร์บอน ฌ เฌอ</div>
+            <div class="c-title">ใบรับรองการปลูกต้นไม้</div>
+            <div class="c-sub">และประมาณการกักเก็บคาร์บอน</div>
+          </div>
+          <div></div>
+          <div class="c-body">
+            <div class="c-given">มอบให้แก่</div>
+            <div class="c-name" id="cName"></div>
+            <div class="c-text" id="cText"></div>
+            <div class="c-big">
+              <div><span class="n" id="cTrees"></span><span class="u">ต้นที่ปลูก</span></div>
+              <div><span class="n" id="cKg"></span><span class="u" id="cKgU"></span></div>
+              <div><span class="n" id="cT"></span><span class="u">ตัน CO₂e</span></div>
+            </div>
+          </div>
+          <div class="c-foot">
+            <div class="meta" id="cMeta"></div>
+            <div class="c-seal"><span><b>ฌ เฌอ</b>ปลูกจริง<br>ตรวจสอบได้</span></div>
+            <div class="sig">ผู้รับรอง · หน่วยคาร์บอน ฌ เฌอ</div>
+          </div>
+        </div>
+        <div class="c-note" id="cNote"></div>
+      </div>
+      <div class="caption">ใบรับรองขนาด A4 แนวนอน · ส่งให้ลูกค้าได้โดยจับภาพหน้าจอส่วนนี้ หรือขอไฟล์ PDF จาก Claude</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// kg CO2e ต่อต้นต่อปี เมื่อโตเต็มอัตรา (ค่าตั้งต้นโดยประมาณ สำหรับไม้ยืนต้นเขตร้อน)
+const SPECIES = [
+  { id: 'pradu',   th: 'ประดู่ป่า',     low: 15, high: 25 },
+  { id: 'yangna',  th: 'ยางนา',        low: 20, high: 35 },
+  { id: 'takhian', th: 'ตะเคียนทอง',   low: 18, high: 30 },
+  { id: 'makha',   th: 'มะค่าโมง',     low: 12, high: 22 },
+  { id: 'sak',     th: 'สัก',          low: 15, high: 28 },
+  { id: 'payung',  th: 'พะยูง',        low: 10, high: 18 },
+  { id: 'ratcha',  th: 'ราชพฤกษ์',     low: 8,  high: 15 },
+];
+const $ = (id) => document.getElementById(id);
+const sel = $('species');
+SPECIES.forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.th; sel.appendChild(o); });
+
+const fmt = (n, d = 0) => n.toLocaleString('th-TH', { minimumFractionDigits: d, maximumFractionDigits: d });
+const thaiDate = (iso) => { const d = new Date(iso + 'T00:00:00'); return isNaN(d) ? '-' : d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }); };
+
+function rampYears(years) { let s = 0; for (let y = 1; y <= years; y++) s += Math.min(1, y / 5); return s; }
+
+function calc(v) {
+  const sp = SPECIES.find(s => s.id === v.species);
+  const eff = rampYears(v.years);
+  const k = v.count * (v.survival / 100) * eff;
+  return { sp, eff, low: sp.low * k, high: sp.high * k, survivors: v.count * v.survival / 100 };
+}
+
+function hash(str) { let h = 2166136261; for (const c of str) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36).toUpperCase().slice(-4).padStart(4, '0'); }
+
+let serialTouched = false;
+$('serial').addEventListener('input', () => { serialTouched = true; });
+
+function read() {
+  return {
+    name: $('name').value.trim() || '—',
+    item: $('item').value.trim(),
+    species: sel.value,
+    count: Math.max(1, Math.round(+$('count').value || 1)),
+    treeName: $('treeName').value.trim(),
+    site: $('site').value,
+    date: $('date').value,
+    years: +$('years').value,
+    survival: Math.min(100, Math.max(10, +$('survival').value || 80)),
+  };
+}
+
+function render() {
+  const v = read();
+  const r = calc(v);
+  if (!serialTouched) {
+    const y = (v.date || '2026').slice(0, 4);
+    $('serial').value = `CCU-${y}-${hash(v.name + v.item + v.species + v.count + v.date)}`;
+  }
+  const serial = $('serial').value.trim();
+
+  $('calcRows').innerHTML = `
+    <tr><td>อัตราดูดซับ ${r.sp.th} (ต่อต้นต่อปี)</td><td>${r.sp.low}–${r.sp.high} กก.</td></tr>
+    <tr><td>ปีที่คิดเต็มอัตรา (หลังหักช่วงต้นกล้า)</td><td>${fmt(r.eff, 1)} จาก ${v.years} ปี</td></tr>
+    <tr><td>ต้นที่คาดว่ารอด (${v.survival}%)</td><td>${fmt(r.survivors, 1)} จาก ${v.count} ต้น</td></tr>
+    <tr><td>ช่วงประมาณการ ${v.years} ปี</td><td>${fmt(r.low)}–${fmt(r.high)} กก.</td></tr>
+    <tr class="total"><td>ค่าที่ใช้บนใบรับรอง (ค่าต่ำ)</td><td>${fmt(r.low)} กก. CO₂e</td></tr>`;
+
+  $('cName').textContent = v.name;
+  const tree = v.treeName ? `${r.sp.th} "${v.treeName}"` : r.sp.th;
+  $('cText').innerHTML = `ฌ เฌอ ได้ปลูกต้น<b>${esc(tree)}</b> จำนวน <b>${v.count} ต้น</b> ที่<b>${esc(v.site)}</b> เมื่อวันที่ <b>${thaiDate(v.date)}</b>${v.item ? ` ในนามของการซื้อ <b>${esc(v.item)}</b>` : ''} ต้นไม้นี้คาดว่าจะกักเก็บคาร์บอนได้อย่างน้อยตามตัวเลขด้านล่าง ตลอด ${v.years} ปีข้างหน้า`;
+  $('cTrees').textContent = fmt(v.count);
+  $('cKg').textContent = fmt(r.low);
+  $('cKgU').textContent = `กก. CO₂e ใน ${v.years} ปี`;
+  $('cT').textContent = fmt(r.low / 1000, 2);
+  $('cMeta').innerHTML = `เลขที่ ${esc(serial)}<br>ออกเมื่อ ${thaiDate(new Date().toISOString().slice(0,10))}<br>แปลง ${esc(v.site.split(' ')[0])}`;
+  $('cNote').textContent = `ตัวเลขเป็นค่าประมาณการขั้นต่ำ (อัตรารอด ${v.survival}%) ไม่ใช่คาร์บอนเครดิต ไม่ได้ขึ้นทะเบียนหรือทวนสอบโดย อบก. (T-VER) จึงใช้ซื้อขายหรือชดเชยการปล่อยก๊าซเรือนกระจกไม่ได้`;
+  return { v, r, serial, tree };
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+$('f').addEventListener('input', render);
+$('f').addEventListener('submit', e => e.preventDefault());
+
+$('copy').addEventListener('click', () => {
+  const { v, r, serial, tree } = render();
+  const text = `สวัสดีค่ะ ${v.name}\nขอบคุณที่เลือก ฌ เฌอ เราปลูกต้น${tree} ให้แล้ว ${v.count} ต้น ที่${v.site} (${thaiDate(v.date)})\nคาดว่าต้นไม้นี้จะกักเก็บคาร์บอนได้อย่างน้อย ${fmt(r.low)} กก. CO₂e ตลอด ${v.years} ปี\nเลขที่ใบรับรอง ${serial}\nแวะมาเยี่ยมต้นไม้ของคุณได้ทุกเมื่อ`;
+  const done = () => { $('toast').textContent = 'คัดลอกข้อความแล้ว'; };
+  try { navigator.clipboard.writeText(text).then(done, () => { $('toast').textContent = text; }); }
+  catch { $('toast').textContent = text; }
+});
+$('reset').addEventListener('click', () => {
+  ['name', 'item', 'treeName'].forEach(id => $(id).value = '');
+  $('count').value = 1; serialTouched = false; $('toast').textContent = ''; render(); $('name').focus();
+});
+
+// ลายกิโยเช่ (guilloche) แบบเอกสารสำคัญ วาดด้วย canvas
+function drawGuilloche() {
+  const c = $('g'), box = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  c.width = box.width * dpr; c.height = box.height * dpr;
+  const x = c.getContext('2d'); x.scale(dpr, dpr);
+  x.fillStyle = '#fbfcf8'; x.fillRect(0, 0, box.width, box.height);
+  const cx = box.width / 2, cy = box.height / 2, R = Math.min(box.width, box.height) * 0.46;
+  x.lineWidth = 0.5;
+  for (let k = 0; k < 3; k++) {
+    x.strokeStyle = ['rgba(61,122,82,.10)', 'rgba(31,77,54,.07)', 'rgba(138,109,43,.08)'][k];
+    x.beginPath();
+    for (let t = 0; t <= Math.PI * 2 * 12; t += 0.004) {
+      const r = R * (0.62 + 0.28 * Math.sin(t * (7 + k) / 12) ) ;
+      const px = cx + (r * Math.cos(t) + R * 0.12 * Math.cos(t * (19 + k * 2))) * (box.width / box.height) ;
+      const py = cy + r * Math.sin(t) + R * 0.12 * Math.sin(t * (19 + k * 2));
+      t === 0 ? x.moveTo(px, py) : x.lineTo(px, py);
+    }
+    x.stroke();
+  }
+}
+new ResizeObserver(drawGuilloche).observe($('sheet'));
+render();
+</script>
