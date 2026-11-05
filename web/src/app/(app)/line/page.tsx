@@ -2,12 +2,24 @@ import { createClient } from '@/lib/supabase/server';
 import { getMyCapabilities } from '@/modules/registry';
 import { LINE_MODELS } from '@/modules/line-agent/intent';
 import { botInfo, lineSecrets } from '@/modules/line-agent/line';
-import { decideRoom, saveSettings, setFlag, syncSheetsNow, togglePause } from '@/modules/line-agent/admin';
+import { closeChange, decideRoom, saveRoomFlags, saveSettings, setFlag, syncSheetsNow, togglePause } from '@/modules/line-agent/admin';
 import { serviceEmail } from '@/modules/sheets/google';
 
 export const metadata = { title: 'ผู้ช่วย LINE · Chaw Cher OS' };
 
-type Room = { id: string; name: string | null; group_id: string; status: string; joined_at: string };
+type Room = {
+  id: string; name: string | null; group_id: string; status: string; joined_at: string;
+  see_price: boolean; see_customer: boolean; see_money: boolean; see_address: boolean;
+  customer_draft: boolean; draft_polite: string; can_slip: boolean; can_photo: boolean; push_worksheet: boolean;
+};
+type Change = { id: string; bls: string | null; text: string; display_name: string | null; created_at: string };
+type Photo = { id: string; bls: string; image_path: string; display_name: string | null; created_at: string };
+const FLAG_LABELS: [keyof Room, string][] = [
+  ['see_price', 'เห็นราคาขาย / Clearance'], ['see_customer', 'เห็นชื่อลูกค้า'], ['see_money', 'เห็นยอดขาย / ยอดค้าง'],
+  ['see_address', 'เห็นที่ส่ง / รายละเอียดการส่ง'], ['customer_draft', 'แนบข้อความพร้อมส่งลูกค้า'],
+  ['can_slip', 'อ่านสลิป (Reply รูป + "สลิป")'], ['can_photo', 'เก็บรูปงานเสร็จ (Reply รูป + "งานเสร็จ BLS…")'],
+  ['push_worksheet', 'รับใบงานผลิตอัตโนมัติ (บอทพูดเอง · นับโควตา LINE)'],
+];
 type Req = {
   id: string; created_at: string; display_name: string | null; question: string; answer: string | null;
   status: string; error: string | null; data_used: string | null; flagged: boolean;
@@ -44,6 +56,17 @@ export default async function LinePage({ searchParams }: PageProps<'/line'>) {
   const db = supabase.schema('line_agent');
   let reqQ = db.from('requests').select('*').order('created_at', { ascending: false }).limit(50);
   if (only === 'flagged') reqQ = reqQ.eq('flagged', true);
+  const [{ data: changes }, { data: photos }, { count: slipsWaiting }] = await Promise.all([
+    db.from('change_requests').select('*').eq('status', 'เปิด').order('created_at', { ascending: false }).limit(20),
+    db.from('work_photos').select('*').order('created_at', { ascending: false }).limit(12),
+    db.from('slips').select('id', { count: 'exact', head: true }).in('status', ['รอเลือก BLS', 'รอการเงินยืนยัน', 'ยืนยันแล้ว']),
+  ]);
+  const photoUrls = new Map<string, string>();
+  if ((photos as Photo[] | null)?.length) {
+    const { data: signed } = await supabase.storage.from('line-images')
+      .createSignedUrls((photos as Photo[]).map((p) => p.image_path), 600);
+    (signed ?? []).forEach((x) => { if (x.path && x.signedUrl) photoUrls.set(x.path, x.signedUrl); });
+  }
   const [{ data: rooms }, { data: budget }, { data: reqs }, { data: sources }] = await Promise.all([
     db.from('rooms').select('*').order('joined_at', { ascending: false }),
     db.from('v_budget').select('*').maybeSingle(),
@@ -61,7 +84,7 @@ export default async function LinePage({ searchParams }: PageProps<'/line'>) {
     <>
       <h1 className="text-xl font-semibold tracking-tight">ผู้ช่วย LINE</h1>
       <p className="mt-1 text-sm text-muted">
-        บอทในห้อง CC · ตอบงานผลิตและสต็อก · ไม่เห็นราคา ต้นทุน และข้อมูลลูกค้า
+        บอทในกลุ่ม CC · แต่ละกลุ่มเห็นข้อมูลไม่เท่ากัน ตั้งได้ด้านล่าง · ต้นทุนและกำไรไม่มีทางเห็น
       </p>
 
       {/* LR-21 · ปุ่มพักบอท */}
@@ -122,25 +145,88 @@ export default async function LinePage({ searchParams }: PageProps<'/line'>) {
       {/* LR-3 · ห้อง */}
       <h2 className="mt-6 mb-2 font-semibold">ห้อง</h2>
       {(rooms as Room[] | null)?.length ? (rooms as Room[]).map((r) => (
-        <div key={r.id} className={card + ' mb-2 flex items-center justify-between gap-3'}>
-          <div className="min-w-0">
-            <div className="truncate font-medium">{r.name ?? 'ห้องไม่มีชื่อ'}</div>
-            <div className="text-xs text-muted">เชิญเมื่อ {when(r.joined_at)}</div>
-          </div>
-          {r.status === 'รออนุมัติ' ? (
-            <div className="flex shrink-0 gap-2">
-              <form action={decideRoom}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="อนุมัติ" />
-                <button className="rounded-xl bg-accent px-3 py-1.5 text-sm text-accent-fg">อนุมัติ</button></form>
-              <form action={decideRoom}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="ปฏิเสธ" />
-                <button className="rounded-xl border border-border px-3 py-1.5 text-sm">ปฏิเสธ</button></form>
+        <div key={r.id} className={card + ' mb-2 text-sm'}>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="truncate font-medium">{r.name ?? 'ห้องไม่มีชื่อ'}</div>
+              <div className="text-xs text-muted">เชิญเมื่อ {when(r.joined_at)}</div>
             </div>
-          ) : (
-            <span className={pill(r.status === 'อนุมัติ' ? 'ok' : r.status === 'ปฏิเสธ' ? 'bad' : 'warn')}>{r.status}</span>
+            {r.status === 'รออนุมัติ' ? (
+              <div className="flex shrink-0 gap-2">
+                <form action={decideRoom}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="อนุมัติ" />
+                  <button className="rounded-xl bg-accent px-3 py-1.5 text-sm text-accent-fg">อนุมัติ</button></form>
+                <form action={decideRoom}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="ปฏิเสธ" />
+                  <button className="rounded-xl border border-border px-3 py-1.5 text-sm">ปฏิเสธ</button></form>
+              </div>
+            ) : (
+              <span className={pill(r.status === 'อนุมัติ' ? 'ok' : r.status === 'ปฏิเสธ' ? 'bad' : 'warn')}>{r.status}</span>
+            )}
+          </div>
+          {r.status !== 'รออนุมัติ' && r.status !== 'บอทออกแล้ว' && (
+            <details className="mt-2">
+              <summary className="cursor-pointer text-xs text-muted">
+                ตั้งค่ากลุ่มนี้ · {FLAG_LABELS.filter(([k]) => r[k]).map(([, l]) => l.split(' (')[0]).join(' · ') || 'ปิดหมด'}
+              </summary>
+              <form action={saveRoomFlags} className="mt-2 space-y-1.5">
+                <input type="hidden" name="id" value={r.id} />
+                {FLAG_LABELS.map(([k, label]) => (
+                  <label key={k} className="flex items-center gap-2">
+                    <input type="checkbox" name={k} defaultChecked={Boolean(r[k])} className="h-4 w-4 accent-[var(--accent)]" /> {label}
+                  </label>
+                ))}
+                <label className="flex items-center gap-2">คำลงท้ายข้อความถึงลูกค้า
+                  <select name="draft_polite" defaultValue={r.draft_polite} className="rounded-lg border border-border bg-bg p-1">
+                    <option>ค่ะ</option><option>ครับ</option>
+                  </select>
+                </label>
+                <label className="flex items-center gap-2">สถานะ
+                  <select name="status" defaultValue={r.status} className="rounded-lg border border-border bg-bg p-1">
+                    <option>อนุมัติ</option><option>ปฏิเสธ</option>
+                  </select>
+                </label>
+                <button className="rounded-xl bg-accent px-3 py-1.5 text-sm text-accent-fg">บันทึกกลุ่มนี้</button>
+              </form>
+            </details>
           )}
         </div>
       )) : (
         <p className={card + ' text-sm text-muted'}>ยังไม่มีห้อง · เชิญบอทเข้าห้อง LINE แล้วห้องจะขึ้นที่นี่ให้กดอนุมัติ</p>
       )}
+
+      {/* ชุด B · สลิป */}
+      <a href="/line/slips" className={card + ' mt-3 flex items-center justify-between text-sm'}>
+        <span>🧾 สลิปรอดำเนินการ</span>
+        <span className={pill((slipsWaiting ?? 0) > 0 ? 'warn' : 'ok')}>{slipsWaiting ?? 0} ใบ · เปิดหน้าสลิป →</span>
+      </a>
+
+      {/* ชุด C · คำขอค้าง */}
+      <h2 className="mt-6 mb-2 font-semibold">คำขอเลื่อน / เปลี่ยน ที่ยังไม่ปิด</h2>
+      {(changes as Change[] | null)?.length ? (changes as Change[]).map((c) => (
+        <div key={c.id} className={card + ' mb-2 flex items-start justify-between gap-3 text-sm'}>
+          <div className="min-w-0">
+            <div className="text-xs text-muted">{when(c.created_at)} · {c.display_name ?? '—'}{c.bls ? ` · ${c.bls}` : ''}</div>
+            <div className="mt-1 whitespace-pre-wrap">{c.text}</div>
+          </div>
+          <form action={closeChange}><input type="hidden" name="id" value={c.id} />
+            <button className="shrink-0 rounded-xl border border-border px-3 py-1.5 text-xs">ปิดแล้ว</button></form>
+        </div>
+      )) : <p className={card + ' text-sm text-muted'}>ไม่มีคำขอค้าง</p>}
+
+      {/* ชุด B · รูปงานเสร็จล่าสุด */}
+      {(photos as Photo[] | null)?.length ? (
+        <>
+          <h2 className="mt-6 mb-2 font-semibold">รูปงานเสร็จล่าสุด</h2>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {(photos as Photo[]).map((p) => (
+              <a key={p.id} href={photoUrls.get(p.image_path) ?? '#'} target="_blank" className="block overflow-hidden rounded-xl border border-border bg-surface text-xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {photoUrls.get(p.image_path) ? <img src={photoUrls.get(p.image_path)} alt={p.bls} className="aspect-square w-full object-cover" /> : <div className="aspect-square" />}
+                <div className="p-1.5">{p.bls}<span className="block text-muted">{when(p.created_at)}</span></div>
+              </a>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       {/* LR-20 · LR-22 · งบ */}
       <h2 className="mt-6 mb-2 font-semibold">งบ Claude เดือนนี้</h2>

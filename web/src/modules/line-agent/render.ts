@@ -37,18 +37,27 @@ const src = (s: string, updated?: string | null) => `\n— ดูจาก: ${s}
 const qty = (n: number | null) => (n == null ? '—' : Number.isInteger(Number(n)) ? String(Number(n)) : String(n));
 const baht = (n: number | null | undefined) => (n == null ? null : Number(n).toLocaleString('th-TH', { maximumFractionDigits: 2 }));
 
+export type Flags = {
+  see_price: boolean; see_customer: boolean; see_money: boolean; see_address: boolean;
+  customer_draft: boolean; draft_polite: 'ค่ะ' | 'ครับ'; can_slip: boolean; can_photo: boolean;
+};
+export type Ctx = { groupId: string; flags: Flags };
+
 type Order = {
   source: 'ระบบ' | 'ชีต'; order_no: string; label?: string | null; wo: string | null; doc_status: string | null;
   required_finish_on: string | null; promised_delivery_on: string | null; delivery_text: string | null;
   items_text?: string | null; updated_at: string | null;
+  photos?: number; photo_last?: string | null;
+  customer_name?: string | null; total_sales?: number | null; balance?: number | null; delivery_text_full?: string | null;
   lines: { line_no: number; description: string; note: string | null; qty: number | null; unit_price: number | null }[];
 };
 type DueRow = {
   order_no: string; wo: string | null; due_on: string; due_kind: 'ต้องเสร็จ' | 'ส่ง';
-  first_item: string | null; item_count: number; source: string;
+  first_item: string | null; item_count: number; source: string; customer_name?: string | null;
 };
 type StockRow = { kind: string; item: string; location: string | null; status: string | null; units: number | null; source: string };
 type Clearance = {
+  hidden?: boolean;
   expires_on: string | null; expired: boolean; updated_at: string | null; total: number;
   items: { name: string; retail: number | null; disc: string | null; price: number | null }[];
 };
@@ -73,17 +82,33 @@ export const HELP =
   '• ชื่อรุ่น ชื่อผ้า ชื่อหนัง + "มีในสต็อกไหม"\n' +
   '• "ราคา clearance ขุนทอง"\n' +
   '• "ผลิตกี่วัน"\n' +
+  '• กดค้างที่รูปสลิป → Reply → "@Team Bay สลิป" (กลุ่มที่เปิดไว้)\n' +
+  '• กดค้างที่รูปงานเสร็จ → Reply → "@Team Bay งานเสร็จ BLS3230" (กลุ่มที่เปิดไว้)\n' +
   'ถามหลายเรื่องในข้อความเดียวได้ · ผมตอบจากระบบและชีตเท่านั้น ไม่ตัดสินแทนทีมครับ';
 
 export type Rendered = { answer: string; dataUsed: string; status: 'ตอบแล้ว' | 'ตอบไม่ได้' | 'ส่งต่อทีม' };
 
-async function one(it: Intent): Promise<Rendered> {
+/** ข้อความพร้อมส่งลูกค้า · โค้ดเขียนตัวเลขและวันที่ (LR-24) · คนก๊อปไปส่งเอง (กฎ AI 1) */
+function draft(o: Order, p: 'ค่ะ' | 'ครับ', ask: 'status' | 'dates') {
+  const who = 'คุณลูกค้า';
+  const st = (o.photos ?? 0) > 0 ? `ผลิตเสร็จแล้ว อยู่ระหว่างเตรียมจัดส่ง${p}`
+    : /^\d+\s*\/\s*\d+$/.test((o.wo ?? '').trim()) ? `อยู่ระหว่างการผลิต${p}`
+    : `อยู่ระหว่างเตรียมเข้าการผลิต${p}`;
+  const safe = o.delivery_text && o.delivery_text !== 'ดูในชีต' ? o.delivery_text : null;
+  const ship = o.promised_delivery_on ? `กำหนดส่งวันที่ ${thDate(o.promised_delivery_on)}${p}`
+    : safe ? `กำหนดส่ง ${safe}${p}` : `ทางเราจะแจ้งวันส่งให้ทราบอีกครั้ง${p}`;
+  const body = ask === 'dates' ? `ออเดอร์ ${o.order_no} ${ship}` : `ออเดอร์ ${o.order_no} ตอนนี้${st}\n${ship}`;
+  return `\n\n📋 ก็อปส่งลูกค้า\nสวัสดี${p} ${who}\n${body}\nหากมีความคืบหน้า ทางเราจะแจ้งให้ทราบ${p} ขอบคุณ${p} 🙏`;
+}
+
+async function one(it: Intent, ctx: Ctx): Promise<Rendered> {
+  const f = ctx.flags;
   switch (it.intent) {
     case 'help':
       return { answer: HELP, dataUsed: '—', status: 'ตอบแล้ว' };
 
     case 'secret':
-      return { answer: 'ข้อมูลนี้ไม่มีในห้องนี้ครับ (ต้นทุน กำไร ข้อมูลลูกค้า)\nทีม CC ดูได้ในระบบครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
+      return { answer: 'ข้อมูลนี้ไม่มีในห้องนี้ครับ (ต้นทุน กำไร' + (f.see_customer ? '' : ' ข้อมูลลูกค้า') + ')\nทีม CC ดูได้ในระบบครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
 
     case 'handoff':
       return {
@@ -100,11 +125,17 @@ async function one(it: Intent): Promise<Rendered> {
     case 'order_dates':
     case 'order_status': {
       if (!it.order_no) return { answer: 'ขอเลข BLS ด้วยครับ เช่น "BLS3230 รายละเอียด"', dataUsed: '—', status: 'ตอบไม่ได้' };
-      const o = await call<Order | null>('room_order', { p_order_no: it.order_no });
+      const o = await call<Order | null>('room_order', { p_order_no: it.order_no, p_group_id: ctx.groupId });
       if (!o) {
         return { answer: `ยังไม่มี ${bls(it.order_no)} ทั้งในระบบและในชีตครับ\nเลขถูกไหมครับ`, dataUsed: 'room_order', status: 'ตอบไม่ได้' };
       }
-      const head = `${o.order_no}${o.label ? ` (${o.label})` : ''}`;
+      const cust = o.customer_name ? ` · ${o.customer_name}` : '';
+      const head = `${o.order_no}${o.label ? ` (${o.label})` : ''}${cust}`;
+      const money = o.total_sales != null || o.balance != null
+        ? `\n💰 ยอดขาย ${baht(o.total_sales) ?? '—'} · ค้าง ${baht(o.balance) ?? '—'} (ตามชีต)` : '';
+      const pics = (o.photos ?? 0) > 0 ? `\n📷 มีรูปงานเสร็จ ${o.photos} รูป (ล่าสุด ${thDate(o.photo_last?.slice(0, 10))})` : '';
+      const addr = o.delivery_text_full && o.delivery_text_full !== o.delivery_text ? `\n📍 ${o.delivery_text_full}` : '';
+      const d2 = (k: 'status' | 'dates') => (f.customer_draft ? draft(o, f.draft_polite, k) : '');
       const warn = o.doc_status === 'ยกเลิก' ? '\n⚠️ ออเดอร์นี้ถูกยกเลิกแล้ว' : o.doc_status === 'ร่าง' ? '\n⚠️ ยังเป็นใบร่าง ยังไม่ยืนยัน' : '';
       const ship = o.promised_delivery_on
         ? `กำหนดส่ง ${thDate(o.promised_delivery_on)}${(() => { const d = daysFromToday(o.promised_delivery_on!); return d < 0 ? ` (เลยมา ${-d} วัน)` : d === 0 ? ' (วันนี้)' : ` (อีก ${d} วัน)`; })()}`
@@ -112,11 +143,13 @@ async function one(it: Intent): Promise<Rendered> {
       const finish = o.required_finish_on ? `\nต้องผลิตเสร็จ ${thDate(o.required_finish_on)}` : '';
 
       if (it.intent === 'order_dates') {
-        return { answer: `${head}${warn}${finish}\n${ship}` + src(fromWhere(o, 'กำหนดส่ง'), o.updated_at), dataUsed: 'room_order', status: 'ตอบแล้ว' };
+        return { answer: `${head}${warn}${finish}\n${ship}${addr}` + src(fromWhere(o, 'กำหนดส่ง'), o.updated_at) + d2('dates'), dataUsed: 'room_order', status: 'ตอบแล้ว' };
       }
       if (it.intent === 'order_status') {
         return {
-          answer: `${head} · ${woText(o)}${warn}${finish}\n${ship}\nระบบยังไม่มีข้อมูลว่ากำลังผลิตหรือเสร็จแล้วครับ` + src(fromWhere(o, 'ช่อง w/o'), o.updated_at),
+          answer: `${head} · ${woText(o)}${warn}${finish}\n${ship}${pics}${money}`
+            + ((o.photos ?? 0) > 0 ? '' : '\nยังไม่มีรูปงานเสร็จในระบบครับ')
+            + src(fromWhere(o, 'ช่อง w/o'), o.updated_at) + d2('status'),
           dataUsed: 'room_order', status: 'ตอบแล้ว',
         };
       }
@@ -133,7 +166,7 @@ async function one(it: Intent): Promise<Rendered> {
         body = '(ยังไม่มีรายการ)';
       }
       const what = o.source === 'ชีต' ? (o.lines.length ? 'ใบ PO + Order Tracking' : 'Order Tracking') : 'ออเดอร์';
-      return { answer: `${head} · ${woText(o)}${warn}\n${body}\n${ship}` + src(fromWhere(o, what), o.updated_at), dataUsed: 'room_order', status: 'ตอบแล้ว' };
+      return { answer: `${head} · ${woText(o)}${warn}\n${body}\n${ship}${addr}${money}${pics}` + src(fromWhere(o, what), o.updated_at) + d2('status'), dataUsed: 'room_order', status: 'ตอบแล้ว' };
     }
 
     case 'orders_due':
@@ -142,7 +175,8 @@ async function one(it: Intent): Promise<Rendered> {
       const days = Math.min(Math.max(Math.round(it.days ?? 7), 0), 60);
       const over = it.intent === 'orders_overdue';
       const [rows, undated] = await Promise.all([
-        over ? call<DueRow[]>('room_orders_overdue') : call<DueRow[]>('room_orders_due', { p_from: today, p_to: addDays(today, days) }),
+        over ? call<DueRow[]>('room_orders_overdue', { p_group_id: ctx.groupId })
+          : call<DueRow[]>('room_orders_due', { p_from: today, p_to: addDays(today, days), p_group_id: ctx.groupId }),
         call<number>('room_orders_undated'),
       ]);
       const head = over ? 'งานที่เลยกำหนด (ย้อน 30 วัน)' : days === 0 ? 'งานวันนี้' : `งานใน ${days} วันข้างหน้า`;
@@ -152,7 +186,7 @@ async function one(it: Intent): Promise<Rendered> {
         const d = daysFromToday(r.due_on);
         const late = d < 0 ? ` (เลย ${-d} วัน)` : '';
         const more = r.item_count > 1 ? ` +${r.item_count - 1}` : '';
-        return `• ${thDate(r.due_on)} ${r.due_kind}${late} · ${r.order_no} · ${shortItem(r.first_item)}${more} · ${woText(r)}`;
+        return `• ${thDate(r.due_on)} ${r.due_kind}${late} · ${r.order_no}${r.customer_name ? ` (${r.customer_name})` : ''} · ${shortItem(r.first_item)}${more} · ${woText(r)}`;
       }).join('\n');
       const more = rows.length > MAX_ROWS ? `\n…และอีก ${rows.length - MAX_ROWS} งาน` : '';
       const done = over ? '\nระบบยังไม่รู้ว่างานไหนส่งแล้ว ทีมช่วยยืนยันได้ครับ' : '';
@@ -174,7 +208,8 @@ async function one(it: Intent): Promise<Rendered> {
     }
 
     case 'clearance': {
-      const c = await call<Clearance>('room_clearance', { p_query: it.query ?? '' });
+      const c = await call<Clearance>('room_clearance', { p_query: it.query ?? '', p_group_id: ctx.groupId });
+      if (c.hidden) return { answer: 'กลุ่มนี้ไม่ได้เปิดให้ดูราคาครับ · ถามในกลุ่ม PO ได้ครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
       if (c.expired) return { answer: `ราคา Clearance หมดอายุแล้วครับ (ถึง ${thDate(c.expires_on)})\nรอราคาชุดใหม่จากทีม CC ครับ`, dataUsed: 'room_clearance', status: 'ตอบไม่ได้' };
       if (c.items.length === 0) return { answer: `ไม่เจอ "${it.query ?? ''}" ในรายการ Clearance ครับ`, dataUsed: 'room_clearance', status: 'ตอบไม่ได้' };
       const list = c.items.slice(0, MAX_ROWS).map((x) =>
@@ -190,8 +225,8 @@ async function one(it: Intent): Promise<Rendered> {
 const NUM = ['①', '②', '③', '④'];
 
 /** หลายเรื่องในข้อความเดียว · ตอบทีละข้อตามลำดับที่ถาม */
-export async function render(items: Intent[]): Promise<Rendered> {
-  const outs = await Promise.all(items.map(one));
+export async function render(items: Intent[], ctx: Ctx): Promise<Rendered> {
+  const outs = await Promise.all(items.map((it) => one(it, ctx)));
   if (outs.length === 1) return outs[0];
   const status = outs.some((o) => o.status === 'ส่งต่อทีม') ? 'ส่งต่อทีม'
     : outs.every((o) => o.status === 'ตอบไม่ได้') ? 'ตอบไม่ได้' : 'ตอบแล้ว';

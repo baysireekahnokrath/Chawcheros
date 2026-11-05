@@ -56,3 +56,50 @@ export async function syncSheetsNow() {
   try { await syncAll(); } catch (e) { console.error('sync now', e); }
   done();
 }
+
+const ROOM_FLAGS = ['see_price', 'see_customer', 'see_money', 'see_address', 'customer_draft', 'can_slip', 'can_photo', 'push_worksheet'] as const;
+
+/** สิทธิ์และหน้าที่ของแต่ละกลุ่ม (0036) · ไม่ติ๊ก = ปิด */
+export async function saveRoomFlags(formData: FormData) {
+  const id = String(formData.get('id') ?? '');
+  const patch: Record<string, unknown> = {};
+  for (const f of ROOM_FLAGS) patch[f] = formData.get(f) === 'on';
+  const polite = String(formData.get('draft_polite') ?? 'ค่ะ');
+  patch.draft_polite = polite === 'ครับ' ? 'ครับ' : 'ค่ะ';
+  const status = String(formData.get('status') ?? '');
+  if (['อนุมัติ', 'ปฏิเสธ'].includes(status)) patch.status = status;
+  const supabase = await createClient();
+  await supabase.schema('line_agent').from('rooms').update(patch).eq('id', id);
+  done();
+}
+
+export async function closeChange(formData: FormData) {
+  const id = String(formData.get('id') ?? '');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.schema('line_agent').from('change_requests')
+    .update({ status: 'ปิดแล้ว', closed_by: user?.id ?? null, closed_at: new Date().toISOString() }).eq('id', id);
+  done();
+}
+
+/** หน้าสลิป · พี่ษา (finance.write) หรือ Bay · ยืนยัน = เงินเข้าจริง ตรวจกับรูปแล้ว */
+export async function slipAction(formData: FormData) {
+  const id = String(formData.get('id') ?? '');
+  const act = String(formData.get('act') ?? '');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const now = new Date().toISOString();
+  const patch: Record<string, unknown> = {};
+  if (act === 'confirm') {
+    const bls = String(formData.get('bls') ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const amount = Number(String(formData.get('amount') ?? '').replace(/,/g, ''));
+    if (!/^(BLS)?\d{3,5}[A-Z]?$/.test(bls) || !(amount > 0)) return;
+    Object.assign(patch, { bls: bls.startsWith('BLS') ? bls : 'BLS' + bls, amount, status: 'ยืนยันแล้ว', confirmed_by: user?.id ?? null, confirmed_at: now });
+  } else if (act === 'posted') {
+    Object.assign(patch, { status: 'ลงชีตแล้ว', posted_by: user?.id ?? null, posted_at: now });
+  } else if (act === 'reject') {
+    Object.assign(patch, { status: 'ไม่ใช่สลิป', note: String(formData.get('note') ?? '') || null });
+  } else return;
+  await supabase.schema('line_agent').from('slips').update(patch).eq('id', id);
+  revalidatePath('/line/slips');
+}

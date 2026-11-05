@@ -85,6 +85,8 @@ export type OrderRow = {
   delivery_text: string | null; delivery_on: string | null; items_text: string | null; sheet_rows: string;
 };
 
+export type MoneyRow = { bls: string; customer_name: string | null; total_sales: number | null; balance: number | null };
+
 export function parseOrders(values: string[][], refYear = new Date().getFullYear()) {
   const warnings: Warn[] = [];
   const header = values[0] ?? [];
@@ -92,6 +94,8 @@ export function parseOrders(values: string[][], refYear = new Date().getFullYear
     po: col(header, 'PO'), wo: col(header, 'w/o'), date: col(header, 'วันที่สั่งซื้อ'),
     items: col(header, 'รายการ'), due: col(header, 'กำหนดส่งของ'),
   };
+  const cm = { name: col(header, 'ชื่อลูกค้า'), total: col(header, 'Total Sales'), bal: col(header, 'Balance') };
+  const money = new Map<string, MoneyRow>();
   for (const [k, i] of Object.entries(c)) if (i < 0) throw new Error(`Order Tracking: หาคอลัมน์ "${k}" ไม่เจอ · หัวตารางเปลี่ยนหรือเปล่า`);
 
   type Acc = OrderRow & { _items: string[]; _first: number; _last: number };
@@ -128,12 +132,20 @@ export function parseOrders(values: string[][], refYear = new Date().getFullYear
     }
     const it = cell(c.items);
     if (it) cur._items.push(it);
+    // ชื่อลูกค้า+ยอด (เก็บแยก เห็นเฉพาะกลุ่มที่เปิด · 0036) · เอาค่าแรกที่เจอของแต่ละ BLS
+    if (cm.name >= 0 || cm.total >= 0 || cm.bal >= 0) {
+      const m = money.get(cur.bls) ?? { bls: cur.bls, customer_name: null, total_sales: null, balance: null };
+      if (!m.customer_name && cm.name >= 0 && cell(cm.name)) m.customer_name = cell(cm.name);
+      if (m.total_sales == null && cm.total >= 0) m.total_sales = num(cell(cm.total));
+      if (m.balance == null && cm.bal >= 0) m.balance = num(cell(cm.bal));
+      money.set(cur.bls, m);
+    }
   }
   const rows: OrderRow[] = [...byBls.values()].map(({ _items, _first, _last, ...o }) => ({
     ...o, items_text: _items.length ? _items.join('\n') : null,
     sheet_rows: _first === _last ? String(_first) : `${_first}-${_last}`,
   }));
-  return { rows, warnings };
+  return { rows, money: [...money.values()], warnings };
 }
 
 // ---------------------------------------------------------------------------

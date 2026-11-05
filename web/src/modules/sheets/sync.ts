@@ -47,7 +47,8 @@ async function save(id: string, rows: unknown[], meta: { tab?: string | null; wa
   return data as number;
 }
 
-const ORDER_COLS = new Set(['PO', 'w/o', 'วันที่สั่งซื้อ', 'รายการ', 'กำหนดส่งของ']);
+// ชื่อลูกค้า + ยอด เก็บแยกตาราง sheets.order_money (0036) · เบอร์/ที่อยู่/ต้นทุน ไม่ขอ
+const ORDER_COLS = new Set(['PO', 'w/o', 'วันที่สั่งซื้อ', 'รายการ', 'กำหนดส่งของ', 'ชื่อลูกค้า', 'Total Sales', 'Balance']);
 
 const JOBS: Record<string, (s: Source) => Promise<{ rows: unknown[]; tab: string | null; warnings: string[] }>> = {
   async orders(s) {
@@ -55,6 +56,7 @@ const JOBS: Record<string, (s: Source) => Promise<{ rows: unknown[]; tab: string
     const [[head]] = await read(s.spreadsheet_id, [`${q(tab)}!A1:AZ1`]);
     const v = await readColumns(s.spreadsheet_id, tab, head ?? [], (h) => ORDER_COLS.has(h));
     const r = P.parseOrders(v);
+    await save('money', r.money, { tab });
     return { rows: r.rows, tab, warnings: r.warnings };
   },
   async po(s) {
@@ -105,7 +107,7 @@ export function syncAll(): Promise<SyncResult> {
     if (error) throw new Error('อ่านรายชื่อชีตไม่ได้: ' + error.message);
     await Promise.all((data as Source[]).map(async (s) => {
       const job = JOBS[s.id];
-      if (!job) return;
+      if (!job) return;   // money ดึงพร้อม orders
       try {
         const r = await job(s);
         const n = await save(s.id, r.rows, { tab: r.tab, warnings: r.warnings.slice(0, 50) });
@@ -116,6 +118,12 @@ export function syncAll(): Promise<SyncResult> {
         await db().rpc('mark_failed', { p_source: s.id, p_error: msg });
       }
     }));
+    // ชุด C · BLS ใหม่ที่มีใบ PO → ส่งใบงานผลิตเข้ากลุ่ม (กันส่งซ้ำในฐานข้อมูล)
+    if (out.po?.ok) {
+      const { pushWorksheets } = await import('@/modules/line-agent/worksheet');
+      try { out.worksheets = { ok: true, rows: await pushWorksheets() }; }
+      catch (e) { out.worksheets = { ok: false, error: e instanceof Error ? e.message : String(e) }; }
+    }
     return out;
   })().finally(() => { running = null; });
   return running;

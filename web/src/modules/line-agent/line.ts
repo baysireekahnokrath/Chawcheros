@@ -58,6 +58,26 @@ export async function memberName(token: string, groupId: string, userId: string)
   return r?.displayName ?? null;
 }
 
+/** บอทพูดเอง (push) · นับโควตาตามจำนวนคนในกลุ่ม · ใช้แค่ส่งใบงานผลิต (ชุด C) */
+export async function push(token: string, to: string, text: string): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetch(`${API}/message/push`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ to, messages: [{ type: 'text', text: text.slice(0, 4900) }] }),
+  });
+  if (res.ok) return { ok: true };
+  return { ok: false, error: `LINE push ${res.status}: ${(await res.text()).slice(0, 300)}` };
+}
+
+/** ดึงรูปจาก LINE · LINE เก็บไว้ให้ดึงแค่ช่วงสั้นๆ จึงต้องคัดลอกเข้าระบบทันที */
+export async function getContent(token: string, messageId: string): Promise<{ data: Buffer; type: string }> {
+  const res = await fetch(`https://api-data.line.me/v2/bot/message/${encodeURIComponent(messageId)}/content`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`ดึงรูปจาก LINE ไม่ได้ (${res.status}) · ลองส่งรูปใหม่แล้ว Reply อีกครั้ง`);
+  return { data: Buffer.from(await res.arrayBuffer()), type: res.headers.get('content-type') ?? 'image/jpeg' };
+}
+
 /** ตรวจว่า token ใช้ได้ไหม · หน้าหลังบ้าน LR-23 */
 export async function botInfo(token: string) {
   return getJson<{ displayName?: string; basicId?: string }>(token, '/info');
@@ -74,7 +94,7 @@ export type LineEvent = {
   replyToken?: string;
   deliveryContext?: { isRedelivery?: boolean };
   source: { type: 'group' | 'room' | 'user'; groupId?: string; roomId?: string; userId?: string };
-  message?: { type: string; text?: string; mention?: { mentionees: Mentionee[] } };
+  message?: { id?: string; type: string; text?: string; quotedMessageId?: string; mention?: { mentionees: Mentionee[] } };
 };
 
 /**
