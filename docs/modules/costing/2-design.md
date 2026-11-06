@@ -4,10 +4,10 @@
 
 | ไฟล์ | คืออะไร |
 |---|---|
-| `supabase/migrations/0037_costing.sql` | ตาราง วิว ฟังก์ชัน RLS ทั้งโมดูล |
+| `supabase/migrations/0039_costing.sql` | ตาราง วิว ฟังก์ชัน RLS ทั้งโมดูล |
 | `supabase/migrations/0038_fix_truncated_column.sql` | แก้ชื่อคอลัมน์ที่ Postgres ตัดทิ้งใน 0033 |
 | `supabase/tests/18_costing.sql` | ทดสอบ 12 ข้อ · ผ่านทั้งหมดบน Postgres 16 |
-| `docs/APPLY-0037-0038.sql` | รวมสองไฟล์ไว้วางครั้งเดียวใน SQL Editor |
+| `docs/APPLY-0038-0039.sql` | รวมสองไฟล์ไว้วางครั้งเดียวใน SQL Editor |
 
 > 🔒 **ไฟล์นี้มีแต่โครงสร้าง ไม่มีตัวเลขต้นทุนจริงสักตัว**
 > ใบ costing จริงที่ Bay ส่งมาดูอยู่นอก repo · ตัวอย่างข้างล่างใช้ `—` หรือเลขสมมติที่ไม่เกี่ยวกับของจริง

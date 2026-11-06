@@ -1,5 +1,75 @@
 -- ============================================================================
--- 0037 · โมดูลต้นทุนและใบเสนอราคา
+-- รวม migration 0038 + 0039 ไว้ในไฟล์เดียว เพื่อวางครั้งเดียวจบ
+-- ============================================================================
+-- สร้างจากไฟล์ใน repo ตรงๆ ไม่ได้แก้อะไรเพิ่ม
+--   supabase/migrations/0038_fix_truncated_column.sql แก้ชื่อคอลัมน์ที่ถูกตัดทิ้ง
+--   supabase/migrations/0039_costing.sql              โมดูลต้นทุนและใบเสนอราคา
+--
+-- ★ ต้องรัน docs/APPLY-0037-pos.sql ก่อนไฟล์นี้
+--   ไฟล์นี้ตั้งค่า pgrst.db_schemas ทั้งก้อนใหม่ และใส่ pos ไว้ให้แล้ว
+--   ถ้ารันไฟล์นี้ก่อน แล้วค่อยรัน pos ก็ยังได้ · pos จะเขียนทับโดยไม่มี production
+--   แล้วต้องรันบรรทัด alter role ท้ายไฟล์นี้อีกครั้ง
+--
+-- วิธีใช้
+--   1. เปิด Supabase → SQL Editor → New query
+--   2. วางทั้งไฟล์นี้ → Run
+--   3. รันคำสั่งตรวจท้ายไฟล์เพื่อยืนยันว่าขึ้นครบ
+--
+-- ทดสอบแล้วบน Postgres เปล่า + migration 0001-0037 → ผ่านทั้งก้อนในทรานแซกชันเดียว
+-- และ supabase/tests/18_costing.sql ผ่านทั้ง 12 ข้อ
+-- ถ้าพังกลางคัน จะถอยกลับหมด ไม่ทิ้งสถานะค้าง
+--
+-- ★ 0038 แก้ของที่พังอยู่จริงบนเว็บวันนี้
+--   คอลัมน์ "เลยกำหนดส่งและยังค้างเงิน" ยาวเกิน 63 ไบต์ Postgres จึงตัดชื่อทิ้งเงียบๆ
+--   โค้ดหน้าเว็บอ่านไม่เจอ → หน้ารายการออเดอร์นับ "เลยกำหนด" ได้ 0 เสมอ
+--   ต้อง deploy เว็บใหม่พร้อมกัน เพราะชื่อคอลัมน์เปลี่ยน
+-- ============================================================================
+
+begin;
+
+
+-- ========================================================================
+-- >>> 0038_fix_truncated_column.sql
+-- ========================================================================
+
+-- ============================================================================
+-- 0038 · แก้ชื่อคอลัมน์ที่ถูกตัดทิ้งเงียบๆ ใน 0033
+-- ============================================================================
+-- เจอตอนทดสอบ 0037 กับ Postgres ในเครื่อง · Postgres ตัดชื่อ identifier ที่ยาว
+-- เกิน 63 "ไบต์" ทิ้งโดยแจ้งแค่ NOTICE ไม่ใช่ ERROR — ภาษาไทยตัวละ 3 ไบต์
+-- จึงเขียนได้แค่ประมาณ 21 ตัวอักษร
+--
+--   ตั้งใจให้ชื่อ   "เลยกำหนดส่งและยังค้างเงิน"   (75 ไบต์)
+--   ฐานข้อมูลเก็บ  "เลยกำหนดส่งและยังค้าง"      (63 ไบต์ · ถูกตัด)
+--
+-- ★ ผลที่เกิดขึ้นจริงบนหน้าเว็บ: โค้ดอ่าน row.เลยกำหนดส่งและยังค้างเงิน
+--   ได้ undefined ทุกครั้ง → หน้ารายการออเดอร์นับ "เลยกำหนด" ได้ 0 เสมอ
+--   และหน้ารายละเอียดไม่เคยขึ้นคำเตือน แม้ออเดอร์เลยกำหนดส่งและยังค้างเงินจริง
+--   ไม่มี error ให้เห็น ตัวเลขแค่บอกว่าไม่มีปัญหา ซึ่งแย่กว่าพัง
+--
+-- แก้ด้วยการเปลี่ยนชื่อ ไม่ drop แล้วสร้างใหม่ · view ที่พึ่งพากันอ้างถึงกัน
+-- ด้วยหมายเลขคอลัมน์ ไม่ใช่ชื่อ จึงไม่พังตาม
+-- ============================================================================
+
+alter view sales.v_orders
+  rename column "เลยกำหนดส่งและยังค้าง" to "เลยกำหนดและค้างเงิน";
+
+alter view sales.v_today
+  rename column "เลยกำหนดส่งและยังค้าง" to "เลยกำหนดและค้างเงิน";
+
+comment on view sales.v_orders is
+  'รายการออเดอร์พร้อมสถานะที่คำนวณสด · ไม่มีช่องสถานะให้ใครพิมพ์ จึงไม่มีทางเพี้ยน (แก้ข้อ O1) · '
+  'ชื่อคอลัมน์ภาษาไทยต้องไม่เกิน 63 ไบต์ = ราว 21 ตัวอักษร ไม่งั้น Postgres ตัดทิ้งเงียบๆ';
+
+notify pgrst, 'reload schema';
+
+
+-- ========================================================================
+-- >>> 0039_costing.sql
+-- ========================================================================
+
+-- ============================================================================
+-- 0039 · โมดูลต้นทุนและใบเสนอราคา
 -- ============================================================================
 -- เป้าหมายที่ Bay ตั้งไว้ (2026-11-05):
 --   "ผมส่ง customer requirement แล้ว คุณออกใบเสนอราคาให้ผมได้เลย
@@ -1292,7 +1362,47 @@ update core.modules set sort_order = sort_order + 2
 
 -- ⚠️ ขาดบรรทัดนี้ = REST API มองไม่เห็น schema production ทั้งก้อน
 alter role authenticator
-  set pgrst.db_schemas = 'public, graphql_public, core, catalog, materials, pricing, cost, marketing, stock, content, crm, sales, line_agent, sheets, production';
+  set pgrst.db_schemas = 'public, graphql_public, core, catalog, materials, pricing, cost, marketing, stock, content, crm, sales, line_agent, sheets, pos, production';
+-- ★ ต้องมี pos ด้วย · ค่านี้เขียนทับกันทั้งก้อน ไม่ได้ต่อท้าย
+--   0037_pos.sql เพิ่ม pos ไว้ · ถ้าไฟล์นี้รันทีหลังแล้วลืม pos ไป โมดูลนั้นหายจาก REST API ทันที
 
 notify pgrst, 'reload config';
 notify pgrst, 'reload schema';
+
+
+commit;
+
+-- ============================================================================
+-- ตรวจว่าขึ้นครบ · รันแยกหลังจาก commit แล้ว
+-- ============================================================================
+select 'schema ใหม่' as "ตรวจอะไร",
+       coalesce(string_agg(nspname, ' · ' order by nspname), 'ไม่พบ') as "ผลที่ได้"
+from pg_namespace where nspname = 'production'
+union all
+select 'ตาราง production',
+       coalesce(string_agg(table_name, ' · ' order by table_name), 'ไม่พบ')
+from information_schema.tables where table_schema = 'production'
+union all
+select 'ตาราง/วิว cost',
+       coalesce(string_agg(table_name, ' · ' order by table_name), 'ไม่พบ')
+from information_schema.tables where table_schema = 'cost'
+union all
+select 'ใบเสนอราคาใน sales',
+       coalesce(string_agg(table_name, ' · ' order by table_name), 'ไม่พบ')
+from information_schema.tables
+where table_schema = 'sales' and table_name like '%quote%'
+union all
+select 'โมดูลใหม่ใน core.modules',
+       coalesce(string_agg(id, ' · ' order by id), 'ไม่พบ')
+from core.modules where id in ('production','quotes')
+union all
+select 'คอลัมน์ที่แก้ชื่อแล้ว (0038)',
+       coalesce(string_agg(table_name || '.' || column_name, ' · ' order by table_name), 'ไม่พบ')
+from information_schema.columns
+where table_schema = 'sales' and column_name = 'เลยกำหนดและค้างเงิน'
+union all
+-- ★ ต้องเห็นทั้ง pos และ production ในบรรทัดนี้
+select 'REST API เห็น schema ไหน',
+       coalesce((select setconfig::text from pg_db_role_setting s
+                 join pg_roles r on r.oid = s.setrole
+                 where r.rolname = 'authenticator' limit 1), 'ไม่พบ');
