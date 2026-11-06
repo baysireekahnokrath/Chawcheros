@@ -3,6 +3,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 /** ต่ออายุ session ทุก request และกันหน้าที่ต้องล็อกอิน */
 export async function middleware(request: NextRequest) {
+  // หน้า POS หน้าบูธเปิดสาธารณะ (ไม่ต้องล็อกอิน) · ฐานข้อมูลยอมให้แค่บันทึกบิลที่ใส่ PIN ถูก
+  if (request.nextUrl.pathname === '/pos') return NextResponse.next();
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -48,5 +51,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api/line/webhook|api/sheets/sync|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: ['/((?!api/line/webhook|api/sheets/sync|pos/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
