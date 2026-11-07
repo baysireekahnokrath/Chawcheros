@@ -205,10 +205,22 @@ dialog::backdrop { background: rgba(20, 30, 40, .45); }
   </section>
 
   <!-- SALES -->
-  <section id="v-sales" hidden>
+  <section id="v-sales" hidden style="display:grid;gap:14px">
+    <div class="card" style="gap:10px">
+      <div class="filters">
+        <label style="width:190px">วันที่<input type="date" id="dDate"></label>
+        <div class="row">
+          <button class="btn ghost small" id="dPrev" type="button">◀ วันก่อน</button>
+          <button class="btn ghost small" id="dToday" type="button">วันนี้</button>
+          <button class="btn ghost small" id="dNext" type="button">วันถัดไป ▶</button>
+        </div>
+      </div>
+      <div class="row" id="dDays"></div>
+    </div>
     <div class="kpis num" id="kpis"></div>
     <div class="card">
-      <div class="row" style="justify-content:space-between"><h2 style="font-size:17px">บิลวันนี้ในเครื่องนี้</h2><span class="muted">Bay ดูของทุกเครื่องได้ที่หลังบ้าน</span></div>
+      <div class="row" style="justify-content:space-between"><h2 style="font-size:17px" id="salesTitle">บิลวันนี้</h2><span class="muted" id="salesSrc"></span></div>
+      <p class="muted">แตะที่บิลเพื่อดูใบเสร็จและคัดลอกส่งลูกค้า</p>
       <div class="tbl"><table><thead><tr><th>เลขบิล</th><th>เวลา</th><th>รายการ</th><th class="r">ยอด</th><th>ชำระ</th><th>สถานะ</th><th></th></tr></thead><tbody id="salesBody"></tbody></table></div>
       <div id="syncBox" hidden class="card" style="background:var(--warn-bg);border-color:transparent">
         <p style="color:var(--warn)" id="syncMsg"></p>
@@ -364,7 +376,11 @@ $('saveSale').addEventListener('click', async () => {
   cart = []; $('discVal').value = ''; $('cust').value = ''; $('custPhone').value = ''; $('note').value = '';
   saveCart(); renderCart();
   await syncOne(sale);
-  saving = false; renderSales(); openReceipt(sale);
+  saving = false;
+  viewDate = localDate();                       // ขายเสร็จแล้วเด้งกลับวันนี้ ไม่งั้นบิลใหม่ไม่โผล่
+  if (dayCache[viewDate]) delete dayCache[viewDate];
+  $('dDate').value = viewDate;
+  renderSales(); openReceipt(sale);
 });
 
 // ---------- sync ----------
@@ -410,38 +426,115 @@ function receiptText(s) {
   return L.join('\n');
 }
 function openReceipt(s) {
-  const msg = s.synced ? '<span class="tag">บันทึกเข้าระบบแล้ว</span>' : '<span class="tag warn">เก็บในเครื่องก่อน · ระบบจะส่งให้เองเมื่อมีเน็ต</span>';
+  // ★ บิลที่ยกเลิกจากหลังบ้านแล้ว ส่งให้ลูกค้าไม่ได้ · ซ่อนปุ่มคัดลอกไปเลย
+  //   ไม่งั้นวันหนึ่งจะมีคนก็อปใบเสร็จของบิลที่ยกเลิกไปแล้วส่งลูกค้า
+  const void_ = s.status === 'ยกเลิก';
+  const msg = void_ ? '<span class="tag bad">ยกเลิกแล้ว</span>'
+            : s.synced ? '<span class="tag">บันทึกเข้าระบบแล้ว</span>'
+            : '<span class="tag warn">เก็บในเครื่องก่อน · ระบบจะส่งให้เองเมื่อมีเน็ต</span>';
   $('dlgBody').innerHTML = `<div class="row" style="justify-content:space-between"><h3>ใบเสร็จ</h3>${msg}</div>${receiptHtml(s)}
-    <div class="row"><button class="btn" id="dClose">ขายบิลต่อไป</button><button class="btn ghost" id="dCopy">คัดลอกส่งลูกค้า</button></div>
-    <p class="muted">กดผิด? แจ้ง Bay ให้แก้หรือยกเลิกบิล ${esc(s.no)} จากหลังบ้าน</p>`;
+    <div class="row"><button class="btn" id="dClose">ปิด</button>${void_ ? '' : '<button class="btn ghost" id="dCopy">คัดลอกส่งลูกค้า</button>'}</div>
+    <p class="muted">${void_ ? 'บิลนี้ถูกยกเลิกจากหลังบ้านแล้ว ส่งให้ลูกค้าไม่ได้' : 'กดผิด? แจ้ง Bay ให้แก้หรือยกเลิกบิล ' + esc(s.no) + ' จากหลังบ้าน'}</p>`;
   $('dClose').onclick = () => $('dlg').close();
-  $('dCopy').onclick = () => copy(receiptText(s));
+  if (!void_) $('dCopy').onclick = () => copy(receiptText(s));
   if (!$('dlg').open) $('dlg').showModal();
 }
 async function copy(text) { try { await navigator.clipboard.writeText(text); toast('คัดลอกแล้ว'); } catch { toast('คัดลอกไม่ได้ในเบราว์เซอร์นี้'); } }
 
 // ---------- sales view ----------
+// บิลของวันที่เลือก มาจากสองที่รวมกัน
+//   · ฐานข้อมูล  = ทุกเครื่องของงาน · ย้อนหลังได้ทุกวัน (ต้องมี PIN และมีเน็ต)
+//   · ในเครื่อง  = บิลที่เพิ่งขายและยังไม่ได้ส่ง · จะได้ไม่หายจากจอตอนเน็ตหลุด
+// ฐานข้อมูลชนะเมื่อ id ซ้ำกัน เพราะยอดถูกคำนวณใหม่ที่ฝั่งนั้นเสมอ
+let viewDate = localDate();
+const dayCache = {};     // 'YYYY-MM-DD' -> บิลจากฐานข้อมูล
+let dayList = [];        // สิ่งที่อยู่บนจอตอนนี้ · ปุ่ม ดู/คัดลอก หาจากตรงนี้
+
 function itemsShort(s) { return s.items.map(l => `${l.name}${l.v ? ' ' + l.v : ''}${l.qty > 1 ? ' ×' + l.qty : ''}`).join(', '); }
+function thDate(d) {
+  const [y, m, dd] = d.split('-').map(Number);
+  return new Date(y, m - 1, dd).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+}
+function shiftDate(d, n) {
+  const [y, m, dd] = d.split('-').map(Number);
+  const x = new Date(y, m - 1, dd + n);
+  return localDate(x);
+}
+function mergeDay(d) {
+  const byId = new Map();
+  (dayCache[d] || []).forEach(s => byId.set(s.id, s));
+  sales.filter(s => s.date === d).forEach(s => { if (!byId.has(s.id)) byId.set(s.id, s); });
+  return [...byId.values()].sort((a, b) => String(b.at).localeCompare(String(a.at)));
+}
+async function loadDay(d) {
+  if (!pin || !navigator.onLine) return false;
+  try { dayCache[d] = (await rpc('list_sales', { p_pin: pin, p_date: d })) || []; return true; }
+  catch (e) { if (e.pin) { pin = ''; lsSet('-pin', ''); showPin('PIN เปลี่ยนแล้ว ใส่ PIN ใหม่จาก Bay'); } return false; }
+}
+async function loadDays() {
+  if (!pin || !navigator.onLine) { $('dDays').innerHTML = ''; return; }
+  try {
+    const days = (await rpc('sale_days', { p_pin: pin })) || [];
+    $('dDays').innerHTML = days.length
+      ? '<span class="muted">วันที่มีบิล:</span>' + days.map(d =>
+          `<button class="btn ghost small" type="button" data-day="${esc(d.date)}">${esc(thDate(d.date))} · ${d.bills} บิล</button>`).join('')
+      : '';
+  } catch { $('dDays').innerHTML = ''; }
+}
+async function goDate(d) {
+  viewDate = d;
+  $('dDate').value = d;
+  renderSales();                 // วาดของในเครื่องก่อน จะได้ไม่ค้างรอเน็ต
+  if (!(viewDate in dayCache)) { await loadDay(d); renderSales(); }
+}
 function renderSales() {
-  const list = sales.filter(s => s.date === localDate()).sort((a, b) => b.at.localeCompare(a.at));
-  const sum = list.reduce((a, s) => a + s.total, 0);
-  const by = (p) => list.filter(s => s.pay === p).reduce((a, s) => a + s.total, 0);
-  $('kpis').innerHTML = `<div class="kpi"><span>ยอดสุทธิ</span><b>฿${baht(sum)}</b></div><div class="kpi"><span>จำนวนบิล</span><b>${list.length}</b></div>
+  const list = dayList = mergeDay(viewDate);
+  const live = list.filter(s => s.status !== 'ยกเลิก');
+  const sum = live.reduce((a, s) => a + Number(s.total), 0);
+  const by = (p) => live.filter(s => s.pay === p).reduce((a, s) => a + Number(s.total), 0);
+  const today = viewDate === localDate();
+
+  $('salesTitle').textContent = today ? 'บิลวันนี้' : 'บิลวันที่ ' + thDate(viewDate);
+  $('salesSrc').textContent = (viewDate in dayCache)
+    ? 'ทุกเครื่องรวมกัน'
+    : 'เฉพาะเครื่องนี้ · ใส่ PIN และต่อเน็ตเพื่อดูของทุกเครื่อง';
+
+  $('kpis').innerHTML = `<div class="kpi"><span>ยอดสุทธิ</span><b>฿${baht(sum)}</b></div><div class="kpi"><span>จำนวนบิล</span><b>${live.length}</b></div>
     <div class="kpi"><span>โอน / QR</span><b>฿${baht(by('โอน'))}</b></div><div class="kpi"><span>เงินสด · บัตร</span><b>฿${baht(by('เงินสด'))} · ${baht(by('บัตร'))}</b></div>`;
-  $('salesBody').innerHTML = list.length ? list.map(s => `<tr><td>${esc(s.no)}</td><td>${new Date(s.at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}</td><td>${esc(itemsShort(s))}</td><td class="r">฿${baht(s.total)}</td><td>${esc(s.pay)}</td><td>${s.synced ? '<span class="tag">ส่งแล้ว</span>' : '<span class="tag warn">รอส่ง</span>'}</td><td><button class="btn ghost small" data-view="${esc(s.id)}">ดู</button></td></tr>`).join('')
-    : '<tr><td colspan="7" class="muted" style="padding:16px 6px">วันนี้ยังไม่มีบิลในเครื่องนี้</td></tr>';
+
+  $('salesBody').innerHTML = list.length ? list.map(s => {
+    const void_ = s.status === 'ยกเลิก';
+    const tag = void_ ? '<span class="tag bad">ยกเลิก</span>'
+              : s.synced ? '<span class="tag">ส่งแล้ว</span>' : '<span class="tag warn">รอส่ง</span>';
+    return `<tr${void_ ? ' class="void"' : ''} data-view="${esc(s.id)}" style="cursor:pointer"><td>${esc(s.no)}</td><td>${new Date(s.at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}</td><td>${esc(itemsShort(s))}</td><td class="r">฿${baht(s.total)}</td><td>${esc(s.pay)}</td><td>${tag}</td><td><div class="row" style="gap:4px;flex-wrap:nowrap"><button class="btn ghost small" data-view="${esc(s.id)}">ดู</button>${void_ ? '' : `<button class="btn ghost small" data-copy="${esc(s.id)}">คัดลอก</button>`}</div></td></tr>`;
+  }).join('')
+    : `<tr><td colspan="7" class="muted" style="padding:16px 6px">${today ? 'วันนี้ยังไม่มีบิล' : 'วันที่ ' + esc(thDate(viewDate)) + ' ไม่มีบิล'}</td></tr>`;
+
   const n = sales.filter(s => !s.synced).length;
   $('syncBox').hidden = !n;
   $('syncMsg').textContent = n ? `${n} บิลยังไม่เข้าระบบ (เน็ตหลุดหรือยังไม่ใส่ PIN) · บิลยังอยู่ในเครื่อง ไม่หาย · ระบบลองส่งให้ทุก 30 วินาที` : '';
   setMode();
 }
-document.addEventListener('click', e => { const v = e.target.closest('[data-view]'); if (v) { const s = sales.find(x => x.id === v.dataset.view); if (s) openReceipt(s); } });
+document.addEventListener('click', e => {
+  // ★ ต้องเช็ค data-copy ก่อน เพราะปุ่มคัดลอกอยู่ในแถวที่มี data-view
+  //   ไม่งั้นกดคัดลอกแล้วจะไปเปิดใบเสร็จแทน
+  const c = e.target.closest('[data-copy]');
+  if (c) { const s = dayList.find(x => x.id === c.dataset.copy); if (s) copy(receiptText(s)); return; }
+  const v = e.target.closest('[data-view]');
+  if (v) { const s = dayList.find(x => x.id === v.dataset.view) || sales.find(x => x.id === v.dataset.view); if (s) openReceipt(s); return; }
+  const d = e.target.closest('[data-day]');
+  if (d) goDate(d.dataset.day);
+});
+$('dDate').addEventListener('change', () => { if ($('dDate').value) goDate($('dDate').value); });
+$('dPrev').addEventListener('click', () => goDate(shiftDate(viewDate, -1)));
+$('dNext').addEventListener('click', () => goDate(shiftDate(viewDate, 1)));
+$('dToday').addEventListener('click', () => goDate(localDate()));
 
 // ---------- PIN ----------
 function showPin(msg) { $('pinBox').hidden = false; $('pinErr').textContent = msg || ''; setTimeout(() => $('pinIn').focus(), 50); }
 $('pinForm').addEventListener('submit', async e => {
   e.preventDefault(); const p = $('pinIn').value.trim(); $('pinErr').textContent = 'กำลังตรวจ…';
-  try { const ok = await rpc('check_pin', { p_pin: p }); if (ok === true) { pin = p; lsSet('-pin', p); $('pinBox').hidden = true; $('pinIn').value = ''; syncAll(); toast('พร้อมขายแล้ว'); } else $('pinErr').textContent = 'PIN ไม่ถูกต้อง'; }
+  try { const ok = await rpc('check_pin', { p_pin: p }); if (ok === true) { pin = p; lsSet('-pin', p); $('pinBox').hidden = true; $('pinIn').value = ''; syncAll(); loadDays(); loadDay(viewDate).then(ok => { if (ok) renderSales(); }); toast('พร้อมขายแล้ว'); } else $('pinErr').textContent = 'PIN ไม่ถูกต้อง'; }
   catch { $('pinErr').textContent = 'ต่อระบบไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่'; }
 });
 
@@ -449,8 +542,9 @@ $('pinForm').addEventListener('submit', async e => {
 function showTab(t) {
   ['sell', 'sales'].forEach(k => { $('v-' + k).hidden = k !== t; });
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
-  if (t === 'sales') renderSales();
+  if (t === 'sales') { renderSales(); loadDays(); if (!(viewDate in dayCache)) loadDay(viewDate).then(ok => { if (ok) renderSales(); }); }
 }
+$('dDate').value = viewDate;
 renderCats(); renderCart(); renderSales();
 if (!pin) showPin(); else syncAll();
 </script>
