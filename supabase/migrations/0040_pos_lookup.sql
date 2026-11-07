@@ -70,40 +70,7 @@ comment on function pos.list_sales(text, date) is
   'บิลของวันที่เลือก ทุกเครื่องรวมกัน · ต้องใส่ PIN ร้าน · '
   'คืนรูปแบบเดียวกับที่หน้าเว็บเก็บในเครื่อง หน้าจอจึงใช้โค้ดวาดชุดเดิมได้';
 
--- ---------------------------------------------------------------------------
--- วันไหนมีบิลบ้าง · ให้ตัวเลือกวันที่รู้ว่ามีอะไรให้ดู ไม่ต้องเดาวัน
--- ---------------------------------------------------------------------------
-create or replace function pos.sale_days(p_pin text)
-returns jsonb
-language plpgsql security definer
-set search_path = pos, extensions, public
-as $$
-declare v jsonb;
-begin
-  if not pos.check_pin(p_pin) then
-    raise exception 'pin_invalid' using errcode = '28000';
-  end if;
-
-  select coalesce(jsonb_agg(x order by x->>'date' desc), '[]'::jsonb) into v
-  from (
-    select jsonb_build_object(
-      'date',  to_char(s.sold_on, 'YYYY-MM-DD'),
-      'bills', count(*) filter (where s.status = 'ปกติ'),
-      'total', coalesce(sum(s.total) filter (where s.status = 'ปกติ'), 0)
-    ) as x
-    from pos.sales s
-    group by s.sold_on
-  ) t;
-
-  return v;
-end $$;
-
-comment on function pos.sale_days(text) is
-  'วันที่มีบิล พร้อมจำนวนและยอดรวมของวันนั้น · ใช้เติมตัวเลือกวันในหน้ายอดขาย';
-
 revoke all on function pos.list_sales(text, date) from public;
-revoke all on function pos.sale_days(text)        from public;
 grant execute on function pos.list_sales(text, date) to anon, authenticated;
-grant execute on function pos.sale_days(text)        to anon, authenticated;
 
 notify pgrst, 'reload schema';

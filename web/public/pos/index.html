@@ -215,7 +215,6 @@ dialog::backdrop { background: rgba(20, 30, 40, .45); }
           <button class="btn ghost small" id="dNext" type="button">วันถัดไป ▶</button>
         </div>
       </div>
-      <div class="row" id="dDays"></div>
     </div>
     <div class="kpis num" id="kpis"></div>
     <div class="card">
@@ -471,16 +470,6 @@ async function loadDay(d) {
   try { dayCache[d] = (await rpc('list_sales', { p_pin: pin, p_date: d })) || []; return true; }
   catch (e) { if (e.pin) { pin = ''; lsSet('-pin', ''); showPin('PIN เปลี่ยนแล้ว ใส่ PIN ใหม่จาก Bay'); } return false; }
 }
-async function loadDays() {
-  if (!pin || !navigator.onLine) { $('dDays').innerHTML = ''; return; }
-  try {
-    const days = (await rpc('sale_days', { p_pin: pin })) || [];
-    $('dDays').innerHTML = days.length
-      ? '<span class="muted">วันที่มีบิล:</span>' + days.map(d =>
-          `<button class="btn ghost small" type="button" data-day="${esc(d.date)}">${esc(thDate(d.date))} · ${d.bills} บิล</button>`).join('')
-      : '';
-  } catch { $('dDays').innerHTML = ''; }
-}
 async function goDate(d) {
   viewDate = d;
   $('dDate').value = d;
@@ -521,9 +510,7 @@ document.addEventListener('click', e => {
   const c = e.target.closest('[data-copy]');
   if (c) { const s = dayList.find(x => x.id === c.dataset.copy); if (s) copy(receiptText(s)); return; }
   const v = e.target.closest('[data-view]');
-  if (v) { const s = dayList.find(x => x.id === v.dataset.view) || sales.find(x => x.id === v.dataset.view); if (s) openReceipt(s); return; }
-  const d = e.target.closest('[data-day]');
-  if (d) goDate(d.dataset.day);
+  if (v) { const s = dayList.find(x => x.id === v.dataset.view) || sales.find(x => x.id === v.dataset.view); if (s) openReceipt(s); }
 });
 $('dDate').addEventListener('change', () => { if ($('dDate').value) goDate($('dDate').value); });
 $('dPrev').addEventListener('click', () => goDate(shiftDate(viewDate, -1)));
@@ -534,7 +521,7 @@ $('dToday').addEventListener('click', () => goDate(localDate()));
 function showPin(msg) { $('pinBox').hidden = false; $('pinErr').textContent = msg || ''; setTimeout(() => $('pinIn').focus(), 50); }
 $('pinForm').addEventListener('submit', async e => {
   e.preventDefault(); const p = $('pinIn').value.trim(); $('pinErr').textContent = 'กำลังตรวจ…';
-  try { const ok = await rpc('check_pin', { p_pin: p }); if (ok === true) { pin = p; lsSet('-pin', p); $('pinBox').hidden = true; $('pinIn').value = ''; syncAll(); loadDays(); loadDay(viewDate).then(ok => { if (ok) renderSales(); }); toast('พร้อมขายแล้ว'); } else $('pinErr').textContent = 'PIN ไม่ถูกต้อง'; }
+  try { const ok = await rpc('check_pin', { p_pin: p }); if (ok === true) { pin = p; lsSet('-pin', p); $('pinBox').hidden = true; $('pinIn').value = ''; syncAll(); loadDay(viewDate).then(ok => { if (ok) renderSales(); }); toast('พร้อมขายแล้ว'); } else $('pinErr').textContent = 'PIN ไม่ถูกต้อง'; }
   catch { $('pinErr').textContent = 'ต่อระบบไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่'; }
 });
 
@@ -542,7 +529,7 @@ $('pinForm').addEventListener('submit', async e => {
 function showTab(t) {
   ['sell', 'sales'].forEach(k => { $('v-' + k).hidden = k !== t; });
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
-  if (t === 'sales') { renderSales(); loadDays(); if (!(viewDate in dayCache)) loadDay(viewDate).then(ok => { if (ok) renderSales(); }); }
+  if (t === 'sales') { renderSales(); if (!(viewDate in dayCache)) loadDay(viewDate).then(ok => { if (ok) renderSales(); }); }
 }
 $('dDate').value = viewDate;
 renderCats(); renderCart(); renderSales();

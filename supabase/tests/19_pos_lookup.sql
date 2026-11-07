@@ -7,8 +7,7 @@
 --   1 PIN ผิด อ่านไม่ได้
 --   2 PIN ถูก อ่านบิลของวันที่เลือกได้ ทุกเครื่องรวมกัน
 --   3 ★ รูปแบบที่คืนกลับ ตรงกับที่หน้าเว็บใช้ทุกช่อง (ก็อปปี้ใบเสร็จได้เลย)
---   4 วันไหนมีบิลบ้าง พร้อมยอดรวม · บิลที่ยกเลิกไม่นับในยอด
---   5 ★ anon ยังแตะตาราง pos.sales ตรงๆ ไม่ได้ · ประตูเดียวคือฟังก์ชันที่ต้องใช้ PIN
+--   4 ★ anon ยังแตะตาราง pos.sales ตรงๆ ไม่ได้ · ประตูเดียวคือฟังก์ชันที่ต้องใช้ PIN
 -- ============================================================================
 
 -- ตั้ง PIN ร้าน (ปกติ Bay ตั้งจากหลังบ้านด้วย pos.set_pin)
@@ -88,36 +87,16 @@ begin
   end if;
 end $$;
 
-\echo ''
-\echo '=== 4 · วันไหนมีบิลบ้าง ==='
-select jsonb_pretty(pos.sale_days('199001'));
-
-do $$
-declare v jsonb;
-begin
-  v := pos.sale_days('199001');
-  if jsonb_array_length(v) <> 2 then
-    raise exception 'ข้อ 4 พัง: ควรมี 2 วัน แต่ได้ %', jsonb_array_length(v);
-  end if;
-  if (v->0->>'date') <> '2026-11-07' then
-    raise exception 'ข้อ 4 พัง: ควรเรียงวันใหม่สุดขึ้นก่อน แต่ได้ %', v->0->>'date';
-  end if;
-  -- 1,000 + 180
-  if (v->0->>'total')::numeric <> 1180.00 then
-    raise exception 'ข้อ 4 พัง: ยอดวันที่ 7 ควรเป็น 1180.00 แต่ได้ %', v->0->>'total';
-  end if;
-end $$;
-
--- ===== ข้อ 5 · ประตูเดียวยังเป็นประตูเดียว =====
+-- ===== ข้อ 4 · ประตูเดียวยังเป็นประตูเดียว =====
 do $$
 declare n int;
 begin
   begin
     select count(*) into n from pos.sales;
-    raise exception 'ข้อ 5 พัง: anon อ่านตาราง pos.sales ตรงๆ ได้ % แถว', n;
+    raise exception 'ข้อ 4 พัง: anon อ่านตาราง pos.sales ตรงๆ ได้ % แถว', n;
   exception
     when insufficient_privilege then null;
-    when raise_exception then if sqlerrm like 'ข้อ 5 พัง%' then raise; end if;
+    when raise_exception then if sqlerrm like 'ข้อ 4 พัง%' then raise; end if;
   end;
 end $$;
 
