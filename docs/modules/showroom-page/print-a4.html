@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Showroom QR · A4</title>
+<!-- ป้าย A4 ตั้งในโชว์รูม · QR = friend path "Showroom" (lin.ee/SlGe4gD) · พิมพ์: Ctrl/Cmd+P → A4 · ขอบ: ไม่มี (None) · เปิด Background graphics -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Anuphan:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#2B4368;--slate:#3E4653;--teal:#83B7BF;--taupe:#958C7B;--bg:#F7F8F8;--text:#212121;--muted:#6B6F7D;--accent:#C1622E}
+  @page{size:A4 portrait;margin:0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#d9dcdf}
+  body{font-family:'Anuphan','Montserrat',sans-serif;color:var(--text);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{width:210mm;height:297mm;margin:10mm auto;background:#fff;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.15)}
+  @media print{html,body{background:#fff}.page{margin:0;box-shadow:none}}
+
+  .band{background:var(--slate);height:62mm;display:flex;align-items:center;justify-content:center}
+  .band img{height:50mm}
+
+  .body{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:14mm 18mm 0}
+  .eyebrow{font-family:'Montserrat',sans-serif;font-size:10pt;letter-spacing:.3em;text-transform:uppercase;color:var(--taupe)}
+  h1{font-weight:500;color:var(--navy);font-size:30pt;line-height:1.25;margin:4mm 0 3mm}
+  .sub{font-size:13.5pt;color:var(--muted);line-height:1.6;max-width:150mm}
+
+  .qrbox{margin:9mm 0 5mm;padding:6mm;border:0.6mm solid var(--teal)}
+  .qrbox img{width:78mm;height:78mm;display:block}
+  .id{font-family:'Montserrat',sans-serif;font-size:13pt;letter-spacing:.06em;color:var(--navy);font-weight:500}
+
+  ul{list-style:none;display:flex;gap:7mm;justify-content:center;margin-top:8mm;font-size:12pt;color:var(--text)}
+  ul li{display:flex;align-items:center;gap:2.5mm}
+  ul li::before{content:"";width:2.2mm;height:2.2mm;background:var(--accent);display:inline-block}
+
+  .foot{border-top:0.3mm solid #E3E5E8;margin:0 18mm;padding:6mm 0 9mm;display:flex;justify-content:space-between;font-size:10.5pt;color:var(--muted)}
+  .foot b{color:var(--navy);font-weight:500;font-family:'Montserrat',sans-serif}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="band"><img src="assets/logo-slate.png" alt="Chaw Cher ฌ เฌอ"></div>
+
+  <div class="body">
+    <div class="eyebrow">Showroom · Khlong San</div>
+    <h1>ชอบตัวไหน<br>สแกนเก็บไว้ใน LINE</h1>
+    <p class="sub">เพิ่มเพื่อน แล้วทักถามราคา ขนาด และผ้าของตัวที่ลองนั่งได้ทันที<br>กลับบ้านไปแล้วก็คุยต่อได้</p>
+
+    <div class="qrbox"><img src="assets/line-qr-showroom.png" alt="QR เพิ่มเพื่อน LINE"></div>
+    <div class="id">LINE @chawcher</div>
+
+    <ul>
+      <li>ถามราคา</li>
+      <li>ขอรูป + สเปก</li>
+      <li>สั่งทำตามขนาด</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    <span>81 ซ.เจริญนคร 32/1 คลองสาน · โทร <b>063 829 9536</b></span>
+    <b>chawcher.com</b>
+  </div>
+</div>
+</body>
+</html>

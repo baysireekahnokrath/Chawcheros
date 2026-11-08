@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Showroom · Chaw Cher (mockup)</title>
+<!-- MOCKUP ด่าน 3 · ข้อมูลจริงจากเว็บ · ยังไม่ต่อ tag จริง กดปุ่มแล้วจะโชว์ว่า event ไหนจะยิง -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Anuphan:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cc-navy:#2B4368; --cc-slate:#3E4653; --cc-teal:#83B7BF; --cc-taupe:#958C7B;
+    --cc-bg:#F7F8F8; --cc-white:#FFFFFF; --cc-text:#212121; --cc-muted:#6B6F7D; --cc-line:#E3E5E8;
+    --cc-accent:#C1622E; --cc-accent-dark:#A9521F;
+    --en:'Montserrat',sans-serif; --th:'Anuphan','Montserrat',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--th);color:var(--cc-text);background:var(--cc-bg);line-height:1.65;-webkit-font-smoothing:antialiased;padding-bottom:84px}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  .eyebrow{font-family:var(--en);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--cc-taupe);font-weight:500}
+  h1,h2{font-weight:500;color:var(--cc-navy);line-height:1.3}
+  h1{font-size:clamp(28px,6vw,46px)} h2{font-size:clamp(22px,4vw,30px)}
+  p.lead{font-size:17px;color:var(--cc-muted);max-width:34em}
+
+  /* top bar */
+  .top{background:var(--cc-slate);color:#fff}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .top img{height:46px;display:block}
+  .top a.tel{font-family:var(--en);font-size:14px;text-decoration:none;opacity:.9}
+
+  /* hero */
+  .hero{position:relative;min-height:62vh;display:flex;align-items:flex-end;color:#fff;
+    background:linear-gradient(180deg,rgba(43,67,104,.05) 30%,rgba(30,38,52,.75)),
+      repeating-linear-gradient(115deg,#cdbfad 0 2px,#d8ccbc 2px 22px);}
+  .hero .ph{position:absolute;top:16px;left:16px;font-size:12px;background:rgba(255,255,255,.85);color:var(--cc-slate);padding:4px 10px;border-radius:99px}
+  .hero .wrap{padding-bottom:40px;padding-top:120px}
+  .hero h1{color:#fff;margin:10px 0 12px}
+  .hero p{color:rgba(255,255,255,.9);max-width:30em;font-size:17px}
+  .hero .eyebrow{color:#E9E2D6}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--cc-accent);color:#fff;
+    font-family:var(--th);font-weight:600;font-size:18px;padding:16px 28px;border:0;border-radius:2px;cursor:pointer;text-decoration:none;min-height:56px}
+  .btn:hover{background:var(--cc-accent-dark)}
+  .btn svg{width:22px;height:22px}
+  .btn.ghost{background:transparent;color:var(--cc-navy);border:1px solid var(--cc-navy);font-weight:500;font-size:16px}
+  .hero .btn{margin-top:24px}
+  .note{font-size:13px;opacity:.85;margin-top:10px}
+
+  section{padding:64px 0}
+  .grid{display:grid;gap:28px}
+  @media(min-width:860px){.grid.two{grid-template-columns:1.1fr .9fr;align-items:start}}
+
+  /* info */
+  .info{background:var(--cc-white)}
+  dl.facts{display:grid;gap:0;border-top:1px solid var(--cc-line);margin-top:24px}
+  .facts div{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--cc-line)}
+  .facts dt{font-family:var(--en);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cc-taupe);padding-top:3px}
+  .facts dd a{text-decoration:none;border-bottom:1px solid var(--cc-teal)}
+  .map{aspect-ratio:4/3;width:100%;border:0;background:#e9ecef}
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+
+  /* steps */
+  ol.steps{list-style:none;display:grid;gap:16px;margin-top:28px;counter-reset:s}
+  @media(min-width:760px){ol.steps{grid-template-columns:repeat(3,1fr)}}
+  ol.steps li{background:var(--cc-white);padding:24px;border-top:3px solid var(--cc-teal);counter-increment:s}
+  ol.steps li::before{content:"0" counter(s);font-family:var(--en);font-size:28px;font-weight:300;color:var(--cc-teal);display:block;margin-bottom:6px}
+  ol.steps b{color:var(--cc-navy);font-weight:600}
+
+  /* try list */
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px}
+  @media(min-width:760px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  .tile{aspect-ratio:1/1;background:repeating-linear-gradient(135deg,#e4e1db 0 2px,#ece9e4 2px 16px);display:flex;align-items:flex-end;padding:12px;font-size:14px;color:var(--cc-slate)}
+
+  /* qr for desktop */
+  .qr{background:var(--cc-navy);color:#fff}
+  .qr .wrap{display:flex;flex-wrap:wrap;gap:32px;align-items:center}
+  .qr img{width:180px;height:180px;background:#fff;padding:10px}
+  .qr h2{color:#fff}
+  .qr p{color:rgba(255,255,255,.8)}
+
+  footer{background:var(--cc-slate);color:rgba(255,255,255,.75);font-size:14px;padding:32px 0}
+
+  /* sticky mobile bar */
+  .sticky{position:fixed;left:0;right:0;bottom:0;background:rgba(247,248,248,.96);backdrop-filter:blur(6px);border-top:1px solid var(--cc-line);padding:12px 16px;display:flex;gap:10px;z-index:10}
+  .sticky .btn{flex:1;font-size:16px;padding:12px 16px;min-height:52px}
+  .sticky a.call{width:52px;min-height:52px;display:flex;align-items:center;justify-content:center;border:1px solid var(--cc-navy);color:var(--cc-navy)}
+  @media(min-width:860px){.sticky{display:none}body{padding-bottom:0}}
+
+  /* mock tracking panel */
+  .toast{position:fixed;left:50%;top:16px;transform:translateX(-50%) translateY(-140%);transition:transform .25s;background:#111;color:#fff;font:13px/1.55 ui-monospace,Menlo,monospace;padding:14px 16px;border-radius:8px;z-index:20;width:min(460px,92vw);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast b{color:#9fe0a8;font-weight:600}
+  .mockbar{background:#FFF7E6;color:#7a5a12;font-size:13px;text-align:center;padding:8px 12px;border-bottom:1px solid #f1dfb0}
+</style>
+</head>
+<body>
+
+<div class="mockbar">MOCKUP · กดปุ่ม LINE แล้วจะเห็นว่า event ไหนจะยิงก่อนเปิด LINE · ของจริงยิงจริงแล้วพาไป LINE</div>
+
+<header class="top">
+  <div class="wrap">
+    <img src="assets/logo-white.png" alt="Chaw Cher ฌ เฌอ">
+    <a class="tel" href="tel:0638299536">063 829 9536</a>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="ph">ใส่รูปโชว์รูมจริง · แนวนอน 1920px</span>
+  <div class="wrap">
+    <div class="eyebrow">Showroom · Khlong San</div>
+    <h1>มานั่งลองของจริง<br>ที่โชว์รูมคลองสาน</h1>
+    <p>โซฟาเป็นของที่ต้องนั่งถึงจะรู้ว่าใช่ เราเปิดโชว์รูมให้คุณมาลองนั่งของจริงทุกตัว ไม่มีค่าใช้จ่าย</p>
+    <a class="btn js-line" data-cc-appt="showroom-hero" href="#">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 .9l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.5 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>
+      นัดวันเข้าชมทาง LINE
+    </a>
+    <div class="note">จ.–ศ. 10.00–18.00 น. · ส.–อา. นัดล่วงหน้า</div>
+  </div>
+</section>
+
+<section class="info">
+  <div class="wrap grid two">
+    <div>
+      <div class="eyebrow">Visit us</div>
+      <h2 style="margin-top:8px">ข้อมูลการเข้าชม</h2>
+      <dl class="facts">
+        <div><dt>ที่อยู่</dt><dd>81 ซอยเจริญนคร 32/1 แขวงบางลำภูล่าง<br>เขตคลองสาน กรุงเทพฯ 10600</dd></div>
+        <div><dt>เวลา</dt><dd>จันทร์ – ศุกร์ 10.00 – 18.00 น.<br>เสาร์ – อาทิตย์ นัดล่วงหน้า</dd></div>
+        <div><dt>จอดรถ</dt><dd>หน้าร้าน 1 คัน ฟรี · ทักมานัดก่อน เราจะกันที่ไว้ให้</dd></div>
+        <div><dt>โทร</dt><dd><a href="tel:0638299536">063 829 9536</a></dd></div>
+      </dl>
+      <div class="actions">
+        <a class="btn js-line" data-cc-appt="showroom-info" href="#">นัดวันเข้าชมทาง LINE</a>
+        <a class="btn ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=81+ซอยเจริญนคร+32/1+คลองสาน+กรุงเทพ">ดูเส้นทาง</a>
+      </div>
+    </div>
+    <iframe class="map" loading="lazy" title="แผนที่โชว์รูม"
+      src="https://www.google.com/maps?q=81+%E0%B8%8B%E0%B8%AD%E0%B8%A2%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%99%E0%B8%84%E0%B8%A3+32/1+%E0%B8%84%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B8%AA%E0%B8%B2%E0%B8%99&output=embed"></iframe>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2 style="margin-top:8px">นัดง่าย 3 ขั้น</h2>
+    <ol class="steps">
+      <li><b>ทัก LINE</b><br>กดปุ่มด้านล่าง บอกวันเวลาที่สะดวก และรุ่นที่อยากลอง</li>
+      <li><b>เรายืนยันนัด</b><br>เตรียมรุ่นที่สนใจ ตัวอย่างผ้า และกันที่จอดรถไว้ให้</li>
+      <li><b>มานั่งลอง</b><br>ลองได้ทุกตัว วัดขนาดกับห้องจริง สั่งทำตามที่ต้องการได้</li>
+    </ol>
+  </div>
+</section>
+
+<section class="info">
+  <div class="wrap">
+    <div class="eyebrow">In the showroom</div>
+    <h2 style="margin-top:8px">มีอะไรให้ลองบ้าง</h2>
+    <p class="lead" style="margin-top:8px">ผลิตเองทุกตัว มาตรฐานส่งออกญี่ปุ่น สั่งทำขนาด ผ้า และสีได้</p>
+    <div class="tiles">
+      <div class="tile">รูปรุ่นที่ 1</div><div class="tile">รูปรุ่นที่ 2</div>
+      <div class="tile">รูปรุ่นที่ 3</div><div class="tile">ตัวอย่างผ้า</div>
+    </div>
+  </div>
+</section>
+
+<section class="qr">
+  <div class="wrap">
+    <img src="assets/line-qr-showroom.png" alt="QR เพิ่มเพื่อน LINE @chawcher">
+    <div>
+      <div class="eyebrow" style="color:var(--cc-teal)">On a computer?</div>
+      <h2 style="margin:8px 0">สแกนด้วยมือถือ เพื่อนัดทาง LINE</h2>
+      <p>LINE Official · @chawcher</p>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Chaw Cher · ฌ เฌอ — ผู้ผลิตและออกแบบเฟอร์นิเจอร์ สั่งทำได้ตามต้องการ</div></footer>
+
+<div class="sticky">
+  <a class="call" href="tel:0638299536" aria-label="โทร">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+  </a>
+  <a class="btn js-line" data-cc-appt="showroom-sticky" href="#">นัดวันเข้าชมทาง LINE</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== ของจริงจะเป็นแบบนี้ ===== */
+const LINE_URL = 'https://lin.ee/SlGe4gD';   // friend path "Showroom" · ดูหมายเหตุใน 0-idea.md
+function fire(pos){
+  const ev = [];
+  // GA4 (ผ่าน gtag ที่ Site Kit ติดไว้) · key event
+  if (window.gtag) gtag('event','book_showroom',{button_position:pos,transport_type:'beacon'});
+  ev.push('GA4      → <b>book_showroom</b> {position:"'+pos+'"}');
+  // Google Ads conversion · ต้องเอา label จาก Google Ads มาใส่
+  if (window.gtag) gtag('event','conversion',{send_to:'AW-11359947999/LABEL',transport_type:'beacon'});
+  ev.push('Ads      → <b>conversion</b> AW-11359947999/&lt;label&gt;');
+  // Meta Pixel · standard event
+  if (window.fbq) fbq('track','Schedule',{content_name:'showroom_visit',position:pos});
+  ev.push('Meta     → <b>Schedule</b> {content_name:"showroom_visit"}');
+  return ev;
+}
+document.querySelectorAll('.js-line').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const pos=a.dataset.ccAppt, ev=fire(pos);
+    const t=document.getElementById('toast');
+    t.innerHTML=ev.join('<br>')+'<br><br>→ เปิด '+LINE_URL+' ใน 0.3 วิ (mockup ไม่เปิดจริง)';
+    t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),4200);
+    // ของจริง: setTimeout(()=>{ location.href = LINE_URL }, 300);
+  });
+});
+</script>
+</body>
+</html>
