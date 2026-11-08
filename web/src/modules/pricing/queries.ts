@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { sortRows } from '@/lib/sortRows';
 
 /** 1 แถว = 1 ตัวสินค้า พร้อมราคาและรูปของรุ่น — มาจากวิว pricing.v_price_list */
 export type PriceRow = {
@@ -39,10 +40,6 @@ export async function getPriceList(): Promise<{ rows: PriceRow[]; error: string 
     .schema('pricing')
     .from('v_price_list')
     .select('*')
-    // เรียงที่ฐานข้อมูล หน้าจอจะได้ไม่ต้องเรียงใหม่ทุกครั้งที่พิมพ์ค้นหา
-    .order('หมวด')
-    .order('รุ่น')
-    .order('ราคาเต็มรวม_vat', { ascending: true, nullsFirst: false })
     .limit(2000);
 
   if (error) {
@@ -51,5 +48,11 @@ export async function getPriceList(): Promise<{ rows: PriceRow[]; error: string 
       error: [error.message, error.details, error.hint].filter(Boolean).join(' · '),
     };
   }
-  return { rows: (data ?? []) as PriceRow[], error: null };
+  // เรียงในเครื่อง · API เรียงตามชื่อคอลัมน์ภาษาไทยไม่ได้ (ดู lib/sortRows)
+  const rows = sortRows((data ?? []) as PriceRow[], [
+    { key: (r) => r.หมวด },
+    { key: (r) => r.รุ่น },
+    { key: (r) => r.ราคาเต็มรวม_vat },
+  ]);
+  return { rows, error: null };
 }

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { sortRows } from '@/lib/sortRows';
 
 /** 1 แถว = 1 รุ่น (Collection + หมวด) — มาจากวิว catalog.v_import_groups */
 export type ImportGroup = {
@@ -46,12 +47,14 @@ export async function getImportGroups(): Promise<ImportGroup[]> {
   const { data } = await supabase
     .schema('catalog')
     .from('v_import_groups')
-    .select('*')
-    // กลุ่มใหญ่ขึ้นก่อน · 23 กลุ่มแรกคือ 64% ของสินค้าทั้งหมด
-    // เรียงตามตัวอักษรทำให้เจอกำแพง 95 ใบโดยไม่รู้ว่าอันไหนสำคัญ
-    .order('รอตรวจ', { ascending: false })
-    .order('จำนวนแถว', { ascending: false });
-  return (data ?? []) as ImportGroup[];
+    .select('*');
+  // กลุ่มใหญ่ขึ้นก่อน · 23 กลุ่มแรกคือ 64% ของสินค้าทั้งหมด
+  // เรียงตามตัวอักษรทำให้เจอกำแพง 95 ใบโดยไม่รู้ว่าอันไหนสำคัญ
+  // เรียงในเครื่อง เพราะ API เรียงตามชื่อคอลัมน์ภาษาไทยไม่ได้ (ดู lib/sortRows)
+  return sortRows((data ?? []) as ImportGroup[], [
+    { key: (r) => r.รอตรวจ, desc: true },
+    { key: (r) => r.จำนวนแถว, desc: true },
+  ]);
 }
 
 /** แถวทั้งหมดในกลุ่มเดียว — ใช้ตอนกดดูรายละเอียดก่อนอนุมัติ */
