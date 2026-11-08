@@ -114,16 +114,28 @@ const WORD_TAG: [RegExp, string][] = [
   [/ฐานเตียง/, 'BASE'], [/ไม่มีแขน/, 'NA'], [/ที่นั่ง|seat/i, 'S'], [/ฟุต/, 'F'],
 ];
 
-/** ทำ sub ภาษาไทยให้เป็นรหัสที่อ่านออก · เก็บคำสำคัญ + ตัวเลข ตามลำดับที่เจอ */
-function tagOf(sub: string): string {
+/**
+ * ทำ sub ภาษาไทยให้เป็นรหัสที่อ่านออก · เก็บคำสำคัญ + ตัวเลขที่ยังไม่ได้บอกไปแล้ว
+ *
+ * ★ ตัดตัวเลขที่ซ้ำกับขนาดของโมดูลเองออก
+ *   "DAYBED เอียง W213 x D135 xH85" เคยได้รหัส PHX2130-21313585DB
+ *   ซึ่งพูดความกว้างซ้ำสองรอบแล้วยังอ่านไม่ออก · ตอนนี้ได้ PHX2130-DBSLT
+ */
+function tagOf(sub: string, w: number | null, d: number | null, h: number | null): string {
   const direct = SUB_TAG[sub.trim()];
   if (direct !== undefined) return direct;
   const ascii = sub.toUpperCase().replace(/[^A-Z0-9]/g, '');
   const words: string[] = [];
   for (const [re, tag] of WORD_TAG) if (re.test(sub) && !words.includes(tag)) words.push(tag);
-  const nums = sub.match(/\d+(\.\d+)?/g) ?? [];
+  const known = new Set([w, d, h].filter((v): v is number => v != null).map(String));
+  const raw = sub.match(/\d+(\.\d+)?/g) ?? [];
+  const nums = raw.filter((n) => !known.has(n));
   const out = [...nums, ...words].join('');
-  return (out || ascii).slice(0, 10);
+  if (out) return out.slice(0, 10);
+  // ชื่อมีแต่ตัวเลขที่ซ้ำกับขนาดของโมดูลเอง เช่น "150 cm" ของโต๊ะกว้าง 150
+  // ความกว้างอยู่ในรหัสอยู่แล้ว (KS1500) ไม่ต้องต่อท้ายให้ยาวขึ้นเปล่า ๆ
+  if (raw.length && !words.length) return '';
+  return ascii.slice(0, 10);
 }
 
 /**
@@ -132,7 +144,8 @@ function tagOf(sub: string): string {
  * ของฟีนิกซ์มีกับดัก: ความกว้างในรหัสตระกูลมีโต๊ะ รวมโต๊ะ 40 ซม. ไปแล้ว
  * PHX2700RA-T = ที่นั่ง 230 + โต๊ะ 40 ไม่ใช่ที่นั่ง 270
  */
-function codeFor(coll: string, prefix: string, cat: string, sub: string, w: number | null, d: number | null): string {
+function codeFor(coll: string, prefix: string, cat: string, sub: string,
+                 w: number | null, d: number | null, h: number | null): string {
   if (coll === 'ฟีนิกซ์') {
     let m = /^3S \((\d+)\)/.exec(sub);
     if (m) return `PHX${+m[1] * 10}-2AR`;
@@ -154,7 +167,7 @@ function codeFor(coll: string, prefix: string, cat: string, sub: string, w: numb
     if (cat === 'สตูล') return 'KT-STOOL';
   }
   let code = prefix + mm(w) + (CAT_SUFFIX[cat] ?? '-' + cat.slice(0, 2));
-  const tag = tagOf(sub);
+  const tag = tagOf(sub, w, d, h);
   if (tag) code += '-' + tag;
   return code;
 }
@@ -302,7 +315,7 @@ export function buildSheets(rows: PriceRow[]): Sheet[] {
       const mods = [...byMod.values()];
       for (const m of mods) {
         m.mats.sort((a, b) => gradeRank(a) - gradeRank(b) || a.localeCompare(b, 'th'));
-        const u = uniq(codeFor(coll, prefix, cat, m.sub, m.w, m.d), used, m.h);
+        const u = uniq(codeFor(coll, prefix, cat, m.sub, m.w, m.d, m.h), used, m.h);
         m.code = u.code;
         m.ambiguous = u.hit;
       }

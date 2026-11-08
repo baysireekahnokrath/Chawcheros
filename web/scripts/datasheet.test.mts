@@ -113,6 +113,16 @@ ok('ชุดเก้าอี้กีวี่ 2 ตัว มีรหัส
 ok('ชุดเก้าอี้อีมู 2 ตัว มีรหัสของตัวเอง', nnCodes.includes('NNKS800-DT-2EMU'), true);
 ok('นางนวล/กระสา ไม่เหลือแถวกำกวม', nn.ambiguous.length, 0);
 
+// ตัวเลขในชื่อที่ซ้ำกับขนาดของโมดูลเอง ต้องไม่ถูกเอามาต่อท้ายรหัส
+ok('โต๊ะทานข้าวกระสา 150 → KS1500-DT ไม่ใช่ KS1500-DT-150',
+   mods.some((m) => m.code === 'KS1500-DT'), true);
+ok('ไม่มีรหัสที่ลงท้ายด้วย CM',
+   mods.some((m) => /CM$/.test(m.code)), false);
+ok('เดย์เบดเอียงฟีนิกซ์ → PHX2130-DBSLT',
+   mods.some((m) => m.code === 'PHX2130-DBSLT'), true);
+ok('ไม่มีรหัสยาวเกิน 20 ตัว',
+   mods.filter((m) => m.code.length > 20).map((m) => m.code), []);
+
 // ชื่ออังกฤษ
 ok('นางแอ่น = Nang Aaen', find('นางแอ่น').en, 'Nang Aaen');
 ok('ฟีนิกซ์ = Phoenix', find('ฟีนิกซ์').en, 'Phoenix');
