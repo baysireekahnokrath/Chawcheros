@@ -4,8 +4,46 @@
    ไม่ใส่ราคา เพราะ data sheet โรงงานไม่ใส่ และราคาเปลี่ยนบ่อยกว่าขนาด"""
 import csv, io, json, re, sys, collections
 
-ROOT = '/home/user/Chawcheros'
-SCR  = '/tmp/claude-0/-home-user-Chawcheros/8dfb96be-79b3-5c16-b64e-d08642b109ad/scratchpad'
+import os
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+SCR  = os.environ.get('WEB_SPECS_DIR', os.path.join(ROOT, 'docs', 'source'))
+
+# ---------------------------------------------------------------------------
+# ทำความสะอาดคำอธิบายจากเว็บ
+#   เว็บเขียนปนกันหมด: บรรทัดขนาด หัวข้อตัวพิมพ์ใหญ่ เครื่องหมาย ** ของ markdown
+#   และบางรุ่นมีสองหน้าสินค้าที่เนื้อหาเกือบเหมือนกัน
+# ---------------------------------------------------------------------------
+
+def _is_noise(l):
+    t = l.strip()
+    if not t: return True
+    if re.fullmatch(r"[\s(]*[\d.'’]+[\s)]*", t): return True
+    if re.match(r"^[A-Z0-9().'’\s/-]*W\s*[\d.]+\s*([xX×]\s*)?D\s*[\d.]+", t): return True
+    if re.match(r"^(KING|QUEEN|SIZE|[\d.]+\s*(ฟุต|'))[:\s]", t, re.I): return True
+    if re.fullmatch(r"[A-Z0-9][A-Z0-9\s()'’.:/-]{1,26}", t): return True
+    if re.fullmatch(r"(highlight|hilight|spec|specification)\s*:?", t, re.I): return True
+    if re.match(r"^\*?\s*AVAILABLE\b", t, re.I): return True
+    # "ขนาด: W510 x D550 x H790" แทรกกลางย่อหน้า ไม่ได้ขึ้นต้นบรรทัด
+    if re.search(r"(ขนาด|SIZE)\s*[:：]\s*W\s*[\d.]+", t, re.I): return True
+    return False
+
+def clean_spec(spec):
+    out = []
+    for l in (spec or '').split('\n'):
+        l = l.replace('**', '').strip()
+        l = re.sub(r'^[–—-]\s*', '– ', l)
+        if _is_noise(l): continue
+        out.append(l)
+    return '\n'.join(out).strip()
+
+def dedupe(texts):
+    """ข้อความหนึ่งกินความอีกอันอยู่แล้ว เก็บอันยาว ทิ้งอันสั้น"""
+    uniq = []
+    for t in sorted({t for t in texts if t}, key=len, reverse=True):
+        key = re.sub(r'\s+', '', t)
+        if any(key in re.sub(r'\s+', '', u) for u in uniq): continue
+        uniq.append(t)
+    return uniq
 
 def num(s):
     m = re.search(r'([\d.]+)', s or '')
@@ -19,7 +57,7 @@ def num2(s):
 
 rows = list(csv.DictReader(io.open(f'{ROOT}/docs/source/standard-price-2026-grid-view.csv',
                                    encoding='utf-8-sig')))
-specs = json.load(io.open(f'{SCR}/web/specs.json', encoding='utf-8'))
+specs = json.load(io.open(os.path.join(SCR, 'web-specs.json'), encoding='utf-8'))
 imap  = list(csv.DictReader(io.open(f'{ROOT}/docs/source/product-image-map.csv',
                                     encoding='utf-8-sig')))
 
@@ -147,7 +185,7 @@ for coll, rs in sorted(by.items(), key=lambda kv: -len(kv[1])):
     sheets.append({'th':coll, 'en':en_name(rs), 'prefix':pre,
                    'code_real': coll in REAL, 'rows':len(rs), 'groups':groups})
 
-io.open(f'{SCR}/gen/sheets.json','w',encoding='utf-8').write(
+io.open(os.path.join(ROOT, 'docs', 'source', 'datasheet-modules.json'), 'w', encoding='utf-8').write(
     json.dumps(sheets, ensure_ascii=False, indent=1))
 print('คอลเลกชัน', len(sheets))
 print('มีสเปคจากเว็บ', sum(1 for s in sheets for g in s['groups'] if g['web']),
@@ -155,3 +193,56 @@ print('มีสเปคจากเว็บ', sum(1 for s in sheets for g in 
 codes = [m['code'] for s in sheets for g in s['groups'] for m in g['mods']]
 dup = [c for c,n in collections.Counter(codes).items() if n > 1]
 print('โมดูลรวม', len(codes), '· รหัสซ้ำ', len(dup), dup[:8])
+
+
+# ---------------------------------------------------------------------------
+# เขียน web/src/modules/datasheet/descriptions.ts ให้แอปใช้
+#   ข้อความเดียวกันอาจอยู่หลายหมวด · ยกให้หมวดที่มีสินค้ามากที่สุด เพราะนั่นคือเจ้าของเรื่อง
+# ---------------------------------------------------------------------------
+_by_coll = {}
+for r in imap:
+    sl = slug_of(r['หน้าสินค้า'])
+    if not sl or sl not in specs: continue
+    try: cnt = int(r['จำนวนตัวสินค้า'] or 0)
+    except ValueError: cnt = 0
+    _by_coll.setdefault(r['collection'], []).append((r['category'], sl, cnt))
+
+_out = {}
+for coll, items in _by_coll.items():
+    texts = dedupe([clean_spec(specs[sl]['spec']) for _, sl, _ in items])
+    owner = {}
+    for t in texts:
+        cands = [(cnt, cat) for cat, sl, cnt in items if clean_spec(specs[sl]['spec']) == t]
+        if cands: owner[t] = max(cands)[1]
+    for cat, sl, _ in items:
+        t = clean_spec(specs[sl]['spec'])
+        e = {'link': specs[sl]['link'], 'title': specs[sl]['title']}
+        if t and owner.get(t) == cat: e['text'] = t
+        _out[f'{coll}|{cat}'] = e
+
+_ts = """/**
+ * คำอธิบายและลิงก์หน้าสินค้า ดึงมาจาก chawcher.com ครั้งเดียว
+ *
+ * ทำไมเก็บเป็นไฟล์ ไม่ยิงเว็บสด
+ *   ข้อความพวกนี้เปลี่ยนปีละครั้งสองครั้ง แต่หน้า data sheet เปิดทุกวัน
+ *   ยิงสดแปลว่าเว็บล่มเมื่อไหร่ หน้านี้พังตาม และช้าลงโดยไม่ได้อะไรเพิ่ม
+ *
+ * ข้อความผ่านการตัดบรรทัดขนาด หัวข้อตัวพิมพ์ใหญ่ และเครื่องหมาย ** ของ markdown ออกแล้ว
+ * รุ่นที่มีหลายหน้าสินค้าแต่เนื้อหาซ้ำกัน เก็บไว้ที่หมวดที่มีสินค้ามากที่สุดหมวดเดียว
+ *
+ * key คือ "ชื่อคอลเลกชัน|ชื่อหมวด" ตรงกับที่ใบราคาใช้
+ * ไม่มี text = เว็บมีแต่บรรทัดขนาด ยังไม่มีข้อความขายของ
+ *
+ * ★ ไฟล์นี้สร้างด้วย docs/tools/build-datasheets.py อย่าแก้ด้วยมือ
+ */
+export type WebSpec = { link: string; title: string; text?: string };
+
+export const WEB_SPECS: Record<string, WebSpec> = """ + json.dumps(_out, ensure_ascii=False, indent=2) + """;
+
+export function webSpecOf(collection: string, category: string): WebSpec | undefined {
+  return WEB_SPECS[`${collection}|${category}`];
+}
+"""
+_dst = os.path.join(ROOT, 'web', 'src', 'modules', 'datasheet', 'descriptions.ts')
+io.open(_dst, 'w', encoding='utf-8').write(_ts)
+print('descriptions.ts · คีย์', len(_out), '· มีคำอธิบาย', sum(1 for v in _out.values() if 'text' in v))
