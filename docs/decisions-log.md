@@ -419,3 +419,5 @@ Bay บอกว่าเป็น "สูตรพิเศษ" คือบว
 | P1 | CI ทางการ | มี · ปี 2021 · Drive โฟลเดอร์ CC_Ci · navy `#2B4368` · teal `#83B7BF` · taupe `#958C7B` · off-white `#F7F8F8` · Gotham + Sukhumvit Set |
 | P2 | สีปุ่มหลัก | **Terracotta `#C1622E`** แทนส้มสด `#FF6833` (CI2) · ใช้เป็นสีเน้นตัวเดียว |
 | P3 | ฟอนต์บนเว็บ | Gotham/Sukhumvit ฝังเว็บไม่ได้ → ใช้ Montserrat + Anuphan แทน (รอ Bay ยืนยัน CI3) |
+| P4 | ป้าย A4 โชว์รูม | QR = ข้อความ "สวัสดี มาถึงโชว์รูมแล้ว" ไป @chawcher (friend path นับแค่เพื่อนใหม่) |
+| P5 | นับคนมาโชว์รูม | ระบบนับจาก webhook @chawcher · ไม่ตอบลูกค้า · เก็บเฉพาะข้อความแจ้งมาถึง · หน้า `/arrivals` (0041) · ขั้นตอน `docs/modules/showroom-page/4-setup-arrivals.md` |
