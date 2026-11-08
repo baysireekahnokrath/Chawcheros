@@ -1,4965 +1,5402 @@
 [
  {
+  "ambiguous": [
+   {
+    "cat": "โซฟา",
+    "codes": [
+     "PHX2100RA-T",
+     "PHX2100RA-T-H85"
+    ],
+    "subs": [
+     "3RT (170)",
+     "170 cm with Table"
+    ]
+   },
+   {
+    "cat": "โซฟา",
+    "codes": [
+     "PHX-CR125X166",
+     "PHX-CR125X166-H85"
+    ],
+    "subs": [
+     "CL (125*166)",
+     "เดย์เบด"
+    ]
+   }
+  ],
   "th": "ฟีนิกซ์",
   "en": "Phoenix",
   "prefix": "PHX",
-  "code_real": true,
-  "rows": 142,
+  "codeReal": true,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "PHX1900-3S",
       "sub": "3 ที่นั่ง",
-      "w": 190.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 190,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX1900-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 4
      },
      {
+      "code": "PHX2100RA-T",
       "sub": "3RT (170)",
-      "w": 170.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 170,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2100RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 4
      },
      {
+      "code": "PHX2300RA-T",
       "sub": "3RT (190)",
-      "w": 190.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 190,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2300RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2500RA-T",
       "sub": "3RT (210)",
-      "w": 210.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 210,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2500RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2700RA-T",
       "sub": "3RT (230)",
-      "w": 230.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 230,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2700RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2900RA-T",
       "sub": "3RT (250)",
-      "w": 250.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 250,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2900RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX3100RA-T",
       "sub": "3RT (270)",
-      "w": 270.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 270,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX3100RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX1500-2AR",
       "sub": "3S (150)",
-      "w": 150.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX1500-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX1700-2AR",
       "sub": "3S (170)",
-      "w": 170.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 170,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX1700-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX1900-2AR",
       "sub": "3S (190)",
-      "w": 190.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 190,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX1900-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2100-2AR",
       "sub": "3S (210)",
-      "w": 210.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 210,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2100-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2300-2AR",
       "sub": "3S (230)",
-      "w": 230.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 230,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2300-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2500-2AR",
       "sub": "3S (250)",
-      "w": 250.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 250,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2500-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2700-2AR",
       "sub": "3S (270)",
-      "w": 270.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 270,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2700-2AR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX1900RA-T",
       "sub": "150 cm with Table",
-      "w": 150.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX1900RA-T"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2100RA-T-H85",
       "sub": "170 cm with Table",
-      "w": 170.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 170,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2100RA-T-H85"
+      "woods": [],
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "PHX-CR125X166",
       "sub": "CL (125*166)",
-      "w": 125.0,
-      "d": 166.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 125,
+      "d": 166,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-CR125X166"
+      "woods": [],
+      "colours": [],
+      "variants": 4
      },
      {
+      "code": "PHX2130-21313585DB",
       "sub": "DAYBED เอียง W213 x D135 xH85",
-      "w": 213.0,
-      "d": 135.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 213,
+      "d": 135,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2130-DAYBED"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX1700R",
       "sub": "DAYBED-R/L (170)",
-      "w": 170.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 170,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX1700R"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2100R",
       "sub": "DAYBED-R/L (210)",
-      "w": 210.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 210,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2100R"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX2300R",
       "sub": "DAYBED-R/L (230)",
-      "w": 230.0,
-      "d": 96.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 230,
+      "d": 96,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX2300R"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX3550-L",
       "sub": "L-shape",
-      "w": 355.0,
-      "d": 166.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 355,
+      "d": 166,
+      "h": 85,
+      "seatH": null,
+      "backD": 96,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX3550-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX-CR100X166",
       "sub": "เดย์เบด",
-      "w": 100.0,
-      "d": 166.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 100,
+      "d": 166,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-CR100X166"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX-CR100X180",
       "sub": "เดย์เบด",
-      "w": 100.0,
-      "d": 180.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 100,
+      "d": 180,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-CR100X180"
+      "woods": [],
+      "colours": [],
+      "variants": 4
      },
      {
+      "code": "PHX-CR125X166-H85",
       "sub": "เดย์เบด",
-      "w": 125.0,
-      "d": 166.0,
-      "h": 85.0,
-      "d2": null,
-      "h2": null,
+      "w": 125,
+      "d": 166,
+      "h": 85,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-CR125X166-H85"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15061,
-     "title": "PHOENIX SOFA",
-     "spec": "3 SEAT\nW200 X D96 X H86 CM.\nW250 X D96 X H86 CM.\n*AVAILABLE W150-W270 CM.\nL SHAPE\nW310 X D166 X H86 CM.\nW355 X D166 X H86 CM.\n*AVAILABLE W250-W490 CM.\nโซฟาที่ดีและนั่งสบายที่สุด",
      "link": "https://chawcher.com/product/phoenix-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/phoenix1-sofa-website.jpg"
+     "title": "PHOENIX SOFA",
+     "text": "โซฟาที่ดีและนั่งสบายที่สุด"
     }
    },
    {
     "cat": "ตู้เก็บของ",
     "mods": [
      {
+      "code": "PHX1350-SB",
       "sub": "",
-      "w": 135.0,
+      "w": 135,
       "d": 43.5,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "PHX1350-SB"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15262,
-     "title": "PHOENIX SIDEBOARD",
-     "spec": "W135 X D43.5 X H80 CM.",
      "link": "https://chawcher.com/product/phoenix-sideboard/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/phoenix1-sideboard-website.jpg"
+     "title": "PHOENIX SIDEBOARD"
     }
    },
    {
     "cat": "โต๊ะกลาง",
     "mods": [
      {
+      "code": "PHX1200-CT",
       "sub": "",
-      "w": 120.0,
-      "d": 90.0,
-      "h": 40.0,
-      "d2": null,
-      "h2": null,
+      "w": 120,
+      "d": 90,
+      "h": 40,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ขาเหล็ก ท็อปไม้โอ๊ค",
        "ขาเหล็ก ท็อปหินสังเคราะห์"
       ],
-      "colour": [],
-      "code": "PHX1200-CT"
+      "colours": [],
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15239,
-     "title": "PHOENIX COFFEE TABLE",
-     "spec": "W90 X D120 X H35 CM.",
      "link": "https://chawcher.com/product/phoenix-coffee-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/phoenix1-coffee-table-website.jpg"
+     "title": "PHOENIX COFFEE TABLE"
     }
    },
    {
     "cat": "ที่พักหัว",
     "mods": [
      {
+      "code": "PHX-HEADREST",
       "sub": "",
-      "w": 62.0,
-      "d": 21.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 62,
+      "d": 21,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-HEADREST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX-HEADREST-2",
       "sub": "",
-      "w": 62.0,
-      "d": 14.0,
-      "h": 64.0,
-      "d2": null,
-      "h2": null,
+      "w": 62,
+      "d": 14,
+      "h": 64,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า B"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-HEADREST-2"
+      "woods": [],
+      "colours": [],
+      "variants": 1
      }
     ],
+    "image": null,
     "web": null
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "PHX-STOOL-M",
       "sub": "Size M",
-      "w": 125.0,
-      "d": 91.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 125,
+      "d": 91,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-STOOL-M"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PHX-STOOL-S",
       "sub": "Size S",
-      "w": 97.0,
-      "d": 61.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 97,
+      "d": 61,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PHX-STOOL-S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15206,
-     "title": "PHOENIX STOOL",
-     "spec": "S:\nW97 X D61 X H42 CM.\nM:\nW125 X D91 X H42 CM.",
      "link": "https://chawcher.com/product/phoenix-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/phoenix1-stool-website.jpg"
+     "title": "PHOENIX STOOL"
     }
    },
    {
     "cat": "หมอน",
     "mods": [
      {
+      "code": "PHX-CUSHION-55",
       "sub": "Size L",
-      "w": 55.0,
+      "w": 55,
       "d": null,
-      "h": 55.0,
-      "d2": null,
-      "h2": null,
+      "h": 55,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
-       "หนังแท้ ผสมผ้า",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ ผสมผ้า"
       ],
-      "wood": [
+      "woods": [
        "ไส้ไมโครเจล"
       ],
-      "colour": [],
-      "code": "PHX-CUSHION-55"
+      "colours": [],
+      "variants": 3
      },
      {
+      "code": "PHX-CUSHION-45",
       "sub": "Size S",
-      "w": 45.0,
+      "w": 45,
       "d": null,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
-       "หนังแท้ ผสมผ้า",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ ผสมผ้า"
       ],
-      "wood": [
+      "woods": [
        "ไส้ไมโครเจล"
       ],
-      "colour": [],
-      "code": "PHX-CUSHION-45"
+      "colours": [],
+      "variants": 3
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 142,
+  "modules": 33
  },
  {
+  "ambiguous": [],
   "th": "ขุนทอง",
   "en": "Koontong",
   "prefix": "KT",
-  "code_real": true,
-  "rows": 83,
+  "codeReal": true,
   "groups": [
    {
     "cat": "เก้าอี้",
     "mods": [
      {
+      "code": "KT630-CH",
       "sub": "",
-      "w": 63.0,
-      "d": 63.0,
-      "h": 77.0,
-      "d2": null,
-      "h2": null,
+      "w": 63,
+      "d": 63,
+      "h": 77,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT630-CH"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15001,
-     "title": "KOONTONG CHAIR",
-     "spec": "W63 X D63 X H77 CM.",
      "link": "https://chawcher.com/product/koontong-chair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/koontong2-chair-website-1.jpg"
+     "title": "KOONTONG CHAIR"
     }
    },
    {
     "cat": "ชั้นวางทีวี",
     "mods": [
      {
+      "code": "KT1500-TV",
       "sub": "",
-      "w": 150.0,
+      "w": 150,
       "d": 43.5,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KT1500-TV"
+      "variants": 2
      },
      {
+      "code": "KT1800-TV",
       "sub": "",
-      "w": 180.0,
+      "w": 180,
       "d": 43.5,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KT1800-TV"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15275,
-     "title": "KOONTONG TV CABINET (WALNUT)",
-     "spec": "W150 X D43.5 X H45 CM.\nW180 X D43.5 X H45 CM.\n**สินค้าต้องประกอบขาด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง**\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\nHighlight:\n– ออกแบบให้สามารถวางเครื่องเล่นเกมส์ / Andriod Box / Truevision ไว้ในช่องกลางได้ ทั้งนี้ยังสามารถกด remote ทะลุได้ เพราะการออกแบบที่มีการเว้นช่องว่างไว้\n– หน้าบานเป็น Solid Oak\n– Top ด้านบนออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F**** (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น",
      "link": "https://chawcher.com/product/koontong-tv-cabinet-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/koontong1-walnut-tv-website.jpg"
+     "title": "KOONTONG TV CABINET (WALNUT)",
+     "text": "สินค้าต้องประกอบขาด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\n– ออกแบบให้สามารถวางเครื่องเล่นเกมส์ / Andriod Box / Truevision ไว้ในช่องกลางได้ ทั้งนี้ยังสามารถกด remote ทะลุได้ เพราะการออกแบบที่มีการเว้นช่องว่างไว้\n– หน้าบานเป็น Solid Oak\n– Top ด้านบนออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "KT1400",
       "sub": "2 ที่นั่ง",
-      "w": 140.0,
-      "d": 80.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 140,
+      "d": 80,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT1400"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KT1600",
       "sub": "2 ที่นั่ง",
-      "w": 160.0,
-      "d": 80.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 160,
+      "d": 80,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT1600"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KT2100",
       "sub": "3 ที่นั่ง",
-      "w": 210.0,
-      "d": 80.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 210,
+      "d": 80,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT2100"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KT2300",
       "sub": "3 ที่นั่ง",
-      "w": 230.0,
-      "d": 80.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 230,
+      "d": 80,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT2300"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KT2400",
       "sub": "3 ที่นั่ง",
-      "w": 240.0,
-      "d": 80.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 240,
+      "d": 80,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT2400"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KT2100-L",
       "sub": "L-shape",
-      "w": 210.0,
-      "d": 150.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 210,
+      "d": 150,
+      "h": 87,
+      "seatH": null,
+      "backD": 80,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT2100-L"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      },
      {
+      "code": "KT2400-L",
       "sub": "L-shape",
-      "w": 240.0,
-      "d": 150.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 240,
+      "d": 150,
+      "h": 87,
+      "seatH": null,
+      "backD": 80,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT2400-L"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      },
      {
+      "code": "KT3200-L",
       "sub": "L-shape",
-      "w": 320.0,
-      "d": 150.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 320,
+      "d": 150,
+      "h": 87,
+      "seatH": null,
+      "backD": 80,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT3200-L"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      },
      {
+      "code": "KTC70X150",
       "sub": "เดย์เบด",
-      "w": 70.0,
-      "d": 150.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 70,
+      "d": 150,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KTC70X150"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      },
      {
+      "code": "KTC80X150",
       "sub": "เดย์เบด",
-      "w": 80.0,
-      "d": 150.0,
-      "h": 87.0,
-      "d2": null,
-      "h2": null,
+      "w": 80,
+      "d": 150,
+      "h": 87,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KTC80X150"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      }
     ],
+    "image": null,
     "web": {
-     "id": 15091,
-     "title": "KOONTONG SOFA",
-     "spec": "2S:\nW140 X D81 X H87 CM.\nW160 X D81 X H87 CM.\n3S:\nW180 X D81 X H87 CM.\nW210 X D81 X H87 CM.\nW230 X D81 X H87 CM.\nW240 X D81 X H87 CM.\nใช้วัสดุทีคงทนอย่าง pocket spring ทำให้ปัญหาเรื่องการยุบตัวของโซฟาเกิดขึ้นได้ยากขึ้น\nใช้วัสดุที่ Premium ที่สุดสำหรับโซฟาคือ ขนห่าน ทำให้ความรู้สึกของการนั่งโซฟาขุนทองนุ่มในระดับเดียวกับโซฟาระดับโลก",
      "link": "https://chawcher.com/product/koontong-sofa-2/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/koontong-1-sofa-website.jpg"
+     "title": "KOONTONG SOFA",
+     "text": "ใช้วัสดุทีคงทนอย่าง pocket spring ทำให้ปัญหาเรื่องการยุบตัวของโซฟาเกิดขึ้นได้ยากขึ้น\nใช้วัสดุที่ Premium ที่สุดสำหรับโซฟาคือ ขนห่าน ทำให้ความรู้สึกของการนั่งโซฟาขุนทองนุ่มในระดับเดียวกับโซฟาระดับโลก"
     }
    },
    {
     "cat": "ตู้เก็บของ",
     "mods": [
      {
+      "code": "KT1200-SB",
       "sub": "",
-      "w": 120.0,
+      "w": 120,
       "d": 43.5,
-      "h": 79.0,
-      "d2": null,
-      "h2": null,
+      "h": 79,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KT1200-SB"
+      "variants": 2
      },
      {
+      "code": "KT1600-SB",
       "sub": "",
-      "w": 160.0,
+      "w": 160,
       "d": 43.5,
-      "h": 79.0,
-      "d2": null,
-      "h2": null,
+      "h": 79,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KT1600-SB"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15253,
-     "title": "KOONTONG SIDEBOARD (WALNUT)",
-     "spec": "W160 D43.5 H79 cm\n**สินค้าต้องประกอบได้ด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง**\nออกแบบโดยดีไซน์เนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\nHighlight:\n– หน้าบานเป็น Solid Oak\n– Top ออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F**** (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น",
      "link": "https://chawcher.com/product/koontong-sideboard-walnut-2/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/koontong1-walnut-sideboardw160-website-1.jpg"
+     "title": "KOONTONG SIDEBOARD (WALNUT)",
+     "text": "สินค้าต้องประกอบได้ด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง\nออกแบบโดยดีไซน์เนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\n– หน้าบานเป็น Solid Oak\n– Top ออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น"
     }
    },
    {
     "cat": "เตียง",
     "mods": [
      {
+      "code": "KT1180-BED-35F",
       "sub": "3.5 ฟุต",
-      "w": 118.0,
-      "d": 218.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 118,
+      "d": 218,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT1180-BED-35F"
+      "woods": [],
+      "colours": [],
+      "variants": 3
      },
      {
+      "code": "KT1630-BED-5F",
       "sub": "5 ฟุต",
-      "w": 163.0,
-      "d": 218.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 163,
+      "d": 218,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT1630-BED-5F"
+      "woods": [],
+      "colours": [],
+      "variants": 3
      },
      {
+      "code": "KT1930-BED-6F",
       "sub": "6 ฟุต",
-      "w": 193.0,
-      "d": 218.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 193,
+      "d": 218,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT1930-BED-6F"
+      "woods": [],
+      "colours": [],
+      "variants": 3
      }
     ],
+    "image": null,
     "web": {
-     "id": 15295,
-     "title": "KOONTONG BED",
-     "spec": "KING:\n(6’) W193 X D218 X H90 CM.\nQUEEN:\n(5’) W163 X D218 X H90 CM.\n(3.5’) W118 X D218 X H90 CM.\n1.โครงสร้างแข็งแรงทนทานภายในทำด้วยไม้\n2.หัวเตียงและขอบเตียงหุ้มด้วยวัสดุซึ่งปลอดภัยต่อการใช้งาน เพื่อให้พื้นผิวที่นุ่มนวล",
      "link": "https://chawcher.com/product/koontong-bed/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/koontong-bed.jpg"
+     "title": "KOONTONG BED",
+     "text": "1.โครงสร้างแข็งแรงทนทานภายในทำด้วยไม้\n2.หัวเตียงและขอบเตียงหุ้มด้วยวัสดุซึ่งปลอดภัยต่อการใช้งาน เพื่อให้พื้นผิวที่นุ่มนวล"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "KT-STOOL",
       "sub": "",
-      "w": 71.0,
-      "d": 51.0,
-      "h": 46.0,
-      "d2": null,
-      "h2": null,
+      "w": 71,
+      "d": 51,
+      "h": 46,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ ฐานหนังเทียม",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ ฐานหนังเทียม"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KT-STOOL"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      }
     ],
+    "image": null,
     "web": {
-     "id": 15197,
-     "title": "KOONTONG STOOL",
-     "spec": "S:\nW70 X D50 X H46 CM.\nL:\nW70 X D80 X H46 CM.",
      "link": "https://chawcher.com/product/koontong-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/koontong1-stool-website.jpg"
+     "title": "KOONTONG STOOL"
     }
    }
-  ]
+  ],
+  "variants": 83,
+  "modules": 19
  },
  {
+  "ambiguous": [],
   "th": "ทากะ",
   "en": "Taka",
   "prefix": "TK",
-  "code_real": false,
-  "rows": 60,
+  "codeReal": false,
   "groups": [
    {
     "cat": "1 ที่นั่ง 1 แขน",
     "mods": [
      {
+      "code": "TK900-1R",
       "sub": "",
-      "w": 90.0,
-      "d": 90.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 90,
+      "d": 90,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK900-1R"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15069,
-     "title": "TAKA SOFA",
-     "spec": "3 SEAT\nW177 X D90 X H72 CM.\nW197 X D90 X H72 CM.\nL SHAPE\nW254 X D162 X H72 CM.\nW284 X D162 X H72 CM.",
      "link": "https://chawcher.com/product/taka-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/taka1-sofa-website-1.jpg"
+     "title": "TAKA SOFA"
     }
    },
    {
     "cat": "1 ที่นั่ง ไม่มีแขน",
     "mods": [
      {
+      "code": "TK830-1NA",
       "sub": "",
-      "w": 83.0,
-      "d": 90.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 83,
+      "d": 90,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK830-1NA"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15069,
-     "title": "TAKA SOFA",
-     "spec": "3 SEAT\nW177 X D90 X H72 CM.\nW197 X D90 X H72 CM.\nL SHAPE\nW254 X D162 X H72 CM.\nW284 X D162 X H72 CM.",
      "link": "https://chawcher.com/product/taka-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/taka1-sofa-website-1.jpg"
+     "title": "TAKA SOFA"
     }
    },
    {
     "cat": "3 ที่นั่ง ไม่มีแขน",
     "mods": [
      {
+      "code": "TK1800-3NA",
       "sub": "",
-      "w": 180.0,
-      "d": 90.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 180,
+      "d": 90,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK1800-3NA"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15069,
-     "title": "TAKA SOFA",
-     "spec": "3 SEAT\nW177 X D90 X H72 CM.\nW197 X D90 X H72 CM.\nL SHAPE\nW254 X D162 X H72 CM.\nW284 X D162 X H72 CM.",
      "link": "https://chawcher.com/product/taka-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/taka1-sofa-website-1.jpg"
+     "title": "TAKA SOFA"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "TK1700",
       "sub": "",
-      "w": 170.0,
-      "d": 92.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 170,
+      "d": 92,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK1700"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "TK1800-2S",
       "sub": "2 ที่นั่ง",
-      "w": 180.0,
-      "d": 90.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 180,
+      "d": 90,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK1800-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "TK2000-2S",
       "sub": "2 ที่นั่ง",
-      "w": 200.0,
-      "d": 90.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 200,
+      "d": 90,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK2000-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "TK2540-L",
       "sub": "L-shape",
-      "w": 254.0,
-      "d": 162.0,
-      "h": 72.0,
-      "d2": 90.0,
-      "h2": 46.0,
+      "w": 254,
+      "d": 162,
+      "h": 72,
+      "seatH": null,
+      "backD": 90,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK2540-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "TK2840-L",
       "sub": "L-shape",
-      "w": 284.0,
-      "d": 162.0,
-      "h": 72.0,
-      "d2": 90.0,
-      "h2": 46.0,
+      "w": 284,
+      "d": 162,
+      "h": 72,
+      "seatH": null,
+      "backD": 90,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK2840-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "TK3150-L",
       "sub": "L-shape",
-      "w": 315.0,
-      "d": 162.0,
-      "h": 72.0,
-      "d2": 90.0,
-      "h2": 46.0,
+      "w": 315,
+      "d": 162,
+      "h": 72,
+      "seatH": null,
+      "backD": 90,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK3150-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15069,
-     "title": "TAKA SOFA",
-     "spec": "3 SEAT\nW177 X D90 X H72 CM.\nW197 X D90 X H72 CM.\nL SHAPE\nW254 X D162 X H72 CM.\nW284 X D162 X H72 CM.",
      "link": "https://chawcher.com/product/taka-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/taka1-sofa-website-1.jpg"
+     "title": "TAKA SOFA"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "TK1000-ST",
       "sub": "",
-      "w": 100.0,
-      "d": 80.0,
-      "h": 46.0,
-      "d2": null,
-      "h2": null,
+      "w": 100,
+      "d": 80,
+      "h": 46,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK1000-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "TK850-ST",
       "sub": "",
-      "w": 85.0,
-      "d": 62.0,
-      "h": 46.0,
-      "d2": null,
-      "h2": null,
+      "w": 85,
+      "d": 62,
+      "h": 46,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK850-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15205,
-     "title": "TAKA STOOL",
-     "spec": "W85 X D62 X H44 CM.",
      "link": "https://chawcher.com/product/taka-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/taka1-stool-website.jpg"
+     "title": "TAKA STOOL"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "TK1180-AC",
       "sub": "",
-      "w": 118.0,
-      "d": 90.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": 46.0,
+      "w": 118,
+      "d": 90,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "TK1180-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15069,
-     "title": "TAKA SOFA",
-     "spec": "3 SEAT\nW177 X D90 X H72 CM.\nW197 X D90 X H72 CM.\nL SHAPE\nW254 X D162 X H72 CM.\nW284 X D162 X H72 CM.",
      "link": "https://chawcher.com/product/taka-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/taka1-sofa-website-1.jpg"
+     "title": "TAKA SOFA"
     }
    }
-  ]
+  ],
+  "variants": 60,
+  "modules": 12
  },
  {
+  "ambiguous": [],
   "th": "อีมู",
   "en": "Emu",
   "prefix": "EMU",
-  "code_real": false,
-  "rows": 46,
+  "codeReal": false,
   "groups": [
    {
     "cat": "เก้าอี้",
     "mods": [
      {
+      "code": "EMU520-CH",
       "sub": "",
-      "w": 52.0,
-      "d": 53.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "w": 52,
+      "d": 53,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "EMU520-CH"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15013,
-     "title": "EMU CHAIR (WALNUT)",
-     "spec": "W52 X D53 X H80 CM.\nออกแบบมาเพื่อความสบายของทุกคน",
      "link": "https://chawcher.com/product/emu-chair-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/emu3-walnut-chair-website-1.jpg"
+     "title": "EMU CHAIR (WALNUT)",
+     "text": "ออกแบบมาเพื่อความสบายของทุกคน"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "EMU1450-2S",
       "sub": "2 ที่นั่ง",
-      "w": 145.0,
-      "d": 82.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 145,
+      "d": 82,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ พนักพิงผ้า",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ พนักพิงผ้า"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU1450-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      },
      {
+      "code": "EMU1700-2.5S",
       "sub": "2.5 ที่นั่ง",
-      "w": 170.0,
-      "d": 82.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 170,
+      "d": 82,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ พนักพิงผ้า",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ พนักพิงผ้า"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU1700-25"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      },
      {
+      "code": "EMU1900-3S",
       "sub": "3 ที่นั่ง",
-      "w": 190.0,
-      "d": 82.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 190,
+      "d": 82,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ พนักพิงผ้า",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ พนักพิงผ้า"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU1900-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      }
     ],
+    "image": null,
     "web": {
-     "id": 15120,
-     "title": "EMU SOFA",
-     "spec": "Variation\n2S: W145 X D82 X H83 CM.\n2.5S: W170 X D82 X H83 CM.\n3S: W190 X D82 X H83 CM.\nด้วยประสบการณ์การผลิตโซฟาส่งออกญี่ปุ่นมากว่า 28 ปี ทำให้เรามั่นใจในคุณภาพโซฟาหนังทุกตัวที่ผลิตออกมาภายในแบรนด์ ฌ เฌอ ว่าเราจะสามารถผลิตโซฟาที่คุณภาพดีที่สุดเพื่อส่งมอบให้กับลูกค้าเพื่อบ้านของทุกคน เราเลือกผ้าจาก supplier ทั่วโลกเพื่อสร้างความแตกต่างให้กับเฟอร์นิเจอร์ของ ฌ เฌอ และเพื่อทำให้เฟอร์นิเจอร์ตัวนั้นๆ พิเศษสำหรับบ้านของคุณ",
      "link": "https://chawcher.com/product/emu-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/emu1-sofa-website-1.jpg"
+     "title": "EMU SOFA",
+     "text": "Variation\nด้วยประสบการณ์การผลิตโซฟาส่งออกญี่ปุ่นมากว่า 28 ปี ทำให้เรามั่นใจในคุณภาพโซฟาหนังทุกตัวที่ผลิตออกมาภายในแบรนด์ ฌ เฌอ ว่าเราจะสามารถผลิตโซฟาที่คุณภาพดีที่สุดเพื่อส่งมอบให้กับลูกค้าเพื่อบ้านของทุกคน เราเลือกผ้าจาก supplier ทั่วโลกเพื่อสร้างความแตกต่างให้กับเฟอร์นิเจอร์ของ ฌ เฌอ และเพื่อทำให้เฟอร์นิเจอร์ตัวนั้นๆ พิเศษสำหรับบ้านของคุณ"
     }
    },
    {
     "cat": "เตียง",
     "mods": [
      {
+      "code": "EMU1620-BED-35F",
       "sub": "3.5 ฟุต",
-      "w": 162.0,
-      "d": 219.0,
-      "h": 107.0,
-      "d2": null,
-      "h2": null,
+      "w": 162,
+      "d": 219,
+      "h": 107,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU1620-BED-35F"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "EMU2070-BED-5F",
       "sub": "5 ฟุต",
-      "w": 207.0,
-      "d": 219.0,
-      "h": 107.0,
-      "d2": null,
-      "h2": null,
+      "w": 207,
+      "d": 219,
+      "h": 107,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU2070-BED-5F"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "EMU2370-BED-6F",
       "sub": "6 ฟุต",
-      "w": 237.0,
-      "d": 219.0,
-      "h": 107.0,
-      "d2": null,
-      "h2": null,
+      "w": 237,
+      "d": 219,
+      "h": 107,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU2370-BED-6F"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15296,
-     "title": "EMU BED",
-     "spec": "KING:\n(6’) W237 X D219 X H107 CM.\nQUEEN:\n(5’) W207 X D219 X H107 CM.\n(3.5’) W162 X D219 X H107 CM.\nหัวเตียงวัสดุเป็นโครงไม้หุ้มด้วยผ้า หนังสังเคราะห์ หรือ หนังแท้ (ราคาขึ้นอยู่กับวัสดุที่เลือก)",
      "link": "https://chawcher.com/product/emu-bed/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/emu-bed.jpg"
+     "title": "EMU BED",
+     "text": "หัวเตียงวัสดุเป็นโครงไม้หุ้มด้วยผ้า หนังสังเคราะห์ หรือ หนังแท้ (ราคาขึ้นอยู่กับวัสดุที่เลือก)"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "EMU620-ST",
       "sub": "",
-      "w": 62.0,
-      "d": 43.0,
-      "h": 39.0,
-      "d2": null,
-      "h2": null,
+      "w": 62,
+      "d": 43,
+      "h": 39,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU620-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15193,
-     "title": "EMU STOOL",
-     "spec": "W62 X D43 X H39 CM.",
      "link": "https://chawcher.com/product/emu-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/emu1-stool-website.jpg"
+     "title": "EMU STOOL"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "EMU900-AC",
       "sub": "",
-      "w": 90.0,
-      "d": 82.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 90,
+      "d": 82,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะหนังแท้ พนักพิงผ้า",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะหนังแท้ พนักพิงผ้า"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "EMU900-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      }
     ],
+    "image": null,
     "web": {
-     "id": 15148,
-     "title": "EMU ARMCHAIR",
-     "spec": "W89 X D82 X H83 CM.",
      "link": "https://chawcher.com/product/emu-armchair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/emu1-armchair-website-1.jpg"
+     "title": "EMU ARMCHAIR"
     }
    }
-  ]
+  ],
+  "variants": 46,
+  "modules": 9
  },
  {
+  "ambiguous": [
+   {
+    "cat": "สตูล",
+    "codes": [
+     "PF760-ST",
+     "PF760-ST-H41"
+    ],
+    "subs": [
+     "—",
+     "—"
+    ]
+   }
+  ],
   "th": "พัฟฟิน",
   "en": "Puffin",
   "prefix": "PF",
-  "code_real": false,
-  "rows": 40,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "PF920-11S",
       "sub": "1 ที่นั่ง 1 แขน",
-      "w": 92.0,
-      "d": 83.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 92,
+      "d": 83,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF920-11"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PF1100-11S",
       "sub": "1 ที่นั่ง 1 แขน",
-      "w": 110.0,
-      "d": 83.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 110,
+      "d": 83,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF1100-11"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PF810-1NAS",
       "sub": "1 ที่นั่ง ไม่มีแขน",
-      "w": 81.0,
-      "d": 83.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 81,
+      "d": 83,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF810-1"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PF1840-3S",
       "sub": "3 ที่นั่ง",
-      "w": 184.0,
-      "d": 83.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 184,
+      "d": 83,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF1840-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PF2200-3S",
       "sub": "3 ที่นั่ง",
-      "w": 220.0,
-      "d": 83.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 220,
+      "d": 83,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF2200-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15089,
-     "title": "PUFFIN SOFA",
-     "spec": "ARMLESS :\nW81 X D83 X H78 CM.\n1S-1ARM :\nW92 X D83 X H78 CM.\nW110 X D83 X H78 CM.\nARMCHAIR :\nW109 X D83 X H78 CM.\n3S :\nW182 X D83 X H78 CM.\nW220 X D83 X H78 CM.\nW265 X D83 X H78 CM.\nพัฟฟินโซฟา เป็น modular sofa ที่สามารถเลือกได้หลากหลายรูปแบบและหลายขนาดขึ้นอยู่กับความต้องการของลูกค้า\nและขนาดพื้นที่ของลูกค้าที่เหมาะสม\nโครงสร้างเป็นไม้เนื้อแข็ง\nฟองน้ำบุอย่างดี พร้อมผ้าที่มีให้เลือกหลากหลายมากมาย\nโซฟา 1 ที่นั่ง 1 แขน (สามารถสลับซ้ายขวาได้) เลือกผ้ากับทางร้านผ่าน Line Official หรือ Showroom\nเมื่อประกอบกับโซฟา 1 ที่นั่งแบบไม่มีแขน จะออกมาเป็นโซฟา 3 ที่นั่งที่กว้างขวางนั่งสบาย เข้ากับ สรีระของคนเอเชียที่สุด\nดีไซน์องศาการนั่งที่เองนิดหน่อย เบาะนั่ง slope เล็กน้อย ทำให้ การนั่งสบาย พร้อมกับพนักพิงที่ดีไซน์โค้งรับหลังล่าง ทำให้นั่งแล้วไม่เมื่อย",
      "link": "https://chawcher.com/product/puffin-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/puffin1-sofa-website-2.jpg"
+     "title": "PUFFIN SOFA",
+     "text": "พัฟฟินโซฟา เป็น modular sofa ที่สามารถเลือกได้หลากหลายรูปแบบและหลายขนาดขึ้นอยู่กับความต้องการของลูกค้า\nและขนาดพื้นที่ของลูกค้าที่เหมาะสม\nโครงสร้างเป็นไม้เนื้อแข็ง\nฟองน้ำบุอย่างดี พร้อมผ้าที่มีให้เลือกหลากหลายมากมาย\nโซฟา 1 ที่นั่ง 1 แขน (สามารถสลับซ้ายขวาได้) เลือกผ้ากับทางร้านผ่าน Line Official หรือ Showroom\nเมื่อประกอบกับโซฟา 1 ที่นั่งแบบไม่มีแขน จะออกมาเป็นโซฟา 3 ที่นั่งที่กว้างขวางนั่งสบาย เข้ากับ สรีระของคนเอเชียที่สุด\nดีไซน์องศาการนั่งที่เองนิดหน่อย เบาะนั่ง slope เล็กน้อย ทำให้ การนั่งสบาย พร้อมกับพนักพิงที่ดีไซน์โค้งรับหลังล่าง ทำให้นั่งแล้วไม่เมื่อย"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "PF760-ST",
       "sub": "",
-      "w": 76.0,
-      "d": 57.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 76,
+      "d": 57,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF760-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "PF760-ST-H41",
       "sub": "",
-      "w": 76.0,
-      "d": 76.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 76,
+      "d": 76,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF760-ST-H41"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15208,
-     "title": "PUFFIN STOOL",
-     "spec": "W76 X D57 X H41 CM.",
      "link": "https://chawcher.com/product/puffin-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/puffin1-stool-website.jpg"
+     "title": "PUFFIN STOOL"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "PF1030-AC",
       "sub": "",
-      "w": 103.0,
-      "d": 83.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 103,
+      "d": 83,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "PF1030-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15089,
-     "title": "PUFFIN SOFA",
-     "spec": "ARMLESS :\nW81 X D83 X H78 CM.\n1S-1ARM :\nW92 X D83 X H78 CM.\nW110 X D83 X H78 CM.\nARMCHAIR :\nW109 X D83 X H78 CM.\n3S :\nW182 X D83 X H78 CM.\nW220 X D83 X H78 CM.\nW265 X D83 X H78 CM.\nพัฟฟินโซฟา เป็น modular sofa ที่สามารถเลือกได้หลากหลายรูปแบบและหลายขนาดขึ้นอยู่กับความต้องการของลูกค้า\nและขนาดพื้นที่ของลูกค้าที่เหมาะสม\nโครงสร้างเป็นไม้เนื้อแข็ง\nฟองน้ำบุอย่างดี พร้อมผ้าที่มีให้เลือกหลากหลายมากมาย\nโซฟา 1 ที่นั่ง 1 แขน (สามารถสลับซ้ายขวาได้) เลือกผ้ากับทางร้านผ่าน Line Official หรือ Showroom\nเมื่อประกอบกับโซฟา 1 ที่นั่งแบบไม่มีแขน จะออกมาเป็นโซฟา 3 ที่นั่งที่กว้างขวางนั่งสบาย เข้ากับ สรีระของคนเอเชียที่สุด\nดีไซน์องศาการนั่งที่เองนิดหน่อย เบาะนั่ง slope เล็กน้อย ทำให้ การนั่งสบาย พร้อมกับพนักพิงที่ดีไซน์โค้งรับหลังล่าง ทำให้นั่งแล้วไม่เมื่อย",
      "link": "https://chawcher.com/product/puffin-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/puffin1-sofa-website-2.jpg"
+     "title": "PUFFIN SOFA"
     }
    }
-  ]
+  ],
+  "variants": 40,
+  "modules": 8
  },
  {
+  "ambiguous": [],
   "th": "สวอน",
   "en": "Swan",
   "prefix": "SW",
-  "code_real": false,
-  "rows": 39,
+  "codeReal": false,
   "groups": [
    {
     "cat": "เก้าอี้",
     "mods": [
      {
+      "code": "SW520-CH",
       "sub": "",
-      "w": 52.0,
-      "d": 60.0,
-      "h": 79.0,
-      "d2": null,
-      "h2": null,
+      "w": 52,
+      "d": 60,
+      "h": 79,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "SW520-CH"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 14996,
-     "title": "SWAN CHAIR",
-     "spec": "W52 X D60 X H79 CM.",
      "link": "https://chawcher.com/product/swan-chair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan1-chair-website-1.jpg"
+     "title": "SWAN CHAIR"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "SW3450-DBHB",
       "sub": "L-shape (Daybed High back)",
-      "w": 345.0,
-      "d": 185.0,
-      "h": 81.0,
-      "d2": 105.0,
-      "h2": 66.0,
+      "w": 345,
+      "d": 185,
+      "h": 81,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "SW3450-LSHAPE"
+      "woods": [],
+      "colours": [],
+      "variants": 4
      }
     ],
+    "image": null,
     "web": {
-     "id": 15065,
-     "title": "SWAN SOFA",
-     "spec": "3 SEAT\nW204 X D105 X H86 CM.\nW240 X D105 X H86 CM.\nL SHAPE\nW316 X D179 X H86 CM.\nW343 X D185 X H88 CM.\nDAYBED\nW102 X 179 X 86 CM.",
      "link": "https://chawcher.com/product/swan-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan1-sofa-website-1.jpg"
+     "title": "SWAN SOFA"
     }
    },
    {
     "cat": "โต๊ะกลาง",
     "mods": [
      {
+      "code": "SW1000-CT",
       "sub": "",
-      "w": 100.0,
-      "d": 40.0,
-      "h": 31.0,
-      "d2": null,
-      "h2": null,
+      "w": 100,
+      "d": 40,
+      "h": 31,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ท็อปกระจก",
        "ท็อปเหล็ก"
       ],
-      "wood": [
+      "woods": [
        "เหล็ก"
       ],
-      "colour": [
+      "colours": [
        "สีดำ",
        "สีเทาเข้ม"
       ],
-      "code": "SW1000-CT"
+      "variants": 3
      }
     ],
+    "image": null,
     "web": {
-     "id": 15238,
-     "title": "SWAN COFFEE TABLE",
-     "spec": "W100 X D40 X H31 CM.\nฌ เฌอ | โต๊ะกลาง สวอน (Swan Coffee Table) เหล็ก หรือ กระจก เลือกสีได้\nSwan Coffee Table ของ Chaw Cher Modern Collection ที่ผสมผสานความแข็งแกร่งคงทนของเหล็ก\nกับความโค้งอ่อนช้อยของ design ที่ผ่านการคิดและร่วมงานกับทีมงานผลิตชั้นนำทำให้ Swan Coffee Table\nเหมาะแก่การใช้งานในทุกพื้นที่ ไม่ว่าจะเป็นห้องรับแขกในบ้าน หรือแม้กระทั้ง lobby ของ โรงแรม",
      "link": "https://chawcher.com/product/swan-coffee-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan-coffee-table-website-1.jpg"
+     "title": "SWAN COFFEE TABLE",
+     "text": "ฌ เฌอ | โต๊ะกลาง สวอน (Swan Coffee Table) เหล็ก หรือ กระจก เลือกสีได้\nSwan Coffee Table ของ Chaw Cher Modern Collection ที่ผสมผสานความแข็งแกร่งคงทนของเหล็ก\nกับความโค้งอ่อนช้อยของ design ที่ผ่านการคิดและร่วมงานกับทีมงานผลิตชั้นนำทำให้ Swan Coffee Table\nเหมาะแก่การใช้งานในทุกพื้นที่ ไม่ว่าจะเป็นห้องรับแขกในบ้าน หรือแม้กระทั้ง lobby ของ โรงแรม"
     }
    },
    {
     "cat": "โต๊ะข้างเตียง",
     "mods": [
      {
+      "code": "SW-NT",
       "sub": "",
       "w": null,
       "d": null,
       "h": null,
-      "d2": null,
-      "h2": null,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "เหล็ก / กระจก"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "SW-NT"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15228,
-     "title": "SWAN SIDE TABLE",
-     "spec": "W40 X D35X H48 CM.",
      "link": "https://chawcher.com/product/swan-side-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan-side-table-website.jpg"
+     "title": "SWAN SIDE TABLE"
     }
    },
    {
     "cat": "โต๊ะทานข้าว",
     "mods": [
      {
+      "code": "SW1800-DT",
       "sub": "",
-      "w": 180.0,
-      "d": 90.0,
-      "h": 74.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 90,
+      "h": 74,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "เหล็ก / กระจก",
        "เหล็ก / หินสังเคราะห์"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "SW1800-DT"
+      "variants": 2
      },
      {
+      "code": "SW2100-DT",
       "sub": "",
-      "w": 210.0,
-      "d": 95.0,
-      "h": 74.0,
-      "d2": null,
-      "h2": null,
+      "w": 210,
+      "d": 95,
+      "h": 74,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "เหล็ก / กระจก",
        "เหล็ก / หินสังเคราะห์"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "SW2100-DT"
+      "variants": 2
      },
      {
+      "code": "SW2400-DT",
       "sub": "",
-      "w": 240.0,
-      "d": 105.0,
-      "h": 74.0,
-      "d2": null,
-      "h2": null,
+      "w": 240,
+      "d": 105,
+      "h": 74,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "เหล็ก / กระจก",
        "เหล็ก / หินสังเคราะห์"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "SW2400-DT"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15226,
-     "title": "SWAN DINING TABLE",
-     "spec": "W180 X D90 X H74 CM.\nW210 X D100 X H74 CM.\nW240 X D110 X H74 CM.",
      "link": "https://chawcher.com/product/swan-dining-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan-dining-table-website-1.jpg"
+     "title": "SWAN DINING TABLE"
     }
    },
    {
     "cat": "เลาจ์แชร์",
     "mods": [
      {
+      "code": "SW750-LC",
       "sub": "",
-      "w": 75.0,
-      "d": 70.0,
-      "h": 68.0,
-      "d2": null,
-      "h2": null,
+      "w": 75,
+      "d": 70,
+      "h": 68,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "SW750-LC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15160,
-     "title": "SWAN COZY CHAIR",
-     "spec": "W75 X D76 X H75 CM.",
      "link": "https://chawcher.com/product/swan-cozy-chair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan1-cozychair-website-1.jpg"
+     "title": "SWAN COZY CHAIR"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "SW1050-ST-L",
       "sub": "Size L",
-      "w": 105.0,
-      "d": 105.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 105,
+      "d": 105,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "SW1050-ST-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "SW1250-ST-M",
       "sub": "Size M",
-      "w": 125.0,
-      "d": 75.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 125,
+      "d": 75,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "SW1250-ST-M"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "SW700-ST-S",
       "sub": "Size S",
-      "w": 70.0,
-      "d": 70.0,
-      "h": 41.0,
-      "d2": null,
-      "h2": null,
+      "w": 70,
+      "d": 70,
+      "h": 41,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "SW700-ST-S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15207,
-     "title": "SWAN STOOL",
-     "spec": "S:\nW50 X D70 X H41 CM.\nM:\nW80 X D70 X H41 CM.\nL:\nW125 X D70 X H41 CM.",
      "link": "https://chawcher.com/product/swan-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/swan1-stool-website-1.jpg"
+     "title": "SWAN STOOL"
     }
    }
-  ]
+  ],
+  "variants": 39,
+  "modules": 11
  },
  {
+  "ambiguous": [
+   {
+    "cat": "เตียง",
+    "codes": [
+     "NA1750-BED-5F",
+     "NA1750-BED-5F-H110"
+    ],
+    "subs": [
+     "5 ฟุต",
+     "5 ฟุต"
+    ]
+   },
+   {
+    "cat": "เตียง",
+    "codes": [
+     "NA2050-BED-6F",
+     "NA2050-BED-6F-H110"
+    ],
+    "subs": [
+     "6 ฟุต",
+     "6 ฟุต"
+    ]
+   }
+  ],
   "th": "นางแอ่น",
   "en": "Nang Aaen",
   "prefix": "NA",
-  "code_real": false,
-  "rows": 37,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "NA1580-2S",
       "sub": "2 ที่นั่ง",
-      "w": 158.0,
-      "d": 87.0,
-      "h": 73.0,
-      "d2": null,
-      "h2": null,
+      "w": 158,
+      "d": 87,
+      "h": 73,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NA1580-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "NA2000-3S",
       "sub": "3 ที่นั่ง",
-      "w": 200.0,
-      "d": 87.0,
-      "h": 73.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 87,
+      "h": 73,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NA2000-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15118,
-     "title": "NANGAAEN SOFA",
-     "spec": "W158 X D87 X H73 CM.\nW200 X D87 X H73 CM.\n– หนึ่งในโซฟาสไตล์เกาหลีที่ละมุนที่สุดในตลาด\n– การเย็นที่เนี๊ยบ โค้งที่พอดิบพอดีและเป็นมาตรฐานเหมือนกันทุกตัว\n– แน่นแต่นุ่มคือลักษณะการนั่งของ โซฟานางแอ่น",
      "link": "https://chawcher.com/product/nangaaen-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangaaen1-sofa-website-1.jpg"
+     "title": "NANGAAEN SOFA",
+     "text": "– หนึ่งในโซฟาสไตล์เกาหลีที่ละมุนที่สุดในตลาด\n– การเย็นที่เนี๊ยบ โค้งที่พอดิบพอดีและเป็นมาตรฐานเหมือนกันทุกตัว\n– แน่นแต่นุ่มคือลักษณะการนั่งของ โซฟานางแอ่น"
     }
    },
    {
     "cat": "เตียง",
     "mods": [
      {
+      "code": "NA1750-BED-5F-BASE",
       "sub": "5 ฟุต (เฉพาะฐานเตียง)",
-      "w": 175.0,
-      "d": 211.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 175,
+      "d": 211,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NA1750-BED-5F-BASE"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NA1750-BED-5F",
       "sub": "5 ฟุต",
-      "w": 175.0,
-      "d": 211.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 175,
+      "d": 211,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NA1750-BED-5F"
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "NA1750-BED-5F-H110",
       "sub": "5 ฟุต",
-      "w": 175.0,
-      "d": 211.0,
-      "h": 110.0,
-      "d2": null,
-      "h2": null,
+      "w": 175,
+      "d": 211,
+      "h": 110,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NA1750-BED-5F-H110"
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "NA2050-BED-6F-BASE",
       "sub": "6 ฟุต (เฉพาะฐานเตียง)",
-      "w": 205.0,
-      "d": 211.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 205,
+      "d": 211,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NA2050-BED-6F-BASE"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NA2050-BED-6F",
       "sub": "6 ฟุต",
-      "w": 205.0,
-      "d": 211.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 205,
+      "d": 211,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NA2050-BED-6F"
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "NA2050-BED-6F-H110",
       "sub": "6 ฟุต",
-      "w": 205.0,
-      "d": 211.0,
-      "h": 110.0,
-      "d2": null,
-      "h2": null,
+      "w": 205,
+      "d": 211,
+      "h": 110,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NA2050-BED-6F-H110"
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15297,
-     "title": "NANGAAEN BED",
-     "spec": "KING (HIGH): (6’)W205 X D211 X H110 CM.\nQUEEN (HIGH): (5’)W175 X D211 X H110 CM.\nKING (LOW): (6’)W205 X D211 X H90 CM.\nQUEEN (LOW): (5’)W175 X D211 X H90 CM.\nKING (NO HEADBOARD) (6’)W193.2 X D202.5 X H20 CM.\nQUEEN (NO HEADBOARD) (5’)W163.2 X D202.5 X H20 CM.\nเตียงนางแอ่น เป็นเตียงที่ได้รับความนิยมสูงมาก เนื่องจากยกฐานสูงพอดีกับเมื่อวางฟูกแล้วทำให้ลุกนั่งสะดวก ทั้งยังทำความสะอาดใต้เตียงได้ง่าย\nการผลิตที่เนี๊ยบระดับผู้ผลิตจากญี่ปุ่น ที่ผ่านการส่งต่อกันมาถึงรุ่นที่ 3 โครงไม้นำเข้าสำเร็จรูป ผ่านการผลิตจากเครื่องจักรทำให้ได้มาตรฐานเหมือนกันทุกตัว ยกฐานทำให้ทำความสะอาดได้ง่าย\nการเย็บหุ้มบุหัวเตียงจากโรงงานที่ผลิตและส่งออกไปมากกว่า 15 ประเทศทั่วโลก งานเนี๊ยบมาตรฐานระดับโลก ต้องยกให้ ฌ เฌอ นะครับ",
      "link": "https://chawcher.com/product/nangaaen-bed/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangaaen.jpg"
+     "title": "NANGAAEN BED",
+     "text": "เตียงนางแอ่น เป็นเตียงที่ได้รับความนิยมสูงมาก เนื่องจากยกฐานสูงพอดีกับเมื่อวางฟูกแล้วทำให้ลุกนั่งสะดวก ทั้งยังทำความสะอาดใต้เตียงได้ง่าย\nการผลิตที่เนี๊ยบระดับผู้ผลิตจากญี่ปุ่น ที่ผ่านการส่งต่อกันมาถึงรุ่นที่ 3 โครงไม้นำเข้าสำเร็จรูป ผ่านการผลิตจากเครื่องจักรทำให้ได้มาตรฐานเหมือนกันทุกตัว ยกฐานทำให้ทำความสะอาดได้ง่าย\nการเย็บหุ้มบุหัวเตียงจากโรงงานที่ผลิตและส่งออกไปมากกว่า 15 ประเทศทั่วโลก งานเนี๊ยบมาตรฐานระดับโลก ต้องยกให้ ฌ เฌอ นะครับ"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "NA1070-AC",
       "sub": "",
-      "w": 107.0,
-      "d": 87.0,
-      "h": 73.0,
-      "d2": null,
-      "h2": null,
+      "w": 107,
+      "d": 87,
+      "h": 73,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NA1070-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15150,
-     "title": "NANGAAEN ARMCHAIR",
-     "spec": "W107 X D87 X H73 CM.\n– หนึ่งในโซฟาสไตล์เกาหลีที่ละมุนที่สุดในตลาด\n– การเย็นที่เนี๊ยบ โค้งที่พอดิบพอดีและเป็นมาตรฐานเหมือนกันทุกตัว\n– แน่นแต่นุ่มคือลักษณะการนั่งของ โซฟานางแอ่น",
      "link": "https://chawcher.com/product/nangaaen-armchair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangaan2-armchair-website-3.jpg"
+     "title": "NANGAAEN ARMCHAIR"
     }
    }
-  ]
+  ],
+  "variants": 37,
+  "modules": 9
  },
  {
+  "ambiguous": [],
   "th": "อัญชัน",
   "en": "Aunchan",
   "prefix": "AC",
-  "code_real": false,
-  "rows": 30,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "AC850-1S",
       "sub": "1 ที่นั่ง",
-      "w": 85.0,
-      "d": 91.0,
-      "h": 93.0,
-      "d2": null,
-      "h2": null,
+      "w": 85,
+      "d": 91,
+      "h": 93,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "AC850-1S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "AC1550-2S",
       "sub": "2 ที่นั่ง",
-      "w": 155.0,
-      "d": 91.0,
-      "h": 93.0,
-      "d2": null,
-      "h2": null,
+      "w": 155,
+      "d": 91,
+      "h": 93,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "AC1550-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "AC1800-3S",
       "sub": "3 ที่นั่ง",
-      "w": 180.0,
-      "d": 91.0,
-      "h": 93.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 91,
+      "h": 93,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "AC1800-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "AC2000-3S",
       "sub": "3 ที่นั่ง",
-      "w": 200.0,
-      "d": 91.0,
-      "h": 93.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 91,
+      "h": 93,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "AC2000-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15145,
-     "title": "AUNCHAN ARMCHAIR",
-     "spec": "W85 X D91 X H94 CM.",
      "link": "https://chawcher.com/product/aunchan-armchair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/aunchan1-armchair-website-1.jpg"
+     "title": "AUNCHAN ARMCHAIR"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "AC700-ST-L",
       "sub": "L",
-      "w": 70.0,
-      "d": 70.0,
-      "h": 46.0,
-      "d2": null,
-      "h2": null,
+      "w": 70,
+      "d": 70,
+      "h": 46,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "AC700-ST-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "AC700-ST-S",
       "sub": "S",
-      "w": 70.0,
-      "d": 50.0,
-      "h": 46.0,
-      "d2": null,
-      "h2": null,
+      "w": 70,
+      "d": 50,
+      "h": 46,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "AC700-ST-S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15198,
-     "title": "AUNCHAN STOOL",
-     "spec": "W70 X D70 X H46 CM.",
      "link": "https://chawcher.com/product/aunchan-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/aunchan1-stool-website.jpg"
+     "title": "AUNCHAN STOOL"
     }
    }
-  ]
+  ],
+  "variants": 30,
+  "modules": 6
  },
  {
+  "ambiguous": [],
   "th": "นกแก้ว",
   "en": "Nokkaew",
   "prefix": "NK",
-  "code_real": false,
-  "rows": 29,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "NK1600-3S",
       "sub": "3 ที่นั่ง",
-      "w": 160.0,
-      "d": 90.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 160,
+      "d": 90,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NK1600-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "NK1800-3S",
       "sub": "3 ที่นั่ง",
-      "w": 180.0,
-      "d": 90.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 90,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NK1800-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "NK2000-3S",
       "sub": "3 ที่นั่ง",
-      "w": 200.0,
-      "d": 90.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 90,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NK2000-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15073,
-     "title": "NOKKAEW SOFA",
-     "spec": "3 SEAT\nW200 X D96 X H86 CM.\nW250 X D96 X H86 CM.\n*AVAILABLE W150-W270 CM.\nเบาะนั่ง S-Sprin\nเบาะนั่งลึกเหมาะกับคนที่ชอบนั่งแบบ Relax\nมีความสวยงามทนทาน",
      "link": "https://chawcher.com/product/nokkaew-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nokkeaw1-sofa-website-1.jpg"
+     "title": "NOKKAEW SOFA",
+     "text": "เบาะนั่ง S-Sprin\nเบาะนั่งลึกเหมาะกับคนที่ชอบนั่งแบบ Relax\nมีความสวยงามทนทาน"
     }
    },
    {
     "cat": "ที่พักหัว",
     "mods": [
      {
+      "code": "NK620-HR",
       "sub": "",
-      "w": 62.0,
-      "d": 14.0,
-      "h": 64.0,
-      "d2": null,
-      "h2": null,
+      "w": 62,
+      "d": 14,
+      "h": 64,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NK620-HR"
+      "woods": [],
+      "colours": [],
+      "variants": 4
      }
     ],
+    "image": null,
     "web": null
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "NK800-ST",
       "sub": "",
-      "w": 80.0,
-      "d": 80.0,
-      "h": 44.0,
-      "d2": null,
-      "h2": null,
+      "w": 80,
+      "d": 80,
+      "h": 44,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NK800-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15194,
-     "title": "NOKKAEW STOOL",
-     "spec": "W80 X D80 X H44 CM.",
      "link": "https://chawcher.com/product/nokkaew-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nokkaew1-stool-website.jpg"
+     "title": "NOKKAEW STOOL"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "NK850-AC",
       "sub": "",
-      "w": 85.0,
-      "d": 90.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 85,
+      "d": 90,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NK850-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15136,
-     "title": "NOKKAEW ARMCHAIR",
-     "spec": "W85 X D90 X H76 CM.",
      "link": "https://chawcher.com/product/mininest-armchair-2/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nokkaew1-armchair-website-1.jpg"
+     "title": "NOKKAEW ARMCHAIR"
     }
    }
-  ]
+  ],
+  "variants": 29,
+  "modules": 6
  },
  {
+  "ambiguous": [],
   "th": "กระเรียน",
   "en": "Krarean",
   "prefix": "KR",
-  "code_real": false,
-  "rows": 25,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "KR1600",
       "sub": "",
-      "w": 160.0,
-      "d": 97.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 160,
+      "d": 97,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KR1600"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KR2400",
       "sub": "",
-      "w": 240.0,
-      "d": 97.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 240,
+      "d": 97,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KR2400"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KR1350-2S",
       "sub": "2 ที่นั่ง",
-      "w": 135.0,
-      "d": 97.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 135,
+      "d": 97,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KR1350-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KR2020-3S",
       "sub": "3 ที่นั่ง",
-      "w": 202.0,
-      "d": 97.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 202,
+      "d": 97,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KR2020-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15117,
-     "title": "KRAREAN SOFA",
-     "spec": "W135 X D97 X H78 CM.\nW160 X D97 X H78 CM.\nW202 X D97 X H78 CM.\nW240 X D97 X H78 CM.\n1.โซฟา 3-ที่นั่ง ประกอบด้วยหมอนอิง 5 ใบ\n2.โครงผลิตจากไม้เนื้อแข็ง แข็งแรงทนทาน",
      "link": "https://chawcher.com/product/krarean-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krarean1-sofa-website.jpg"
+     "title": "KRAREAN SOFA",
+     "text": "1.โซฟา 3-ที่นั่ง ประกอบด้วยหมอนอิง 5 ใบ\n2.โครงผลิตจากไม้เนื้อแข็ง แข็งแรงทนทาน"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "KR940-ST",
       "sub": "",
-      "w": 94.0,
-      "d": 77.0,
-      "h": 37.0,
-      "d2": null,
-      "h2": null,
+      "w": 94,
+      "d": 77,
+      "h": 37,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KR940-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15215,
-     "title": "KRAREAN STOOL",
-     "spec": "W94 X D77 X H37 CM.\nด้วยสไตล์ที่โดดเด่นไม่เหมือนใคร",
      "link": "https://chawcher.com/product/krarean-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krarean1-stool-website.jpg"
+     "title": "KRAREAN STOOL",
+     "text": "ด้วยสไตล์ที่โดดเด่นไม่เหมือนใคร"
     }
    }
-  ]
+  ],
+  "variants": 25,
+  "modules": 5
  },
  {
+  "ambiguous": [],
   "th": "โอมุ",
   "en": "Omu",
   "prefix": "OM",
-  "code_real": false,
-  "rows": 25,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "OM1850-2S",
       "sub": "2 ที่นั่ง",
-      "w": 185.0,
-      "d": 167.0,
-      "h": 84.0,
-      "d2": 101.0,
-      "h2": 45.0,
+      "w": 185,
+      "d": 167,
+      "h": 84,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "OM1850-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "OM2250-3S",
       "sub": "3 ที่นั่ง",
-      "w": 225.0,
-      "d": 167.0,
-      "h": 84.0,
-      "d2": 101.0,
-      "h2": 45.0,
+      "w": 225,
+      "d": 167,
+      "h": 84,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "OM2250-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "OM2800-L",
       "sub": "L-shape",
-      "w": 280.0,
-      "d": 167.0,
-      "h": 84.0,
-      "d2": 101.0,
-      "h2": 45.0,
+      "w": 280,
+      "d": 167,
+      "h": 84,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "OM2800-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "OM3200-L",
       "sub": "L-shape",
-      "w": 320.0,
-      "d": 167.0,
-      "h": 84.0,
-      "d2": 101.0,
-      "h2": 45.0,
+      "w": 320,
+      "d": 167,
+      "h": 84,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "OM3200-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15071,
-     "title": "OMU SOFA",
-     "spec": "3 SEAT\nW185 X D101 X H84 CM.\nW225 X D101 X H84 CM.\nL SHAPE\nW284 X D167 X H84 CM.\nW321 X D167 X H84 CM.",
      "link": "https://chawcher.com/product/omu-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/omu1-sofa-website-1.jpg"
+     "title": "OMU SOFA"
     }
    },
    {
     "cat": "ที่พักหัว",
     "mods": [
      {
+      "code": "OM650-HR",
       "sub": "",
-      "w": 65.0,
-      "d": 21.0,
-      "h": 78.0,
-      "d2": null,
-      "h2": null,
+      "w": 65,
+      "d": 21,
+      "h": 78,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "OM650-HR"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 25,
+  "modules": 5
  },
  {
+  "ambiguous": [
+   {
+    "cat": "อาร์มแชร์",
+    "codes": [
+     "IS900-AC",
+     "IS900-AC-H83"
+    ],
+    "subs": [
+     "—",
+     "พร้อมสตูล"
+    ]
+   }
+  ],
   "th": "อินทรี",
   "en": "Insee",
   "prefix": "IS",
-  "code_real": false,
-  "rows": 20,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "IS1910-2S",
       "sub": "2 ที่นั่ง",
-      "w": 191.0,
-      "d": 104.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 191,
+      "d": 104,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "IS1910-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15119,
-     "title": "INSEE SOFA",
-     "spec": "W191 X D104 X H83 CM.",
      "link": "https://chawcher.com/product/insee-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/insee2-sofa-website-1.jpg"
+     "title": "INSEE SOFA"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "IS790-ST",
       "sub": "",
-      "w": 79.0,
-      "d": 60.0,
-      "h": 39.0,
-      "d2": null,
-      "h2": null,
+      "w": 79,
+      "d": 60,
+      "h": 39,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "IS790-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15214,
-     "title": "INSEE STOOL",
-     "spec": "W79 X D60 X H39 CM.",
      "link": "https://chawcher.com/product/insee-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/insee1-stool-website.jpg"
+     "title": "INSEE STOOL"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "IS900-AC",
       "sub": "",
-      "w": 90.0,
-      "d": 166.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 90,
+      "d": 166,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "IS900-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "IS900-AC-H83",
       "sub": "พร้อมสตูล",
-      "w": 90.0,
-      "d": 166.0,
-      "h": 83.0,
-      "d2": null,
-      "h2": null,
+      "w": 90,
+      "d": 166,
+      "h": 83,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "IS900-AC-H83"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15161,
-     "title": "INSEE COZY CHAIR",
-     "spec": "W90 X D106 X H83 CM.\nINSEE STOOL:\nW79 X D60 X H39 CM.\nThe Signature Armchair ที่นั่งสบายที่สุดตัวหนึ่ง\nเบาะที่นุ่มกำลังดี\nผ้าหรือหนังแบบพิเศษในแบบของ ฌ เฌอ\nดีไซน์โค้งมนที่ลงตัวเป็นเอกลักษณ์\nความพิถีพิถันในการผลิตที่ใส่ใจทุกรายละเอียด\nการไม่ยอมให้สิ่งที่ยังติดค้างในความไม่ผ่านทั้งเรื่องของดีไซน์ และคุณภาพการผลิต\nความใส่ใจแม้แต่สิ่งที่มองไม่เห็นอย่างโคลงสร้างที่แข็งแรงกว่าความโค้งมนที่น่าสัมผัส",
      "link": "https://chawcher.com/product/insee-cozy-chair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/insee1-cozychair-website-1.jpg"
+     "title": "INSEE COZY CHAIR",
+     "text": "The Signature Armchair ที่นั่งสบายที่สุดตัวหนึ่ง\nเบาะที่นุ่มกำลังดี\nผ้าหรือหนังแบบพิเศษในแบบของ ฌ เฌอ\nดีไซน์โค้งมนที่ลงตัวเป็นเอกลักษณ์\nความพิถีพิถันในการผลิตที่ใส่ใจทุกรายละเอียด\nการไม่ยอมให้สิ่งที่ยังติดค้างในความไม่ผ่านทั้งเรื่องของดีไซน์ และคุณภาพการผลิต\nความใส่ใจแม้แต่สิ่งที่มองไม่เห็นอย่างโคลงสร้างที่แข็งแรงกว่าความโค้งมนที่น่าสัมผัส"
     }
    }
-  ]
+  ],
+  "variants": 20,
+  "modules": 4
  },
  {
+  "ambiguous": [],
   "th": "กระสา",
   "en": "Krasa",
   "prefix": "KS",
-  "code_real": false,
-  "rows": 19,
+  "codeReal": false,
   "groups": [
    {
     "cat": "ชั้นวางทีวี",
     "mods": [
      {
+      "code": "KS1800-TV",
       "sub": "",
-      "w": 180.0,
+      "w": 180,
       "d": 44.5,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KS1800-TV"
+      "variants": 2
      },
      {
+      "code": "KS2000-TV",
       "sub": "",
-      "w": 200.0,
+      "w": 200,
       "d": 44.5,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KS2000-TV"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15278,
-     "title": "KRASA TV CABINET (WALNUT)",
-     "spec": "W180 X D44 X H45 CM.\nW200 X D44 X H45 CM.\n**สินค้าต้องประกอบขาด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง**\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\nHighlight:\n– ออกแบบให้สามารถวางเครื่องเล่นเกมส์ / Andriod Box / Truevision ไว้ในช่องกลางได้ ทั้งนี้ยังะสามารถกด remote ทะลุได้ เพราะการออกแบบที่มีการเว้นช่องว่างไว้\n– หน้าบานเป็น Solid Oak มีกระจกกันฝุ่น\n– Top ด้านบนออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F**** (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น",
      "link": "https://chawcher.com/product/krasa-tv-cabinet-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krasa1-walnut-tv-website.jpg"
+     "title": "KRASA TV CABINET (WALNUT)",
+     "text": "สินค้าต้องประกอบขาด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\n– ออกแบบให้สามารถวางเครื่องเล่นเกมส์ / Andriod Box / Truevision ไว้ในช่องกลางได้ ทั้งนี้ยังะสามารถกด remote ทะลุได้ เพราะการออกแบบที่มีการเว้นช่องว่างไว้\n– หน้าบานเป็น Solid Oak มีกระจกกันฝุ่น\n– Top ด้านบนออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "KS1510-3S",
       "sub": "3 ที่นั่ง",
-      "w": 151.0,
-      "d": 75.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 151,
+      "d": 75,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KS1510-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15106,
-     "title": "KRASA SOFA",
-     "spec": "W140 X D75 X H76 CM.\nW151 X D75 X H76 CM.",
      "link": "https://chawcher.com/product/krasa-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krasa1-sofa-website.jpg"
+     "title": "KRASA SOFA"
     }
    },
    {
     "cat": "ตู้เก็บของ",
     "mods": [
      {
+      "code": "KS1800-SB",
       "sub": "",
-      "w": 180.0,
+      "w": 180,
       "d": 43.5,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KS1800-SB"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15263,
-     "title": "KRASA SIDEBOARD",
-     "spec": "W180 X D43.5 X H80 CM.",
      "link": "https://chawcher.com/product/krasa-sideboard/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krasa-sideboard-website.jpg"
+     "title": "KRASA SIDEBOARD"
     }
    },
    {
     "cat": "โต๊ะทานข้าว",
     "mods": [
      {
+      "code": "KS1500-DT-150",
       "sub": "150 cm",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "KS1500-DT-150CM"
+      "variants": 1
      },
      {
+      "code": "KS1800-DT-180",
       "sub": "180 cm",
-      "w": 180.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "KS1800-DT-180CM"
+      "variants": 1
      },
      {
+      "code": "KS2000-DT-200",
       "sub": "200 cm",
-      "w": 200.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "KS2000-DT-200CM"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15227,
-     "title": "KRASA DINING TABLE",
-     "spec": "W150 X D80 X H75 CM.\nW180 X D85 X H75 CM.\nW200 X D85 X H75 CM.",
      "link": "https://chawcher.com/product/krasa-dining-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krasa1-dining-table-website.jpg"
+     "title": "KRASA DINING TABLE"
     }
    },
    {
     "cat": "ม้านั่ง",
     "mods": [
      {
+      "code": "KS1100-BN",
       "sub": "",
-      "w": 110.0,
-      "d": 38.0,
-      "h": 44.0,
-      "d2": null,
-      "h2": null,
+      "w": 110,
+      "d": 38,
+      "h": 44,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KS1100-BN"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15008,
-     "title": "KRASA BENCH",
-     "spec": "W110 X D38 X H44 CM.",
      "link": "https://chawcher.com/product/krasa-bench/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krasa1-chair-website-1.jpg"
+     "title": "KRASA BENCH"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "KS600-AC",
       "sub": "",
-      "w": 60.0,
-      "d": 75.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 60,
+      "d": 75,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KS600-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15134,
-     "title": "KRASA ARMCHAIR",
-     "spec": "W60 X D75 X H76 CM.",
      "link": "https://chawcher.com/product/krasa-armchair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krasa2-armchair-website-1.jpg"
+     "title": "KRASA ARMCHAIR"
     }
    }
-  ]
+  ],
+  "variants": 19,
+  "modules": 9
  },
  {
+  "ambiguous": [],
   "th": "ขมิ้น",
   "en": "Kamin",
   "prefix": "KM",
-  "code_real": false,
-  "rows": 19,
+  "codeReal": false,
   "groups": [
    {
     "cat": "ชั้นวางทีวี",
     "mods": [
      {
+      "code": "KM1600-TV",
       "sub": "",
-      "w": 160.0,
+      "w": 160,
       "d": 44.5,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KM1600-TV"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15279,
-     "title": "KAMIN TV CABINET (OAK)",
-     "spec": "W160 X D44.5 X H45 CM.\n**สินค้าต้องประกอบขาด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง**\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\nHighlight:\n– ออกแบบให้สามารถวางเครื่องเล่นเกมส์ / Andriod Box / Truevision ไว้ในช่องกลางได้ ทั้งนี้ยังสามารถกด remote ทะลุได้ เพราะการออกแบบที่มีการเว้นช่องว่างไว้\n– หน้าบานเป็น Solid Oak\n– Top ด้านบนออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F**** (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น",
      "link": "https://chawcher.com/product/kamin-tv-cabinet-oak/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kamin1-oak-tv-website.jpg"
+     "title": "KAMIN TV CABINET (OAK)",
+     "text": "สินค้าต้องประกอบขาด้วยตนเอง โดยมีคู่มือและอุปกรณ์ให้ในกล่อง\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\n– ออกแบบให้สามารถวางเครื่องเล่นเกมส์ / Andriod Box / Truevision ไว้ในช่องกลางได้ ทั้งนี้ยังสามารถกด remote ทะลุได้ เพราะการออกแบบที่มีการเว้นช่องว่างไว้\n– หน้าบานเป็น Solid Oak\n– Top ด้านบนออกแบบให้ยื่นออกไปข้างหลังประมาณ 2.5 เซ็นติเมตร เพื่อการวางติดกำแพงได้โดยไม่ติดบัวพื้นด้านล่าง\n– ความปลอดภัยจากการใช้วัสดุที่ปลอดสารฟอร์มาลดีไฮด์ระดับ F (เอฟ โฟ สตาร์) ซึ่งเป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าประเภทเฟอร์นิเจอร์\n– เก๊ะเป็นไม้คิริซึ่งเป็นวัสดุที่ญี่ปุ่นนิยมทำตู้เก็บกิโมโนเนื่องจากคุณสมบัติของการทนความชื้น"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "KM1790-3S",
       "sub": "3 ที่นั่ง",
-      "w": 179.0,
-      "d": 90.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 179,
+      "d": 90,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KM1790-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KM2000-3S",
       "sub": "3 ที่นั่ง",
-      "w": 200.0,
-      "d": 90.0,
-      "h": 90.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 90,
+      "h": 90,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KM2000-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15070,
-     "title": "KAMIN SOFA",
-     "spec": "ตารางสเปกและราคาสำหรับการสั่งผลิตมาตรฐาน (Made-to-Order)\nประเภทวัสดุหุ้ม (เลือกสีได้)\nขนาดสินค้า (กว้าง x ลึก x สูง)\nราคาปกติ (บาท)\nราคาพิเศษส่วนลด 25% (บาท)\nผ้า A\nW179 x D90 x H90 cm\n54,400\n40,800\nผ้า A\nW200 x D90 x H90 cm\n65,300\n48,975\nผ้า B\nW179 x D90 x H90 cm\n62,000\n46,500\nผ้า B\nW200 x D90 x H90 cm\n75,000\n56,250\nผ้า C\nW179 x D90 x H90 cm\n68,125\n51,093.75\nผ้า C\nW200 x D90 x H90 cm\n81,625\n61,218.75\nหนังแท้\nW179 x D90 x H90 cm\n85,100\n63,825\nหนังแท้\nW200 x D90 x H90 cm\n98,400\n73,800",
      "link": "https://chawcher.com/product/kamin-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kamin1-sofa-website-1.jpg"
+     "title": "KAMIN SOFA",
+     "text": "ตารางสเปกและราคาสำหรับการสั่งผลิตมาตรฐาน (Made-to-Order)\nประเภทวัสดุหุ้ม (เลือกสีได้)\nขนาดสินค้า (กว้าง x ลึก x สูง)\nราคาปกติ (บาท)\nราคาพิเศษส่วนลด 25% (บาท)\nผ้า A\n54,400\n40,800\nผ้า A\n65,300\n48,975\nผ้า B\n62,000\n46,500\nผ้า B\n75,000\n56,250\nผ้า C\n68,125\n51,093.75\nผ้า C\n81,625\n61,218.75\nหนังแท้\n85,100\n63,825\nหนังแท้\n98,400\n73,800"
     }
    },
    {
     "cat": "ตู้เก็บของ",
     "mods": [
      {
+      "code": "KM1200-SB",
       "sub": "",
-      "w": 120.0,
+      "w": 120,
       "d": 44.5,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KM1200-SB"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15249,
-     "title": "KAMIN SIDEBOARD (WALNUT)",
-     "spec": "W120 X D44.5 X H80 CM.",
      "link": "https://chawcher.com/product/kamin-sideboard-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kamin1-walnut-sideboard-website-1.jpg"
+     "title": "KAMIN SIDEBOARD (WALNUT)"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "KM700-ST",
       "sub": "",
-      "w": 70.0,
-      "d": 50.0,
-      "h": 44.0,
-      "d2": null,
-      "h2": null,
+      "w": 70,
+      "d": 50,
+      "h": 44,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KM700-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15204,
-     "title": "KAMIN STOOL",
-     "spec": "W70 X D50 X H44 CM.",
      "link": "https://chawcher.com/product/kamin-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kamin2-stool-website.jpg"
+     "title": "KAMIN STOOL"
     }
    }
-  ]
+  ],
+  "variants": 19,
+  "modules": 5
  },
  {
+  "ambiguous": [],
   "th": "นางนวล",
   "en": "Nangnuan",
   "prefix": "NN",
-  "code_real": false,
-  "rows": 16,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "NN1440-3S",
       "sub": "3 ที่นั่ง",
-      "w": 144.0,
-      "d": 88.0,
-      "h": 65.0,
-      "d2": null,
-      "h2": null,
+      "w": 144,
+      "d": 88,
+      "h": 65,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NN1440-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 2
      },
      {
+      "code": "NN1650-3S",
       "sub": "3 ที่นั่ง",
-      "w": 165.0,
-      "d": 88.0,
-      "h": 65.0,
-      "d2": null,
-      "h2": null,
+      "w": 165,
+      "d": 88,
+      "h": 65,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NN1650-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 2
      },
      {
+      "code": "NN1860-3S",
       "sub": "3 ที่นั่ง",
-      "w": 186.0,
-      "d": 88.0,
-      "h": 65.0,
-      "d2": null,
-      "h2": null,
+      "w": 186,
+      "d": 88,
+      "h": 65,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "NN1860-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15116,
-     "title": "NANGNUAN SOFA",
-     "spec": "ARMLESS:\nW144 X D87 X H66 CM.\n1 ARM:\nW165 X D87 X H66 CM.\n3S:\nW186 X D87 X H66 CM.",
      "link": "https://chawcher.com/product/nangnaun-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangnuan1-sofa-website.jpg"
+     "title": "NANGNUAN SOFA"
     }
    },
    {
     "cat": "โต๊ะกลาง",
     "mods": [
      {
+      "code": "NN1100-CT",
       "sub": "",
-      "w": 110.0,
-      "d": 60.0,
-      "h": 35.0,
-      "d2": null,
-      "h2": null,
+      "w": 110,
+      "d": 60,
+      "h": 35,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NN1100-CT"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15240,
-     "title": "NANGNUAN COFFEE TABLE",
-     "spec": "W110 X D60 X H35 CM.",
      "link": "https://chawcher.com/product/nangnuan-coffee-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangnuan1-table-website.jpg"
+     "title": "NANGNUAN COFFEE TABLE"
     }
    },
    {
     "cat": "โต๊ะข้าง",
     "mods": [
      {
+      "code": "NN500-SDT",
       "sub": "",
-      "w": 50.0,
-      "d": 30.0,
-      "h": 50.0,
-      "d2": null,
-      "h2": null,
+      "w": 50,
+      "d": 30,
+      "h": 50,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NN500-SDT"
+      "variants": 1
      },
      {
+      "code": "NN425-SDT",
       "sub": "",
       "w": 42.5,
       "d": 25.5,
-      "h": 60.0,
-      "d2": null,
-      "h2": null,
+      "h": 60,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NN425-SDT"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15229,
-     "title": "NANGNUAN SIDE TABLE",
-     "spec": "W42.5 X D25.5 X H60 CM.",
      "link": "https://chawcher.com/product/nangnuan-side-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangnuan-side-table-website.jpg"
+     "title": "NANGNUAN SIDE TABLE"
     }
    },
    {
     "cat": "โต๊ะทานข้าว",
     "mods": [
      {
+      "code": "NN1500-DT-150",
       "sub": "150 cm",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "Japanese Version",
        "เลือกสีได้"
       ],
-      "code": "NN1500-DT-150CM"
+      "variants": 2
      },
      {
+      "code": "NN1800-DT-180",
       "sub": "180 cm",
-      "w": 180.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "NN1800-DT-180CM"
+      "variants": 1
      },
      {
+      "code": "NN2000-DT-200",
       "sub": "200 cm",
-      "w": 200.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "เลือกสีได้"
       ],
-      "code": "NN2000-DT-200CM"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15224,
-     "title": "NANGNUAN DINING TABLE",
-     "spec": "W80 X D80 X H75 CM.\nW150 X D80 X H75 CM.\nW180 X D85 X H75 CM.\nW200 X D85 X H75 CM.",
      "link": "https://chawcher.com/product/nangnuan-dining-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangnuan-dining-table-website.jpg"
+     "title": "NANGNUAN DINING TABLE"
     }
    },
    {
     "cat": "ม้านั่ง",
     "mods": [
      {
+      "code": "NN1250-BN",
       "sub": "",
-      "w": 125.0,
-      "d": 38.0,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "w": 125,
+      "d": 38,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NN1250-BN"
+      "variants": 1
      },
      {
+      "code": "NN1550-BN",
       "sub": "",
-      "w": 155.0,
-      "d": 38.0,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "w": 155,
+      "d": 38,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NN1550-BN"
+      "variants": 1
      },
      {
+      "code": "NN1750-BN",
       "sub": "",
-      "w": 175.0,
-      "d": 38.0,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "w": 175,
+      "d": 38,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NN1750-BN"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15009,
-     "title": "NANGNUAN BENCH",
-     "spec": "W125 X D38 X H45 CM.\nW155 X D38 X H45 CM.\nW175 X D38 X H45 CM.\nTop ไม้สังเคราะห์ทำสี เพื่อความพิเศษและธรรมชาติ\nดู Unique ไม่เหมือนใคร\nขาเป็นไม้โอ๊คสีเข้ม\nมาพร้อมกับความเรียบ สบายตา เข้าได้กับทุกบ้าน\nแข็งแรงและทนทานต่อการใช้งาน\n1.ไม้โอ๊คจริงทุกส่วน\n2.แข็งแรงและทนทานต่อการใช้งาน",
      "link": "https://chawcher.com/product/nangnuan-bench/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangnuan1-chair-website-1.jpg"
+     "title": "NANGNUAN BENCH",
+     "text": "Top ไม้สังเคราะห์ทำสี เพื่อความพิเศษและธรรมชาติ\nดู Unique ไม่เหมือนใคร\nขาเป็นไม้โอ๊คสีเข้ม\nมาพร้อมกับความเรียบ สบายตา เข้าได้กับทุกบ้าน\nแข็งแรงและทนทานต่อการใช้งาน\n1.ไม้โอ๊คจริงทุกส่วน\n2.แข็งแรงและทนทานต่อการใช้งาน"
     }
    }
-  ]
+  ],
+  "variants": 16,
+  "modules": 12
  },
  {
+  "ambiguous": [],
   "th": "ฮูก",
   "en": "Hook",
   "prefix": "HK",
-  "code_real": false,
-  "rows": 15,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โคซี่แชร์",
     "mods": [
      {
+      "code": "HK790-CZ",
       "sub": "ฐานหมุนได้",
-      "w": 79.0,
-      "d": 92.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": null,
+      "w": 79,
+      "d": 92,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "HK790-CZ"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15159,
-     "title": "HOOK COZY CHAIR",
-     "spec": "W79 X D92 X H72 CM.",
      "link": "https://chawcher.com/product/hook-cozy-chair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/hook1-cozychair-website-1.jpg"
+     "title": "HOOK COZY CHAIR"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "HK1600-3S",
       "sub": "3 ที่นั่ง",
-      "w": 160.0,
-      "d": 89.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "w": 160,
+      "d": 89,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "HK1600-3S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15067,
-     "title": "HOOK SOFA",
-     "spec": "W160 X D86 X H80 CM.\nW200 X D86 X H80 CM.",
      "link": "https://chawcher.com/product/hook-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/hook1-sofa-website-1.jpg"
+     "title": "HOOK SOFA"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "HK820-AC",
       "sub": "",
-      "w": 82.0,
-      "d": 86.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "w": 82,
+      "d": 86,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "HK820-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15147,
-     "title": "HOOK ARMCHAIR",
-     "spec": "W82 X D86 X H80 CM.",
      "link": "https://chawcher.com/product/hook-armchair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/hook1-armchair-website-1.jpg"
+     "title": "HOOK ARMCHAIR"
     }
    }
-  ]
+  ],
+  "variants": 15,
+  "modules": 3
  },
  {
+  "ambiguous": [],
   "th": "นางนวล / กระสา",
   "en": "Nangnuan or Krasa Dining Set",
   "prefix": "NNKS",
-  "code_real": false,
-  "rows": 14,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โต๊ะทานข้าว",
     "mods": [
      {
+      "code": "NNKS800-DT-2KW",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 2 ตัว",
-      "w": 80.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 80,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS800-DT-2"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1500-DT-2KWBN",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 2 ตัว และม้านั่ง",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1500-DT-2"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1800-DT-3KWBN",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 3 ตัว และม้านั่ง",
-      "w": 180.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1800-DT-3"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS2000-DT-3KWBN",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 3 ตัว และม้านั่ง",
-      "w": 200.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS2000-DT-3"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1500-DT-4KW",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 4 ตัว",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1500-DT-4"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1800-DT-6KW",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 6 ตัว",
-      "w": 180.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1800-DT-6"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS2000-DT-6KW",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 6 ตัว",
-      "w": 200.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS2000-DT-6"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS800-DT-2EMU",
       "sub": "พร้อมชุดเก้าอี้อีมู 2 ตัว",
-      "w": 80.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 80,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS800-DT-2-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1500-DT-2EMUBN",
       "sub": "พร้อมชุดเก้าอี้อีมู 2 ตัว และม้านั่ง",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1500-DT-2-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1800-DT-3EMUBN",
       "sub": "พร้อมชุดเก้าอี้อีมู 3 ตัว และม้านั่ง",
-      "w": 180.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1800-DT-3-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS2000-DT-3EMUBN",
       "sub": "พร้อมชุดเก้าอี้อีมู 3 ตัว และม้านั่ง",
-      "w": 200.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS2000-DT-3-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1500-DT-4EMU",
       "sub": "พร้อมชุดเก้าอี้อีมู 4 ตัว",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1500-DT-4-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS1800-DT-6EMU",
       "sub": "พร้อมชุดเก้าอี้อีมู 6 ตัว",
-      "w": 180.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 180,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS1800-DT-6-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NNKS2000-DT-6EMU",
       "sub": "พร้อมชุดเก้าอี้อีมู 6 ตัว",
-      "w": 200.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 200,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "NNKS2000-DT-6-H75"
+      "colours": [],
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15224,
-     "title": "NANGNUAN DINING TABLE",
-     "spec": "W80 X D80 X H75 CM.\nW150 X D80 X H75 CM.\nW180 X D85 X H75 CM.\nW200 X D85 X H75 CM.",
      "link": "https://chawcher.com/product/nangnuan-dining-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nangnuan-dining-table-website.jpg"
+     "title": "NANGNUAN DINING TABLE"
     }
    }
-  ]
+  ],
+  "variants": 14,
+  "modules": 14
  },
  {
-  "th": "ฟลามิงโก้",
-  "en": "Flamingo Recliner",
-  "prefix": "FL",
-  "code_real": false,
-  "rows": 11,
-  "groups": [
-   {
-    "cat": "Recliner",
-    "mods": [
-     {
-      "sub": "",
-      "w": 74.0,
-      "d": 97.0,
-      "h": 97.0,
-      "d2": null,
-      "h2": null,
-      "mats": [
-       "ผ้า A",
-       "ผ้า B",
-       "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้ / PVC",
-       "หนังแท้"
-      ],
-      "wood": [],
-      "colour": [],
-      "code": "FL740-RC"
-     },
-     {
-      "sub": "2 ที่นั่ง",
-      "w": 146.0,
-      "d": 97.0,
-      "h": 97.0,
-      "d2": null,
-      "h2": null,
-      "mats": [
-       "ผ้า A",
-       "ผ้า B",
-       "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
-      ],
-      "wood": [],
-      "colour": [],
-      "code": "FL1460-RC-2S"
-     }
-    ],
-    "web": {
-     "id": 15167,
-     "title": "FLAMINGO RECLINER",
-     "spec": "W74 X D97 X H98 CM.\nเก้าอี้ปรับนอน หนังแท้ รุ่น Flamingo\nสินค้าเราเป็นหนังแท้ ที่เหมาะสำหรับใช้ทำเฟอร์นิเจอร์ มีคุณภาพสูง คงทน",
-     "link": "https://chawcher.com/product/flamingo-recliner/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/flamingo-recliner3-cozychair-website-1.jpg"
-    }
-   }
-  ]
- },
- {
+  "ambiguous": [],
   "th": "กระทา",
   "en": "Krata",
   "prefix": "KTA",
-  "code_real": false,
-  "rows": 11,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "KTA1600-2S",
       "sub": "2 ที่นั่ง",
-      "w": 160.0,
-      "d": 90.0,
-      "h": 76.0,
-      "d2": null,
-      "h2": null,
+      "w": 160,
+      "d": 90,
+      "h": 76,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KTA1600-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15068,
-     "title": "KRATA SOFA",
-     "spec": "W166 X D78 X H76 CM.",
      "link": "https://chawcher.com/product/phoenix-sofa-copy-copy/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krata1-sofa-website-1.jpg"
+     "title": "KRATA SOFA"
     }
    },
    {
     "cat": "ตู้เก็บของ",
     "mods": [
      {
+      "code": "KTA1600-SB",
       "sub": "",
-      "w": 160.0,
+      "w": 160,
       "d": 45.5,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KTA1600-SB"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15264,
-     "title": "KRATA SIDEBOARD",
-     "spec": "W160 X D45.5 X H82 CM.",
      "link": "https://chawcher.com/product/krata-sideboard/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krata1-sideboard-website-1.jpg"
+     "title": "KRATA SIDEBOARD"
     }
    },
    {
     "cat": "เลาจ์แชร์",
     "mods": [
      {
+      "code": "KTA690-LC",
       "sub": "",
-      "w": 69.0,
-      "d": 81.0,
-      "h": 67.0,
-      "d2": null,
-      "h2": null,
+      "w": 69,
+      "d": 81,
+      "h": 67,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KTA690-LC"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15158,
-     "title": "KRATA COZY CHAIR",
-     "spec": "W69 X D81 X H67 CM.\nKRATA COZY CHAIR:\nW69 X D81 X H67 CM.\nKrata Cozy Chair เป็น cozy chair ที่ออกแบบมาให้มีรูปทรงกะทัดรัดมีเส้นสายที่โค้งมนเบาบาง\nมีเสน่ห์ ที่น่าหลงไหลด้วยความโค้งมนนี้แสดงถึงความปราณีตในการผลิต",
      "link": "https://chawcher.com/product/krata-cozy-chair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/krata2-cozychair-website-1.jpg"
+     "title": "KRATA COZY CHAIR",
+     "text": "Krata Cozy Chair เป็น cozy chair ที่ออกแบบมาให้มีรูปทรงกะทัดรัดมีเส้นสายที่โค้งมนเบาบาง\nมีเสน่ห์ ที่น่าหลงไหลด้วยความโค้งมนนี้แสดงถึงความปราณีตในการผลิต"
     }
    }
-  ]
+  ],
+  "variants": 11,
+  "modules": 3
  },
  {
+  "ambiguous": [],
+  "th": "ฟลามิงโก้",
+  "en": "Flamingo Recliner",
+  "prefix": "FL",
+  "codeReal": false,
+  "groups": [
+   {
+    "cat": "Recliner",
+    "mods": [
+     {
+      "code": "FL740-RC",
+      "sub": "",
+      "w": 74,
+      "d": 97,
+      "h": 97,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
+      "mats": [
+       "ผ้า A",
+       "ผ้า B",
+       "ผ้า C",
+       "หนังแท้",
+       "หนังแท้ (ออย)",
+       "หนังแท้ / PVC"
+      ],
+      "woods": [],
+      "colours": [],
+      "variants": 6
+     },
+     {
+      "code": "FL1460-RC-2S",
+      "sub": "2 ที่นั่ง",
+      "w": 146,
+      "d": 97,
+      "h": 97,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
+      "mats": [
+       "ผ้า A",
+       "ผ้า B",
+       "ผ้า C",
+       "หนังแท้",
+       "หนังแท้ (ออย)"
+      ],
+      "woods": [],
+      "colours": [],
+      "variants": 5
+     }
+    ],
+    "image": null,
+    "web": {
+     "link": "https://chawcher.com/product/flamingo-recliner/",
+     "title": "FLAMINGO RECLINER",
+     "text": "เก้าอี้ปรับนอน หนังแท้ รุ่น Flamingo\nสินค้าเราเป็นหนังแท้ ที่เหมาะสำหรับใช้ทำเฟอร์นิเจอร์ มีคุณภาพสูง คงทน"
+    }
+   }
+  ],
+  "variants": 11,
+  "modules": 2
+ },
+ {
+  "ambiguous": [],
   "th": "กีวี่",
   "en": "Kiwi",
   "prefix": "KW",
-  "code_real": false,
-  "rows": 10,
+  "codeReal": false,
   "groups": [
    {
     "cat": "เก้าอี้",
     "mods": [
      {
+      "code": "KW510-CH",
       "sub": "",
-      "w": 51.0,
-      "d": 54.0,
-      "h": 73.0,
-      "d2": null,
-      "h2": null,
+      "w": 51,
+      "d": 54,
+      "h": 73,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ",
        "สีวอลนัท"
       ],
-      "code": "KW510-CH"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15006,
-     "title": "KIWI CHAIR (WALNUT)",
-     "spec": "สินค้า: เก้าอี้ กีวี่\nขนาด: W510 x D550 x H790\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\nHighlight:\nเทคนิคการเข้าไม้แบบญี่ปุ่นแท้ๆ ใช้ไม้น้อย แต่แข็งแรง\nเบาะออกแบบให้สามารถเปลี่ยน cover ได้ง่ายๆ สะดวกในการทำความสะอาด และด้านในเป็น PVC กันน้ำอีก 1 ชั้น\nการออกแบบองศาพนักพิงด้วยเทคนิคไม้ดัดทำเป็นโค้งรับหลังที่ให้ความรู้สึกสบายทุกครั้งที่ได้นั่ง\nใส่ใจในเรื่อง Eco Friendly ผ่านขบวนการ Waste Management (การควบคุมการสูญเสีย) ได้แก่การวางแผนการผลิตให้มีการสูญเสียไม้ให้น้อยที่สุด ทั้งนี้ส่วนที่สูญเสียจะนำกลับไป recycle เพื่อเอามาทำเป็นส่วนประกอบอื่นๆในรุ่นอื่นๆได้ด้วย อีกทั้งจะงดใช้สารเคมีที่เป็นอันตรายต่อผู้ใช้งาน ผู้ผลิตสินค้า รวมถึงธรรมชาติอีกด้วย",
      "link": "https://chawcher.com/product/kiwi-chair-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kiwi2-walnut-chair-website-1.jpg"
+     "title": "KIWI CHAIR (WALNUT)",
+     "text": "สินค้า: เก้าอี้ กีวี่\nออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\nเทคนิคการเข้าไม้แบบญี่ปุ่นแท้ๆ ใช้ไม้น้อย แต่แข็งแรง\nเบาะออกแบบให้สามารถเปลี่ยน cover ได้ง่ายๆ สะดวกในการทำความสะอาด และด้านในเป็น PVC กันน้ำอีก 1 ชั้น\nการออกแบบองศาพนักพิงด้วยเทคนิคไม้ดัดทำเป็นโค้งรับหลังที่ให้ความรู้สึกสบายทุกครั้งที่ได้นั่ง\nใส่ใจในเรื่อง Eco Friendly ผ่านขบวนการ Waste Management (การควบคุมการสูญเสีย) ได้แก่การวางแผนการผลิตให้มีการสูญเสียไม้ให้น้อยที่สุด ทั้งนี้ส่วนที่สูญเสียจะนำกลับไป recycle เพื่อเอามาทำเป็นส่วนประกอบอื่นๆในรุ่นอื่นๆได้ด้วย อีกทั้งจะงดใช้สารเคมีที่เป็นอันตรายต่อผู้ใช้งาน ผู้ผลิตสินค้า รวมถึงธรรมชาติอีกด้วย"
     }
    },
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "KW1580-2.5S",
       "sub": "2.5 ที่นั่ง",
-      "w": 158.0,
-      "d": 82.0,
-      "h": 77.0,
-      "d2": null,
-      "h2": null,
+      "w": 158,
+      "d": 82,
+      "h": 77,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท",
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KW1580-25"
+      "variants": 2
      },
      {
+      "code": "KW1780-3S",
       "sub": "3 ที่นั่ง",
-      "w": 178.0,
-      "d": 82.0,
-      "h": 77.0,
-      "d2": null,
-      "h2": null,
+      "w": 178,
+      "d": 82,
+      "h": 77,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KW1780-3S"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15093,
-     "title": "KIWI SOFA (WALNUT)",
-     "spec": "ขนาด: W1580 x D785 x H785 mm\nน้ำหนักโดยรวม 35 kg\nออกแบบโดยคำนึงถึงผู้ใช้เป็นหลัก เบาะนั่งและเบาะพิงมีส่วนผสมของขนเป็ดเพื่อการนั่งที่สบาย องศาเบาะและพนักพิงได้ทำการทดสอบจนได้องศาที่นั่งสบายที่สุด ผ้าหุ้มเบาะสามารถถอดซักได้เพื่อสุขภาพที่ดีของผู้ใช้ โครงสร้างโปร่งเพื่อให้อากาศถ่ายเทไม่เกิดการสะสมของแบคทีเรีย\nHighlight:\n– ออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\n– เบาะ และพนักพิงสามารถถอดซักได้\n– เบาะ และพนักพิง เป็นฟองน้ำ 1 ชั้น และเป็นขนเป็ดอีก 1 ชั้น\n– โครงสร้างเป็นไม้โอ๊คแท้ที่อบแห้งและเคลือบน้ำมันมาเป็นอย่างดี\n– ใต้เบาะเป็นตะแกรงไนลอนทำให้อากาศถ่ายเทสะดวกจึงทำให้ผู้ใช้งานไม่ร้อน\n– สินค้าจากโรงงานญี่ปุ่นซึ่งมีความใส่ใจในเรื่อง Eco Friendly ผ่านขบวนการ Waste Management (การควบคุมการสูญเสีย) ได้แก่การวางแผนการผลิตให้มีการสูญเสียไม้ให้น้อยที่สุด ทั้งนี้ส่วนที่สูญเสียจะนำกลับไป recycle เพื่อเอามาทำเป็นส่วนประกอบอื่นๆในรุ่นอื่นๆได้ด้วย อีกทั้งจะงดใช้สารเคมีที่เป็นอันตรายต่อผู้ใช้งาน ผู้ผลิตสินค้า รวมถึงธรรมชาติอีกด้วย",
      "link": "https://chawcher.com/product/kiwi-sofa-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kiwi-walnut1-sofa-website-1.jpg"
+     "title": "KIWI SOFA (WALNUT)",
+     "text": "น้ำหนักโดยรวม 35 kg\nออกแบบโดยคำนึงถึงผู้ใช้เป็นหลัก เบาะนั่งและเบาะพิงมีส่วนผสมของขนเป็ดเพื่อการนั่งที่สบาย องศาเบาะและพนักพิงได้ทำการทดสอบจนได้องศาที่นั่งสบายที่สุด ผ้าหุ้มเบาะสามารถถอดซักได้เพื่อสุขภาพที่ดีของผู้ใช้ โครงสร้างโปร่งเพื่อให้อากาศถ่ายเทไม่เกิดการสะสมของแบคทีเรีย\n– ออกแบบโดยดีไซเนอร์ญี่ปุ่น มีความนุ่มนวลตามแบบฉบับญี่ปุ่น แต่แฝงไปด้วยเทคนิค และการประกอบที่ใส่ใจในทุกรายละเอียด\n– เบาะ และพนักพิงสามารถถอดซักได้\n– เบาะ และพนักพิง เป็นฟองน้ำ 1 ชั้น และเป็นขนเป็ดอีก 1 ชั้น\n– โครงสร้างเป็นไม้โอ๊คแท้ที่อบแห้งและเคลือบน้ำมันมาเป็นอย่างดี\n– ใต้เบาะเป็นตะแกรงไนลอนทำให้อากาศถ่ายเทสะดวกจึงทำให้ผู้ใช้งานไม่ร้อน\n– สินค้าจากโรงงานญี่ปุ่นซึ่งมีความใส่ใจในเรื่อง Eco Friendly ผ่านขบวนการ Waste Management (การควบคุมการสูญเสีย) ได้แก่การวางแผนการผลิตให้มีการสูญเสียไม้ให้น้อยที่สุด ทั้งนี้ส่วนที่สูญเสียจะนำกลับไป recycle เพื่อเอามาทำเป็นส่วนประกอบอื่นๆในรุ่นอื่นๆได้ด้วย อีกทั้งจะงดใช้สารเคมีที่เป็นอันตรายต่อผู้ใช้งาน ผู้ผลิตสินค้า รวมถึงธรรมชาติอีกด้วย"
     }
    },
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "KW710-ST",
       "sub": "",
-      "w": 71.0,
-      "d": 50.0,
-      "h": 38.0,
-      "d2": null,
-      "h2": null,
+      "w": 71,
+      "d": 50,
+      "h": 38,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า C",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KW710-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 3
      }
     ],
+    "image": null,
     "web": {
-     "id": 15195,
-     "title": "KIWI STOOL",
-     "spec": "S:\nW57 X D50 X H38 CM.\nL:\nW71 X D50 X H38 CM.",
      "link": "https://chawcher.com/product/kiwi-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kiwi1-stool-website.jpg"
+     "title": "KIWI STOOL"
     }
    },
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "KW660-AC",
       "sub": "",
-      "w": 66.0,
-      "d": 82.0,
-      "h": 77.0,
-      "d2": null,
-      "h2": null,
+      "w": 66,
+      "d": 82,
+      "h": 77,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท",
        "ไม้โอ๊ค"
       ],
-      "colour": [],
-      "code": "KW660-AC"
+      "colours": [],
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15133,
-     "title": "KIWI ARMCHAIR (WALNUT)",
-     "spec": "W66 X D82 X H77 CM.\nโซฟาไม้ที่ขายดีที่สุดออกแบบโดยคำนึงถึงผู้ใช้เป็นหลัก เบาะนั่งและเบาะพิงมีส่วนผสมของขนเป็ดเพื่อการนั่งที่ผ่อนคลาย องศาของเบาะนั่งและพนักพิงได้ทำการทดสอบจนได้องศาที่นั่งสบายที่สุด โครงสร้างโปร่งเพื่อให้อากาศถ่ายเทไม่เกิดการสะสมของแบคทีเรีย",
      "link": "https://chawcher.com/product/kiwi-armchair-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kiwi-walnut1-armchair-website-2.jpg"
+     "title": "KIWI ARMCHAIR (WALNUT)",
+     "text": "โซฟาไม้ที่ขายดีที่สุดออกแบบโดยคำนึงถึงผู้ใช้เป็นหลัก เบาะนั่งและเบาะพิงมีส่วนผสมของขนเป็ดเพื่อการนั่งที่ผ่อนคลาย องศาของเบาะนั่งและพนักพิงได้ทำการทดสอบจนได้องศาที่นั่งสบายที่สุด โครงสร้างโปร่งเพื่อให้อากาศถ่ายเทไม่เกิดการสะสมของแบคทีเรีย"
     }
    }
-  ]
+  ],
+  "variants": 10,
+  "modules": 5
  },
  {
+  "ambiguous": [],
   "th": "ขอนไม้",
   "en": "Khonmai Stool",
   "prefix": "KN",
-  "code_real": false,
-  "rows": 10,
+  "codeReal": false,
   "groups": [
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "KN600-ST-L",
       "sub": "Size L",
-      "w": 60.0,
-      "d": 60.0,
-      "h": 37.0,
-      "d2": null,
-      "h2": null,
+      "w": 60,
+      "d": 60,
+      "h": 37,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KN600-ST-L"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      },
      {
+      "code": "KN410-ST-S",
       "sub": "Size S",
-      "w": 41.0,
-      "d": 41.0,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "w": 41,
+      "d": 41,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KN410-ST-S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15218,
-     "title": "KHONMAI STOOL",
-     "spec": "S:\nW41 X D41 X H45 CM.\nL:\nW60 X D60 X H37 CM.\nStool ที่เป็นได้มากกว่าสตูล ไม่ว่าจะใช้ต่อกับโซฟาเพื่อทำให้ได้ที่นั่งเพิ่มมากขึ้น\nหรือจะใช้เป็นที่วางเท้าในวันสบายๆ ก็สามารถปรับเปลี่ยนได้กับทุกความต้องการของคุณ",
      "link": "https://chawcher.com/product/khonmai-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/khonmai1-stool-website.jpg"
+     "title": "KHONMAI STOOL",
+     "text": "Stool ที่เป็นได้มากกว่าสตูล ไม่ว่าจะใช้ต่อกับโซฟาเพื่อทำให้ได้ที่นั่งเพิ่มมากขึ้น\nหรือจะใช้เป็นที่วางเท้าในวันสบายๆ ก็สามารถปรับเปลี่ยนได้กับทุกความต้องการของคุณ"
     }
    }
-  ]
+  ],
+  "variants": 10,
+  "modules": 2
  },
  {
+  "ambiguous": [],
   "th": "นกยูง",
   "en": "Nokyoong",
   "prefix": "NY",
-  "code_real": false,
-  "rows": 9,
+  "codeReal": false,
   "groups": [
    {
     "cat": "เตียง",
     "mods": [
      {
+      "code": "NY1530-BED-5F",
       "sub": "5 ฟุต",
-      "w": 153.0,
-      "d": 206.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "w": 153,
+      "d": 206,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1530-BED-5F"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NY1830-BED-6F",
       "sub": "6 ฟุต",
-      "w": 183.0,
-      "d": 206.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "w": 183,
+      "d": 206,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1830-BED-6F"
+      "colours": [],
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15293,
-     "title": "NOKYOONG BED",
-     "spec": "KING:\n(6’)W183 X D206 X H80 CM.\nQUEEN:\n(5’)W153 X D206 X H80 CM.\nขาเตียงยกสูง ทำความสะอาดได้ง่ายความสูงฐานเตียงสามารถปรับระดับได้\nเพื่อให้เหมาะกับสัดส่วนของลูกค้า ขนาดไม่ใหญ่มาก ทำให้ห้องดูโปร่งสบาย",
      "link": "https://chawcher.com/product/nokyoong-bed/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nokyoong-bed.jpg"
+     "title": "NOKYOONG BED",
+     "text": "ขาเตียงยกสูง ทำความสะอาดได้ง่ายความสูงฐานเตียงสามารถปรับระดับได้\nเพื่อให้เหมาะกับสัดส่วนของลูกค้า ขนาดไม่ใหญ่มาก ทำให้ห้องดูโปร่งสบาย"
     }
    },
    {
     "cat": "โต๊ะกลาง",
     "mods": [
      {
+      "code": "NY1100-CT",
       "sub": "",
-      "w": 110.0,
-      "d": 50.0,
-      "h": 40.0,
-      "d2": null,
-      "h2": null,
+      "w": 110,
+      "d": 50,
+      "h": 40,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช",
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "NY1100-CT"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15237,
-     "title": "NOKYOONG COFFEE TABLE",
-     "spec": "W110 X D50 X H40 CM.",
      "link": "https://chawcher.com/product/nokyoong-coffee-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nookyoong-coffee-table-website.jpg"
+     "title": "NOKYOONG COFFEE TABLE"
     }
    },
    {
     "cat": "โต๊ะทานข้าว",
     "mods": [
      {
+      "code": "NY1500-DT-150",
       "sub": "150 cm",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1500-DT-150CM"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NY1500-DT-2KWKSBN",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 2 ตัว และม้านั่งกระสา",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1500-DT-2"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NY1500-DT-4KW",
       "sub": "พร้อมชุดเก้าอี้กีวี่ 4 ตัว",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1500-DT-4"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NY1500-DT-2EMUKSBN",
       "sub": "พร้อมชุดเก้าอี้อีมู 2 ตัว และม้านั่งกระสา",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1500-DT-2-H75"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "NY1500-DT-4EMU",
       "sub": "พร้อมชุดเก้าอี้อีมู 4 ตัว",
-      "w": 150.0,
-      "d": 80.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 150,
+      "d": 80,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท เชอรี่ และเบิร์ช"
       ],
-      "colour": [],
-      "code": "NY1500-DT-4-H75"
+      "colours": [],
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15225,
-     "title": "NOKYOONG DINING TABLE",
-     "spec": "W150 X D80 X H75 CM.\nโต๊ะ นกยูง ผลิตด้วยเทคโนโลยีชั้นสูงของ ญี่ปุ่น",
      "link": "https://chawcher.com/product/nokyoong-dining-table/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nookyoong-dining-table-website.jpg"
+     "title": "NOKYOONG DINING TABLE",
+     "text": "โต๊ะ นกยูง ผลิตด้วยเทคโนโลยีชั้นสูงของ ญี่ปุ่น"
     }
    }
-  ]
+  ],
+  "variants": 9,
+  "modules": 8
  },
  {
+  "ambiguous": [
+   {
+    "cat": "ตู้เก็บของ",
+    "codes": [
+     "KK800-SB",
+     "KK800-SB-H80"
+    ],
+    "subs": [
+     "—",
+     "—"
+    ]
+   }
+  ],
   "th": "กางเขน",
   "en": "Kangkaen",
   "prefix": "KK",
-  "code_real": false,
-  "rows": 6,
+  "codeReal": false,
   "groups": [
    {
     "cat": "ชั้นวางทีวี",
     "mods": [
      {
+      "code": "KK1600-TV",
       "sub": "",
-      "w": 160.0,
+      "w": 160,
       "d": 44.5,
-      "h": 43.0,
-      "d2": null,
-      "h2": null,
+      "h": 43,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KK1600-TV"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15273,
-     "title": "KANGKAEN TV CABINET",
-     "spec": "W160 X D44.5 X H43 CM.\n**สินค้าต้องประกอบด้วยตนเอง โดยมีอุปกรณ์ให้ในกล่อง**\nKANG KAEN TV Cabinet เรียบง่ายทั้งภายในและภายนอกไม่ใช่เฉพาะรูปทรงที่ดูเรียบง่ายเท่านั้น ผู้ใช้งานก็จะมีชีวิตที่เรียบง่ายขึ้นเพราะสินค้าชิ้นนี้สามารถเก็บอุปกรณ์การดูทีวีของคุณเข้าไปไว้ในช่องกระจกและเก็บสายทั้งหมดไว้ด้านหลัง ส่วนลิ้นชักก็ยังมี organizer จัดการให้การเก็บของเป็นระเบียบอีกด้วย นอกจากการออกแบบการใช้งานที่ทำให้ชีวิตคุณเรียบง่ายแล้ว ความปลอดภัยจากการใช้วัสดุที่ปลอดภัยระดับ F4 STARS ก็เป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าทั้ง collection นี้อีกด้วย (F4stars คือมาตรฐานการใช้สารเคมีที่น้อยที่สุดในโลกตอนนี้ น้อยกว่า E0 ซึ่งเป็นมาตรฐานที่ดีที่สุดของยุโรป)",
      "link": "https://chawcher.com/product/kangkaen-tv-cabinet/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kangkaen1-tv-website.jpg"
+     "title": "KANGKAEN TV CABINET",
+     "text": "สินค้าต้องประกอบด้วยตนเอง โดยมีอุปกรณ์ให้ในกล่อง\nKANG KAEN TV Cabinet เรียบง่ายทั้งภายในและภายนอกไม่ใช่เฉพาะรูปทรงที่ดูเรียบง่ายเท่านั้น ผู้ใช้งานก็จะมีชีวิตที่เรียบง่ายขึ้นเพราะสินค้าชิ้นนี้สามารถเก็บอุปกรณ์การดูทีวีของคุณเข้าไปไว้ในช่องกระจกและเก็บสายทั้งหมดไว้ด้านหลัง ส่วนลิ้นชักก็ยังมี organizer จัดการให้การเก็บของเป็นระเบียบอีกด้วย นอกจากการออกแบบการใช้งานที่ทำให้ชีวิตคุณเรียบง่ายแล้ว ความปลอดภัยจากการใช้วัสดุที่ปลอดภัยระดับ F4 STARS ก็เป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าทั้ง collection นี้อีกด้วย (F4stars คือมาตรฐานการใช้สารเคมีที่น้อยที่สุดในโลกตอนนี้ น้อยกว่า E0 ซึ่งเป็นมาตรฐานที่ดีที่สุดของยุโรป)"
     }
    },
    {
     "cat": "ตู้เก็บของ",
     "mods": [
      {
+      "code": "KK800-SB",
       "sub": "",
-      "w": 80.0,
+      "w": 80,
       "d": 44.5,
       "h": 126.5,
-      "d2": null,
-      "h2": null,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KK800-SB"
+      "variants": 1
      },
      {
+      "code": "KK800-SB-H80",
       "sub": "",
-      "w": 80.0,
+      "w": 80,
       "d": 44.5,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": true,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KK800-SB-H80"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15265,
-     "title": "KANGKAEN SIDEBOARD",
-     "spec": "W80 X D44.5 X H80 CM.\n**สินค้าต้องประกอบด้วยตนเอง โดยมีอุปกรณ์ให้ในกล่อง**\nKANGKAEN SIDEBOARD เรียบง่ายทั้งภายใน และภายนอก ไม่ใช่เฉพาะรูปทรงที่ดูเรียบง่ายเท่านั้น ผู้ใช้งานก็จะมีชีวิตที่เรียบง่ายขึ้น\nนอกจากการออกแบบการใช้งานที่ทำให้ชีวิตคุณเรียบง่ายแล้ว ความปลอดภัยจากการใช้วัสดุที่ปลอดภัยระดับ F**** ก็เป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าทั้ง collection นี้อีกด้วย (F4stars คือมาตรฐานการใช้สารเคมีที่น้อยที่สุดในโลกตอนนี้ น้อยกว่า E0 ซึ่งเป็นมาตรฐานที่ดีที่สุดของยุโรป)",
      "link": "https://chawcher.com/product/kangkaen-sideboard/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kangkaen1-sideboard-website-1.jpg"
+     "title": "KANGKAEN SIDEBOARD",
+     "text": "สินค้าต้องประกอบด้วยตนเอง โดยมีอุปกรณ์ให้ในกล่อง\nKANGKAEN SIDEBOARD เรียบง่ายทั้งภายใน และภายนอก ไม่ใช่เฉพาะรูปทรงที่ดูเรียบง่ายเท่านั้น ผู้ใช้งานก็จะมีชีวิตที่เรียบง่ายขึ้น\nนอกจากการออกแบบการใช้งานที่ทำให้ชีวิตคุณเรียบง่ายแล้ว ความปลอดภัยจากการใช้วัสดุที่ปลอดภัยระดับ F ก็เป็นมาตรฐานของญี่ปุ่นที่ใช้ในการผลิตสินค้าทั้ง collection นี้อีกด้วย (F4stars คือมาตรฐานการใช้สารเคมีที่น้อยที่สุดในโลกตอนนี้ น้อยกว่า E0 ซึ่งเป็นมาตรฐานที่ดีที่สุดของยุโรป)"
     }
    },
    {
     "cat": "เตียง",
     "mods": [
      {
+      "code": "KK1525-BED-5F",
       "sub": "5 ฟุต",
       "w": 152.5,
-      "d": 210.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "d": 210,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KK1525-BED-5F"
+      "variants": 1
      },
      {
+      "code": "KK1825-BED-6F",
       "sub": "6 ฟุต",
       "w": 182.5,
-      "d": 210.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "d": 210,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KK1825-BED-6F"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": {
-     "id": 15294,
-     "title": "KANGKAEN BED",
-     "spec": "KING:\n(6’)W182.5 X D210 X H80 CM.\nQUEEN:\n(5’)W152.5 X D210 X H80 CM.\nKANGKAEN SIDE BED:\nW40 X D40 X H50 CM.\nเตียงไม้โอ๊คฐานเตี้ยสไตล์ญีปุ่น ฐานทึบติดพื้นทำให้ฝุ่นไม่ไปสะสมใต้เตียง\nความปลอดภัยจากการใช้วัสดุที่ปลอดภัยระดับ F มีขนาด 5ฟุตและ 6ฟุต",
      "link": "https://chawcher.com/product/kangkaen-bed/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kangkaen-bed.jpg"
+     "title": "KANGKAEN BED",
+     "text": "เตียงไม้โอ๊คฐานเตี้ยสไตล์ญีปุ่น ฐานทึบติดพื้นทำให้ฝุ่นไม่ไปสะสมใต้เตียง\nความปลอดภัยจากการใช้วัสดุที่ปลอดภัยระดับ F มีขนาด 5ฟุตและ 6ฟุต"
     }
    },
    {
     "cat": "โต๊ะข้างเตียง",
     "mods": [
      {
+      "code": "KK400-NT",
       "sub": "",
-      "w": 40.0,
-      "d": 40.0,
-      "h": 50.0,
-      "d2": null,
-      "h2": null,
+      "w": 40,
+      "d": 40,
+      "h": 50,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "KK400-NT"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 6,
+  "modules": 6
  },
  {
+  "ambiguous": [],
   "th": "มินิเนส",
   "en": "Mini Nest",
   "prefix": "MN",
-  "code_real": false,
-  "rows": 6,
+  "codeReal": false,
   "groups": [
    {
     "cat": "อาร์มแชร์",
     "mods": [
      {
+      "code": "MN750-AC",
       "sub": "",
-      "w": 75.0,
-      "d": 71.0,
-      "h": 72.0,
-      "d2": null,
-      "h2": null,
+      "w": 75,
+      "d": 71,
+      "h": 72,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
-       "เบาะผ้า พนักพิงด้านนอกหนัง",
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
+       "หนังแท้",
        "หนังแท้ (ออย)",
-       "หนังแท้"
+       "เบาะผ้า พนักพิงด้านนอกหนัง"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "MN750-AC"
+      "woods": [],
+      "colours": [],
+      "variants": 6
      }
     ],
+    "image": null,
     "web": {
-     "id": 15135,
-     "title": "MININEST ARMCHAIR",
-     "spec": "W75 X D71 X H72 CM.\nเฟรมไม้โอ๊ค",
      "link": "https://chawcher.com/product/mininest-armchair/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/mininest2-armchair-website-3.jpg"
+     "title": "MININEST ARMCHAIR",
+     "text": "เฟรมไม้โอ๊ค"
     }
    }
-  ]
+  ],
+  "variants": 6,
+  "modules": 1
  },
  {
+  "ambiguous": [],
+  "th": "กระตั้ว",
+  "en": "Kratua Sofa",
+  "prefix": "KTU",
+  "codeReal": false,
+  "groups": [
+   {
+    "cat": "โซฟา",
+    "mods": [
+     {
+      "code": "KTU2030-3S",
+      "sub": "3 ที่นั่ง",
+      "w": 203,
+      "d": 87,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
+      "mats": [
+       "ผ้า A",
+       "ผ้า B",
+       "ผ้า C",
+       "หนังแท้",
+       "หนังแท้ (ออย)"
+      ],
+      "woods": [],
+      "colours": [],
+      "variants": 5
+     }
+    ],
+    "image": null,
+    "web": {
+     "link": "https://chawcher.com/product/kratua-sofa/",
+     "title": "KRATUA SOFA"
+    }
+   }
+  ],
+  "variants": 5,
+  "modules": 1
+ },
+ {
+  "ambiguous": [],
+  "th": "เนส",
+  "en": "Nest Sofa",
+  "prefix": "NS",
+  "codeReal": false,
+  "groups": [
+   {
+    "cat": "โซฟา",
+    "mods": [
+     {
+      "code": "NS1420-2S",
+      "sub": "2 ที่นั่ง",
+      "w": 142,
+      "d": 105,
+      "h": 102,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
+      "mats": [
+       "ผ้า A",
+       "ผ้า B",
+       "ผ้า C",
+       "หนังแท้",
+       "หนังแท้ (ออย)"
+      ],
+      "woods": [],
+      "colours": [],
+      "variants": 5
+     }
+    ],
+    "image": null,
+    "web": {
+     "link": "https://chawcher.com/product/nest-love-seat/",
+     "title": "NEST LOVE SEAT",
+     "text": "1.โซฟา Love Seat ประกอบด้วยหมอนอิง 3 ใบ\n2.โครงผลิตจากไม้เนื้อแข็ง แข็งแรงทนทาน"
+    }
+   }
+  ],
+  "variants": 5,
+  "modules": 1
+ },
+ {
+  "ambiguous": [],
   "th": "เบิร์ด",
   "en": "Bird",
   "prefix": "BD",
-  "code_real": false,
-  "rows": 5,
+  "codeReal": false,
   "groups": [
    {
     "cat": "ชั้นวางหนังสือ",
     "mods": [
      {
+      "code": "BD800-BS",
       "sub": "",
-      "w": 80.0,
-      "d": 43.0,
-      "h": 180.0,
-      "d2": null,
-      "h2": null,
+      "w": 80,
+      "d": 43,
+      "h": 180,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้วอลนัท",
        "ไม้โอ๊ค"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "BD800-BS"
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15290,
-     "title": "BIRD BOOKSHELF (WALNUT )",
-     "spec": "W80 X D42 X H180 CM.",
      "link": "https://chawcher.com/product/bird-bookshelf-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/shelf-walnut.jpg"
+     "title": "BIRD BOOKSHELF (WALNUT )"
     }
    },
    {
     "cat": "โต๊ะข้าง",
     "mods": [
      {
+      "code": "BD600-SDT",
       "sub": "",
-      "w": 60.0,
-      "d": 60.0,
-      "h": 49.0,
-      "d2": null,
-      "h2": null,
+      "w": 60,
+      "d": 60,
+      "h": 49,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ขาไม้โอ๊ค ท็อปไม้สังเคราะห์"
       ],
-      "colour": [],
-      "code": "BD600-SDT"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "BD500-SDT",
       "sub": "",
-      "w": 50.0,
-      "d": 50.0,
-      "h": 59.0,
-      "d2": null,
-      "h2": null,
+      "w": 50,
+      "d": 50,
+      "h": 59,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ขาไม้โอ๊ค ท็อปไม้สังเคราะห์"
       ],
-      "colour": [],
-      "code": "BD500-SDT"
+      "colours": [],
+      "variants": 1
      },
      {
+      "code": "BD400-SDT",
       "sub": "",
-      "w": 40.0,
-      "d": 40.0,
-      "h": 39.0,
-      "d2": null,
-      "h2": null,
+      "w": 40,
+      "d": 40,
+      "h": 39,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ขาไม้โอ๊ค ท็อปไม้สังเคราะห์"
       ],
-      "colour": [],
-      "code": "BD400-SDT"
+      "colours": [],
+      "variants": 1
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 5,
+  "modules": 4
  },
  {
-  "th": "เนส",
-  "en": "Nest Sofa",
-  "prefix": "NS",
-  "code_real": false,
-  "rows": 5,
-  "groups": [
-   {
-    "cat": "โซฟา",
-    "mods": [
-     {
-      "sub": "2 ที่นั่ง",
-      "w": 142.0,
-      "d": 105.0,
-      "h": 102.0,
-      "d2": null,
-      "h2": null,
-      "mats": [
-       "ผ้า A",
-       "ผ้า B",
-       "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
-      ],
-      "wood": [],
-      "colour": [],
-      "code": "NS1420-2S"
-     }
-    ],
-    "web": {
-     "id": 15169,
-     "title": "NEST LOVE SEAT",
-     "spec": "W142 X D105 X H102 C\n1.โซฟา Love Seat ประกอบด้วยหมอนอิง 3 ใบ\n2.โครงผลิตจากไม้เนื้อแข็ง แข็งแรงทนทาน",
-     "link": "https://chawcher.com/product/nest-love-seat/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/nest2-loveseat-website-1.jpg"
-    }
-   }
-  ]
- },
- {
+  "ambiguous": [],
   "th": "โอบ",
   "en": "OAB Sofa",
   "prefix": "OB",
-  "code_real": false,
-  "rows": 5,
+  "codeReal": false,
   "groups": [
    {
     "cat": "โซฟา",
     "mods": [
      {
+      "code": "OB1820-2S",
       "sub": "2 ที่นั่ง",
-      "w": 182.0,
-      "d": 96.0,
-      "h": 95.0,
-      "d2": null,
-      "h2": 43.0,
+      "w": 182,
+      "d": 96,
+      "h": 95,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
+       "หนังแท้",
+       "หนังแท้ (ออย)"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "OB1820-2S"
+      "woods": [],
+      "colours": [],
+      "variants": 5
      }
     ],
+    "image": null,
     "web": {
-     "id": 15072,
-     "title": "OAB SOFA",
-     "spec": "W183 X D95 X H96 CM.",
      "link": "https://chawcher.com/product/oab-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/oab1-sofa-website.jpg"
+     "title": "OAB SOFA"
     }
    }
-  ]
+  ],
+  "variants": 5,
+  "modules": 1
  },
  {
-  "th": "กระตั้ว",
-  "en": "Kratua Sofa",
-  "prefix": "KTU",
-  "code_real": false,
-  "rows": 5,
-  "groups": [
-   {
-    "cat": "โซฟา",
-    "mods": [
-     {
-      "sub": "3 ที่นั่ง",
-      "w": 203.0,
-      "d": 87.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
-      "mats": [
-       "ผ้า A",
-       "ผ้า B",
-       "ผ้า C",
-       "หนังแท้ (ออย)",
-       "หนังแท้"
-      ],
-      "wood": [],
-      "colour": [],
-      "code": "KTU2030-3S"
-     }
-    ],
-    "web": {
-     "id": 15115,
-     "title": "KRATUA SOFA",
-     "spec": "W203 X D87 X H75 CM.",
-     "link": "https://chawcher.com/product/kratua-sofa/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/kratua1-sofa-website-1.jpg"
-    }
-   }
-  ]
- },
- {
+  "ambiguous": [],
   "th": "กีวี่ โซฟา",
   "en": "Kiwi Headrest",
   "prefix": "KWS",
-  "code_real": false,
-  "rows": 3,
+  "codeReal": false,
   "groups": [
    {
     "cat": "ที่พักหัว",
     "mods": [
      {
+      "code": "KWS470-HR",
       "sub": "",
-      "w": 47.0,
-      "d": 23.0,
-      "h": 75.0,
-      "d2": null,
-      "h2": null,
+      "w": 47,
+      "d": 23,
+      "h": 75,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "ผ้า B",
        "หนังแท้/PVC"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "KWS470-HR"
+      "woods": [],
+      "colours": [],
+      "variants": 3
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 3,
+  "modules": 1
  },
  {
-  "th": "ฟลามิงโก",
-  "en": "Flamingo Sideboard",
-  "prefix": "FLS",
-  "code_real": false,
-  "rows": 2,
-  "groups": [
-   {
-    "cat": "ตู้เก็บของ",
-    "mods": [
-     {
-      "sub": "",
-      "w": 161.0,
-      "d": 44.5,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
-      "mats": [],
-      "wood": [
-       "ไม้โอ๊ค"
-      ],
-      "colour": [
-       "สีธรรมชาติ",
-       "สีวอลนัท"
-      ],
-      "code": "FLS1610-SB"
-     }
-    ],
-    "web": {
-     "id": 15261,
-     "title": "FLAMINGO SIDEBOARD (WALNUT)",
-     "spec": "W161 X D44.5 X H80.2 CM.",
-     "link": "https://chawcher.com/product/flamingo-sideboard-walnut/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/flamingo1-walnut-sideboard-website.jpg"
-    }
-   }
-  ]
- },
- {
+  "ambiguous": [],
   "th": "ดิน",
   "en": "Din Stool",
   "prefix": "DN",
-  "code_real": false,
-  "rows": 2,
+  "codeReal": false,
   "groups": [
    {
     "cat": "สตูล",
     "mods": [
      {
+      "code": "DN680-ST",
       "sub": "",
-      "w": 68.0,
-      "d": 68.0,
-      "h": 30.0,
-      "d2": null,
-      "h2": null,
+      "w": 68,
+      "d": 68,
+      "h": 30,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A",
        "หนังแท้"
       ],
-      "wood": [],
-      "colour": [],
-      "code": "DN680-ST"
+      "woods": [],
+      "colours": [],
+      "variants": 2
      }
     ],
+    "image": null,
     "web": {
-     "id": 15216,
-     "title": "DIN STOOL",
-     "spec": "W68 X D68 X H30 CM.\nเบาะรองนั่งที่นั่งสบายที่สุด",
      "link": "https://chawcher.com/product/din-stool/",
-     "image": "https://chawcher.com/wp-content/uploads/2025/07/din1-stool-website.jpg"
+     "title": "DIN STOOL",
+     "text": "เบาะรองนั่งที่นั่งสบายที่สุด"
     }
    }
-  ]
+  ],
+  "variants": 2,
+  "modules": 1
  },
  {
+  "ambiguous": [],
+  "th": "ฟลามิงโก",
+  "en": "Flamingo Sideboard",
+  "prefix": "FLS",
+  "codeReal": false,
+  "groups": [
+   {
+    "cat": "ตู้เก็บของ",
+    "mods": [
+     {
+      "code": "FLS1610-SB",
+      "sub": "",
+      "w": 161,
+      "d": 44.5,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
+      "mats": [],
+      "woods": [
+       "ไม้โอ๊ค"
+      ],
+      "colours": [
+       "สีธรรมชาติ",
+       "สีวอลนัท"
+      ],
+      "variants": 2
+     }
+    ],
+    "image": null,
+    "web": {
+     "link": "https://chawcher.com/product/flamingo-sideboard-walnut/",
+     "title": "FLAMINGO SIDEBOARD (WALNUT)"
+    }
+   }
+  ],
+  "variants": 2,
+  "modules": 1
+ },
+ {
+  "ambiguous": [],
   "th": "ชิน",
   "en": "Chin",
   "prefix": "CH",
-  "code_real": false,
-  "rows": 1,
+  "codeReal": false,
   "groups": [
    {
     "cat": "ศาลเจ้า (ตี่จู่เอี๊ยะ)",
     "mods": [
      {
+      "code": "CH550-SH",
       "sub": "",
-      "w": 55.0,
-      "d": 50.0,
-      "h": 80.0,
-      "d2": null,
-      "h2": null,
+      "w": 55,
+      "d": 50,
+      "h": 80,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [],
-      "wood": [
+      "woods": [
        "ไม้เมเปิ้ล"
       ],
-      "colour": [
+      "colours": [
        "สีธรรมชาติ"
       ],
-      "code": "CH550-SH"
+      "variants": 1
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 1,
+  "modules": 1
  },
  {
+  "ambiguous": [],
   "th": "ฌ เฌอ",
   "en": "Chaw Cher Pillow",
   "prefix": "CC",
-  "code_real": false,
-  "rows": 1,
+  "codeReal": false,
   "groups": [
    {
     "cat": "หมอน",
     "mods": [
      {
+      "code": "CC450-PL-S",
       "sub": "Size S",
-      "w": 45.0,
+      "w": 45,
       "d": null,
-      "h": 45.0,
-      "d2": null,
-      "h2": null,
+      "h": 45,
+      "seatH": null,
+      "backD": null,
+      "ambiguous": false,
       "mats": [
        "ผ้า A"
       ],
-      "wood": [
+      "woods": [
        "ไส้ใยสังเคราะห์"
       ],
-      "colour": [],
-      "code": "CC450-PL-S"
+      "colours": [],
+      "variants": 1
      }
     ],
+    "image": null,
     "web": null
    }
-  ]
+  ],
+  "variants": 1,
+  "modules": 1
  }
 ]
