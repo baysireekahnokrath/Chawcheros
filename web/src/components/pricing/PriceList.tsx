@@ -122,14 +122,43 @@ function SimpleRows({ rows }: { rows: PriceRow[] }) {
   );
 }
 
+const ALL = 'ทั้งหมด';
+
+/** รายการตัวเลือก พร้อมจำนวนรุ่น · นับรุ่นไม่ใช่นับแถว เลขจะได้ตรงกับที่เห็นบนจอ */
+function options(rows: PriceRow[], pick: (r: PriceRow) => string) {
+  const m = new Map<string, Set<string>>();
+  for (const r of rows) {
+    const k = pick(r);
+    if (!m.has(k)) m.set(k, new Set());
+    m.get(k)!.add(r.product_id);
+  }
+  return [...m.entries()]
+    .map(([name, ids]) => ({ name, n: ids.size }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'th'));
+}
+
 export default function PriceList({ rows }: { rows: PriceRow[] }) {
   const [q, setQ] = useState('');
-  const [cat, setCat] = useState('ทั้งหมด');
+  const [cat, setCat] = useState(ALL);
+  const [coll, setColl] = useState(ALL);
 
-  const cats = useMemo(
-    () => ['ทั้งหมด', ...[...new Set(rows.map((r) => r.หมวด))].sort((a, b) => a.localeCompare(b, 'th'))],
-    [rows],
+  // รุ่นโชว์ครบทุกตัวเสมอ · ประเภทแคบลงตามรุ่นที่เลือก
+  // เคยให้แคบลงทั้งสองทาง แล้วเจอทางตัน: พอเลือก ทากะ + สตูล
+  // ช่องรุ่นเหลือแค่ ทากะ ตัวเดียว สลับไปรุ่นอื่นไม่ได้จนกว่าจะล้างประเภทก่อน
+  const collOpts = useMemo(() => options(rows, (r) => r.รุ่น), [rows]);
+  const catOpts = useMemo(
+    () => options(rows.filter((r) => coll === ALL || r.รุ่น === coll), (r) => r.หมวด),
+    [rows, coll],
   );
+
+  // เปลี่ยนช่องหนึ่งแล้วอีกช่องอาจค้างค่าที่ไม่มีอยู่จริง ต้องรีเซ็ตให้
+  function pickColl(v: string) {
+    setColl(v);
+    if (v !== ALL && cat !== ALL && !rows.some((r) => r.รุ่น === v && r.หมวด === cat)) setCat(ALL);
+  }
+  function pickCat(v: string) {
+    setCat(v);
+  }
 
   const groups = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -139,14 +168,21 @@ export default function PriceList({ rows }: { rows: PriceRow[] }) {
       (r.ชื่ออังกฤษ ?? '').toLowerCase().includes(needle) ||
       r.หมวด.toLowerCase().includes(needle) ||
       r.sku_display.includes(needle);
-    return groupByProduct(rows.filter((r) => (cat === 'ทั้งหมด' || r.หมวด === cat) && hit(r)));
-  }, [rows, q, cat]);
+    return groupByProduct(
+      rows.filter(
+        (r) => (cat === ALL || r.หมวด === cat) && (coll === ALL || r.รุ่น === coll) && hit(r),
+      ),
+    );
+  }, [rows, q, cat, coll]);
 
   const variantCount = groups.reduce((n, g) => n + g.rows.length, 0);
+  const filtered = q.trim() !== '' || cat !== ALL || coll !== ALL;
+  const selectClass =
+    'rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-text outline-none focus:border-accent';
 
   return (
     <>
-      <div className="print:hidden">
+      <div className="grid gap-2 print:hidden">
         <input
           id="price-search"
           value={q}
@@ -154,24 +190,62 @@ export default function PriceList({ rows }: { rows: PriceRow[] }) {
           placeholder="ค้นหารุ่น หมวด หรือ SKU"
           className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 outline-none focus:border-accent"
         />
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {cats.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setCat(c)}
-              aria-pressed={cat === c}
-              className={`rounded-full border px-3 py-1 text-sm ${
-                cat === c ? 'border-accent bg-accent text-accent-fg' : 'border-border text-muted'
-              }`}
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          <label className="grid gap-1 text-xs text-muted" htmlFor="price-coll">
+            รุ่น
+            <select
+              id="price-coll"
+              value={coll}
+              onChange={(e) => pickColl(e.target.value)}
+              className={selectClass}
             >
-              {c}
-            </button>
-          ))}
+              <option value={ALL}>ทุกรุ่น ({collOpts.length})</option>
+              {collOpts.map((o) => (
+                <option key={o.name} value={o.name}>
+                  {o.name} ({o.n})
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="grid gap-1 text-xs text-muted" htmlFor="price-cat">
+            ประเภท
+            <select
+              id="price-cat"
+              value={cat}
+              onChange={(e) => pickCat(e.target.value)}
+              className={selectClass}
+            >
+              <option value={ALL}>ทุกประเภท ({catOpts.length})</option>
+              {catOpts.map((o) => (
+                <option key={o.name} value={o.name}>
+                  {o.name} ({o.n})
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-        <p className="mt-3 text-sm text-muted">
+
+        <p className="text-sm text-muted">
           {groups.length} รุ่น · {variantCount} ตัวสินค้า · ราคารวม VAT แล้ว
           {' · '}ตัวเลขขีดฆ่าคือราคาเต็ม ตัวเลขเขียวคือราคาขาย
+          {filtered && (
+            <>
+              {' · '}
+              <button
+                type="button"
+                onClick={() => {
+                  setQ('');
+                  setCat(ALL);
+                  setColl(ALL);
+                }}
+                className="underline underline-offset-2"
+              >
+                ล้างตัวกรอง
+              </button>
+            </>
+          )}
         </p>
       </div>
 
