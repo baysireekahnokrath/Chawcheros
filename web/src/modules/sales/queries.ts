@@ -15,7 +15,7 @@ export type OrderRow = {
   รับชำระแล้ว: number;
   ยอดค้าง: number;
   สถานะการเงิน: string;
-  เลยกำหนดส่งและยังค้างเงิน: boolean;
+  เลยกำหนดและค้างเงิน: boolean;
   สถานะเอกสาร: string;
   'w/o': string | null;
 };

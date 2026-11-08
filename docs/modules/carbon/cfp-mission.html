@@ -1,0 +1,464 @@
+<title>ภารกิจใบ CFP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Noto+Sans+Thai:wght@400;500&display=swap">
+<style>
+/* Layout: one working page for the team: progress on top, then steps, ready-to-send messages, data to prepare, quotes, contact log. CHAW CHER CI. */
+:root {
+  --bg: #F7F8F8; --panel: #FFFFFF; --ink: #2F4554; --muted: #5B6670; --line: #DDE1E3;
+  --navy: #2B4368; --aqua: #83B7BF; --aqua-soft: #E4EEF0; --taupe: #958C7B;
+  --ok: #2E6B4F; --ok-bg: #E3EFE8; --warn: #7A5A12; --warn-bg: #F6EEDB;
+  --logo-filter: none;
+  --font: "Montserrat", "Noto Sans Thai", "Sukhumvit Set", Tahoma, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1C2A33; --panel: #24343F; --ink: #E6ECEF; --muted: #A3B1BA; --line: #344853;
+  --navy: #A9CDD3; --aqua: #83B7BF; --aqua-soft: #2C4250; --taupe: #B8AE9C;
+  --ok: #8FD0AE; --ok-bg: #22392F; --warn: #E8CF8F; --warn-bg: #3A321E;
+  --logo-filter: brightness(0) invert(1); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1C2A33; --panel: #24343F; --ink: #E6ECEF; --muted: #A3B1BA; --line: #344853;
+  --navy: #A9CDD3; --aqua: #83B7BF; --aqua-soft: #2C4250; --taupe: #B8AE9C;
+  --ok: #8FD0AE; --ok-bg: #22392F; --warn: #E8CF8F; --warn-bg: #3A321E;
+  --logo-filter: brightness(0) invert(1); color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 64px; }
+.wrap { max-width: 960px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2, h3 { font-weight: 500; margin: 0; text-wrap: balance; color: var(--navy); }
+h1 { font-size: clamp(24px, 4vw, 32px); line-height: 1.35; }
+h2 { font-size: 20px; }
+h3 { font-size: 16px; color: var(--ink); }
+p { margin: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--taupe); }
+.muted { color: var(--muted); font-size: 13.5px; }
+header { display: flex; gap: 18px; align-items: center; }
+header img { width: 44px; height: 57px; filter: var(--logo-filter); flex: none; }
+header > div { min-width: 0; display: grid; gap: 4px; }
+
+.status { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; }
+.pill { border-radius: 999px; padding: 3px 12px; background: var(--aqua-soft); color: var(--ink); }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+
+.progress { display: grid; gap: 8px; }
+.bar { height: 10px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--navy); width: 0; transition: width .3s; }
+
+section { display: grid; gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.tip { background: var(--aqua-soft); border-radius: 10px; padding: 12px 16px; font-size: 14px; }
+
+/* steps */
+.step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+.step:first-child { border-top: 0; padding-top: 0; }
+.step input[type=checkbox] { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--navy); }
+.step .t { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.step .t b { font-weight: 500; }
+.step.done .t b { text-decoration: line-through; color: var(--muted); }
+.when { font-size: 12px; color: var(--taupe); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+.step .f { display: grid; grid-template-columns: 1fr 150px; gap: 8px; margin-top: 8px; }
+.step .f .note { grid-column: 1 / -1; }
+
+/* forms */
+label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+input, select, textarea { font: inherit; font-size: 14.5px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+textarea { min-height: 64px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.full { grid-column: 1 / -1; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; }
+legend { font-weight: 500; color: var(--navy); margin-bottom: 8px; padding: 0; }
+
+button { font: inherit; font-size: 14px; font-weight: 500; border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--navy); background: var(--navy); color: var(--panel); }
+button.ghost { background: transparent; color: var(--navy); }
+button.small { padding: 4px 10px; font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* contacts */
+.who { display: grid; gap: 6px; }
+.who .meta { font-size: 13.5px; color: var(--muted); }
+details { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--bg); }
+summary { cursor: pointer; font-weight: 500; color: var(--navy); }
+pre.msg { white-space: pre-wrap; word-break: break-word; font: inherit; font-size: 14px; margin: 10px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; max-height: 360px; overflow: auto; }
+.fill { background: var(--warn-bg); color: var(--warn); border-radius: 4px; padding: 0 3px; }
+
+/* tables */
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 12.5px; }
+td.num { text-align: right; }
+.empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--navy); color: var(--panel); padding: 8px 16px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.toast.on { opacity: 1; }
+@media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: minmax(0, 1fr); } .step .f { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .bar > span, .toast { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <img src="data:image/png;base64,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" alt="CHAW CHER">
+    <div>
+      <p class="eyebrow">CHAW CHER · ทีมงาน</p>
+      <h1>ภารกิจ: ได้ใบรับรอง CFP จาก อบก. ให้เร็วที่สุด</h1>
+      <p class="muted">ทำตามลำดับข้างล่าง พิมพ์ทุกอย่างลงในหน้านี้ ระบบบันทึกให้ทันทีที่ออกจากช่อง</p>
+    </div>
+  </header>
+
+  <div class="status" aria-live="polite">
+    <span class="pill" id="saveMode">กำลังเชื่อมต่อ…</span>
+    <span class="muted" id="saveNote"></span>
+  </div>
+
+  <div class="progress card">
+    <div class="row" style="justify-content:space-between"><h2>ความคืบหน้า</h2><span id="progText" class="muted">0 / 9 ขั้น</span></div>
+    <div class="bar" role="progressbar" aria-label="ความคืบหน้า" aria-valuemin="0" aria-valuemax="9" id="bar"><span></span></div>
+    <p class="tip"><b>ทางที่เร็วที่สุด:</b> ขั้น 1, 2 และ 5–6 ไม่ต้องรอกัน ทำพร้อมกันได้เลย ขั้น 6 (ชั่งชิ้นส่วนโซฟา) ใช้เวลานานที่สุด เริ่มก่อนได้ทันทีโดยไม่ต้องรอใคร</p>
+  </div>
+
+  <section>
+    <h2>1 · ขั้นตอน</h2>
+    <div class="card" id="steps"></div>
+  </section>
+
+  <section>
+    <h2>2 · ติดต่อใคร · ข้อความพร้อมส่ง</h2>
+    <p class="muted">ข้อความดึงชื่อบริษัท ชื่อผู้ส่ง และเบอร์จากส่วนที่ 3 ให้อัตโนมัติ ช่องที่ยังเป็น<span class="fill">[สีเหลือง]</span>คือยังไม่ได้กรอก</p>
+    <div class="card who">
+      <h3>Davis · ผู้ผลิตผ้า SMART (คุณ Vicky)</h3>
+      <p class="meta">ช่องทาง: กลุ่มแชท S-ASE-DAVIS · ส่งภาษาอังกฤษ · ขอเอกสารผ้ารุ่น GRACE</p>
+      <details><summary>ข้อความถึง Davis</summary><pre class="msg" id="msg-davis"></pre><button class="small" data-copy="davis">คัดลอกข้อความ</button></details>
+    </div>
+    <div class="card who">
+      <h3>อบก. · องค์การบริหารจัดการก๊าซเรือนกระจก (TGO)</h3>
+      <p class="meta">หาเบอร์และอีเมลฝ่ายฉลากคาร์บอนที่ <a href="https://www.tgo.or.th" target="_blank" rel="noopener">tgo.or.th</a> หน้า “ติดต่อเรา” · ที่อยู่: อาคารรัฐประศาสนภักดี ชั้น 9 ศูนย์ราชการฯ ถ.แจ้งวัฒนะ หลักสี่ กรุงเทพฯ 10210</p>
+      <details><summary>คำพูดตอนโทร</summary><pre class="msg" id="msg-call"></pre><button class="small" data-copy="call">คัดลอก</button></details>
+      <details><summary>อีเมลถึง อบก.</summary><pre class="msg" id="msg-tgo"></pre><button class="small" data-copy="tgo">คัดลอกอีเมล</button></details>
+    </div>
+    <div class="card who">
+      <h3>ที่ปรึกษาและผู้ทวนสอบ CFP (2–3 ราย)</h3>
+      <p class="meta">ใช้รายชื่อที่ อบก. ให้มา · แนบไฟล์แบบเก็บข้อมูล CFP-data-collection-sofa.xlsx ไปด้วย</p>
+      <details><summary>อีเมลขอใบเสนอราคา</summary><pre class="msg" id="msg-consult"></pre><button class="small" data-copy="consult">คัดลอกอีเมล</button></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>3 · ข้อมูลที่ต้องเตรียมก่อนคุย</h2>
+    <form class="card" id="infoForm" autocomplete="off">
+      <fieldset class="grid2">
+        <legend>บริษัทและผู้ติดต่อ</legend>
+        <label>ชื่อนิติบุคคล<input data-k="info.company" id="i-company" placeholder="บริษัท … จำกัด"></label>
+        <label>เลขประจำตัวผู้เสียภาษี<input data-k="info.taxid" id="i-taxid" inputmode="numeric"></label>
+        <label>จังหวัดที่ตั้งโรงงาน<input data-k="info.province" id="i-province"></label>
+        <label>ที่อยู่โรงงาน<input data-k="info.address" id="i-address"></label>
+        <label>ชื่อผู้ติดต่อ (ผู้ส่งอีเมล)<input data-k="info.sender" id="i-sender"></label>
+        <label>ตำแหน่ง<input data-k="info.role" id="i-role"></label>
+        <label>เบอร์โทร<input data-k="info.phone" id="i-phone" inputmode="tel"></label>
+        <label>อีเมล<input data-k="info.email" id="i-email" inputmode="email"></label>
+      </fieldset>
+      <fieldset class="grid3">
+        <legend>โซฟารุ่นแรกที่จะขอ CFP</legend>
+        <label>ชื่อรุ่น<input data-k="info.model" id="i-model"></label>
+        <label>SKU<input data-k="info.sku" id="i-sku"></label>
+        <label>ผ้าที่ใช้<input data-k="info.fabric" id="i-fabric" placeholder="SMART by Davis · GRACE"></label>
+        <label>ผ้าต่อตัว (เมตร)<input data-k="info.meters" id="i-meters" inputmode="decimal"></label>
+        <label>น้ำหนักโซฟา 1 ตัว (กก.)<input data-k="info.weight" id="i-weight" inputmode="decimal"></label>
+        <label>ผลิตต่อปี (ตัว)<input data-k="info.perYear" id="i-perYear" inputmode="numeric"></label>
+      </fieldset>
+      <fieldset class="grid2">
+        <legend>คำตอบจาก Davis</legend>
+        <label>% วัสดุรีไซเคิลของผ้า<input data-k="info.recycledPct" id="i-recycledPct" inputmode="decimal"></label>
+        <label>มีใบรับรองรีไซเคิล (เช่น GRS)?<select data-k="info.grs" id="i-grs"><option value="">ยังไม่รู้</option><option>มี</option><option>ไม่มี</option></select></label>
+        <label>คาร์บอนของผ้า (kgCO₂e ต่อเมตร)<input data-k="info.fabricCo2" id="i-fabricCo2" inputmode="decimal"></label>
+        <label>ที่มาของ 370 ขวด (ใช้ผ้ากี่เมตร)<input data-k="info.bottleBasis" id="i-bottleBasis"></label>
+        <label class="full">ไฟล์ที่ Davis ส่งมา / ลิงก์<input data-k="info.davisFiles" id="i-davisFiles"></label>
+      </fieldset>
+      <fieldset class="grid2">
+        <legend>คำตอบจาก อบก.</legend>
+        <label>ฝ่ายและชื่อผู้ติดต่อ<input data-k="info.tgoContact" id="i-tgoContact"></label>
+        <label>เบอร์ / อีเมล อบก.<input data-k="info.tgoChannel" id="i-tgoChannel"></label>
+        <label>ค่าธรรมเนียมขอรับรอง<input data-k="info.tgoFee" id="i-tgoFee"></label>
+        <label>ระยะเวลาโดยประมาณ<input data-k="info.tgoTime" id="i-tgoTime"></label>
+        <label>ยื่น CFP + CE-CFP พร้อมกันได้ไหม<select data-k="info.tgoBoth" id="i-tgoBoth"><option value="">ยังไม่รู้</option><option>ได้</option><option>ไม่ได้</option></select></label>
+        <label>มีโครงการช่วย SME ไหม<input data-k="info.tgoSme" id="i-tgoSme"></label>
+        <label class="full">ขั้นตอนและเอกสารที่ต้องใช้<textarea data-k="info.tgoSteps" id="i-tgoSteps"></textarea></label>
+      </fieldset>
+    </form>
+  </section>
+
+  <section>
+    <h2>4 · ใบเสนอราคาที่ปรึกษา</h2>
+    <div class="card">
+      <form class="grid3" id="quoteForm" autocomplete="off">
+        <label>ชื่อที่ปรึกษา<input id="q-name" required></label>
+        <label>ผู้ติดต่อ / เบอร์<input id="q-contact"></label>
+        <label>ราคารวม (บาท)<input id="q-price" inputmode="numeric"></label>
+        <label>ระยะเวลา (สัปดาห์)<input id="q-weeks" inputmode="numeric"></label>
+        <label>เคยทำเฟอร์นิเจอร์/สิ่งทอ<select id="q-exp"><option value="">ไม่ทราบ</option><option>เคย</option><option>ไม่เคย</option></select></label>
+        <label>หมายเหตุ<input id="q-note"></label>
+        <div class="full row"><button type="submit">เพิ่มใบเสนอราคา</button></div>
+      </form>
+      <div class="tbl"><table><thead><tr><th>ที่ปรึกษา</th><th>ผู้ติดต่อ</th><th style="text-align:right">ราคา</th><th style="text-align:right">สัปดาห์</th><th>ประสบการณ์</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="quotes"></tbody></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5 · บันทึกการติดต่อ</h2>
+    <div class="card">
+      <form class="grid3" id="logForm" autocomplete="off">
+        <label>วันที่<input id="l-date" type="date" required></label>
+        <label>ติดต่อใคร<select id="l-who"><option>Davis</option><option>อบก.</option><option>ที่ปรึกษา</option><option>ผู้ทวนสอบ</option><option>อื่นๆ</option></select></label>
+        <label>ช่องทาง<select id="l-ch"><option>LINE / แชท</option><option>โทร</option><option>อีเมล</option><option>เจอตัว</option></select></label>
+        <label class="full">ได้ผลอะไร<textarea id="l-result" required placeholder="เช่น คุณ Vicky จะส่งใบ GRS ภายในวันศุกร์"></textarea></label>
+        <label>ทำอะไรต่อ<input id="l-next"></label>
+        <label>ผู้บันทึก<input id="l-by"></label>
+        <div class="row" style="align-self:end"><button type="submit">บันทึก</button></div>
+      </form>
+      <div class="tbl"><table><thead><tr><th>วันที่</th><th>ใคร</th><th>ช่องทาง</th><th>ผล</th><th>ทำต่อ</th><th>ผู้บันทึก</th></tr></thead><tbody id="logs"></tbody></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>ส่งรายงานให้ Bay</h2>
+    <div class="card">
+      <p class="muted">สรุปทุกอย่างในหน้านี้เป็นข้อความ แล้ววางส่งใน LINE ได้เลย</p>
+      <div class="row"><button id="copyReport">คัดลอกรายงานสรุป</button></div>
+      <pre class="msg" id="reportOut" hidden></pre>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const STEPS = [
+  ['s1','ทัก Davis ขอเอกสารผ้า GRACE (% รีไซเคิล, คาร์บอนของผ้า, ที่มา 370 ขวด)','วันนี้'],
+  ['s2','โทรหา อบก. ถามขั้นตอน CFP / CE-CFP และขอรายชื่อที่ปรึกษา','หลังงาน SX'],
+  ['s3','ส่งอีเมลถึง อบก. ตามร่างในส่วนที่ 2','หลังโทร'],
+  ['s4','ขอใบเสนอราคาที่ปรึกษา 2–3 ราย แล้วกรอกในส่วนที่ 4','สัปดาห์นี้'],
+  ['s5','เลือกโซฟารุ่นแรก 1 รุ่น (ขายองค์กรบ่อยสุด บุผ้า GRACE) กรอกในส่วนที่ 3','วันนี้'],
+  ['s6','ชั่งชิ้นส่วนโซฟา 1 ตัวจริง แล้วกรอกแบบเก็บข้อมูล CFP (xlsx) ให้ครบ','เริ่มได้เลย'],
+  ['s7','เลือกที่ปรึกษา ส่งไฟล์ข้อมูลให้คำนวณ','หลังได้ใบเสนอราคา'],
+  ['s8','ผู้ทวนสอบตรวจตัวเลข','ตามที่ปรึกษานัด'],
+  ['s9','ยื่น อบก. และได้รับใบรับรอง CFP / CE-CFP','เป้าหมาย'],
+];
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S = { steps: {}, info: {} };
+let quotes = [], logs = [];
+let db = null, canWrite = false, mainExists = false;
+const LS = 'chawcher-cfp-mission-v1';
+
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 1800); }
+function setMode(kind) {
+  const m = $('saveMode'), n = $('saveNote');
+  if (kind === 'shared') { m.className = 'pill ok'; m.textContent = 'บันทึกร่วมกันทั้งทีม'; n.textContent = 'ทุกคนที่มีสิทธิ์แก้ไขเห็นข้อมูลชุดเดียวกัน'; }
+  else if (kind === 'readonly') { m.className = 'pill warn'; m.textContent = 'บันทึกในเครื่องนี้เท่านั้น'; n.textContent = 'คุณเปิดดูข้อมูลทีมได้ แต่สิ่งที่พิมพ์จะเก็บไว้ในเครื่องนี้ กด “คัดลอกรายงานสรุป” แล้วส่งให้ Bay'; }
+  else { m.className = 'pill warn'; m.textContent = 'บันทึกในเครื่องนี้เท่านั้น'; n.textContent = 'ถ้าต้องการบันทึกร่วมกับทีม ให้ล็อกอิน claude.ai และขอสิทธิ์แก้ไขจาก Bay · ระหว่างนี้กด “คัดลอกรายงานสรุป” แล้วส่งให้ Bay'; }
+}
+
+// ---------- local storage fallback ----------
+function loadLocal() { try { const d = JSON.parse(localStorage.getItem(LS) || 'null'); if (d) { S = { steps: d.steps || {}, info: d.info || {} }; quotes = d.quotes || []; logs = d.logs || []; } } catch {} }
+function saveLocal() { try { localStorage.setItem(LS, JSON.stringify({ ...S, quotes, logs })); } catch {} }
+try { const by = localStorage.getItem(LS + '-by'); if (by) $('l-by').value = by; } catch {}
+
+// ---------- render ----------
+function get(path) { return path.split('.').reduce((o, k) => (o || {})[k], S); }
+function renderSteps() {
+  const box = $('steps'); const focused = document.activeElement;
+  if (!box.dataset.built) {
+    box.innerHTML = STEPS.map(([id, t, w], i) => `
+      <div class="step" id="row-${id}">
+        <input type="checkbox" id="c-${id}" data-k="steps.${id}.done" aria-label="ขั้น ${i + 1} เสร็จแล้ว">
+        <div>
+          <div class="t"><b>${i + 1}. ${esc(t)}</b><span class="when">${esc(w)}</span></div>
+          <div class="f">
+            <label>ผู้รับผิดชอบ<input id="o-${id}" data-k="steps.${id}.owner"></label>
+            <label>กำหนดเสร็จ<input type="date" id="d-${id}" data-k="steps.${id}.due"></label>
+            <label class="note">หมายเหตุ<input id="n-${id}" data-k="steps.${id}.note"></label>
+          </div>
+        </div>
+      </div>`).join('');
+    box.dataset.built = '1';
+  }
+  let done = 0;
+  STEPS.forEach(([id]) => { const st = S.steps[id] || {}; if (st.done) done++; $('row-' + id).classList.toggle('done', !!st.done); });
+  $('progText').textContent = `${done} / ${STEPS.length} ขั้น`;
+  $('bar').setAttribute('aria-valuenow', done);
+  $('bar').firstElementChild.style.width = (done / STEPS.length * 100) + '%';
+}
+function fillInputs() {
+  document.querySelectorAll('[data-k]').forEach(el => {
+    if (el === document.activeElement) return;
+    const v = get(el.dataset.k);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v ?? '';
+  });
+}
+function renderQuotes() {
+  const tb = $('quotes');
+  if (!quotes.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">ยังไม่มีใบเสนอราคา · กรอกฟอร์มด้านบนแล้วกด “เพิ่มใบเสนอราคา”</td></tr>'; return; }
+  const prices = quotes.map(q => +String(q.price).replace(/[^\d.]/g, '')).filter(n => n > 0);
+  const min = prices.length ? Math.min(...prices) : null;
+  tb.innerHTML = quotes.map(q => { const p = +String(q.price).replace(/[^\d.]/g, '');
+    return `<tr><td>${esc(q.name)}${p && p === min ? ' <span class="pill ok">ถูกสุด</span>' : ''}</td><td>${esc(q.contact)}</td><td class="num">${p ? p.toLocaleString('th-TH') : esc(q.price)}</td><td class="num">${esc(q.weeks)}</td><td>${esc(q.exp)}</td><td>${esc(q.note)}</td><td><button class="small ghost" data-delq="${esc(q.id)}" aria-label="ลบ ${esc(q.name)}">ลบ</button></td></tr>`; }).join('');
+}
+function renderLogs() {
+  const tb = $('logs');
+  if (!logs.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">ยังไม่มีบันทึก · ทุกครั้งที่ติดต่อใคร ให้บันทึกผลไว้ที่นี่</td></tr>'; return; }
+  const sorted = [...logs].sort((a, b) => String(b.date + b.at).localeCompare(String(a.date + a.at)));
+  tb.innerHTML = sorted.map(l => `<tr><td>${esc(l.date)}</td><td>${esc(l.who)}</td><td>${esc(l.ch)}</td><td>${esc(l.result)}</td><td>${esc(l.next)}</td><td>${esc(l.by)}</td></tr>`).join('');
+}
+
+// ---------- message templates ----------
+function f(key, label) { const v = (S.info[key] || '').trim(); return v ? esc(v) : `<span class="fill">[${label}]</span>`; }
+function plain(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent; }
+const MSG = {
+  davis: () => `Hi Vicky, thank you for confirming 32 bottles per meter for GRACE.
+
+We are presenting SMART recycled fabric to corporate buyers and are applying for a carbon footprint label (CFP) with Thailand's TGO. Could you please send any of these documents for GRACE, if available:
+
+1. Recycled content % (for example GRS or another recycled certificate)
+2. Carbon footprint data of the fabric (kgCO2e per meter or per kg), or a CFP certificate
+3. The source of the "370 PET bottles = 1 sofa" figure (how many meters of fabric per sofa it assumes)
+
+A PDF or a photo of the certificate would help a lot. Thank you!
+${f('sender','ชื่อผู้ส่ง')} · CHAW CHER`,
+  call: () => `สวัสดีครับ ผม${f('sender','ชื่อผู้ส่ง')} จากแบรนด์เฟอร์นิเจอร์ CHAW CHER ครับ
+อยากขอฉลาก CFP กับ CE-CFP ให้โซฟาที่ใช้ผ้ารีไซเคิลจากขวด PET
+ไม่ทราบว่าต้องติดต่อฝ่ายไหนครับ และขอรายชื่อที่ปรึกษากับผู้ทวนสอบที่ขึ้นทะเบียนไว้ได้ไหมครับ
+
+ถามเพิ่ม (จดคำตอบลงส่วนที่ 3):
+• ค่าธรรมเนียมเท่าไหร่ ใช้เวลาประมาณเท่าไหร่
+• ยื่น CFP กับ CE-CFP พร้อมกันได้ไหม
+• มีโครงการช่วยค่าใช้จ่าย SME ไหม`,
+  tgo: () => `เรื่อง: สอบถามขั้นตอนขอการรับรองฉลาก CFP และ CE-CFP สำหรับเฟอร์นิเจอร์โซฟา
+
+เรียน เจ้าหน้าที่ฝ่ายฉลากคาร์บอนฟุตพริ้นท์ องค์การบริหารจัดการก๊าซเรือนกระจก (องค์การมหาชน)
+
+${f('company','ชื่อนิติบุคคล')} ผู้ผลิตเฟอร์นิเจอร์แบรนด์ CHAW CHER (ฌ เฌอ) มีโรงงานที่จังหวัด${f('province','จังหวัด')} ต้องการขอการรับรองฉลากคาร์บอนฟุตพริ้นท์ของผลิตภัณฑ์ (CFP) และฉลากผลิตภัณฑ์เศรษฐกิจหมุนเวียน (CE-CFP) สำหรับโซฟาที่บุผ้ารีไซเคิลจากขวด PET และนำเศษหนังจากการผลิตกลับมาใช้ใหม่ เริ่มจากโซฟารุ่น ${f('model','ชื่อรุ่น')}
+
+จึงขอเรียนสอบถามดังนี้
+1. ขั้นตอน เอกสาร และระยะเวลาโดยประมาณตั้งแต่ยื่นจนได้รับการรับรอง
+2. ค่าธรรมเนียมการขอรับรอง และค่าใช้จ่ายโดยประมาณของผู้ทวนสอบ
+3. รายชื่อที่ปรึกษาและผู้ทวนสอบที่ขึ้นทะเบียนกับ อบก. ที่มีประสบการณ์ด้านเฟอร์นิเจอร์หรือสิ่งทอ
+4. ยื่น CFP และ CE-CFP พร้อมกันได้หรือไม่ และใช้ข้อมูลชุดเดียวกันได้หรือไม่
+5. มีโครงการสนับสนุนค่าใช้จ่ายสำหรับ SME หรือไม่
+
+บริษัทได้เริ่มเก็บข้อมูลวัตถุดิบ พลังงาน และการขนส่งย้อนหลัง 12 เดือนแล้ว
+
+ขอแสดงความนับถือ
+${f('sender','ชื่อผู้ส่ง')} · ${f('role','ตำแหน่ง')}
+${f('phone','เบอร์โทร')} · ${f('email','อีเมล')}`,
+  consult: () => `เรื่อง: ขอใบเสนอราคาที่ปรึกษาและทวนสอบ CFP / CE-CFP สำหรับโซฟา
+
+เรียน [ชื่อบริษัทที่ปรึกษา]
+
+CHAW CHER (ฌ เฌอ) โดย ${f('company','ชื่อนิติบุคคล')} ผู้ผลิตโซฟาและเฟอร์นิเจอร์ ต้องการขอฉลาก CFP และ CE-CFP จาก อบก. สำหรับโซฟารุ่น ${f('model','ชื่อรุ่น')} ที่บุผ้ารีไซเคิลจากขวด PET (ผ้า ${f('fabric','ผ้าที่ใช้')}) และนำเศษหนังจากการผลิตกลับมาใช้ใหม่ ผลิตปีละประมาณ ${f('perYear','จำนวน')} ตัว
+
+ข้อมูลที่เรามีพร้อมแล้ว: รายการวัตถุดิบพร้อมน้ำหนักต่อตัว ค่าไฟ ค่าเชื้อเพลิง และน้ำย้อนหลัง 12 เดือน การขนส่งวัตถุดิบและการส่งถึงลูกค้า (แนบไฟล์มาด้วย)
+
+ขอทราบ
+1. ค่าบริการที่ปรึกษาและค่าทวนสอบ แยกตามจำนวนรุ่น
+2. ระยะเวลาจนยื่น อบก. ได้
+3. เคยทำผลิตภัณฑ์เฟอร์นิเจอร์หรือสิ่งทอมาก่อนหรือไม่
+
+สะดวกนัดคุยภายในสัปดาห์นี้ไหมครับ
+
+${f('sender','ชื่อผู้ส่ง')} · CHAW CHER · ${f('phone','เบอร์โทร')} · ${f('email','อีเมล')}`,
+};
+function renderMsgs() { for (const k in MSG) $('msg-' + k).innerHTML = MSG[k](); }
+function renderAll() { renderSteps(); fillInputs(); renderQuotes(); renderLogs(); renderMsgs(); }
+
+// ---------- copy ----------
+async function copyText(text, el) {
+  try { await navigator.clipboard.writeText(text); toast('คัดลอกแล้ว'); }
+  catch { if (el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } toast('เลือกข้อความให้แล้ว กดคัดลอกเอง'); }
+}
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]');
+  if (c) { const k = c.dataset.copy; copyText(plain(MSG[k]()), $('msg-' + k)); }
+  const d = e.target.closest('[data-delq]');
+  if (d) delQuote(d.dataset.delq);
+});
+function report() {
+  const L = []; const i = S.info;
+  L.push('รายงานภารกิจใบ CFP · CHAW CHER');
+  const done = STEPS.filter(([id]) => (S.steps[id] || {}).done).length;
+  L.push(`ความคืบหน้า ${done}/${STEPS.length} ขั้น`, '');
+  STEPS.forEach(([id, t], n) => { const s = S.steps[id] || {}; L.push(`${s.done ? '✓' : '○'} ${n + 1}. ${t}${s.owner ? ' · ' + s.owner : ''}${s.due ? ' · กำหนด ' + s.due : ''}${s.note ? ' · ' + s.note : ''}`); });
+  L.push('', 'ข้อมูลที่ได้');
+  [['รุ่นโซฟา', i.model], ['ผ้า', i.fabric], ['ผ้าต่อตัว (ม.)', i.meters], ['น้ำหนัก (กก.)', i.weight], ['% รีไซเคิลผ้า', i.recycledPct], ['GRS', i.grs], ['คาร์บอนผ้า (kgCO2e/ม.)', i.fabricCo2], ['ที่มา 370 ขวด', i.bottleBasis], ['อบก. ผู้ติดต่อ', i.tgoContact], ['อบก. ค่าธรรมเนียม', i.tgoFee], ['อบก. ระยะเวลา', i.tgoTime], ['ยื่น CFP+CE-CFP พร้อมกัน', i.tgoBoth]]
+    .forEach(([k, v]) => { if (v) L.push(`• ${k}: ${v}`); });
+  if (quotes.length) { L.push('', 'ใบเสนอราคา'); quotes.forEach(q => L.push(`• ${q.name}: ${q.price || '-'} บาท · ${q.weeks || '-'} สัปดาห์${q.exp ? ' · ' + q.exp : ''}`)); }
+  if (logs.length) { L.push('', 'ติดต่อล่าสุด'); [...logs].sort((a, b) => String(b.date + b.at).localeCompare(String(a.date + a.at))).slice(0, 5).forEach(l => L.push(`• ${l.date} ${l.who} (${l.ch}): ${l.result}${l.next ? ' → ' + l.next : ''}`)); }
+  return L.join('\n');
+}
+$('copyReport').addEventListener('click', () => { const t = report(); const out = $('reportOut'); out.textContent = t; out.hidden = false; copyText(t, out); });
+
+// ---------- saving ----------
+function nest(path, value) { const ks = path.split('.'); const o = {}; let c = o; ks.forEach((k, i) => { c[k] = i === ks.length - 1 ? value : {}; c = c[k]; }); return o; }
+function setLocalPath(path, value) { const ks = path.split('.'); let c = S; ks.slice(0, -1).forEach(k => { c[k] = c[k] || {}; c = c[k]; }); c[ks.at(-1)] = value; }
+let chain = Promise.resolve();
+function persist(path, value) {
+  setLocalPath(path, value); saveLocal(); renderSteps(); renderMsgs();
+  if (!(db && canWrite)) return;
+  chain = chain.then(async () => {
+    const ref = db.doc('board/main');
+    try {
+      if (mainExists) await ref.update(nest(path, value));
+      else { await ref.set({ steps: S.steps, info: S.info }); mainExists = true; }
+      $('saveNote').textContent = 'บันทึกล่าสุด ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) { if (e && e.code === 'invalid_argument' && !mainExists) { canWrite = false; setMode('readonly'); } else if (e && e.code === 'invalid_argument') { mainExists = false; } else toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+  });
+}
+document.addEventListener('change', e => { const el = e.target.closest('[data-k]'); if (!el) return; persist(el.dataset.k, el.type === 'checkbox' ? el.checked : el.value.trim()); });
+document.addEventListener('input', e => { const el = e.target.closest('#infoForm [data-k]'); if (!el) return; setLocalPath(el.dataset.k, el.value); renderMsgs(); });
+
+$('quoteForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const q = { id: 'q' + Date.now().toString(36), name: $('q-name').value.trim(), contact: $('q-contact').value.trim(), price: $('q-price').value.trim(), weeks: $('q-weeks').value.trim(), exp: $('q-exp').value, note: $('q-note').value.trim(), at: new Date().toISOString() };
+  if (!q.name) return;
+  if (db && canWrite) { try { await db.collection('quotes').doc(q.id).set(q); } catch (err) { if (err && err.code === 'quota_exceeded') { toast('พื้นที่เก็บข้อมูลเต็ม ลบรายการเก่าก่อน'); return; } quotes.push(q); saveLocal(); renderQuotes(); } }
+  else { quotes.push(q); saveLocal(); renderQuotes(); }
+  e.target.reset(); toast('เพิ่มใบเสนอราคาแล้ว');
+});
+async function delQuote(id) {
+  if (db && canWrite) { try { await db.collection('quotes').doc(id).delete(); return; } catch {} }
+  quotes = quotes.filter(q => q.id !== id); saveLocal(); renderQuotes();
+}
+$('l-date').value = new Date().toISOString().slice(0, 10);
+$('logForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const l = { id: 'l' + Date.now().toString(36), date: $('l-date').value, who: $('l-who').value, ch: $('l-ch').value, result: $('l-result').value.trim(), next: $('l-next').value.trim(), by: $('l-by').value.trim(), at: new Date().toISOString() };
+  if (!l.result) return;
+  try { localStorage.setItem(LS + '-by', l.by); } catch {}
+  if (db && canWrite) { try { await db.collection('logs').doc(l.id).set(l); } catch { logs.push(l); saveLocal(); renderLogs(); } }
+  else { logs.push(l); saveLocal(); renderLogs(); }
+  $('l-result').value = ''; $('l-next').value = ''; toast('บันทึกแล้ว');
+});
+
+// ---------- boot ----------
+loadLocal(); renderAll(); setMode('local');
+(async () => {
+  try {
+    db = await (window.claude?.use ? window.claude.use('db') : null);
+  } catch { db = null; }
+  if (!db) { setMode('local'); return; }
+  let perm = null;
+  try { const user = await window.claude.use('user'); perm = user ? await user.can('data.write') : null; } catch {}
+  canWrite = perm !== false;
+  setMode(canWrite ? 'shared' : 'readonly');
+  const timer = setTimeout(() => { $('saveNote').textContent = 'ยังเชื่อมต่อข้อมูลทีมไม่ได้ ข้อมูลที่เห็นอาจยังไม่ล่าสุด'; }, 10000);
+  db.doc('board/main').onSnapshot(snap => {
+    if (!snap.metadata.fromCache) clearTimeout(timer);
+    mainExists = snap.exists;
+    if (snap.exists) { const d = snap.data(); S = { steps: JSON.parse(JSON.stringify(d.steps || {})), info: JSON.parse(JSON.stringify(d.info || {})) }; }
+    renderSteps(); fillInputs(); renderMsgs();
+  }, () => { clearTimeout(timer); setMode('local'); });
+  db.collection('quotes').orderBy('at').onSnapshot(s => { quotes = s.docs.map(d => d.data()); renderQuotes(); }, () => {});
+  db.collection('logs').orderBy('at', 'desc').limit(200).onSnapshot(s => { logs = s.docs.map(d => d.data()); renderLogs(); }, () => {});
+})();
+</script>
