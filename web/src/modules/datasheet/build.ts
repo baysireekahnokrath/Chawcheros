@@ -100,6 +100,33 @@ const SUB_TAG: Record<string, string> = {
 const mm = (v: number | null) => (v == null ? '' : String(Math.round(v * 10)));
 
 /**
+ * คำไทยที่ต้องเก็บไว้ในรหัส
+ *
+ * ★ เคยตัดอักษรไทยทิ้งหมดแล้วเอาแต่ตัวเลข ผลคือชุดโต๊ะอาหารนางนวล/กระสา
+ *   "พร้อมชุดเก้าอี้กีวี่ 2 ตัว" กับ "พร้อมชุดเก้าอี้อีมู 2 ตัว" ได้รหัสเดียวกัน
+ *   ทั้งที่เป็นคนละชุด ต่างกัน 2,400 บาท · ระบบเลยต้องไปต่อท้ายด้วยความสูง
+ *   ซึ่งไม่ได้บอกอะไรกับคนอ่านเลย
+ */
+const WORD_TAG: [RegExp, string][] = [
+  [/กีวี่/, 'KW'], [/อีมู/, 'EMU'], [/ขุนทอง/, 'KT'], [/นางนวล/, 'NN'], [/กระสา/, 'KS'],
+  [/ม้านั่ง/, 'BN'], [/เดย์เบด|daybed/i, 'DB'], [/เอียง/, 'SLT'],
+  [/พนักสูง|high\s*back/i, 'HB'], [/พนักเตี้ย|low\s*back/i, 'LB'],
+  [/ฐานเตียง/, 'BASE'], [/ไม่มีแขน/, 'NA'], [/ที่นั่ง|seat/i, 'S'], [/ฟุต/, 'F'],
+];
+
+/** ทำ sub ภาษาไทยให้เป็นรหัสที่อ่านออก · เก็บคำสำคัญ + ตัวเลข ตามลำดับที่เจอ */
+function tagOf(sub: string): string {
+  const direct = SUB_TAG[sub.trim()];
+  if (direct !== undefined) return direct;
+  const ascii = sub.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const words: string[] = [];
+  for (const [re, tag] of WORD_TAG) if (re.test(sub) && !words.includes(tag)) words.push(tag);
+  const nums = sub.match(/\d+(\.\d+)?/g) ?? [];
+  const out = [...nums, ...words].join('');
+  return (out || ascii).slice(0, 10);
+}
+
+/**
  * รหัสฟีนิกซ์กับขุนทองลอกมาจาก data sheet โรงงานตรง ๆ
  *
  * ของฟีนิกซ์มีกับดัก: ความกว้างในรหัสตระกูลมีโต๊ะ รวมโต๊ะ 40 ซม. ไปแล้ว
@@ -127,7 +154,7 @@ function codeFor(coll: string, prefix: string, cat: string, sub: string, w: numb
     if (cat === 'สตูล') return 'KT-STOOL';
   }
   let code = prefix + mm(w) + (CAT_SUFFIX[cat] ?? '-' + cat.slice(0, 2));
-  const tag = SUB_TAG[sub.trim()] ?? sub.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  const tag = tagOf(sub);
   if (tag) code += '-' + tag;
   return code;
 }

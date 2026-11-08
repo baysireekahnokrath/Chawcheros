@@ -103,6 +103,16 @@ ok('ไม่เตือนมั่ว · W230 มีโต๊ะกับไ�
    phx.ambiguous.some((a) => a.subs.includes('3S (230)')), false);
 ok('ทากะไม่มีแถวกำกวม', find('ทากะ').ambiguous.length, 0);
 
+// ชุดโต๊ะอาหารนางนวล/กระสา · เก้าอี้คนละรุ่นต้องได้รหัสคนละตัว
+const nn = find('นางนวล / กระสา');
+const nnCodes = nn.groups.flatMap((g) => g.mods.map((m) => m.code));
+ok('ชุดโต๊ะอาหาร 14 แบบ ได้รหัสครบ', nnCodes.length, 14);
+ok('ไม่มีรหัสที่ต่อท้ายด้วยความสูงแบบไร้ความหมาย',
+   nnCodes.some((c) => /-H\d+$/.test(c)), false);
+ok('ชุดเก้าอี้กีวี่ 2 ตัว มีรหัสของตัวเอง', nnCodes.includes('NNKS800-DT-2KW'), true);
+ok('ชุดเก้าอี้อีมู 2 ตัว มีรหัสของตัวเอง', nnCodes.includes('NNKS800-DT-2EMU'), true);
+ok('นางนวล/กระสา ไม่เหลือแถวกำกวม', nn.ambiguous.length, 0);
+
 // ชื่ออังกฤษ
 ok('นางแอ่น = Nang Aaen', find('นางแอ่น').en, 'Nang Aaen');
 ok('ฟีนิกซ์ = Phoenix', find('ฟีนิกซ์').en, 'Phoenix');
