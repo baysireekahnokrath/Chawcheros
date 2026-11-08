@@ -26,9 +26,16 @@ export type PriceRow = {
   ที่มาของราคา: string;
 };
 
-export async function getPriceList(): Promise<PriceRow[]> {
+/**
+ * ★ คืน error ออกมาด้วย ไม่กลืนทิ้ง
+ *
+ * ของเดิมเขียน `const { data } = await ...` แล้ว return `data ?? []`
+ * พอ API ตอบ error หน้าจอจึงขึ้นว่า "0 รุ่น" เฉยๆ เหมือนไม่มีสินค้าในระบบ
+ * ทั้งที่ฐานข้อมูลมี 751 แถว — คนอ่านหน้าจอไม่มีทางรู้ว่าต่างกันตรงไหน
+ */
+export async function getPriceList(): Promise<{ rows: PriceRow[]; error: string | null }> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .schema('pricing')
     .from('v_price_list')
     .select('*')
@@ -37,5 +44,12 @@ export async function getPriceList(): Promise<PriceRow[]> {
     .order('รุ่น')
     .order('ราคาเต็มรวม_vat', { ascending: true, nullsFirst: false })
     .limit(2000);
-  return (data ?? []) as PriceRow[];
+
+  if (error) {
+    return {
+      rows: [],
+      error: [error.message, error.details, error.hint].filter(Boolean).join(' · '),
+    };
+  }
+  return { rows: (data ?? []) as PriceRow[], error: null };
 }
