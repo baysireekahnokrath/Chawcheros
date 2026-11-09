@@ -98,6 +98,14 @@ const SUB_TAG: Record<string, string> = {
 };
 
 const mm = (v: number | null) => (v == null ? '' : String(Math.round(v * 10)));
+const cmv = (v: number | null) => (v == null ? '' : String(Math.round(v)));
+
+/**
+ * รุ่นที่ data sheet โรงงานใส่ความกว้างเป็นเซนติเมตร
+ * ฟีนิกซ์: PHX150-2AR คือตัวกว้าง 1500 มม. · ขุนทอง: KT1400 คือ 1400 มม.
+ * ที่เหลือไม่มีไฟล์โรงงาน ใช้มิลลิเมตรตามที่เราตั้งเอง
+ */
+const CM_COLLECTIONS = new Set(['ฟีนิกซ์']);
 
 /**
  * คำไทยที่ต้องเก็บไว้ในรหัส
@@ -141,20 +149,27 @@ function tagOf(sub: string, w: number | null, d: number | null, h: number | null
 /**
  * รหัสฟีนิกซ์กับขุนทองลอกมาจาก data sheet โรงงานตรง ๆ
  *
- * ของฟีนิกซ์มีกับดัก: ความกว้างในรหัสตระกูลมีโต๊ะ รวมโต๊ะ 40 ซม. ไปแล้ว
- * PHX2700RA-T = ที่นั่ง 230 + โต๊ะ 40 ไม่ใช่ที่นั่ง 270
+ * ★ สองโรงงานใช้หน่วยคนละอย่าง · เทียบกับไฟล์ PDF แล้วเป็นแบบนี้จริง
+ *     ฟีนิกซ์ใช้เซนติเมตร · PHX150-2AR คือตัวกว้าง 1500 มม.
+ *     ขุนทองใช้มิลลิเมตร  · KT1400 คือตัวกว้าง 1400 มม.
+ *   เคยเขียนให้ฟีนิกซ์เป็นมิลลิเมตรทั้งคู่ ได้ PHX2300-2AR ซึ่งโรงงานอ่านไม่ออก
+ *
+ * ★ ความกว้างของตระกูลที่มีโต๊ะ คือความกว้างรวม โต๊ะอยู่ในนั้นแล้ว
+ *   เคยบวก 40 เพิ่มเพราะอ่านแบบในไฟล์โรงงานว่าโต๊ะต่อออกมาจากที่นั่ง
+ *   ผลคือชุด "3RT (230) + เดย์เบด 125" ได้ 395 ซม. ทั้งที่ของจริง 355
+ *   ใบราคาเองก็เขียน L-shape W355 · ยึดตามนั้น
  */
 function codeFor(coll: string, prefix: string, cat: string, sub: string,
                  w: number | null, d: number | null, h: number | null): string {
   if (coll === 'ฟีนิกซ์') {
     let m = /^3S \((\d+)\)/.exec(sub);
-    if (m) return `PHX${+m[1] * 10}-2AR`;
+    if (m) return `PHX${+m[1]}-2AR`;
     m = /^3RT \((\d+)\)/.exec(sub);
-    if (m) return `PHX${(+m[1] + 40) * 10}RA-T`;
+    if (m) return `PHX${+m[1]}RA-T`;
     m = /^(\d+) cm with Table/.exec(sub);
-    if (m) return `PHX${(+m[1] + 40) * 10}RA-T`;
+    if (m) return `PHX${+m[1]}RA-T`;
     m = /^DAYBED-R\/L \((\d+)\)/.exec(sub);
-    if (m) return `PHX${+m[1] * 10}R`;
+    if (m) return `PHX${+m[1]}R`;
     if (cat === 'โซฟา' && (sub === 'เดย์เบด' || sub === 'CL (125*166)') && w && d)
       return `PHX-CR${Math.round(w)}X${Math.round(d)}`;
     if (cat === 'สตูล') return 'PHX-STOOL-' + ((w ?? 0) > 110 ? 'M' : 'S');
@@ -166,7 +181,8 @@ function codeFor(coll: string, prefix: string, cat: string, sub: string,
     if (cat === 'โซฟา' && sub === 'เดย์เบด' && w && d) return `KTC${Math.round(w)}X${Math.round(d)}`;
     if (cat === 'สตูล') return 'KT-STOOL';
   }
-  let code = prefix + mm(w) + (CAT_SUFFIX[cat] ?? '-' + cat.slice(0, 2));
+  const num = CM_COLLECTIONS.has(coll) ? cmv(w) : mm(w);
+  let code = prefix + num + (CAT_SUFFIX[cat] ?? '-' + cat.slice(0, 2));
   const tag = tagOf(sub, w, d, h);
   if (tag) code += '-' + tag;
   return code;

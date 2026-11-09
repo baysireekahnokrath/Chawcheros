@@ -6,6 +6,21 @@ export async function middleware(request: NextRequest) {
   // หน้า POS หน้าบูธเปิดสาธารณะ (ไม่ต้องล็อกอิน) · ฐานข้อมูลยอมให้แค่บันทึกบิลที่ใส่ PIN ถูก
   if (request.nextUrl.pathname === '/pos') return NextResponse.next();
 
+  // หน้าจัดชุดฟีนิกซ์เปิดสาธารณะเหมือนกัน (Bay 2026-11-09 ขอแบบไม่ต้องล็อกอิน)
+  // อ่านผ่าน pricing.phoenix_sheet() ที่คืนเฉพาะแถวฟีนิกซ์และไม่มีต้นทุน · ดู 0047
+  if (request.nextUrl.pathname === '/phoenix') return NextResponse.next();
+
+  // หน้าตั้งรหัสผ่านใหม่ · คนที่มาถึงยังไม่ได้ล็อกอิน (ของจริงกันที่ลิงก์ในอีเมล)
+  if (request.nextUrl.pathname === '/reset') return NextResponse.next();
+
+  // ลิงก์กู้รหัสผ่านหลงมาลงหน้าอื่น · เกิดได้ถ้าลืมใส่ /reset ใน Redirect URLs ของ Supabase
+  // ถ้าไม่ดักไว้ โค้ดจะหายไปกับการเด้งไปหน้า login แล้วตั้งรหัสใหม่ไม่ได้เลย
+  if (request.nextUrl.searchParams.has('code')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/reset';   // ส่งต่อทั้งแถบ query · Supabase อาจแนบพารามิเตอร์อื่นมาด้วย
+    return NextResponse.redirect(url);
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
