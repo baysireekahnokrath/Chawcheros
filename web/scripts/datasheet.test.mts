@@ -72,8 +72,11 @@ ok('เรียงรุ่นใหญ่สุดขึ้นก่อน', s
 ok('ฟีนิกซ์ใช้รหัสจริง', find('ฟีนิกซ์').codeReal, true);
 ok('ขุนทองใช้รหัสจริง', find('ขุนทอง').codeReal, true);
 ok('ทากะเป็นรหัสที่เสนอ', find('ทากะ').codeReal, false);
-ok('3S (230) → PHX2300-2AR', !!code('PHX2300-2AR'), true);
-ok('3RT (230) → PHX2700RA-T · รหัสโรงงานรวมโต๊ะ 40 ซม.', !!code('PHX2700RA-T'), true);
+ok('3S (230) → PHX230-2AR · ฟีนิกซ์ใช้เซนติเมตร', !!code('PHX230-2AR'), true);
+ok('3RT (230) → PHX270RA-T · รหัสโรงงานรวมโต๊ะ 40 ซม.', !!code('PHX270RA-T'), true);
+ok('ไม่มีรหัสฟีนิกซ์ที่เป็นมิลลิเมตร',
+   mods.some((m) => /^PHX\d{4}/.test(m.code)), false);
+ok('ขุนทองยังเป็นมิลลิเมตร · KT1400', !!code('KT1400'), true);
 ok('เดย์เบด 125×166 → PHX-CR125X166', !!code('PHX-CR125X166'), true);
 ok('ขุนทอง 2 ที่นั่ง 140 → KT1400', !!code('KT1400'), true);
 ok('ขุนทองเดย์เบด → KTC70X150', !!code('KTC70X150'), true);
@@ -81,7 +84,7 @@ ok('ขุนทองเดย์เบด → KTC70X150', !!code('KTC70X150'),
 // ความลึกช่วงหลังของตัว L · ต้องตรงกับที่ใบราคากระดาษเขียนในวงเล็บ
 ok('ทากะ L254 ช่วงหลังลึก 90', code('TK2540-L')?.backD, 90);
 ok('ขุนทอง L210 ช่วงหลังลึก 80', code('KT2100-L')?.backD, 80);
-ok('ฟีนิกซ์ L355 ช่วงหลังลึก 96', code('PHX3550-L')?.backD, 96);
+ok('ฟีนิกซ์ L355 ช่วงหลังลึก 96', code('PHX355-L')?.backD, 96);
 ok('โซฟาตรงลึก 92 ไม่โดนวาดเป็นตัว L', code('TK1700')?.backD, null);
 ok('โซฟาตรงลึก 90 ก็ไม่โดน', code('TK1800-2S')?.backD, null);
 ok('เดย์เบดเดี่ยวลึก 166 ไม่ใช่ตัว L', code('PHX-CR125X166')?.backD, null);
@@ -118,8 +121,8 @@ ok('โต๊ะทานข้าวกระสา 150 → KS1500-DT ไม่
    mods.some((m) => m.code === 'KS1500-DT'), true);
 ok('ไม่มีรหัสที่ลงท้ายด้วย CM',
    mods.some((m) => /CM$/.test(m.code)), false);
-ok('เดย์เบดเอียงฟีนิกซ์ → PHX2130-DBSLT',
-   mods.some((m) => m.code === 'PHX2130-DBSLT'), true);
+ok('เดย์เบดเอียงฟีนิกซ์ → PHX213-DBSLT',
+   mods.some((m) => m.code === 'PHX213-DBSLT'), true);
 ok('ไม่มีรหัสยาวเกิน 20 ตัว',
    mods.filter((m) => m.code.length > 20).map((m) => m.code), []);
 

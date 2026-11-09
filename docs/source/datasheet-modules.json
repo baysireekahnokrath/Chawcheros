@@ -4,8 +4,8 @@
    {
     "cat": "โซฟา",
     "codes": [
-     "PHX2100RA-T",
-     "PHX2100RA-T-H85"
+     "PHX210RA-T",
+     "PHX210RA-T-H85"
     ],
     "subs": [
      "3RT (170)",
@@ -33,7 +33,7 @@
     "cat": "โซฟา",
     "mods": [
      {
-      "code": "PHX1900-3S",
+      "code": "PHX190-3S",
       "sub": "3 ที่นั่ง",
       "w": 190,
       "d": 96,
@@ -52,7 +52,7 @@
       "variants": 4
      },
      {
-      "code": "PHX2100RA-T",
+      "code": "PHX210RA-T",
       "sub": "3RT (170)",
       "w": 170,
       "d": 96,
@@ -71,7 +71,7 @@
       "variants": 4
      },
      {
-      "code": "PHX2300RA-T",
+      "code": "PHX230RA-T",
       "sub": "3RT (190)",
       "w": 190,
       "d": 96,
@@ -91,7 +91,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2500RA-T",
+      "code": "PHX250RA-T",
       "sub": "3RT (210)",
       "w": 210,
       "d": 96,
@@ -111,7 +111,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2700RA-T",
+      "code": "PHX270RA-T",
       "sub": "3RT (230)",
       "w": 230,
       "d": 96,
@@ -131,7 +131,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2900RA-T",
+      "code": "PHX290RA-T",
       "sub": "3RT (250)",
       "w": 250,
       "d": 96,
@@ -151,7 +151,7 @@
       "variants": 5
      },
      {
-      "code": "PHX3100RA-T",
+      "code": "PHX310RA-T",
       "sub": "3RT (270)",
       "w": 270,
       "d": 96,
@@ -171,7 +171,7 @@
       "variants": 5
      },
      {
-      "code": "PHX1500-2AR",
+      "code": "PHX150-2AR",
       "sub": "3S (150)",
       "w": 150,
       "d": 96,
@@ -191,7 +191,7 @@
       "variants": 5
      },
      {
-      "code": "PHX1700-2AR",
+      "code": "PHX170-2AR",
       "sub": "3S (170)",
       "w": 170,
       "d": 96,
@@ -211,7 +211,7 @@
       "variants": 5
      },
      {
-      "code": "PHX1900-2AR",
+      "code": "PHX190-2AR",
       "sub": "3S (190)",
       "w": 190,
       "d": 96,
@@ -231,7 +231,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2100-2AR",
+      "code": "PHX210-2AR",
       "sub": "3S (210)",
       "w": 210,
       "d": 96,
@@ -251,7 +251,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2300-2AR",
+      "code": "PHX230-2AR",
       "sub": "3S (230)",
       "w": 230,
       "d": 96,
@@ -271,7 +271,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2500-2AR",
+      "code": "PHX250-2AR",
       "sub": "3S (250)",
       "w": 250,
       "d": 96,
@@ -291,7 +291,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2700-2AR",
+      "code": "PHX270-2AR",
       "sub": "3S (270)",
       "w": 270,
       "d": 96,
@@ -311,7 +311,7 @@
       "variants": 5
      },
      {
-      "code": "PHX1900RA-T",
+      "code": "PHX190RA-T",
       "sub": "150 cm with Table",
       "w": 150,
       "d": 96,
@@ -331,7 +331,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2100RA-T-H85",
+      "code": "PHX210RA-T-H85",
       "sub": "170 cm with Table",
       "w": 170,
       "d": 96,
@@ -366,7 +366,7 @@
       "variants": 4
      },
      {
-      "code": "PHX2130-DBSLT",
+      "code": "PHX213-DBSLT",
       "sub": "DAYBED เอียง W213 x D135 xH85",
       "w": 213,
       "d": 135,
@@ -386,7 +386,7 @@
       "variants": 5
      },
      {
-      "code": "PHX1700R",
+      "code": "PHX170R",
       "sub": "DAYBED-R/L (170)",
       "w": 170,
       "d": 96,
@@ -406,7 +406,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2100R",
+      "code": "PHX210R",
       "sub": "DAYBED-R/L (210)",
       "w": 210,
       "d": 96,
@@ -426,7 +426,7 @@
       "variants": 5
      },
      {
-      "code": "PHX2300R",
+      "code": "PHX230R",
       "sub": "DAYBED-R/L (230)",
       "w": 230,
       "d": 96,
@@ -446,7 +446,7 @@
       "variants": 5
      },
      {
-      "code": "PHX3550-L",
+      "code": "PHX355-L",
       "sub": "L-shape",
       "w": 355,
       "d": 166,
@@ -536,7 +536,7 @@
     "cat": "ตู้เก็บของ",
     "mods": [
      {
-      "code": "PHX1350-SB",
+      "code": "PHX135-SB",
       "sub": "",
       "w": 135,
       "d": 43.5,
@@ -564,7 +564,7 @@
     "cat": "โต๊ะกลาง",
     "mods": [
      {
-      "code": "PHX1200-CT",
+      "code": "PHX120-CT",
       "sub": "",
       "w": 120,
       "d": 90,
