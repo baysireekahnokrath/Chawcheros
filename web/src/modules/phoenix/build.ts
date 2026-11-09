@@ -97,6 +97,10 @@ export type Item = {
   cat: string;
   label: string;
   code: string;
+  /** ชื่ออังกฤษจากใบราคา เช่น (Phoenix Sofa) · ใช้ในบรรทัดตอบลูกค้า */
+  en: string;
+  /** งานไม้เท่านั้น · ตู้เก็บของเป็นไม้โอ๊ค สีธรรมชาติ */
+  wood: string;
   w: number | null;
   d: number | null;
   h: number | null;
@@ -117,11 +121,13 @@ export type Item = {
 export const GRADES = ['ผ้า A', 'ผ้า B', 'ผ้า C', 'หนังแท้', 'หนังแท้ (ออย)'];
 export const COLLECTION = 'ฟีนิกซ์';
 
-const num = (v: number | null | undefined) => (v == null ? null : Math.round(v));
+// เก็บทศนิยมหนึ่งตำแหน่ง · ตู้กับโต๊ะในใบราคาลึก 43.5 / 44.5 ซม.
+// ปัดเป็นจำนวนเต็มแล้วตัวเลขที่ส่งให้ลูกค้าจะไม่ตรงกับใบราคา
+const num = (v: number | null | undefined) => (v == null ? null : Math.round(v * 10) / 10);
 const g = (v: number | null) => (v == null ? 'ไม่ระบุ' : String(v));
 
 type Raw = {
-  cat: string; subs: string[];
+  cat: string; subs: string[]; ens: string[]; wood: string;
   w: number | null; d: number | null; h: number | null;
   cells: (Cell | null)[]; extra: Extra[];
 };
@@ -165,6 +171,25 @@ function labelOf(r: Raw): string {
   return by[cat] ?? `${cat} ${g(w)}`;
 }
 
+/**
+ * ชื่ออังกฤษที่จะใช้ตอบลูกค้า
+ *
+ * ★ ใบราคาลงไม่ตรงกันเอง · แถว CL (125*166) เขียน (Phoenix Sofa) ทั้งที่เป็นเดย์เบด
+ *   ส่วนแถวที่รูปทรงเขียนว่า "เดย์เบด" ลงเป็น (Phoenix Daybed)
+ *   ตรงนี้เลือกอันที่ตรงกับของจริง ไม่ใช่เอาอันแรกที่เจอ
+ */
+function pickEn(label: string, ens: string[]): string {
+  if (!ens.length) return '';
+  const want = label.startsWith('เดย์เบด') ? /daybed/i
+    : label.startsWith('สตูล') ? /stool/i
+    : label.startsWith('หมอน') ? /pillow/i
+    : label.startsWith('ที่พักหัว') ? /headrest/i
+    : label.startsWith('โต๊ะกลาง') ? /table/i
+    : label.startsWith('ตู้เก็บของ') ? /sideboard|cabinet/i
+    : null;
+  return (want && ens.find((x) => want.test(x))) || ens[0];
+}
+
 const V = (code: string, name: string): Variant | undefined =>
   hasPlan(code) ? { code, name, w: PLAN_MM[code][0], d: PLAN_MM[code][1] } : undefined;
 
@@ -182,8 +207,15 @@ export function buildPhoenix(rows: PriceRow[]): Item[] {
     const w = num(r.กว้าง), d = num(r.ลึก), h = num(r.สูง);
     const key = [cat, sub, w, d, h].join('|');
     let e = byKey.get(key);
-    if (!e) { e = { cat, subs: [sub], w, d, h, cells: Array(GRADES.length).fill(null), extra: [] };
-              byKey.set(key, e); }
+    if (!e) {
+      e = { cat, subs: [sub], ens: [],
+            wood: [r.ไม้, r.สีไม้].map((x) => (x ?? '').trim()).filter(Boolean).join(' '),
+            w, d, h, cells: Array(GRADES.length).fill(null), extra: [] };
+      byKey.set(key, e);
+    }
+    const en = (r.ชื่ออังกฤษ ?? '').trim();
+    if (en && !e.ens.includes(en)) e.ens.push(en);
+    if (!e.wood) e.wood = [r.ไม้, r.สีไม้].map((x) => (x ?? '').trim()).filter(Boolean).join(' ');
     const cell: Cell = {
       full: num(r.ราคาเต็มรวม_vat),
       sale: num(r.ราคาขายรวม_vat),
@@ -207,6 +239,8 @@ export function buildPhoenix(rows: PriceRow[]): Item[] {
       e.cells.forEach((c, i) => { if (c && !hit.cells[i]) hit.cells[i] = c; });
       hit.extra.push(...e.extra);
       hit.subs.push(...e.subs);
+      e.ens.forEach((x) => { if (!hit.ens.includes(x)) hit.ens.push(x); });
+      if (!hit.wood) hit.wood = e.wood;
     } else { list.push(e); bySig.set(sig, list); }
   }
   const raws = [...bySig.values()].flat();
@@ -224,7 +258,7 @@ export function buildPhoenix(rows: PriceRow[]): Item[] {
     const w = r.cat === 'โซฟา' ? widthOf(lab) : null;
     if (w == null) {
       items.push({
-        cat: r.cat, label: lab, code: '', w: r.w, d: r.d, h: r.h,
+        cat: r.cat, label: lab, code: '', en: pickEn(lab, r.ens), wood: r.wood, w: r.w, d: r.d, h: r.h,
         cells: r.cells, cellsT: null, extra: r.extra,
         arm: {}, tbl: {},
         draw: drawsFor(lab),
@@ -252,6 +286,8 @@ export function buildPhoenix(rows: PriceRow[]): Item[] {
     items.push({
       cat: 'โซฟา', label: `ตัวโซฟา ${w} ซม.`,
       code: arm.both?.code ?? tv.R?.code ?? `PHX${w}`,
+      en: pickEn(`ตัวโซฟา ${w} ซม.`, [...src.ens, ...(base?.ens ?? []), ...(tbl?.ens ?? [])]),
+      wood: src.wood,
       w: src.w, d: src.d, h: src.h,
       cells: (base ?? tbl!).cells,
       cellsT: tbl ? tbl.cells : null,
@@ -324,4 +360,65 @@ export function variantName(it: Item, p: Pick): string {
   if (p.arm === 'both') return 'แขนสองข้าง';
   if (p.arm === 'none') return p.tbl ? `ไม่มีแขน + โต๊ะข้าง${side}` : 'ไม่มีแขน';
   return p.tbl ? `แขน${side} + โต๊ะข้าง` : `แขน${side}`;
+}
+
+/* ===========================================================================
+   ข้อความตอบลูกค้า · รูปแบบที่ Bay ใช้จริง (2026-11-09)
+
+     ฌ เฌอ | โซฟา ฟีนิกซ์ (Phoenix Sofa) แขนขวา ผ้า A เลือกสีได้
+            | ขนาด W230 D96 H85 cm ราคา 112400 ลด 40% เหลือ 67440 บาท
+
+   เป็นรูปแบบเดียวกับคอลัมน์ Full name ในใบราคา แต่สร้างใหม่จากข้อมูลสด
+   เพราะ Full name ในใบราคาส่วนใหญ่ยังติดรหัสโรงงานอยู่ (3S (230), CL (125*166))
+   ซึ่งไม่ควรหลุดไปถึงลูกค้า · ตัวเลขไม่ใส่จุลภาค ตามที่ Bay เขียนมา
+   =========================================================================== */
+
+const N = (n: number) => String(Math.round(n));
+
+/** ชื่อหมวดแบบที่ลูกค้าอ่านรู้เรื่อง · ไม่เอารหัสโรงงานอย่าง 3S (230) */
+const kindOf = (it: Item) =>
+  it.cat === 'โซฟา'
+    ? (it.label.startsWith('เดย์เบด') ? 'เดย์เบด'
+      : it.label.startsWith('ชุดตัวแอล') ? 'โซฟาตัวแอล' : 'โซฟา')
+    : it.cat;
+
+/** ท่อนวัสดุ · ผ้า หนัง ท็อปโต๊ะ เลือกสีได้ · งานไม้ล้วนบอกชนิดไม้กับสีไม้ */
+const matOf = (it: Item, p: ReplyPick) => {
+  const g = p.kind === 'e' ? (it.extra[p.ci]?.label ?? '') : GRADES[p.ci];
+  const colour = /ผ้า|หนัง|ท็อป/.test(g) ? ' เลือกสีได้' : '';
+  // ตู้ไม้ · ชื่อแบบคือ "ไม้โอ๊ค" ซึ่งซ้ำกับช่องไม้ · ใช้ช่องไม้ที่มีสีไม้ด้วยแทน
+  if (!colour && it.wood && it.wood.startsWith(g)) return it.wood;
+  return `${g}${colour}`.trim();
+};
+
+/** ขนาดของชิ้นนี้ตามแบบที่เลือกไว้จริง · หมุนแล้วกว้างกับลึกสลับกัน */
+const sizeOf = (it: Item, p: ReplyPick) => {
+  const dr = variantOf(it, p);
+  let w = dr ? Math.round(dr.w / 10) : it.w;
+  let d = dr ? Math.round(dr.d / 10) : it.d;
+  if (p.rot) [w, d] = [d, w];
+  return [w && `W${w}`, d && `D${d}`, it.h && `H${it.h}`].filter(Boolean).join(' ');
+};
+
+export const priceTail = (full: number, sale: number, disc: number) =>
+  sale < full
+    ? `ราคา ${N(full)} ลด ${disc}% เหลือ ${N(sale)} บาท`
+    : `ราคา ${N(full)} บาท`;
+
+/** สิ่งที่ต้องรู้เพิ่มจาก Pick เพื่อเขียนบรรทัดได้ */
+export type ReplyPick = Pick & {
+  kind: 'g' | 'e'; ci: number; qty: number; mir: boolean; rot: boolean;
+};
+export type ReplyPrice = { full: number; sale: number; disc: number; ask: boolean };
+
+/** หนึ่งบรรทัดต่อหนึ่งชิ้น ตามรูปแบบที่ Bay ใช้ */
+export function replyLine(it: Item, p: ReplyPick, l: ReplyPrice): string {
+  // "เดย์เบด ... เดย์เบดด้านขวา" อ่านแล้วสะดุด · ตัดคำที่ซ้ำกับหมวดออก
+  const vn = variantName(it, p).replace(new RegExp(`^${kindOf(it)}`), '').trim();
+  const head = ['ฌ เฌอ |', kindOf(it), COLLECTION, it.en, vn, matOf(it, p),
+                p.rot ? 'หมุน 90°' : '', p.mir ? 'พลิกซ้าย-ขวา' : '']
+    .filter(Boolean).join(' ');
+  const qty = p.qty > 1 ? ` ×${p.qty}` : '';
+  if (l.ask) return `${head}${qty} | ขนาด ${sizeOf(it, p)} cm · สอบถามราคา`;
+  return `${head}${qty} | ขนาด ${sizeOf(it, p)} cm ${priceTail(l.full, l.sale, l.disc)}`;
 }

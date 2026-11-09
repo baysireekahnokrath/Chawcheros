@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 // @ts-expect-error -- node --experimental-strip-types ต้องการนามสกุล .ts
-import { GRADES, PLAN_MM, buildPhoenix, canPick, cellOf, isSofa, variantName, variantOf } from '../src/modules/phoenix/build.ts';
+import { GRADES, PLAN_MM, buildPhoenix, canPick, cellOf, isSofa, replyLine, variantName, variantOf } from '../src/modules/phoenix/build.ts';
 import type { Item, Pick } from '../src/modules/phoenix/build.ts';
 
 const CSV = join(dirname(fileURLToPath(import.meta.url)),
@@ -156,6 +156,47 @@ ok('ชื่อแบบ · ไม่มีแขน', variantName(it('ตั�
 /* ── ขอบเขตของไฟล์โรงงาน · บางความกว้างไม่มีบางแบบ ── */
 ok('150 ไม่มีแบบมีโต๊ะ', canPick(it('ตัวโซฟา 150 ซม.'), 'one', true, 'R'), false);
 ok('150 มีแบบแขนสองข้าง',  canPick(it('ตัวโซฟา 150 ซม.'), 'both', false, 'R'), true);
+
+/* ── บรรทัดตอบลูกค้า · รูปแบบที่ Bay ส่งมา 2026-11-09 ──
+     ฌ เฌอ | โซฟา 3 ที่นั่ง ฟีนิกซ์ (Phoenix Sofa)   ผ้า A เลือกสีได้
+            | ขนาด W190 D96 H85 cm ราคา 90900 ลด 40% เหลือ 54540 บาท       */
+const reply = (label: string, pk: Partial<Pick> & { kind?: 'g' | 'e'; ci?: number } = {}) => {
+  const x = it(label);
+  const q = { ...P(pk), kind: pk.kind ?? 'g', ci: pk.ci ?? 0, qty: 1, mir: false, rot: false };
+  const c = cellOf(x, q, q.kind, q.ci);
+  return replyLine(x, q, {
+    full: c?.full ?? 0, sale: c?.sale ?? c?.full ?? 0, disc: c?.disc ?? 0,
+    ask: !c || c.full == null,
+  });
+};
+
+ok('โซฟา 190 ผ้า A · ตัวเลขตรงกับที่ Bay ส่งมา', reply('ตัวโซฟา 190 ซม.'),
+   'ฌ เฌอ | โซฟา ฟีนิกซ์ (Phoenix Sofa) แขนสองข้าง ผ้า A เลือกสีได้ | ขนาด W190 D96 H85 cm ราคา 90900 ลด 40% เหลือ 54540 บาท');
+ok('ขึ้นต้นด้วย ฌ เฌอ | เสมอ', reply('เดย์เบด 125×166').startsWith('ฌ เฌอ | '), true);
+ok('ตัวเลขไม่ใส่จุลภาค ตามที่ Bay เขียน', /,/.test(reply('ตัวโซฟา 230 ซม.')), false);
+ok('มีคำว่า ราคา ... ลด ...% เหลือ ... บาท',
+   /ราคา \d+ ลด \d+% เหลือ \d+ บาท$/.test(reply('ตัวโซฟา 230 ซม.')), true);
+ok('เลือกแขนกับโต๊ะแล้วบอกในบรรทัดด้วย',
+   reply('ตัวโซฟา 230 ซม.', { arm: 'one', side: 'R', tbl: true }).includes('แขนขวา + โต๊ะข้าง'), true);
+ok('ไม่มีรหัสโรงงานหลุดไปถึงลูกค้า',
+   /3S|3RT|CL \(|DAYBED-|PHX|with Table/.test(
+     items.map((x) => reply(x.label)).join('\n')), false);
+ok('เดย์เบดใช้ชื่ออังกฤษของเดย์เบด ไม่ใช่ของโซฟา',
+   reply('เดย์เบด 125×166').includes('(Phoenix Daybed)'), true);
+ok('เดย์เบดไม่พูดคำว่าเดย์เบดซ้ำ',
+   (reply('เดย์เบด 125×166').match(/เดย์เบด/g) ?? []).length, 1);
+ok('ผ้ากับหนังบอกว่าเลือกสีได้', reply('ตัวโซฟา 230 ซม.').includes('ผ้า A เลือกสีได้'), true);
+ok('งานไม้บอกชนิดไม้กับสีไม้ ไม่ซ้ำคำ',
+   reply('ตู้เก็บของ 135 ซม.', { kind: 'e' }).includes('ไม้โอ๊ค สีธรรมชาติ |'), true);
+ok('ขนาดไม่ปัดทศนิยมทิ้ง · ตู้ลึก 43.5 ไม่ใช่ 44',
+   reply('ตู้เก็บของ 135 ซม.', { kind: 'e' }).includes('D43.5'), true);
+ok('หมุน 90° แล้วบอกในบรรทัด และกว้างลึกสลับกัน', (() => {
+  const x = it('เดย์เบด 125×166');
+  const q = { ...P(), kind: 'g' as const, ci: 0, qty: 1, mir: false, rot: true };
+  const c = cellOf(x, q, 'g', 0);
+  const line = replyLine(x, q, { full: c!.full!, sale: c!.sale!, disc: c!.disc, ask: false });
+  return line.includes('หมุน 90°') && line.includes('W166 D125');
+})(), true);
 
 /* ── ห้ามมีต้นทุนหลุดมาสักช่อง ── */
 ok('ไม่มีคำว่าต้นทุนในผลลัพธ์', /ต้นทุน|cost|margin|กำไร/i.test(JSON.stringify(items)), false);

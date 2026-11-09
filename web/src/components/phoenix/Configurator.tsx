@@ -2,7 +2,8 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  GRADES, canPick, cellOf, isSofa, planSrc, variantName, variantOf,
+  COLLECTION, GRADES, canPick, cellOf, isSofa, planSrc, priceTail, replyLine,
+  variantOf,
   type Item, type Pick,
 } from '@/modules/phoenix/build';
 
@@ -290,25 +291,31 @@ export default function Configurator({ items }: { items: Item[] }) {
     setToast('กดค้างที่รูป (มือถือ) หรือคลิกขวา (คอม) แล้วบันทึกรูปภาพ');
   };
 
-  /* ---------------- ข้อความส่งลูกค้า ---------------- */
+  /* ---------------- ข้อความส่งลูกค้า ----------------
+     รูปแบบที่ Bay ใช้ตอบลูกค้าจริง (2026-11-09) · เหมือนคอลัมน์ Full name ในใบราคา
+       ฌ เฌอ | โซฟา ฟีนิกซ์ (Phoenix Sofa) แขนขวา ผ้า A เลือกสีได้
+              | ขนาด W230 D96 H85 cm ราคา 112400 ลด 40% เหลือ 67440 บาท
+     ตัวเลขไม่ใส่จุลภาค ตามที่ Bay เขียนมา
+     ชุดหลายชิ้นใส่บรรทัดสรุปไว้บนสุด แล้วไล่ทีละชิ้นข้างล่าง            */
+
+  const lineFor = (p: Sel) => {
+    const l = lineOf(p);
+    return replyLine(l.it, p, { full: l.full, sale: l.sale, disc: l.disc, ask: l.ask });
+  };
+
   const copyText = () => {
-    const L: string[] = ['ฌ เฌอ · ฟีนิกซ์ (Phoenix Sofa)'];
-    if (span.w) L.push(`ขนาดรวม กว้าง ${span.w} × ลึก ${span.d} ซม.`);
-    L.push('');
-    picked.forEach((p) => {
-      const l = lineOf(p);
-      const dr = variantOf(l.it, p);
-      const vn = variantName(l.it, p);
-      L.push(`• ${l.it.label} [${dr ? dr.code : l.it.code}] ${l.name}` +
-             `${p.qty > 1 ? ` ×${p.qty}` : ''}${vn ? ` · ${vn}` : ''}${p.rot ? ' · หมุน 90°' : ''}`);
-      L.push(l.ask ? '  สอบถามราคา'
-        : `  ${BAHT(l.full)} บาท` +
-          (l.sale < l.full ? `  ลด ${l.disc}% เหลือ ${BAHT(l.sale)} บาท` : ''));
-    });
-    L.push('', `ราคาเต็ม ${BAHT(totals.full)} บาท`,
-           `ราคาสุทธิ ${BAHT(totals.sale)} บาท (รวม VAT แล้ว)`,
-           '', 'ยังไม่รวมค่าขนส่งและติดตั้ง');
-    return L.join('\n');
+    if (picked.length === 1) return lineFor(picked[0]);
+    const disc = totals.full ? Math.round((1 - totals.sale / totals.full) * 100) : 0;
+    const en = picked.map((p) => items[p.ii].en).find(Boolean) ?? '';
+    const size = span.w ? `ขนาดรวม W${span.w} D${span.d} cm ` : '';
+    return [
+      `ฌ เฌอ | ชุดโซฟา ${COLLECTION} ${en} | ${size}${priceTail(totals.full, totals.sale, disc)}`,
+      '',
+      'ประกอบด้วย',
+      ...picked.map((p) => `• ${lineFor(p).replace(/^ฌ เฌอ \| /, '')}`),
+      '',
+      'ยังไม่รวมค่าขนส่งและติดตั้ง',
+    ].join('\n');
   };
 
   /* ---------------- ส่วนประกอบย่อย ---------------- */
