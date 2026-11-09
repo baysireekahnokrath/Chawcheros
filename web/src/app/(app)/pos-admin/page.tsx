@@ -133,7 +133,7 @@ export default function PosAdminPage() {
           <h1 className="text-xl font-semibold tracking-tight">ขายหน้าบูธ · หลังบ้าน</h1>
           <p className="mt-1 text-sm text-muted">ลิงก์ให้ทีมหน้าบูธ: <a className="text-accent underline" href="/pos" target="_blank">/pos</a> · อัปเดตเองทุก 30 วินาที</p>
         </div>
-        <button onClick={csv} className="rounded-xl border border-border bg-surface px-4 py-2 text-sm">ดาวน์โหลด CSV</button>
+        <div className="flex gap-2"><a href="/pos-report" className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-accent-fg">ดูรายงาน</a><button onClick={csv} className="rounded-xl border border-border bg-surface px-4 py-2 text-sm">ดาวน์โหลด CSV</button></div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-end gap-3 text-sm">
