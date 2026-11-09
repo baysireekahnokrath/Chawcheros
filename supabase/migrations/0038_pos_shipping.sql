@@ -1,0 +1,83 @@
+-- ============================================================================
+-- 0038 · POS · วิธีรับสินค้า + ที่อยู่ลูกค้า + ใบปะหน้า (label)
+-- ============================================================================
+-- โจทย์จาก Bay (2026-11-09)
+--   S1 ตอนขายเลือกได้ว่า รับไปเอง / ส่ง EMS / ส่ง door to door
+--   S2 ใส่ชื่อ เบอร์ ที่อยู่ลูกค้าได้
+--   S3 จบวัน เลือกบิล EMS แล้วพิมพ์ใบปะหน้าได้เลย
+--
+-- เข้ากันได้กับเครื่องหน้าบูธที่ยังเปิดหน้าเก่าค้างไว้: บิลที่ไม่ส่งช่องใหม่มา = "รับเอง"
+-- ============================================================================
+
+alter table pos.sales
+  add column ship_method      text not null default 'รับเอง'
+                              check (ship_method in ('รับเอง', 'EMS', 'Door to door')),
+  add column ship_address     text not null default '',
+  add column ship_postcode    text not null default '' check (ship_postcode ~ '^[0-9]{0,5}$'),
+  add column label_printed_at timestamptz;
+
+create index pos_sales_ship on pos.sales (ship_method, sold_on) where ship_method <> 'รับเอง';
+
+-- ผู้ส่งบนใบปะหน้า · แก้ได้จากหลังบ้าน
+alter table pos.settings
+  add column sender_name    text not null default 'CHAW CHER HOME SALES GALLERY',
+  add column sender_address text not null default '',
+  add column sender_phone   text not null default '';
+
+grant select (sender_name, sender_address, sender_phone) on pos.settings to authenticated;
+
+create or replace function pos.set_sender(p_name text, p_address text, p_phone text)
+returns void language plpgsql security definer
+set search_path = pos, public as $$
+begin
+  if not core.has_capability('admin') then raise exception 'not_allowed' using errcode = '42501'; end if;
+  update pos.settings
+     set sender_name = left(btrim(coalesce(p_name, '')), 120),
+         sender_address = left(btrim(coalesce(p_address, '')), 400),
+         sender_phone = left(btrim(coalesce(p_phone, '')), 40),
+         updated_at = now()
+   where id = 1;
+end $$;
+revoke all on function pos.set_sender(text, text, text) from public;
+grant execute on function pos.set_sender(text, text, text) to authenticated;
+
+-- บันทึกบิล · รับช่องจัดส่งเพิ่ม (ช่องอื่นเหมือนเดิมทุกอย่าง)
+create or replace function pos.record_sale(p_pin text, p_sale jsonb)
+returns jsonb language plpgsql security definer
+set search_path = pos, extensions, public as $$
+declare v_row pos.sales; v_event text; v_ship text;
+begin
+  if not pos.check_pin(p_pin) then
+    raise exception 'pin_invalid' using errcode = '28000';
+  end if;
+  select event_name into v_event from pos.settings where id = 1;
+  v_ship := case when p_sale->>'ship' in ('EMS', 'Door to door') then p_sale->>'ship' else 'รับเอง' end;
+
+  insert into pos.sales (id, bill_no, sold_at, sold_on, event_name, seller, items,
+                         subtotal, discount_type, discount_value, total, pay,
+                         customer, phone, note, ship_method, ship_address, ship_postcode)
+  values (
+    p_sale->>'id',
+    left(coalesce(p_sale->>'no', ''), 40),
+    coalesce((p_sale->>'at')::timestamptz, now()),
+    coalesce((p_sale->>'date')::date, (now() at time zone 'Asia/Bangkok')::date),
+    v_event,
+    left(btrim(coalesce(p_sale->>'seller', '')), 60),
+    coalesce(p_sale->'items', '[]'::jsonb),
+    0,
+    case when p_sale->>'discountType' = 'pct' then 'pct' else 'baht' end,
+    greatest(coalesce((p_sale->>'discountValue')::numeric, 0), 0),
+    0,
+    coalesce(p_sale->>'pay', 'โอน'),
+    left(coalesce(p_sale->>'customer', ''), 120),
+    left(coalesce(p_sale->>'phone', ''), 60),
+    left(coalesce(p_sale->>'note', ''), 300),
+    v_ship,
+    left(btrim(coalesce(p_sale->>'address', '')), 400),
+    left(regexp_replace(coalesce(p_sale->>'postcode', ''), '[^0-9]', '', 'g'), 5)
+  )
+  on conflict (id) do nothing;
+
+  select * into v_row from pos.sales where id = p_sale->>'id';
+  return jsonb_build_object('id', v_row.id, 'total', v_row.total, 'bill_no', v_row.bill_no);
+end $$;

@@ -96,6 +96,8 @@ label { display: grid; gap: 3px; font-size: 13px; color: var(--muted); min-width
 .sum div { display: flex; justify-content: space-between; }
 .sum .total { font-size: 24px; color: var(--navy); font-weight: 500; padding-top: 6px; border-top: 1px solid var(--line); }
 .pays { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.shipbox { display: grid; gap: 8px; }
+.shipbox textarea { min-height: 72px; font-size: 16px; }
 .pays button { border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 10px 0; border-radius: 10px; font-size: 14px; }
 .pays button[aria-pressed="true"] { border-color: var(--navy); background: var(--aqua-soft); color: var(--navy); font-weight: 500; }
 details.more summary { cursor: pointer; color: var(--navy); font-size: 14px; }
@@ -192,13 +194,19 @@ dialog::backdrop { background: rgba(20, 30, 40, .45); }
         <button type="button" data-pay="เงินสด" aria-pressed="false">เงินสด</button>
         <button type="button" data-pay="บัตร" aria-pressed="false">บัตร</button>
       </div>
-      <details class="more"><summary>ข้อมูลลูกค้า (ไม่บังคับ)</summary>
-        <div>
-          <label>ชื่อลูกค้า / บริษัท<input id="cust"></label>
-          <label>เบอร์ / LINE<input id="custPhone" inputmode="tel"></label>
-          <label>หมายเหตุ (ส่งของ, มัดจำ, สั่งทำ)<input id="note"></label>
-        </div>
-      </details>
+      <div class="pays" role="group" aria-label="วิธีรับสินค้า">
+        <button type="button" data-ship="รับเอง" aria-pressed="true">รับไปเอง</button>
+        <button type="button" data-ship="EMS" aria-pressed="false">ส่ง EMS</button>
+        <button type="button" data-ship="Door to door" aria-pressed="false">Door to door</button>
+      </div>
+      <div class="shipbox" id="shipBox">
+        <p class="muted" id="shipHint">ข้อมูลลูกค้า (ไม่บังคับ)</p>
+        <label>ชื่อลูกค้า / ผู้รับ<input id="cust" autocomplete="name"></label>
+        <label>เบอร์โทร<input id="custPhone" inputmode="tel" autocomplete="tel"></label>
+        <label id="addrWrap" hidden>ที่อยู่จัดส่ง (บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด)<textarea id="addr" rows="3" autocomplete="street-address"></textarea></label>
+        <label id="pcWrap" hidden>รหัสไปรษณีย์<input id="postcode" inputmode="numeric" maxlength="5" autocomplete="postal-code"></label>
+        <label>หมายเหตุ (มัดจำ, สั่งทำ, นัดส่ง)<input id="note"></label>
+      </div>
       <label>คนขาย<input id="seller" placeholder="ชื่อคุณ"></label>
       <button class="btn" id="saveSale" style="padding:14px;font-size:17px" disabled>บันทึกการขาย</button>
     </aside>
@@ -344,11 +352,26 @@ function newBillNo() {
   const d = new Date(); const s = ($('seller').value.trim()[0] || 'X').toUpperCase();
   return `SX${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${/[A-Z0-9]/.test(s) ? s : 'T'}`;
 }
+let ship = 'รับเอง';
+function setShip(v) {
+  ship = v;
+  document.querySelectorAll('[data-ship]').forEach(b => b.setAttribute('aria-pressed', b.dataset.ship === v));
+  const send = v !== 'รับเอง';
+  $('addrWrap').hidden = !send; $('pcWrap').hidden = !send;
+  $('shipHint').textContent = send ? `ส่ง ${v} · กรอกให้ครบทุกช่อง ใช้พิมพ์ใบปะหน้า` : 'ข้อมูลลูกค้า (ไม่บังคับ)';
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-ship]'); if (b) setShip(b.dataset.ship); });
+
 let saving = false;
 $('saveSale').addEventListener('click', async () => {
   if (!cart.length || saving) return;
   const seller = $('seller').value.trim();
   if (!seller) { toast('ใส่ชื่อคนขายก่อน'); $('seller').focus(); return; }
+  if (ship !== 'รับเอง') {
+    const miss = [['cust', 'ชื่อผู้รับ'], ['custPhone', 'เบอร์โทร'], ['addr', 'ที่อยู่'], ['postcode', 'รหัสไปรษณีย์']].find(([id]) => !$(id).value.trim());
+    if (miss) { toast(`ส่งของต้องใส่${miss[1]}`); $(miss[0]).focus(); return; }
+    if (!/^\d{5}$/.test($('postcode').value.trim())) { toast('รหัสไปรษณีย์ต้องเป็นตัวเลข 5 หลัก'); $('postcode').focus(); return; }
+  }
   lsSet('-seller', seller);
   saving = true; $('saveSale').disabled = true;
   const t = totals(cart, discType, $('discVal').value);
@@ -358,10 +381,11 @@ $('saveSale').addEventListener('click', async () => {
     no: newBillNo(), at: now.toISOString(), date: localDate(now), seller,
     items: cart.map(l => ({ name: l.name, v: l.v, price: l.price, qty: l.qty })),
     subtotal: t.sub, discountType: discType, discountValue: +$('discVal').value || 0, discount: t.disc, total: t.total,
-    pay, customer: $('cust').value.trim(), phone: $('custPhone').value.trim(), note: $('note').value.trim(), synced: false,
+    pay, customer: $('cust').value.trim(), phone: $('custPhone').value.trim(), note: $('note').value.trim(),
+    ship, address: ship === 'รับเอง' ? '' : $('addr').value.trim(), postcode: ship === 'รับเอง' ? '' : $('postcode').value.trim(), synced: false,
   };
   sales.push(sale); lsSet('-sales', sales);
-  cart = []; $('discVal').value = ''; $('cust').value = ''; $('custPhone').value = ''; $('note').value = '';
+  cart = []; ['discVal', 'cust', 'custPhone', 'note', 'addr', 'postcode'].forEach(id => { $(id).value = ''; }); setShip('รับเอง');
   saveCart(); renderCart();
   await syncOne(sale);
   saving = false; renderSales(); openReceipt(sale);
@@ -398,7 +422,9 @@ function receiptHtml(s) {
     ${s.discount ? `<div class="ln"><span>ส่วนลด${s.discountType === 'pct' ? ' ' + s.discountValue + '%' : ''}</span><span>−฿${baht(s.discount)}</span></div>` : ''}
     <div class="ln" style="font-size:18px;color:var(--navy)"><b style="font-weight:500">ยอดสุทธิ</b><b style="font-weight:500">฿${baht(s.total)}</b></div>
     <div class="ln muted"><span>ชำระ: ${esc(s.pay)} · คนขาย: ${esc(s.seller)}</span></div>
+    <div class="muted">รับสินค้า: ${esc(s.ship || 'รับเอง')}</div>
     ${s.customer || s.phone ? `<div class="muted">ลูกค้า: ${esc(s.customer)} ${esc(s.phone)}</div>` : ''}
+    ${s.address ? `<div class="muted">ที่อยู่: ${esc(s.address)} ${esc(s.postcode)}</div>` : ''}
     ${s.note ? `<div class="muted">หมายเหตุ: ${esc(s.note)}</div>` : ''}
   </div>`;
 }
@@ -406,7 +432,9 @@ function receiptText(s) {
   const L = [`CHAW CHER · ใบเสร็จ ${s.no}`, new Date(s.at).toLocaleString('th-TH')];
   s.items.forEach(l => L.push(`${l.name}${l.v ? ' ' + l.v : ''} x${l.qty}  ฿${baht(l.price * l.qty)}`));
   if (s.discount) L.push(`ส่วนลด −฿${baht(s.discount)}`);
-  L.push(`ยอดสุทธิ ฿${baht(s.total)} (${s.pay})`, 'ขอบคุณครับ · CHAW CHER');
+  L.push(`ยอดสุทธิ ฿${baht(s.total)} (${s.pay})`);
+  if (s.ship && s.ship !== 'รับเอง') L.push(`จัดส่ง ${s.ship}: ${s.customer} ${s.phone}`, `${s.address} ${s.postcode}`);
+  L.push('ขอบคุณครับ · CHAW CHER');
   return L.join('\n');
 }
 function openReceipt(s) {
