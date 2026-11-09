@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   GRADES, canPick, cellOf, isSofa, planSrc, variantName, variantOf,
   type Item, type Pick,
@@ -25,11 +25,21 @@ type Block = {
 
 export default function Configurator({ items }: { items: Item[] }) {
   const [picked, setPicked] = useState<Sel[]>([]);
+  const [grade, setGradeIdx] = useState(0);      // วัสดุของทั้งชุด · เลือกทีเดียวใช้ทุกชิ้น
   const [fallback, setFallback] = useState('');
   const [png, setPng] = useState('');
   const [toast, setToast] = useState('');
   const planBox = useRef<HTMLDivElement>(null);
+  const selBox = useRef<HTMLElement>(null);
   const [boxW, setBoxW] = useState(640);
+
+  /* เลือกชิ้นแรกแล้วพาสายตาลงไปที่ตาราง · ไม่งั้นไม่มีทางรู้ว่ามีตัวเลือกอยู่ข้างล่าง */
+  const wasEmpty = useRef(true);
+  useEffect(() => {
+    if (picked.length && wasEmpty.current)
+      selBox.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    wasEmpty.current = picked.length === 0;
+  }, [picked.length]);
 
   useEffect(() => {
     const read = () => setBoxW(Math.max(240, (planBox.current?.clientWidth ?? 640) - 22));
@@ -62,6 +72,23 @@ export default function Configurator({ items }: { items: Item[] }) {
     });
     setPng('');
   };
+  /** เปลี่ยนวัสดุทีเดียวทั้งชุด · ชิ้นที่เกรดใหม่ไม่มีราคา คงเกรดเดิมไว้ */
+  const setGrade = (gi: number) => {
+    setGradeIdx(gi);
+    setPicked((ps) => {
+      const out: Sel[] = [];
+      for (const q of ps) {
+        if (q.kind !== 'g' || !items[q.ii].cells[gi]) { out.push(q); continue; }
+        const k = keyOf(q.ii, 'g', gi);
+        const hit = out.find((o) => o.key === k);
+        if (hit) hit.qty += q.qty;
+        else out.push({ ...q, ci: gi, key: k });
+      }
+      return out;
+    });
+    setPng('');
+  };
+
   const bump = (k: string, d: number) => {
     setPicked((ps) => ps.flatMap((p) =>
       p.key !== k ? [p] : p.qty + d <= 0 ? [] : [{ ...p, qty: p.qty + d }]));
@@ -96,6 +123,19 @@ export default function Configurator({ items }: { items: Item[] }) {
     mutate(k, (p) => ({ ...p, [f]: !p[f] }));
     setPng('');
   };
+
+  /* ---------------- จัดกลุ่มสำหรับปุ่มเลือก ---------------- */
+  const groups = useMemo(() => {
+    const sofas: number[] = [], others: number[] = [], extras: number[] = [];
+    items.forEach((it, ii) => {
+      if (isSofa(it)) sofas.push(ii);
+      else if (it.cat === 'โซฟา') others.push(ii);
+      else extras.push(ii);
+    });
+    // ปุ่มเรียงจากสั้นไปยาว อ่านง่ายกว่าตารางที่เรียงจากใหญ่ลงมา
+    sofas.sort((a, b) => (items[a].w ?? 0) - (items[b].w ?? 0));
+    return { sofas, others, extras };
+  }, [items]);
 
   /* ---------------- ตัวเลข ---------------- */
   const lineOf = useCallback((p: Sel) => {
@@ -276,21 +316,57 @@ export default function Configurator({ items }: { items: Item[] }) {
     k: string; field: 'arm' | 'side' | 'tbl' | 'v';
     opts: { val: unknown; label: string; off?: boolean; title?: string }[]; cur: unknown;
   }) => (
-    <div className="mt-1 flex max-w-[16rem] flex-wrap gap-1">
+    <div className="mt-1 flex flex-wrap gap-1">
       {opts.map((o) => (
         <button
           key={String(o.val)} type="button" disabled={o.off} title={o.title}
           aria-pressed={String(o.val) === String(cur)}
           onClick={() => setVar(k, field, o.val)}
-          className={`rounded-md border px-1.5 py-1 text-[0.68rem] font-medium leading-tight
+          className={`rounded-md border px-2 py-1 text-[0.7rem] font-medium leading-tight
             ${String(o.val) === String(cur)
-              ? 'border-accent bg-accent text-white'
+              ? 'border-accent bg-accent text-accent-fg'
               : 'border-border bg-bg text-muted'}
             ${o.off ? 'cursor-not-allowed opacity-40' : ''}`}
         >{o.label}</button>
       ))}
     </div>
   );
+
+  /** ปุ่มเลือกหนึ่งชิ้น · บางชิ้น (โต๊ะกลาง ตู้) ไม่คิดตามผ้า แต่คิดตามท็อป จึงแตกเป็นหลายปุ่ม */
+  const PickChip = ({ ii }: { ii: number }) => {
+    const it = items[ii];
+    const c = it.cells[grade];
+    const one = (key: string, kind: 'g' | 'e', ci: number,
+                 price: number | null, note?: string) => {
+      const n = picked.find((q) => q.key === keyOf(ii, kind, ci))?.qty ?? 0;
+      return (
+        <button
+          key={key} type="button" disabled={price == null}
+          onClick={() => add(ii, kind, ci)}
+          aria-label={`${it.label} ${kind === 'g' ? GRADES[ci] : it.extra[ci].label}`}
+          className={`relative rounded-xl border px-2.5 py-2 text-left
+            ${n ? 'border-accent bg-accent/10' : 'border-border bg-bg'}
+            ${price == null ? 'cursor-not-allowed opacity-40' : ''}`}
+        >
+          <span className="block text-[0.82rem] leading-tight font-medium">{it.label}</span>
+          {note && <span className="block text-[0.6rem] text-muted">{note}</span>}
+          <span className="mt-0.5 block text-[0.68rem]">
+            {price == null ? 'ไม่มีราคา' : BAHT(price)}
+          </span>
+          {n > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 rounded-full bg-accent px-1.5 text-[0.62rem] font-semibold text-accent-fg">
+              {n}
+            </span>
+          )}
+        </button>
+      );
+    };
+    // ชิ้นที่คิดราคาตามผ้า
+    if (c || !it.extra.length) return one(it.label, 'g', grade, c ? (c.sale ?? c.full) : null);
+    // ชิ้นที่คิดราคาตามท็อป · หนึ่งปุ่มต่อหนึ่งแบบ
+    return <>{it.extra.map((e, ei) =>
+      one(`${it.label}-${ei}`, 'e', ei, e.sale ?? e.full, e.label))}</>;
+  };
 
   const Controls = ({ p }: { p: Sel }) => {
     const it = items[p.ii];
@@ -332,95 +408,98 @@ export default function Configurator({ items }: { items: Item[] }) {
 
   return (
     <>
-      {/* ตารางราคา */}
-      <section id="phx-grid" className="min-w-0 rounded-2xl border border-border bg-surface p-3">
-        <h2 className="mb-2 text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
-          ใบราคา ฟีนิกซ์
+      {/* ---- เลือกชิ้น · ด่านแรกต้องง่ายที่สุด ---- */}
+      <section id="phx-pick" className="min-w-0 rounded-2xl border border-border bg-surface p-3 sm:p-4">
+        <h2 className="text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
+          1 · วัสดุหุ้ม
         </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border-separate border-spacing-0 text-[0.8rem]">
-            <thead>
-              <tr>
-                <th className="sticky left-0 z-20 w-[9.5rem] min-w-[9.5rem] border-b border-border bg-surface px-1 py-1.5 text-left text-[0.72rem] font-normal text-muted sm:w-[13rem] sm:min-w-[13rem]">
-                  รายการ
-                </th>
-                {GRADES.map((g) => (
-                  <th key={g} className="border-b border-border bg-surface px-1 py-1.5 text-center text-[0.72rem] font-normal whitespace-nowrap text-muted">{g}</th>
-                ))}
-                <th className="border-b border-border bg-surface px-1 py-1.5 text-center text-[0.72rem] font-normal text-muted">แบบอื่น</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((it, ii) => {
-                const size = [it.w && `W${it.w}`, it.d && `D${it.d}`, it.h && `H${it.h}`]
-                  .filter(Boolean).join('×');
-                return (
-                  <tr key={it.label}>
-                    <th className="sticky left-0 z-10 w-[9.5rem] min-w-[9.5rem] border-b border-border bg-surface px-1 py-1 text-left font-normal sm:w-[13rem] sm:min-w-[13rem]">
-                      <span className="block leading-tight">{it.label}</span>
-                      <small className="block font-mono text-[0.64rem] leading-tight text-muted">
-                        {it.code}{size ? ` · ${size}` : ''}
-                        {isSofa(it) && (
-                          <span className="hidden sm:inline"> · เลือกแขน/โต๊ะได้หลังเลือกราคา</span>
-                        )}
-                      </small>
-                    </th>
-                    {it.cells.map((c, gi) => {
-                      const p = find(keyOf(ii, 'g', gi));
-                      const off = c && c.sale != null && c.full != null && c.sale < c.full;
-                      return (
-                        <td key={gi} className="border-b border-border">
-                          <button
-                            type="button" disabled={!c}
-                            onClick={() => add(ii, 'g', gi)}
-                            aria-label={`${it.label} ${GRADES[gi]}`}
-                            className={`relative block w-full min-w-[5.4rem] border-l border-border px-1 py-1.5 text-center text-[0.78rem]
-                              ${!c ? 'cursor-default text-muted opacity-40' : ''}
-                              ${p ? 'rounded-lg bg-accent/10 ring-2 ring-accent ring-inset' : ''}`}
-                          >
-                            {!c ? '—' : (<>
-                              {off && <s className="block text-[0.66rem] text-muted">{BAHT(c.full)}</s>}
-                              <b className="block font-semibold">{BAHT(c.sale ?? c.full)}</b>
-                              {p && <span className="absolute top-0.5 right-1 text-[0.62rem] font-semibold text-accent">×{p.qty}</span>}
-                            </>)}
-                          </button>
-                        </td>
-                      );
-                    })}
-                    <td className="border-b border-border">
-                      {it.extra.length ? it.extra.map((e, ei) => {
-                        const p = find(keyOf(ii, 'e', ei));
-                        const off = e.sale != null && e.full != null && e.sale < e.full;
-                        return (
-                          <button
-                            key={ei} type="button" onClick={() => add(ii, 'e', ei)}
-                            className={`relative block w-full min-w-[5.4rem] border-l border-border px-1 py-1.5 text-center text-[0.78rem]
-                              ${p ? 'rounded-lg bg-accent/10 ring-2 ring-accent ring-inset' : ''}`}
-                          >
-                            <i className="block text-[0.62rem] not-italic text-muted">{e.label}</i>
-                            {off && <s className="block text-[0.66rem] text-muted">{BAHT(e.full)}</s>}
-                            <b className="block font-semibold">{BAHT(e.sale ?? e.full)}</b>
-                            {p && <span className="absolute top-0.5 right-1 text-[0.62rem] font-semibold text-accent">×{p.qty}</span>}
-                          </button>
-                        );
-                      }) : <span className="block px-1 text-center text-muted opacity-40">—</span>}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <p className="mt-0.5 mb-2 text-xs text-muted">เปลี่ยนได้ตลอด · ราคาทั้งชุดเปลี่ยนตาม</p>
+        <div className="flex flex-wrap gap-1.5">
+          {GRADES.map((g, gi) => (
+            <button
+              key={g} type="button" onClick={() => setGrade(gi)} aria-pressed={gi === grade}
+              className={`rounded-xl border px-3 py-2 text-sm font-medium
+                ${gi === grade ? 'border-accent bg-accent text-accent-fg' : 'border-border bg-bg'}`}
+            >{g}</button>
+          ))}
         </div>
+
+        <h2 className="mt-5 text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
+          2 · ตัวโซฟา · กดเลือกความยาว
+        </h2>
+        <p className="mt-0.5 mb-2 text-xs text-muted">
+          กดแล้วค่อยเลือก <b className="font-semibold text-text">แขน</b> กับ{' '}
+          <b className="font-semibold text-text">โต๊ะข้าง</b> ในตารางที่ขึ้นมาข้างล่าง
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {groups.sofas.map((ii) => {
+            const it = items[ii];
+            const c = it.cells[grade];
+            const n = picked.filter((q) => q.ii === ii).reduce((a, q) => a + q.qty, 0);
+            return (
+              <button
+                key={it.label} type="button" disabled={!c}
+                onClick={() => add(ii, 'g', grade)}
+                aria-label={`${it.label} ${GRADES[grade]}`}
+                className={`relative min-w-[5.2rem] rounded-xl border px-2.5 py-2 text-center
+                  ${n ? 'border-accent bg-accent/10' : 'border-border bg-bg'}
+                  ${!c ? 'cursor-not-allowed opacity-40' : ''}`}
+              >
+                <span className="block text-lg leading-none font-semibold">{it.w}</span>
+                <span className="block text-[0.6rem] text-muted">ซม.</span>
+                <span className="mt-1 block text-[0.68rem] font-medium">
+                  {c ? BAHT(c.sale ?? c.full) : 'ไม่มีราคา'}
+                </span>
+                {n > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 rounded-full bg-accent px-1.5 text-[0.62rem] font-semibold text-accent-fg">
+                    {n}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {groups.others.length > 0 && (
+          <>
+            <h2 className="mt-5 text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
+              3 · เดย์เบด · ชุดตัวแอล
+            </h2>
+            <p className="mt-0.5 mb-2 text-xs text-muted">ต่อกับตัวโซฟาได้ · เลือกด้านซ้าย-ขวาทีหลัง</p>
+            <div className="flex flex-wrap gap-1.5">
+              {groups.others.map((ii) => <PickChip key={items[ii].label} ii={ii} />)}
+            </div>
+          </>
+        )}
+
+        {groups.extras.length > 0 && (
+          <>
+            <h2 className="mt-5 text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
+              4 · ของเสริม
+            </h2>
+            <p className="mt-0.5 mb-2 text-xs text-muted">วางลอย ไม่นับความกว้างของชุด</p>
+            <div className="flex flex-wrap gap-1.5">
+              {groups.extras.map((ii) => <PickChip key={items[ii].label} ii={ii} />)}
+            </div>
+          </>
+        )}
       </section>
 
       {/* ที่เลือกไว้ */}
-      <section id="phx-sel" className="mt-4 min-w-0 rounded-2xl border border-border bg-surface p-3">
-        <h2 className="mb-2 text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
+      <section ref={selBox} id="phx-sel" className="mt-4 min-w-0 scroll-mt-3 rounded-2xl border border-border bg-surface p-3">
+        <h2 className="text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
           ที่เลือกไว้
         </h2>
         {!picked.length ? (
-          <p className="py-2 text-sm text-muted">ยังไม่ได้เลือก · กดราคาในตารางข้างบนได้เลย</p>
-        ) : (
+          <p className="py-2 text-sm text-muted">
+            ยังไม่ได้เลือก · กดปุ่มความยาวข้างบน แล้วของจะมาโผล่ตรงนี้
+          </p>
+        ) : (<>
+          <p className="mt-0.5 mb-2 text-xs text-muted">
+            ปุ่มใต้ชื่อแต่ละชิ้นคือตัวเลือก · <b className="font-semibold text-text">แขน</b> ·{' '}
+            <b className="font-semibold text-text">โต๊ะข้าง</b> ·{' '}
+            <b className="font-semibold text-text">ซ้าย-ขวา</b> · กดดูได้เลย ราคาเปลี่ยนให้ทันที
+          </p>
           <table className="w-full border-collapse text-[0.82rem]">
             <thead>
               <tr className="text-[0.7rem] text-muted">
@@ -437,45 +516,51 @@ export default function Configurator({ items }: { items: Item[] }) {
                 const dr = variantOf(l.it, p);
                 const off = !l.ask && l.sale < l.full;
                 return (
-                  <tr key={p.key}>
-                    <td className="border-b border-border py-1.5 align-top">
+                  <Fragment key={p.key}>
+                  <tr>
+                    <td className="py-1.5 align-top">
                       {l.it.label}
                       <div className="font-mono text-[0.7rem] text-muted">{dr ? dr.code : l.it.code}</div>
-                      <Controls p={p} />
-                      {attached(l.it) && (
-                        <div className="mt-1 flex gap-1">
-                          <button type="button" aria-pressed={p.mir} onClick={() => toggle(p.key, 'mir')}
-                            className={`rounded-md border px-1.5 py-1 text-[0.68rem] font-medium
-                              ${p.mir ? 'border-accent bg-accent text-white' : 'border-border bg-bg text-muted'}`}
-                          >⇄ พลิก</button>
-                          <button type="button" aria-pressed={p.rot} onClick={() => toggle(p.key, 'rot')}
-                            className={`rounded-md border px-1.5 py-1 text-[0.68rem] font-medium
-                              ${p.rot ? 'border-accent bg-accent text-white' : 'border-border bg-bg text-muted'}`}
-                          >⟲ หมุน 90°</button>
-                        </div>
-                      )}
                     </td>
-                    <td className="border-b border-border py-1.5 align-top">{l.name}</td>
-                    <td className="border-b border-border py-1.5 text-right align-top whitespace-nowrap">
+                    <td className="py-1.5 align-top">{l.name}</td>
+                    <td className="py-1.5 text-right align-top whitespace-nowrap">
                       <button onClick={() => bump(p.key, -1)} aria-label="ลด"
                         className="h-6 w-6 rounded-md border border-border bg-bg">−</button>
                       <span className="px-1.5">{p.qty}</span>
                       <button onClick={() => bump(p.key, 1)} aria-label="เพิ่ม"
                         className="h-6 w-6 rounded-md border border-border bg-bg">+</button>
                     </td>
-                    <td className="border-b border-border py-1.5 text-right align-top whitespace-nowrap">
+                    <td className="py-1.5 text-right align-top whitespace-nowrap">
                       {l.ask ? <span className="text-muted">ไม่มีราคาเกรดนี้</span> : (<>
                         {off && <><s className="text-muted">{BAHT(l.full)}</s><br /></>}
                         {BAHT(l.sale)}
                       </>)}
                     </td>
-                    <td className="border-b border-border py-1.5 text-right align-top whitespace-nowrap">
+                    <td className="py-1.5 text-right align-top whitespace-nowrap">
                       <button onClick={() => movePick(p.key, -1)} disabled={i === 0} aria-label="เลื่อนซ้าย"
                         className="h-6 w-6 rounded-md border border-border bg-bg disabled:opacity-30">◀</button>
                       <button onClick={() => movePick(p.key, 1)} disabled={i === picked.length - 1} aria-label="เลื่อนขวา"
                         className="ml-1 h-6 w-6 rounded-md border border-border bg-bg disabled:opacity-30">▶</button>
                     </td>
                   </tr>
+                  <tr>
+                    <td colSpan={5} className="border-b border-border pb-2">
+                      <Controls p={p} />
+                      {attached(l.it) && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          <button type="button" aria-pressed={p.mir} onClick={() => toggle(p.key, 'mir')}
+                            className={`rounded-md border px-2 py-1 text-[0.7rem] font-medium
+                              ${p.mir ? 'border-accent bg-accent text-accent-fg' : 'border-border bg-bg text-muted'}`}
+                          >⇄ พลิกซ้าย-ขวา</button>
+                          <button type="button" aria-pressed={p.rot} onClick={() => toggle(p.key, 'rot')}
+                            className={`rounded-md border px-2 py-1 text-[0.7rem] font-medium
+                              ${p.rot ? 'border-accent bg-accent text-accent-fg' : 'border-border bg-bg text-muted'}`}
+                          >⟲ หมุน 90°</button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                  </Fragment>
                 );
               })}
               <tr className="font-semibold">
@@ -497,7 +582,7 @@ export default function Configurator({ items }: { items: Item[] }) {
               )}
             </tbody>
           </table>
-        )}
+        </>)}
       </section>
 
       {/* แบบแปลน */}
@@ -612,6 +697,92 @@ export default function Configurator({ items }: { items: Item[] }) {
         <p className="mt-2 rounded-lg bg-bg p-2 text-[0.74rem] text-muted">
           ราคาดึงสดจากระบบ · แบบจาก Phoenix data sheet ของโรงงาน · ไม่ได้วาดเอง
         </p>
+      </section>
+
+      {/* ใบราคาเต็ม · พับเก็บไว้ · คนส่วนใหญ่ใช้ปุ่มข้างบนก็พอ */}
+      <section id="phx-grid" className="mt-4 min-w-0 rounded-2xl border border-border bg-surface p-3">
+        <details>
+          <summary className="cursor-pointer text-[0.7rem] font-semibold tracking-[0.12em] text-muted uppercase">
+            ใบราคาทั้งหมด · ทุกวัสดุ
+          </summary>
+          <p className="mt-1 mb-2 text-xs text-muted">
+            กดตัวเลขในตารางก็เลือกได้เหมือนกัน · ตารางนี้ไว้เทียบราคาข้ามวัสดุ
+          </p>
+        <div className="overflow-x-auto">
+          <table className="w-full border-separate border-spacing-0 text-[0.8rem]">
+            <thead>
+              <tr>
+                <th className="sticky left-0 z-20 w-[9.5rem] min-w-[9.5rem] border-b border-border bg-surface px-1 py-1.5 text-left text-[0.72rem] font-normal text-muted sm:w-[13rem] sm:min-w-[13rem]">
+                  รายการ
+                </th>
+                {GRADES.map((g) => (
+                  <th key={g} className="border-b border-border bg-surface px-1 py-1.5 text-center text-[0.72rem] font-normal whitespace-nowrap text-muted">{g}</th>
+                ))}
+                <th className="border-b border-border bg-surface px-1 py-1.5 text-center text-[0.72rem] font-normal text-muted">แบบอื่น</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((it, ii) => {
+                const size = [it.w && `W${it.w}`, it.d && `D${it.d}`, it.h && `H${it.h}`]
+                  .filter(Boolean).join('×');
+                return (
+                  <tr key={it.label}>
+                    <th className="sticky left-0 z-10 w-[9.5rem] min-w-[9.5rem] border-b border-border bg-surface px-1 py-1 text-left font-normal sm:w-[13rem] sm:min-w-[13rem]">
+                      <span className="block leading-tight">{it.label}</span>
+                      <small className="block font-mono text-[0.64rem] leading-tight text-muted">
+                        {it.code}{size ? ` · ${size}` : ''}
+                        {isSofa(it) && (
+                          <span className="hidden sm:inline"> · เลือกแขน/โต๊ะได้หลังเลือกราคา</span>
+                        )}
+                      </small>
+                    </th>
+                    {it.cells.map((c, gi) => {
+                      const p = find(keyOf(ii, 'g', gi));
+                      const off = c && c.sale != null && c.full != null && c.sale < c.full;
+                      return (
+                        <td key={gi} className="border-b border-border">
+                          <button
+                            type="button" disabled={!c}
+                            onClick={() => add(ii, 'g', gi)}
+                            aria-label={`${it.label} ${GRADES[gi]}`}
+                            className={`relative block w-full min-w-[5.4rem] border-l border-border px-1 py-1.5 text-center text-[0.78rem]
+                              ${!c ? 'cursor-default text-muted opacity-40' : ''}
+                              ${p ? 'rounded-lg bg-accent/10 ring-2 ring-accent ring-inset' : ''}`}
+                          >
+                            {!c ? '—' : (<>
+                              {off && <s className="block text-[0.66rem] text-muted">{BAHT(c.full)}</s>}
+                              <b className="block font-semibold">{BAHT(c.sale ?? c.full)}</b>
+                              {p && <span className="absolute top-0.5 right-1 text-[0.62rem] font-semibold text-accent">×{p.qty}</span>}
+                            </>)}
+                          </button>
+                        </td>
+                      );
+                    })}
+                    <td className="border-b border-border">
+                      {it.extra.length ? it.extra.map((e, ei) => {
+                        const p = find(keyOf(ii, 'e', ei));
+                        const off = e.sale != null && e.full != null && e.sale < e.full;
+                        return (
+                          <button
+                            key={ei} type="button" onClick={() => add(ii, 'e', ei)}
+                            className={`relative block w-full min-w-[5.4rem] border-l border-border px-1 py-1.5 text-center text-[0.78rem]
+                              ${p ? 'rounded-lg bg-accent/10 ring-2 ring-accent ring-inset' : ''}`}
+                          >
+                            <i className="block text-[0.62rem] not-italic text-muted">{e.label}</i>
+                            {off && <s className="block text-[0.66rem] text-muted">{BAHT(e.full)}</s>}
+                            <b className="block font-semibold">{BAHT(e.sale ?? e.full)}</b>
+                            {p && <span className="absolute top-0.5 right-1 text-[0.62rem] font-semibold text-accent">×{p.qty}</span>}
+                          </button>
+                        );
+                      }) : <span className="block px-1 text-center text-muted opacity-40">—</span>}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        </details>
       </section>
 
       {toast && (
