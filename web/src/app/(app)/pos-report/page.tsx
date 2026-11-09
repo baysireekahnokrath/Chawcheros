@@ -25,11 +25,11 @@ const RANGES = [
 
 function Bars({ rows, max }: { rows: { label: string; value: number; sub?: string }[]; max: number }) {
   return (
-    <ul className="grid gap-2.5">
+    <ul className="grid min-w-0 grid-cols-1 gap-2.5">
       {rows.map((r) => (
-        <li key={r.label} className="grid gap-1">
-          <div className="flex items-baseline justify-between gap-3 text-sm">
-            <span className="min-w-0 truncate">{r.label}</span>
+        <li key={r.label} className="grid min-w-0 gap-1">
+          <div className="flex min-w-0 items-baseline justify-between gap-3 text-sm">
+            <span className="min-w-0 flex-1 truncate">{r.label}</span>
             <span className="shrink-0 tabular-nums font-medium">{baht(r.value)}{r.sub && <span className="ml-1.5 text-xs font-normal text-muted">{r.sub}</span>}</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-border/60">
@@ -43,7 +43,7 @@ function Bars({ rows, max }: { rows: { label: string; value: number; sub?: strin
 
 function Card({ title, children, right }: { title: string; children: React.ReactNode; right?: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-border bg-surface p-4">
+    <section className="min-w-0 rounded-2xl border border-border bg-surface p-4">
       <div className="mb-3 flex items-center justify-between gap-2"><h2 className="text-sm font-semibold">{title}</h2>{right}</div>
       {children}
     </section>
@@ -128,13 +128,13 @@ export default function PosReportPage() {
         <>
           <div className="mt-4 rounded-2xl bg-accent p-5 text-accent-fg">
             <p className="text-sm opacity-80">ยอดขายสุทธิ</p>
-            <p className="text-4xl font-semibold tabular-nums">{baht(total)}</p>
+            <p className="text-4xl font-semibold tabular-nums break-words">{baht(total)}</p>
             <p className="mt-1 text-sm opacity-80">{ok.length} บิล · เฉลี่ย {baht(avg)} ต่อบิล · ให้ส่วนลดไป {baht(disc)}</p>
           </div>
 
           {(unprinted > 0 || toShip.length > 0) && (
             <Link href="/pos-admin" className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-warn bg-warn/10 p-4 text-sm">
-              <span><b className="font-semibold">ต้องส่งของ {toShip.length} บิล</b>{unprinted > 0 && ` · EMS ยังไม่พิมพ์ใบปะหน้า ${unprinted} บิล`}</span>
+              <span className="min-w-0"><b className="font-semibold">ต้องส่งของ {toShip.length} บิล</b>{unprinted > 0 && ` · EMS ยังไม่พิมพ์ใบปะหน้า ${unprinted} บิล`}</span>
               <span className="shrink-0 font-medium">พิมพ์ใบปะหน้า →</span>
             </Link>
           )}
@@ -142,7 +142,7 @@ export default function PosReportPage() {
           {ok.length === 0 ? (
             <p className="mt-6 rounded-2xl border border-border bg-surface p-4 text-sm text-muted">ยังไม่มีบิลในช่วงนี้ · ลองเลือกช่วงวันที่ยาวขึ้น</p>
           ) : (
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <Card title="ยอดรายวัน"><Bars rows={dayRows} max={Math.max(...dayRows.map((d) => d.value), 0)} /></Card>
               <Card title="สินค้าขายดี" right={<span className="text-xs text-muted">ยอดก่อนส่วนลด</span>}>
                 <Bars rows={products.slice(0, 10)} max={products[0]?.value ?? 0} />
@@ -152,10 +152,10 @@ export default function PosReportPage() {
               <Card title="วิธีรับสินค้า"><Bars rows={group((r) => r.ship_method ?? 'รับเอง')} max={total} /></Card>
               <Card title={`ลูกค้าที่ทิ้งชื่อ/เบอร์ (${contacts.length})`} right={<span className="text-xs text-muted">ทักขอบคุณได้</span>}>
                 {contacts.length === 0 ? <p className="text-sm text-muted">ยังไม่มี</p> : (
-                  <ul className="grid gap-2 text-sm">
+                  <ul className="grid min-w-0 grid-cols-1 gap-2 text-sm">
                     {contacts.slice(0, 20).map((r) => (
-                      <li key={r.id} className="flex items-baseline justify-between gap-3 border-b border-border pb-2 last:border-0">
-                        <span className="min-w-0"><span className="font-medium">{r.customer || 'ไม่ระบุชื่อ'}</span> <span className="text-muted">{r.phone}</span><span className="block truncate text-xs text-muted">{r.items.map((l) => l.name).join(', ')}</span></span>
+                      <li key={r.id} className="flex min-w-0 items-baseline justify-between gap-3 border-b border-border pb-2 last:border-0">
+                        <span className="min-w-0 flex-1"><span className="block truncate"><span className="font-medium">{r.customer || 'ไม่ระบุชื่อ'}</span> <span className="text-muted">{r.phone}</span></span><span className="block truncate text-xs text-muted">{r.items.map((l) => l.name).join(', ')}</span></span>
                         <span className="shrink-0 tabular-nums">{baht(r.total)}</span>
                       </li>
                     ))}
