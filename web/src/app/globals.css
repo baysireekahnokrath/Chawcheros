@@ -77,5 +77,11 @@ body { font-family: var(--font-thai), system-ui, sans-serif; }
   html, body { background: #fff !important; color: #000 !important; }
   svg { color: #000 !important; }
 
+  /* ลูกศรหน้าหัวข้อไม่ต้องติดไปบนกระดาษ
+     ส่วนการกางหมวดที่ยุบไว้ ทำด้วย JS ใน DataSheet.tsx
+     เคยลองสั่งด้วย CSS อย่างเดียว แล้ว render PDF ออกมาหมวดที่ยุบหายหมด */
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+
   @page { margin: 8mm; }
 }

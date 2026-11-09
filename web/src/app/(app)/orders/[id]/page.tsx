@@ -44,9 +44,9 @@ export default async function OrderPage({ params }: PageProps<'/orders/[id]'>) {
         {order.กำหนดส่ง && (
           <div className="flex justify-between text-xs">
             <dt className="text-muted">กำหนดส่ง</dt>
-            <dd className={order.เลยกำหนดส่งและยังค้างเงิน ? 'text-danger' : 'text-muted'}>
+            <dd className={order.เลยกำหนดและค้างเงิน ? 'text-danger' : 'text-muted'}>
               {order.กำหนดส่ง}
-              {order.เลยกำหนดส่งและยังค้างเงิน && ' · เลยกำหนดและยังค้างเงิน'}
+              {order.เลยกำหนดและค้างเงิน && ' · เลยกำหนดและยังค้างเงิน'}
             </dd>
           </div>
         )}

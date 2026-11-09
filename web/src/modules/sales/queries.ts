@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { sortRows } from '@/lib/sortRows';
 
 export { CHANNELS, PAYMENT_METHODS } from './types';
 
@@ -15,7 +16,7 @@ export type OrderRow = {
   รับชำระแล้ว: number;
   ยอดค้าง: number;
   สถานะการเงิน: string;
-  เลยกำหนดส่งและยังค้างเงิน: boolean;
+  เลยกำหนดและค้างเงิน: boolean;
   สถานะเอกสาร: string;
   'w/o': string | null;
 };
@@ -43,8 +44,10 @@ export async function getOrders(status?: string): Promise<OrderRow[]> {
   const supabase = await createClient();
   let q = supabase.schema('sales').from('v_orders').select('*');
   if (status && status !== 'all') q = q.eq('สถานะเอกสาร', status);
-  const { data } = await q.order('วันที่สั่ง', { ascending: false }).limit(300);
-  return (data ?? []) as OrderRow[];
+  // สั่งเรียงที่ API ด้วยคอลัมน์ ASCII เพื่อให้ limit ตัดเอา 300 ออเดอร์ล่าสุดมาจริงๆ
+  // แล้วค่อยเรียงตามวันที่สั่งในเครื่อง (API เรียงชื่อคอลัมน์ไทยไม่ได้ ดู lib/sortRows)
+  const { data } = await q.order('created_at', { ascending: false }).limit(300);
+  return sortRows((data ?? []) as OrderRow[], [{ key: (r) => r.วันที่สั่ง, desc: true }]);
 }
 
 export async function getOrder(id: string) {

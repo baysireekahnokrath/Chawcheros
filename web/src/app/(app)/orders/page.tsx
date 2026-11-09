@@ -17,7 +17,7 @@ export default async function OrdersPage({ searchParams }: PageProps<'/orders'>)
   const rows = await getOrders(active);
 
   const owing = rows.reduce((s, r) => s + (r.ยอดค้าง > 0 ? r.ยอดค้าง : 0), 0);
-  const late = rows.filter((r) => r.เลยกำหนดส่งและยังค้างเงิน).length;
+  const late = rows.filter((r) => r.เลยกำหนดและค้างเงิน).length;
 
   return (
     <>
@@ -76,7 +76,7 @@ export default async function OrdersPage({ searchParams }: PageProps<'/orders'>)
                     {o.สถานะการเงิน}
                     {o.ยอดค้าง > 0 && ` · ค้าง ${baht(o.ยอดค้าง)}`}
                   </span>
-                  <span className={o.เลยกำหนดส่งและยังค้างเงิน ? 'text-danger' : 'text-muted'}>
+                  <span className={o.เลยกำหนดและค้างเงิน ? 'text-danger' : 'text-muted'}>
                     {o.กำหนดส่ง ? `ส่ง ${o.กำหนดส่ง}` : 'ยังไม่นัดส่ง'}
                   </span>
                 </div>
