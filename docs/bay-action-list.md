@@ -86,3 +86,36 @@
 - โมดูลคลัง — นับเป็นตัว ไม่ใช่จำนวน · ยืมออกงานแฟร์แล้วมีกำหนดกลับ · พิมพ์สติกเกอร์
 - ช่องเพิ่มเอง (Custom Fields) — เพิ่มช่องในสินค้า/ลูกค้า/ออเดอร์ได้เองโดยไม่ต้องรอผม
 - หน้าจอสำหรับเครื่องยิงบาร์โค้ดในโรงงานและตอนส่งของ
+
+
+---
+
+## รอบคลังความรู้ + FAQ (2026-11-11) · ทำตามลำดับ
+
+> ลำดับสำคัญ: ฐานข้อมูลก่อน แล้ว merge · ลิงก์ทุกอันกดได้เลย
+
+**ขั้น 1 · ฐานข้อมูล (Supabase)**
+1. เปิด https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new
+2. วางคำสั่งนี้ กด Run: `select to_regclass('line_agent.recent_images');`
+   - ผลเป็น `line_agent.recent_images` = เคยรัน 0037 แล้ว **ข้ามไปข้อ 5**
+   - ผลว่าง (null) = ยังไม่เคยรัน ทำข้อ 3-4
+3. เปิด https://github.com/baysireekahnokrath/Chawcheros/blob/claude/adoring-sagan-q4nlk6/supabase/migrations/0037_line_image_sets.sql → กดไอคอนคัดลอก (Copy raw file) ด้านขวาบนของไฟล์
+4. กลับไปหน้า SQL Editor ลบของเก่า วาง กด Run → ต้องขึ้น Success
+5. เปิด https://github.com/baysireekahnokrath/Chawcheros/blob/claude/adoring-sagan-q4nlk6/supabase/migrations/0048_line_knowledge.sql → Copy raw file → วางใน https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new → Run → ต้องขึ้น Success
+
+**ขั้น 2 · เอาโค้ดขึ้นเว็บจริง**
+6. เปิด https://github.com/baysireekahnokrath/Chawcheros/compare/claude/chaw-cher-os-setup-9k21w6...claude/adoring-sagan-q4nlk6 → Create pull request → Merge pull request → Confirm merge
+7. รอ ~2 นาทีให้ Vercel ขึ้นเว็บเอง แล้วเปิด https://chawcher-os.vercel.app/api/faq → ต้องเห็นข้อความ JSON ขึ้นต้น `{"updated_at"` (ถ้าเด้งไปหน้า login แปลว่ายังไม่ขึ้น รอเพิ่ม)
+
+**ขั้น 3 · ตั้งค่ากลุ่ม LINE**
+8. เปิด https://chawcher-os.vercel.app/line → กลุ่มที่อยากให้บอทตอบจากคลังความรู้ → "ตั้งค่ากลุ่มนี้" → ติ๊ก "ตอบจากคลังความรู้" → บันทึกกลุ่มนี้
+9. กลุ่ม PO และกลุ่มเช็คงาน: กดหัวข้อ "เก็บบทสนทนาห้องนี้เข้าคลังความรู้" → คัดลอกประกาศในกล่อง → ไปโพสต์ในกลุ่ม LINE นั้น → กลับมากด "โพสต์แจ้งทีมแล้ว · เริ่มเก็บ"
+
+**ขั้น 4 · ลองใช้**
+10. ในกลุ่มทดสอบพิมพ์ `@Team Bay จดเรื่องนี้ <ความรู้จริงสักข้อ>` → ต้องตอบ "จดแล้วครับ"
+11. เปิด https://chawcher-os.vercel.app/knowledge → เปิดข้อที่เพิ่งจด → ติ๊ก "ให้บอทตอบ" และ "ขึ้น FAQ สาธารณะ" → เขียนหัวข้อ/คำตอบสำหรับลูกค้า → ยืนยัน
+12. ถามบอทในกลุ่มทดสอบ → ต้องตอบจากข้อที่ยืนยัน · ทีหลังกด "สรุปตอนนี้" ในหน้าเดิมเพื่อลองให้ AI ร่าง
+
+**ขั้น 5 · FAQ บน chawcher.com**
+13. ดู preview https://chawcher.com/?page_id=18148&preview=true (ต้องล็อกอิน WordPress) → ต้องเห็นข้อที่ยืนยันในข้อ 11
+14. พอใจแล้วบอก Claude "publish FAQ" หรือกด Publish เองที่ https://chawcher.com/wp-admin/post.php?post=18148&action=edit

@@ -22,3 +22,10 @@
 
 ### กฎกันลืม
 เจอข้อมูลที่ต้องถาม Bay (URL, ชื่อโปรเจกต์, เลข id, ใครดูแลอะไร) แล้ว Bay ตอบ → **เขียนลงไฟล์นี้ทันทีในรอบนั้น** ก่อนปิดงาน · ถ้าค้น `docs/` เจอก่อนถาม ให้ใช้เลย แล้วเพิ่มลงไฟล์นี้ถ้ายังไม่มี
+
+## วิธีส่งงานให้ Bay (Bay สั่งไว้ 2026-11-11 · ทำทุกครั้ง)
+
+- งานที่ Bay ต้องทำเอง → **ส่งเป็นขั้นตอนเรียง 1 2 3 ทีละขั้น** บอกว่ากดอะไร ได้ผลอะไร
+- **ทุกขั้นที่ต้องเปิดหน้า ให้ใส่ลิงก์เต็ม `https://…` ที่กดแล้วไปถึงเลย** · ห้ามเขียนแค่ path (`/line`) หรือชื่อเมนู ห้ามให้ Bay ไปต่อ URL เอง
+- ลิงก์ที่ใช้บ่อย: ระบบ `https://chawcher-os.vercel.app/` · Supabase SQL `https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new` · repo `https://github.com/baysireekahnokrath/Chawcheros` · merge ใช้ลิงก์ compare `…/compare/<base>...<branch>` · ไฟล์ SQL ใช้ลิงก์ `…/blob/<branch>/supabase/migrations/<ไฟล์>.sql`
+- ข้อความที่ Bay ต้องคัดลอกไปวาง → ใส่ในกล่องโค้ด · ขั้นตอนทั้งหมดจดไว้ใน `docs/bay-action-list.md` ด้วย
