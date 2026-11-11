@@ -44,9 +44,10 @@
 
 **สร้างหน้า draft บน chawcher.com แล้ว (2026-11-11)** · WordPress page **id 18148** · slug `faq` · ยังเป็น draft ไม่เผยแพร่
 - แก้/ดู: `https://chawcher.com/wp-admin/post.php?post=18148&action=edit` · preview `https://chawcher.com/?page_id=18148&preview=true`
-- เป็น Custom HTML block: สคริปต์ดึง `/api/faq` มาสร้างรายการ (ใช้ textContent ไม่แทรก HTML) + CSS ตาม CI · **ช่อง `data-src=""` ยังว่าง** ต้องใส่ URL โดเมนของระบบ chawcher-os (เช่น `https://xxx`) หน้าถึงจะดึงข้อมูล · ตอนว่างแสดง "กำลังรวบรวมคำถามที่พบบ่อย เร็วๆ นี้ค่ะ"
+- เป็น Custom HTML block: สคริปต์ดึง `/api/faq` มาสร้างรายการ (ใช้ textContent ไม่แทรก HTML) + CSS ตาม CI · `data-src="https://chawcher-os.vercel.app"` ใส่แล้ว · ถ้าไม่มี FAQ หรือดึงไม่ได้ จะแสดงข้อความสำรอง
+- ⚠️ ตอนนี้ preview จะขึ้น "โหลดข้อมูลไม่ได้" จนกว่าจะ merge โค้ด 0048 ขึ้น production (ตอนนี้ `/api/faq` บนเว็บจริงตอบ 307 ไปหน้า login เพราะ middleware เวอร์ชันเก่า) · เช็กด้วย `curl -s https://chawcher-os.vercel.app/api/faq`
 - มีหน้า "FAQ Page" (id 5781, draft) อยู่ก่อนแล้ว เป็นหน้าตัวอย่างของธีม eskil (lorem ipsum) · **ไม่ได้แตะ** · ถ้าจะใช้ slug `faq-page` ต้องจัดการหน้านั้นก่อน
-- ก่อนเผยแพร่: รัน 0048 · ยืนยัน FAQ ข้อแรก · ใส่ `data-src` · ดู preview · ค่อยกด publish
+- ก่อนเผยแพร่: merge โค้ด · รัน 0048 · ยืนยัน FAQ ข้อแรก · ดู preview · ค่อยกด publish
 
 ## วิธีใช้ในกลุ่ม LINE
 
