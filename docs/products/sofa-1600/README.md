@@ -9,13 +9,17 @@
 | `sofa-1600-bom.xlsx` | BOM ต่อ 1 ตัว เทียบราคา: ราคาภายในจาก Master_วัสดุ ของโรงงาน (รหัส M, อัปเดต 28/5-16/6/26) กับราคาตลาดที่ค้นเจอ · แท็บ สรุป · BOM เทียบราคา · แหล่งราคา · ไม้ CNC · ฟองน้ำ · สร้างใหม่ด้วย `python3 docs/tools/build-sofa-1600-bom.py` |
 | `sofa-1600-fabric-pattern.dxf` | แพทเทิร์นผ้า 1:1 (รวมเผื่อเย็บ 15 · เผื่อยิงแม็ก 50 · เผื่อยัดร่อง 80) วางบนม้วนกว้าง 1400 · ผังตัด 4.08 ม. สั่ง 4.5 ม./ตัว |
 | `sofa-1600-structure-report.pdf` | รายงานทดสอบโครงสร้าง: โมเดล ค่าวัสดุ แรง EN 12520 ผลทุกข้อ FEM ซี่โครง ขั้นตอนทดสอบจริง · ผลดิบ `structure/revA.json` `structure/revB.json` · สร้างใหม่ `python3 docs/tools/sofa-1600-structure.py B docs/products/sofa-1600/structure/revB.json` แล้ว `python3 docs/tools/build-sofa-1600-structure-report.py` |
+| `sofa-1600-issue-slips.pdf` / `.xlsx` | ใบแจกวัสดุ 7 แผนก (โครงไม้ · สปริง · ฟองน้ำ · วางแบบ · หุ้ม · QC · Packing) ต่อ 1 ตัว · `python3 docs/tools/build-sofa-1600-issue-slips.py` |
+| `sofa-1600-x15.pdf` / `.xlsx` | ใบสั่งผลิต 15 ตัว: สรุป · ใบสั่งซื้อ · ผังตัดไม้ 22 แผ่น · คุ้มทุน CNC · ใบแจก 7 แผนก (รวม 15 ตัว) · `QTY=15 python3 docs/tools/build-sofa-1600-batch.py` |
+| `sofa-1600-cnc-18mm-x15.dxf` | ไฟล์ตัด CNC 15 ตัวพร้อมกัน 22 แผ่น (ทีละตัว 30 แผ่น) |
 | `sofa-1600-bom.pdf` | BOM ฉบับพิมพ์ A4 (สรุป · ทุกบรรทัด · แหล่งราคา) |
 | `sofa-1600-parts-1to1.dxf` | ทุกชิ้นวางเรียงกัน ไม่จัดผัง สำหรับโรงงานที่จะจัดผังเองในโปรแกรม CAM |
 
 สร้างใหม่: `python3 docs/tools/build-sofa-1600-drawing.py` (ต้องมี shapely และ ezdxf) แล้วพิมพ์ `sofa-1600-drawing.html` เป็น PDF ขนาด A3 แนวนอน
 
 ## ลิงก์ Google Drive
-- BOM REV B (Google Sheet): https://docs.google.com/spreadsheets/d/1t9OOMSWfD45nyvWdSCWvGoqzjC_ZshCWTtR7kQWFUTo/edit (ไฟล์ REV A เดิมเปลี่ยนชื่อเป็น “เก่า”)
+- BOM REV B.2 (Google Sheet): https://docs.google.com/spreadsheets/d/1Gv1Ypfyv8YHlY82cT-eSErKQH7mo4reMfO9NQiWVGew/edit (ไฟล์ก่อนหน้าเปลี่ยนชื่อเป็น “เก่า”)
+- ใบสั่งผลิต 15 ตัว (Google Sheet): https://docs.google.com/spreadsheets/d/1I-jXTS9VtYPusM7iioV0NdJTuel2NBfAT7MsV46oCY8/edit
 - ชีตราคาวัสดุที่ระบบใช้ “ราคาวัสดุ ฌ เฌอ”: https://docs.google.com/spreadsheets/d/1E4yTp2sLiQV4ULlUSwFmX40SuioMLOA-9yti6_TfNyE/edit · กรอกจาก Master_วัสดุ แล้ว 203 รายการ (แถว 5-207, 2026-11-11) ราคา = ราคาซื้อ @ ถ้าไม่มี @ ใช้ราคาคิดต้นทุนโรงงาน (ระบุในหมายเหตุ)
 - ต้นฉบับราคาโรงงาน: MidYear_CostingSystem.xlsx (Master_วัสดุ) https://drive.google.com/file/d/1orz_ivnE34Xbkauh-pNBz7pEmpKs5D6t/view
 
@@ -36,7 +40,9 @@
 - ไม้อัดดัด SK1 (2 ชั้น) / SK2 อ้อมมุมทาบใต้ B1/B2 กาวเต็มหน้า = คานกล่อง
 - ขากลางย้าย x850 → x715 (เดิมชนซี่โครง R4) · แผ่นเสริม LPL เต็มช่อง · แหวน Ø40 ใต้ T-nut
 - สายยางยืด 4 เส้น/ช่อง (20 เส้น) พับทบปลาย แม็ก 6 นัด · หมอนข้างเพิ่มแกน PL4
-- ไม้อัด 18 มม. เพิ่มเป็น 3 แผ่น
+- ซี่โครง: ชั้นเสริม R1-D / R2-R5-D ตัดสูงถึง Z450 (ไม่ประกบเต็มแผ่น) · ผ่านทดสอบเท่าเดิม
+- จัดผังตามรูปทรงจริง (ซี่โครงกลับหัวสลับคู่): 1 ตัว = 2 แผ่น · 15 ตัว = 22 แผ่น
+- ค่าตัด CNC 500 บาท/ตร.ม. คิดตามพื้นที่ชิ้นงานจริง 2.55 ตร.ม./ตัว (Bay ยืนยัน 11/11/2026)
 
 ## ต้องให้ Bay ยืนยันก่อนตัด
 1. ค่า B / C / D ในสเก็ตช์ (ในแบบนี้ใช้ค่าเสนอ B 700 · C 670 · D 51)

@@ -20,6 +20,7 @@ from shapely.geometry import box, Polygon, Point, MultiPolygon
 from shapely.ops import unary_union
 from shapely import affinity
 import ezdxf
+import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT = os.path.join(ROOT, "docs", "products", "sofa-1600")
@@ -137,6 +138,16 @@ def rib_profile(kind):
     return clean(p)
 
 
+RIB_DBL_Z = 450                   # REV B: second rib layer only up to here (stress zone: base, rails, post root)
+
+
+def rib_doubler(kind):
+    """Second 18 mm layer of a rib, cut off at Z450 (same slots and notches below that)."""
+    p = rib_profile(kind).intersection(box(-10, 0, 800, RIB_DBL_Z))
+    p = round_corner(p, RY0, RIB_DBL_Z, 20, 1, -1)
+    return clean(p)
+
+
 AP1_TABS = [(200, 260), (360, 420)]       # y ranges, top plate z 440..458
 AP2_TABS = [(200, 280), (360, 440)]       # y ranges, bottom plate z 80..98 (edge notch)
 AP3_TABS = [(160, 240), (320, 400)]       # z ranges, front plate y 452..470
@@ -247,8 +258,10 @@ def add(code, name, qty, poly, holes=(), note=""):
     PARTS.append(dict(code=code, name=name, qty=qty, poly=poly, holes=list(holes), note=note))
 
 
-add("R1", "ซี่โครงปลายซ้าย (พนักต่ำ) · 2 ชั้นกาวประกบ", 2, rib_profile("R1"), note="พนักสูงถึง Z600 · ปลายมนด้วยฟองน้ำ")
-add("R2-R5", "ซี่โครงมาตรฐาน · 2 ชั้นกาวประกบ", 8, rib_profile("R2"), note="ตำแหน่ง X310 / 580 / 850 / 1120 · ไม่มีร่อง B6 (REV B)")
+add("R1", "ซี่โครงปลายซ้าย (พนักต่ำ) · ชั้นเต็ม", 1, rib_profile("R1"), note="พนักสูงถึง Z600 · ประกบกับ R1-D")
+add("R1-D", "ชั้นเสริม R1 (ตัดสูงถึง Z450)", 1, rib_doubler("R1"), note="กาว+สกรูประกบด้านในของ R1")
+add("R2-R5", "ซี่โครงมาตรฐาน · ชั้นเต็ม", 4, rib_profile("R2"), note="ตำแหน่ง X310 / 580 / 850 / 1120 · ประกบกับ R2-R5-D")
+add("R2-R5-D", "ชั้นเสริมซี่โครง (ตัดสูงถึง Z450)", 4, rib_doubler("R2"), note="กาว+สกรู 8 ตัวประกบซี่โครง · หนารวม 36 มม. ช่วงล่าง")
 add("R6", "แผงข้างใน-ที่เท้าแขน", 1, rib_profile("R6"), note="ตัน · ร่องรับแผ่น AP1-3")
 add("A1", "แผงข้างนอก-ที่เท้าแขน", 1, a1_profile(), note="X1560")
 for k in BANDS:
@@ -716,7 +729,7 @@ def sheet_frame():
     s.dim((RY0, 80), (RYF, 80), 6, "h")
     s.dim((RYF, 80), (RYF, 290), 5, "v")
     note_block(sh, 120, 196, "วิธีประกอบ (ย่อ)", [
-        "0. R1-R5 กาวประกบ 2 ชั้น (36 มม.) อัดแคลมป์ + สกรู 8 ตัว รอกาวแห้ง",
+        "0. ประกบชั้นเสริม R1-D / R2-R5-D (ถึง Z450) เข้ากับซี่โครง กาว+สกรู 8 ตัว",
         "1. ตั้งซี่โครง R1-R6 บนจิ๊ก ตามระยะ X และเลื่อนหน้าตาม delta(x)",
         "2. สอดคาน B1 B2 (ล่าง) → B3 B4 (รับสายยาง) → B5 ลงร่อง",
         "   ทากาว PVA D3 + ยิงตะปูลม/สกรู 1¼\" ทุกจุดตัด",
@@ -735,10 +748,12 @@ def sheet_parts_a():
     sh = Sheet(3, "แบบชิ้นส่วน CNC ① ซี่โครง / แผงแขน", "1:5 และ 1:10")
     rib = part("R2-R5")["poly"]
     v = View(sh, 34, 190, 0.2)
-    view_title(sh, 20, 20, "R2-R5 · ซี่โครงมาตรฐาน (4 ตำแหน่ง × 2 ชั้น = 8 แผ่น)", "มาตราส่วน 1:5 · ไม้อัด 18 มม. กาวประกบ 2 ชั้น = 36 มม. · หน้าโซฟาอยู่ทางขวา")
+    view_title(sh, 20, 20, "R2-R5 ซี่โครง (4) + R2-R5-D ชั้นเสริม (4)", "1:5 · เส้นประ = ชั้นเสริมตัดสูงถึง Z450 ประกบด้านในด้วยกาว+สกรู → หนา 36 มม. ช่วงล่าง · หน้าโซฟาอยู่ทางขวา")
     v.poly(rib, fill="#EEF5F6", stroke=INK, sw=0.4)
     v.dim((RY0, 80), (RYF, 80), 14, "h")
     v.dim((RY0, 720), (POST_T, 720), -6, "h")
+    v.poly(part("R2-R5-D")["poly"], stroke=AQUA, sw=0.5, dash="2,1")
+    v.dim((RY0, 80), (RY0, RIB_DBL_Z), -9, "v", f"ชั้นเสริม {RIB_DBL_Z - 80}")
     v.dim((RY0, 80), (RY0, 720), -16, "v")
     v.dim((RYF, 80), (RYF, 290), 8, "v")
     v.dim((POST_T, 290), (POST_B, 290), 4, "h", f"{POST_B - POST_T}")
@@ -764,7 +779,7 @@ def sheet_parts_a():
     sh.add(f'<text x="22" y="238" font-size="2.15" fill="{INK}" font-family="{FONT}">ระดับคาน: {zz}</text>')
 
     v1 = View(sh, 200, 115, 0.1)
-    view_title(sh, 185, 20, "R1 · ซี่โครงปลายซ้าย (2 ชั้น)", "1:10 · เหมือน R2-R5 แต่พนักสูงถึง Z600 · ไม่มีร่อง B5")
+    view_title(sh, 185, 20, "R1 + R1-D · ซี่โครงปลายซ้าย", "1:10 · พนักสูงถึง Z600 · ไม่มีร่อง B5 · ชั้นเสริมถึง Z450")
     v1.poly(part("R1")["poly"], fill="#EEF5F6", stroke=INK, sw=0.4)
     v1.dim((RY0, 80), (RY0, 600), -6, "v")
     v1.dim((RY0, 80), (RYF, 80), 6, "h")
@@ -937,71 +952,161 @@ def sheet_bom(nest_info):
 SHEET_W, SHEET_H, MARGIN, GAP = 2440, 1220, 15, 14
 
 
-def nest():
-    """MaxRects (best-short-side-fit) on bounding boxes, rotation 0/90."""
-    items = []
+PAIR_CODES = ("R1", "R2-R5", "R1-D", "R2-R5-D", "R6", "A1")     # L-shaped parts: nest two copies head-to-tail (one turned 180 deg)
+_PAIR_CACHE = {}
+
+
+def _M(ang=0.0, tx=0.0, ty=0.0):
+    c, s_ = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+    return np.array([[c, -s_, tx], [s_, c, ty], [0, 0, 1.0]])
+
+
+def _apply(M, poly):
+    return affinity.affine_transform(poly, [M[0, 0], M[0, 1], M[1, 0], M[1, 1], M[0, 2], M[1, 2]])
+
+
+def _best_pair(code, poly):
+    """Offset of a 180-deg copy that interlocks with the original; minimises the pair's bounding-box area."""
+    if code in _PAIR_CACHE:
+        return _PAIR_CACHE[code]
+    from shapely.prepared import prep
+    b0 = poly.bounds
+    a = affinity.translate(poly, -b0[0], -b0[1])
+    r = affinity.rotate(a, 180, origin=(0, 0))
+    rb = r.bounds
+    r = affinity.translate(r, -rb[0], -rb[1])
+    W, H = a.bounds[2], a.bounds[3]
+    pa = prep(a.buffer(GAP, join_style=2))
+    best = None
+
+    def scan(xs, ys):
+        nonlocal best
+        for dx in xs:
+            for dy in ys:
+                t = affinity.translate(r, dx, dy)
+                if pa.intersects(t):
+                    continue
+                u = unary_union([a, t]).bounds
+                w, h = u[2] - u[0], u[3] - u[1]
+                if min(w, h) > SHEET_H - 2 * MARGIN or max(w, h) > SHEET_W - 2 * MARGIN:
+                    continue
+                sc = w * h
+                if best is None or sc < best[0]:
+                    best = (sc, dx, dy)
+    scan(np.arange(-W, W + 1, 10), np.arange(-H, H + 1, 10))
+    if best:
+        _, bx, by = best
+        scan(np.arange(bx - 10, bx + 11, 2), np.arange(by - 10, by + 11, 2))
+    _PAIR_CACHE[code] = best
+    return best
+
+
+def make_blocks(mult=1):
+    """Blocks to place: a pair of interlocked L parts, or one part. Each member: (code, poly, holes, M)."""
+    blocks = []
     for p in PARTS:
-        for i in range(p["qty"]):
-            items.append(dict(code=p["code"] + (f"-{i + 1}" if p["qty"] > 1 else ""), base=p["code"],
-                              poly=p["poly"], holes=p["holes"]))
-    for it in items:
-        b = it["poly"].bounds
-        it["w0"], it["h0"] = b[2] - b[0] + GAP, b[3] - b[1] + GAP
-    items.sort(key=lambda t: -max(t["w0"], t["h0"]) * min(t["w0"], t["h0"]))
-    W0, H0 = SHEET_W - 2 * MARGIN + GAP, SHEET_H - 2 * MARGIN + GAP
-    sheets = []
+        n = p["qty"] * mult
+        b0 = p["poly"].bounds
+        M0 = _M(0, -b0[0], -b0[1])
+        k = 0
+        if p["code"] in PAIR_CODES and n >= 2:
+            bp = _best_pair(p["code"], p["poly"])
+            if bp:
+                _, dx, dy = bp
+                a = _apply(M0, p["poly"])
+                rot = affinity.rotate(a, 180, origin=(0, 0)).bounds
+                M1 = _M(0, dx - rot[0], dy - rot[1]) @ _M(180) @ M0
+                while n - k >= 2:
+                    blocks.append(dict(key=p["code"] + "x2", members=[
+                        (f'{p["code"]}-{k + 1}', p["poly"], p["holes"], M0),
+                        (f'{p["code"]}-{k + 2}', p["poly"], p["holes"], M1)]))
+                    k += 2
+        while k < n:
+            blocks.append(dict(key=p["code"], members=[(f'{p["code"]}-{k + 1}' if n > 1 else p["code"], p["poly"], p["holes"], M0)]))
+            k += 1
+    for bl in blocks:
+        bl["shape"] = unary_union([_apply(M, poly) for _, poly, _, M in bl["members"]])
+        bl["area"] = bl["shape"].area
+    return blocks
 
-    def place(free, w, h):
-        best = None
-        for fr in free:
-            for rot, (ww, hh) in ((False, (w, h)), (True, (h, w))):
-                if ww <= fr[2] and hh <= fr[3]:
-                    sc = (min(fr[2] - ww, fr[3] - hh), max(fr[2] - ww, fr[3] - hh))
-                    if best is None or sc < best[0]:
-                        best = (sc, fr[0], fr[1], ww, hh, rot)
-        return best
 
-    def split(free, x, y, w, h):
-        out = []
-        for fx, fy, fw, fh in free:
-            if x >= fx + fw or x + w <= fx or y >= fy + fh or y + h <= fy:
-                out.append((fx, fy, fw, fh))
-                continue
-            if x > fx:
-                out.append((fx, fy, x - fx, fh))
-            if x + w < fx + fw:
-                out.append((x + w, fy, fx + fw - x - w, fh))
-            if y > fy:
-                out.append((fx, fy, fw, y - fy))
-            if y + h < fy + fh:
-                out.append((fx, y + h, fw, fy + fh - y - h))
-        out = [f for f in out if f[2] > 1 and f[3] > 1]
-        return [f for f in out if not any(g is not f and g[0] <= f[0] and g[1] <= f[1] and
-                                           g[0] + g[2] >= f[0] + f[2] and g[1] + g[3] >= f[1] + f[3] and g != f for g in out)]
+def nest(mult=1):
+    """True-shape greedy nesting, sheet by sheet: blocks largest first, rotations 0/90/180/270,
+    bottom-left candidates from placed bounding boxes, then slide down/left. Same block shapes that
+    failed on a sheet are not retried on that sheet."""
+    from shapely.strtree import STRtree
+    W, H = SHEET_W - 2 * MARGIN, SHEET_H - 2 * MARGIN
+    blocks = sorted(make_blocks(mult), key=lambda b: -b["area"])
+    rots = {}
 
-    for it in items:
-        for si, free in enumerate(sheets):
-            r = place(free, it["w0"], it["h0"])
-            if r:
-                break
-        else:
-            sheets.append([(0, 0, W0, H0)])
-            si, free = len(sheets) - 1, sheets[-1]
-            r = place(free, it["w0"], it["h0"])
-        _, x, y, ww, hh, rot = r
-        sheets[si] = split(free, x, y, ww, hh)
-        poly = affinity.rotate(it["poly"], 90, origin=(0, 0)) if rot else it["poly"]
-        b = poly.bounds
-        it["rot"], it["off"] = rot, (-b[0], -b[1])
-        it["pos"] = (si, x + MARGIN, y + MARGIN)
-        it["final"] = affinity.translate(poly, x + MARGIN - b[0], y + MARGIN - b[1])
+    def rotated(bl, ang):
+        k = (bl["key"], ang)
+        if k not in rots:
+            sh = affinity.rotate(bl["shape"], ang, origin=(0, 0))
+            bb = sh.bounds
+            rots[k] = (affinity.translate(sh, -bb[0], -bb[1]), _M(0, -bb[0], -bb[1]) @ _M(ang))
+        return rots[k]
 
-        def tf(px, py, it=it, x=x + MARGIN, y=y + MARGIN):
-            if it["rot"]:
-                px, py = -py, px
-            return px + it["off"][0] + x, py + it["off"][1] + y
-        it["tf"] = tf
-    return items, len(sheets)
+    placed, sheets = [], []
+    remaining = blocks[:]
+    while remaining:
+        si = len(sheets)
+        sheet = dict(polys=[], xs={0.0}, ys={0.0})
+        sheets.append(sheet)
+        failed = set()
+        progress = True
+        while progress:
+            progress = False
+            for bl in list(remaining):
+                if bl["key"] in failed:
+                    continue
+                tree = STRtree(sheet["polys"]) if sheet["polys"] else None
+
+                def ok(g):
+                    b = g.bounds
+                    if b[0] < -0.01 or b[1] < -0.01 or b[2] > W + 0.01 or b[3] > H + 0.01:
+                        return False
+                    if tree is None:
+                        return True
+                    return not any(sheet["polys"][i].intersects(g) for i in tree.query(g))
+                best = None
+                for ang in (0, 90, 180, 270):
+                    sh, Mr = rotated(bl, ang)
+                    w, h = sh.bounds[2], sh.bounds[3]
+                    if w > W or h > H:
+                        continue
+                    for x, y in sorted(((x, y) for x in sheet["xs"] for y in sheet["ys"] if x + w <= W and y + h <= H),
+                                       key=lambda c: (c[0] + c[1] * 0.25)):
+                        if not ok(affinity.translate(sh, x, y)):
+                            continue
+                        for step in (40, 10, 2):           # slide down, then left
+                            moved = True
+                            while moved:
+                                moved = False
+                                if y - step >= 0 and ok(affinity.translate(sh, x, y - step)):
+                                    y -= step; moved = True
+                                elif x - step >= 0 and ok(affinity.translate(sh, x - step, y)):
+                                    x -= step; moved = True
+                        sc = (x + w, y + h)
+                        if best is None or sc < best[0]:
+                            best = (sc, ang, x, y, sh, Mr)
+                        break
+                if best is None:
+                    failed.add(bl["key"])
+                    continue
+                _, ang, x, y, sh, Mr = best
+                g = affinity.translate(sh, x, y)
+                sheet["polys"].append(g.buffer(GAP - 0.5, quad_segs=4))
+                gb = g.bounds
+                sheet["xs"].update([gb[2] + GAP]); sheet["ys"].update([gb[3] + GAP])
+                Mp = _M(0, x + MARGIN, y + MARGIN) @ Mr
+                for code, poly, holes, M in bl["members"]:
+                    MM = Mp @ M
+                    placed.append(dict(code=code, holes=holes, pos=(si, None, None), final=_apply(MM, poly),
+                                       tf=lambda px, py, MM=MM: tuple((MM @ np.array([px, py, 1.0]))[:2])))
+                remaining.remove(bl)
+                progress = True
+    return placed, len(sheets)
 
 
 def holes_of(it):
@@ -1011,7 +1116,7 @@ def holes_of(it):
     return out
 
 
-def write_dxf(placed, nsheets):
+def write_dxf(placed, nsheets, fname="sofa-1600-cnc-18mm.dxf", title="SOFA-1600", one_to_one=True):
     doc = ezdxf.new("R2010", setup=True)
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
@@ -1020,7 +1125,7 @@ def write_dxf(placed, nsheets):
     for s in range(nsheets):
         ox = s * (SHEET_W + 300)
         msp.add_lwpolyline([(ox, 0), (ox + SHEET_W, 0), (ox + SHEET_W, SHEET_H), (ox, SHEET_H)], close=True, dxfattribs={"layer": "SHEET"})
-        msp.add_text(f"SHEET {s + 1}/{nsheets}  PLY 18mm 1220x2440  SOFA-1600", height=30,
+        msp.add_text(f"SHEET {s + 1}/{nsheets}  PLY 18mm 1220x2440  {title}", height=30,
                      dxfattribs={"layer": "LABEL"}).set_placement((ox, SHEET_H + 40))
     for it in placed:
         si = it["pos"][0]
@@ -1033,7 +1138,9 @@ def write_dxf(placed, nsheets):
             msp.add_circle((hx + ox, hy), d / 2, dxfattribs={"layer": "DRILL"})
         c = poly.representative_point()
         msp.add_text(it["code"], height=22, dxfattribs={"layer": "LABEL"}).set_placement((c.x, c.y))
-    doc.saveas(os.path.join(OUT, "sofa-1600-cnc-18mm.dxf"))
+    doc.saveas(os.path.join(OUT, fname))
+    if not one_to_one:
+        return
 
     # unnested 1:1 parts
     doc2 = ezdxf.new("R2010", setup=True)
@@ -1074,8 +1181,9 @@ def sheet_nest(placed, nsheets):
             c = it["final"].representative_point()
             v.text(c.x, c.y, it["code"], 2.0, NAVY, weight=600, dy=0.7)
     note_block(sh, 235 if nsheets <= 2 else 182, 44 if nsheets <= 2 else 140, "หมายเหตุ", [
-        "ผังนี้วางตามกรอบสี่เหลี่ยมของชิ้น (เผื่อเหลือ)",
-        "โรงงานจัดผังใหม่ในโปรแกรม CAM ได้ ใช้ไฟล์ sofa-1600-parts-1to1.dxf",
+        "วางตามรูปทรงจริง: ซี่โครงกลับหัวสลับกันเป็นคู่ · ชิ้นเล็กแทรกช่องว่าง",
+        "แผ่นที่ 2 ยังว่างครึ่งแผ่น → ผลิตหลายตัวพร้อมกันใช้ไฟล์ x15 (ประหยัดกว่า)",
+        "โรงงานจัดผังใหม่ใน CAM ได้ ใช้ไฟล์ sofa-1600-parts-1to1.dxf",
         "ชิ้นเล็ก (LP SP PL) วางในช่องว่างของซี่โครงได้ เพื่อลดเศษ",
         "ลายเสี้ยนไม้: ไม่บังคับ ยกเว้นคาน B ให้เสี้ยนตามความยาว",
     ], size=2.1, lh=3.5)

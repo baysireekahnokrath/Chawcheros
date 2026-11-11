@@ -19,6 +19,7 @@
 - Vercel MCP ที่เชื่อมไว้เข้าถึงได้แค่โปรเจกต์อื่น (`bee-coder-islands`) และ `vercel.com` ถูกบล็อกจากเครื่องนี้ (`docs/deploy-vercel.md`) → **ดู/แก้ Vercel เองไม่ได้ · อย่าเสียเวลาลอง** · ใช้ `curl https://chawcher-os.vercel.app/...` เช็กว่าเว็บจริงขึ้นหรือยังได้
 - ฐานข้อมูล Supabase: Bay วาง migration ใน SQL Editor เอง (เราทดสอบในเครื่องด้วย `supabase/tests/README.md`) · โค้ดที่ Bay merge ขึ้น branch `claude/chaw-cher-os-setup-9k21w6` ถึงจะขึ้นเว็บจริง · แต่ละ session ทำงานบน branch ของตัวเองตามที่ระบบกำหนด
 - ราคาวัสดุ: ชีต “ราคาวัสดุ ฌ เฌอ” (Google Sheet id `1E4yTp2sLiQV4ULlUSwFmX40SuioMLOA-9yti6_TfNyE`) คือที่ระบบดึงราคาวัสดุ · ต้นฉบับราคาโรงงานคือ Master_วัสดุ ใน `MidYear_CostingSystem.xlsx` (Drive id `1orz_ivnE34Xbkauh-pNBz7pEmpKs5D6t`, รหัส M0001-M0209) · กรอกจาก Master แล้ว 2026-11-11 (`docs/products/sofa-1600/README.md`)
+- ค่าตัด CNC (ร้านนอก): 500 บาท/ตร.ม. คิดตามพื้นที่ชิ้นงานจริง ไม่คิดทั้งแผ่น (Bay แจ้ง 2026-11-11) · ผ้าเกรด B 450 บาท/ม.
 - เว็บแบรนด์ chawcher.com: หน้า FAQ draft อยู่ที่ WordPress page id 18148 (`docs/modules/line-agent/8-knowledge.md`)
 
 ### กฎกันลืม

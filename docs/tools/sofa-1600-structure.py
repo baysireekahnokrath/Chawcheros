@@ -248,7 +248,18 @@ def _solve(m, loads, supports):
     ib = Basis(m, e)
     lam, mu = lame_parameters(PLY["E"], PLY["nu"])
     lam_ps = 2 * lam * mu / (lam + 2 * mu)
-    K = asm(linear_elasticity(lam_ps, mu), ib) * T_RIB
+    from skfem.helpers import ddot, sym_grad, trace, eye
+
+    def C(Tn):
+        return 2.0 * mu * Tn + lam_ps * eye(trace(Tn), 2)
+
+    zc = float(getattr(dwg, "RIB_DBL_Z", 1e9))
+
+    @BilinearForm
+    def elast(u_, v_, w):
+        th = np.where(w.x[1] < zc, T_RIB, T)            # REV B: 2 layers below Z450, 1 layer above
+        return th * ddot(C(sym_grad(u_)), sym_grad(v_))
+    K = asm(elast, ib)
     f = np.zeros(K.shape[0])
     bf_all = m.boundary_facets()
     mids = m.p[:, m.facets[:, bf_all]].mean(axis=1)
@@ -331,9 +342,9 @@ for name, Vf, Vb, H, back, sf, case in [
 ]:
     r = rib_fem(rib, rib_loads(Vf, Vb, H, back), SUP, name)
     fem_cases.append((r, Vf, Vb, H, back))
-    check("T3", f"ซี่โครง R2-R5 ({T_RIB:.0f} มม.) แรงดึงสูงสุด · {name}", r["tmax"], PLY["ft"] / sf, "MPa", case,
+    check("T3", f"ซี่โครง R2-R5 (36 มม. ถึง Z{getattr(dwg, 'RIB_DBL_Z', 0)} · บน 18) ดึงสูงสุด · {name}", r["tmax"], PLY["ft"] / sf, "MPa", case,
           f"ที่ y{r['at_t'][0]:.0f} z{r['at_t'][1]:.0f}")
-    check("T3", f"ซี่โครง R2-R5 ({T_RIB:.0f} มม.) แรงอัด/กดสูงสุด · {name}", r["cmax"], PLY["fc"] / sf, "MPa", case,
+    check("T3", f"ซี่โครง R2-R5 (36/18 มม.) อัด/กดสูงสุด · {name}", r["cmax"], PLY["fc"] / sf, "MPa", case,
           f"ที่ y{r['at_c'][0]:.0f} z{r['at_c'][1]:.0f}")
 
 # ================================================================ T4 longitudinal spans (front / back lines)
