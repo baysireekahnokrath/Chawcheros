@@ -141,9 +141,9 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
         id: r.id,
         no: isFree ? '' : String(++n),
         head: isFree ? r.free : (p?.head ?? r.raw),
-        // ลำดับตามใบจริง · วัสดุ แล้วค่อยขนาด · "ไม้โอ๊ค สีวอลนัท | ขนาด W120 D43.5 H79 cm"
-        sub: isFree ? '' : [r.spec || v?.grade, p?.wood, p?.size && `ขนาด ${p.size} cm`]
-          .filter(Boolean).join(' | '),
+        // ตามใบจริง · บรรทัดสองคือไม้กับขนาด บรรทัดสามคือวัสดุหุ้ม
+        sub: isFree ? '' : [p?.wood, p?.size && `ขนาด ${p.size} cm`].filter(Boolean).join(' | '),
+        spec: isFree ? '' : (r.spec || v?.grade || ''),
         colour: '',
         qty: r.qty,
         retail: isFree ? null : (v?.retail ?? null),
@@ -302,6 +302,16 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                     </div>
                   )}
 
+                  {!r.free && (
+                    // บรรทัดวัสดุที่จะไปโผล่ในใบ · แก้ได้ เพราะของบางตัวลูกค้าเขียนวัสดุที่ไม่ตรงกับของจริง
+                    <input
+                      value={r.spec} aria-label="บรรทัดวัสดุในใบ"
+                      placeholder={p?.variants[r.gi]?.grade || 'วัสดุหุ้ม เช่น PVC เลือกสีได้'}
+                      onChange={(e) => setRow(d.id, r.id, (x) => ({ ...x, spec: e.target.value }))}
+                      className="mt-2 w-full rounded-lg border border-border bg-bg px-2 py-2 text-sm"
+                    />
+                  )}
+
                   {r.free && (
                     <input
                       value={r.free} aria-label="รายการอิสระ"
@@ -442,6 +452,7 @@ function Sheet({ q, showImg, first }: {
               <td className="py-1.5">
                 <div>{l.head}</div>
                 {l.sub && <div className="text-black/60">{l.sub}</div>}
+                {l.spec && <div className="text-black/60">{l.spec}</div>}
               </td>
               <td className="py-1.5 text-right">{l.qty}</td>
               <td className="py-1.5 text-right">

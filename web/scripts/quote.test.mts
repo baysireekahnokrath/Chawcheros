@@ -154,7 +154,7 @@ ok('ขนาดไม่ปัดทศนิยมทิ้ง', sizeText(120,
 
 /* ── ตัวเลขท้ายใบ ── */
 const line = (over: Partial<QuoteLine> = {}): QuoteLine => ({
-  id: 'x', no: '1', head: 'h', sub: 's', colour: '', qty: 1,
+  id: 'x', no: '1', head: 'h', sub: 's', spec: '', colour: '', qty: 1,
   retail: 44600, unit: 35680, image: null, ...over,
 });
 const q = (over: Partial<Quote> = {}): Quote => ({
