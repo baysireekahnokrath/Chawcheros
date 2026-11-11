@@ -28,9 +28,11 @@ OUT = os.path.join(ROOT, "docs", "products", "sofa-1600", "sofa-1600-bom.xlsx")
 
 spec = importlib.util.spec_from_file_location("dwg", os.path.join(os.path.dirname(__file__), "build-sofa-1600-drawing.py"))
 dwg = importlib.util.module_from_spec(spec)
+ARGV = sys.argv[1:]
 sys.argv = sys.argv[:1]
 spec.loader.exec_module(dwg)
 _, N_PLY = dwg.nest()
+FAB_NET_M, FAB_BUY_M = dwg.fabric_meters()
 
 FT2 = 10.7639          # sq ft per m2
 SHEET_FT2 = 27.78      # foam sheet 50x80 in
@@ -109,7 +111,8 @@ for code, where, a, t, note in FOAM_LINES:
 L.append(("3 ฟองน้ำ", "ใยโพลีเอสเตอร์ FILL 200 GM", "ห่อทุกชิ้นก่อนหุ้มผ้า ~7 ตร.ม.", "ตร.ฟ.", round(7 * FT2, 1), FOAM_REC,
           "M0120", "FILL 200 GM @ 27.65/17.5 = 1.58", 1.58, 3, round(45 / 16.1, 2), round(85 / 16.1, 2), "M3", "DB1",
           "ตลาดแปลงจากบาท/ม. สมมติหน้ากว้าง 1.5 ม. (16.1 ตร.ฟ./ม.)"))
-L.append(("4 วัสดุหุ้ม", "ผ้าหุ้ม บูเคล่/เท็ดดี้ หน้ากว้าง 140", "ตัว ~6.0 ม. + หมอนข้าง ~1.0 ม.", "ม.", 7.0, 0.85,
+L.append(("4 วัสดุหุ้ม", "ผ้าหุ้ม บูเคล่/เท็ดดี้ หน้ากว้าง 140", f"ตามแพทเทิร์น F1-F9 (แบบแผ่นที่ 7) · ผังตัด {FAB_NET_M:.2f} ม. สั่ง {FAB_BUY_M:.1f} ม.", "ม.",
+          round(FAB_NET_M, 2), round(1 / (1 + dwg.FAB_WASTE), 3),
           None, None, None, None, 503, 1411, "M6, M7", None,
           "ราคาผ้าตามเกรด (A/B/C) อยู่ในตาราง materials ของระบบ แต่ session นี้อ่านฐานข้อมูลไม่ได้ → Bay ใส่เอง"))
 L.append(("4 วัสดุหุ้ม", "สปันบอนด์ 100 GM ปิดใต้ฐาน", "หน้ากว้าง 100", "ม.", 1.5, 0.9,
@@ -297,3 +300,119 @@ for w in wb.worksheets:
     w.page_setup.fitToWidth, w.page_setup.fitToHeight = 1, 0
 wb.save(OUT)
 print(OUT, "lines", len(L))
+
+
+# ---------------------------------------------------------------- PDF (HTML -> print A4 landscape)
+def status_of(code, used, gap):
+    if used is None:
+        return "ยังไม่มีราคา"
+    if code is None:
+        return "ไม่มีใน Master"
+    if gap is None:
+        return "ไม่มีราคาตลาดเทียบ"
+    return "แพงกว่าตลาด" if gap > 0.15 else "ถูกกว่าตลาด" if gap < -0.15 else "ใกล้เคียงตลาด"
+
+
+def build_html(fontcss=""):
+    import html as H
+    import base64
+    e = lambda s: H.escape(str(s)) if s is not None else ""
+    n = lambda v, d=2: "" if v is None or v == "" else f"{v:,.{d}f}"
+    rows, by, tot = [], {}, {"used": 0, "buy": 0, "mkt": 0}
+    counts = {}
+    for i, (g, item, spec_, uom, net, rec, code, dbn, buy, cost, mlo, mhi, msrc, usrc, note) in enumerate(L, 1):
+        q = net / rec
+        gap = (buy / ((mlo + mhi) / 2) - 1) if (buy is not None and mlo is not None) else None
+        amt = q * cost if cost is not None else None
+        st = status_of(code, cost, gap)
+        counts[st] = counts.get(st, 0) + 1
+        b = by.setdefault(g, {"used": 0, "buy": 0, "mkt": 0, "n": 0, "miss": 0})
+        b["used"] += amt or 0
+        b["buy"] += q * buy if buy is not None else 0
+        b["mkt"] += q * (mlo + mhi) / 2 if mlo is not None else 0
+        b["n"] += 1
+        b["miss"] += st == "ยังไม่มีราคา"
+        rows.append((i, g, item, spec_, uom, q, code, buy, cost, mlo, mhi, msrc, gap, amt, st, note))
+    for b in by.values():
+        for k in ("used", "buy", "mkt"):
+            tot[k] += b[k]
+    css_st = {"แพงกว่าตลาด": "hi", "ถูกกว่าตลาด": "lo", "ใกล้เคียงตลาด": "ok", "ยังไม่มีราคา": "miss",
+              "ไม่มีราคาตลาดเทียบ": "na", "ไม่มีใน Master": "miss"}
+    logo = open(os.path.join(ROOT, "docs/brand/logo.svg")).read().replace("currentColor", "#2B4368")
+    logo_uri = "data:image/svg+xml;base64," + base64.b64encode(logo.encode()).decode()
+
+    def header(sub):
+        return (f'<header><img src="{logo_uri}"><div><div class="brand">CHAW CHER · SOFA 1600 × 750</div>'
+                f'<h1>{e(sub)}</h1></div><div class="meta">BOM REV A · 2026-11-11<br>ต่อ 1 ตัว · หน่วยเงิน บาท (ก่อน VAT)</div></header>')
+
+    summ = "".join(f'<tr><td>{e(g)}</td><td class="r">{n(b["used"], 0)}</td><td class="r">{n(b["buy"], 0)}</td>'
+                   f'<td class="r mut">{n(b["mkt"], 0) if b["mkt"] else "–"}</td><td class="r">{b["n"]}</td>'
+                   f'<td class="r">{b["miss"] or ""}</td></tr>' for g, b in by.items())
+    flags = [r for r in rows if r[14] in ("แพงกว่าตลาด", "ถูกกว่าตลาด")]
+    flag_html = "".join(f'<li><b>{e(r[2])}</b> ราคาซื้อ @ {n(r[7])} vs ตลาด {n(r[9])}–{n(r[10])} '
+                        f'(<span class="{css_st[r[14]]}t">{r[12]:+.0%}</span>) — {e(r[15])}</li>' for r in flags)
+    miss = ", ".join(e(r[2]) for r in rows if r[14] == "ยังไม่มีราคา")
+    p1 = f"""<section class="page">{header("สรุปต้นทุนวัสดุ และการเทียบราคา")}
+<div class="kpis"><div><span>ต้นทุนวัสดุ (ราคาคิดต้นทุนโรงงาน)</span><b>{n(tot["used"], 0)}</b></div>
+<div><span>ถ้าคิดที่ราคาซื้อ @</span><b>{n(tot["buy"], 0)}</b></div>
+<div><span>บรรทัดทั้งหมด / ยังไม่มีราคา</span><b>{len(rows)} / {counts.get("ยังไม่มีราคา", 0)}</b></div></div>
+<p class="warn">ยังไม่รวม: {miss}</p>
+<div class="two"><div><h2>แยกตามหมวด</h2><table><tr><th>หมวด</th><th>ราคาที่ใช้</th><th>ราคาซื้อ @</th><th>ราคากลางตลาด*</th><th>บรรทัด</th><th>ไม่มีราคา</th></tr>{summ}
+<tr class="tot"><td>รวม</td><td class="r">{n(tot["used"], 0)}</td><td class="r">{n(tot["buy"], 0)}</td><td class="r mut">{n(tot["mkt"], 0)}</td><td class="r">{len(rows)}</td><td class="r">{counts.get("ยังไม่มีราคา", 0)}</td></tr></table>
+<p class="note">* ราคากลางตลาดรวมเฉพาะบรรทัดที่มีราคาตลาด (รวมผ้าหุ้มที่ยังไม่มีราคาภายใน) ใช้ดูทิศทาง ไม่ใช่ยอดเต็ม</p></div>
+<div><h2>สถานะการเทียบราคา</h2><table>{"".join(f'<tr><td><span class="pill {css_st[k]}">{k}</span></td><td class="r">{counts.get(k, 0)}</td></tr>' for k in ("ใกล้เคียงตลาด", "แพงกว่าตลาด", "ถูกกว่าตลาด", "ไม่มีราคาตลาดเทียบ", "ยังไม่มีราคา"))}</table>
+<h2>ต้องดู (ต่างจากตลาดเกิน ±15%)</h2><ul>{flag_html}</ul></div></div>
+<h2>ที่มาของราคา</h2><p class="note">ราคาภายใน = Master_วัสดุ ของโรงงาน (รหัส M0001–M0209 ราคาอัปเดต 28/5/26 แก้ไข 10–16/6/26) ซึ่งตอนนี้กรอกลงชีต “ราคาวัสดุ ฌ เฌอ” แล้ว ·
+ราคาซื้อ @ = ราคาที่เขียนในชื่อวัสดุ · ราคาคิดต้นทุน = คอลัมน์ราคาต่อหน่วยที่โรงงานใช้ · ราคาตลาด = ค้นเว็บ 11/11/2026 (รายละเอียดหน้าสุดท้าย)</p></section>"""
+
+    trs = "".join(f'<tr><td class="r">{r[0]}</td><td><b>{e(r[2])}</b><div class="mut">{e(r[3])}</div></td><td>{e(r[4])}</td>'
+                  f'<td class="r">{n(r[5])}</td><td>{e(r[6] or "—")}</td><td class="r">{n(r[7])}</td><td class="r">{n(r[8])}</td>'
+                  f'<td class="r mut">{(n(r[9]) + "–" + n(r[10])) if r[9] is not None else ""}</td><td class="mut">{e(r[11] or "")}</td>'
+                  f'<td class="r">{"" if r[12] is None else f"{r[12]:+.0%}"}</td><td class="r"><b>{n(r[13], 0)}</b></td>'
+                  f'<td><span class="pill {css_st[r[14]]}">{r[14]}</span></td><td class="mut small">{e(r[15])}</td></tr>'
+                  + (f'<tr class="grp"><td colspan="13">{e(rows[k + 1][1])}</td></tr>' if k + 1 < len(rows) and rows[k + 1][1] != r[1] else "")
+                  for k, r in enumerate(rows))
+    p2 = f"""<section class="page">{header("BOM เทียบราคา (ทุกบรรทัด)")}
+<table class="bom"><thead><tr><th>#</th><th>รายการ / สเปก</th><th>หน่วย</th><th>ต้องซื้อ</th><th>รหัส</th><th>ราคาซื้อ @</th><th>ราคาคิดต้นทุน</th>
+<th>ตลาด ต่ำ–สูง</th><th>แหล่ง</th><th>@ vs ตลาด</th><th>รวม</th><th>สถานะ</th><th>หมายเหตุ</th></tr></thead>
+<tbody><tr class="grp"><td colspan="13">{e(rows[0][1])}</td></tr>{trs}
+<tr class="tot"><td colspan="10">รวม (ราคาที่ใช้)</td><td class="r">{n(tot["used"], 0)}</td><td colspan="2"></td></tr></tbody></table>
+<p class="note">ต้องซื้อ = ใช้สุทธิ ÷ ได้เนื้อ · ฟองน้ำและใยคิดได้เนื้อ 70% ตามมาตรฐานโรงงาน · ไม้อัดคิดเป็นแผ่นเต็มตามผังตัด (2 แผ่น)</p></section>"""
+
+    srcs = "".join(f'<tr><td><b>{e(s[0])}</b></td><td>{e(s[2])}<div class="mut small">{e(s[3])}</div></td><td>{e(s[4])}</td><td>{e(s[5])}</td></tr>' for s in SOURCES)
+    p3 = f"""<section class="page">{header("แหล่งที่มาของราคา")}
+<table><tr><th>รหัส</th><th>แหล่ง / ลิงก์</th><th>วันที่ของราคา</th><th>ได้ข้อมูลอะไร / ข้อควรระวัง</th></tr>{srcs}</table>
+<ul class="note"><li>{e(NOT_FOUND)}</li>
+<li>หน้าเว็บตลาดเปิดอ่านโดยตรงไม่ได้ ตัวเลขตลาดมาจากผลการค้นหา ควรเปิดลิงก์เช็กก่อนใช้ต่อรองราคา</li>
+<li>ฐานข้อมูลระบบ (Supabase) ยังอ่านไม่ได้ใน session นี้ · ราคาวัสดุภายในจึงอ้างจาก Master_วัสดุ (DB1)</li></ul></section>"""
+
+    style = """@page{size:A4 landscape;margin:0}
+*{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai','Montserrat',sans-serif;color:#1E2733;font-size:9.5pt;background:#fff}
+.page{width:297mm;min-height:210mm;padding:12mm 13mm;page-break-after:always}
+.page:last-child{page-break-after:auto}
+header{display:flex;align-items:center;gap:5mm;border-bottom:2px solid #83B7BF;padding-bottom:3mm;margin-bottom:5mm}
+header img{height:16mm}header .brand{font-family:Montserrat;letter-spacing:.12em;font-size:8.5pt;color:#958C7B;font-weight:500}
+header h1{margin:0;font-size:16pt;color:#2B4368;font-weight:600}header .meta{margin-left:auto;text-align:right;font-size:8pt;color:#6B7280}
+h2{font-size:11pt;color:#2B4368;margin:5mm 0 2mm}
+.kpis{display:flex;gap:4mm}.kpis div{flex:1;background:#F7F8F8;border-left:3px solid #2B4368;padding:3mm 4mm}
+.kpis span{display:block;font-size:8.5pt;color:#6B7280}.kpis b{font-size:18pt;color:#2B4368;font-family:Montserrat}
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:8mm}
+table{width:100%;border-collapse:collapse}th{background:#2B4368;color:#fff;font-weight:500;text-align:left;padding:1.6mm 2mm;font-size:8.5pt}
+td{padding:1.4mm 2mm;border-bottom:1px solid #E3E6EA;vertical-align:top}.r{text-align:right;font-variant-numeric:tabular-nums}
+.tot td{font-weight:600;border-top:2px solid #2B4368;background:#F7F8F8}.grp td{background:#E3EEF0;color:#2F4554;font-weight:600;font-size:8.5pt}
+.bom{font-size:8pt}.bom td{padding:1.1mm 1.5mm}.mut{color:#6B7280}.small{font-size:7.5pt}
+.pill{display:inline-block;padding:.3mm 2mm;border-radius:3mm;font-size:7.5pt;white-space:nowrap}
+.hi{background:#F8D7D3;color:#8A2B20}.lo{background:#DCEFE3;color:#1F6B3A}.ok{background:#E3EEF0;color:#2F4554}
+.miss{background:#FFE8B3;color:#7A5200}.na{background:#F1F2F4;color:#6B7280}.hit{color:#8A2B20;font-weight:600}.lot{color:#1F6B3A;font-weight:600}
+.warn{background:#FFF4C2;padding:2mm 3mm;font-size:8.5pt;margin:4mm 0 0}.note{font-size:8pt;color:#6B7280}
+ul{margin:1mm 0;padding-left:5mm}li{margin-bottom:1.2mm}"""
+    return f'<!doctype html><html lang="th"><head><meta charset="utf-8"><title>SOFA 1600 BOM</title><style>{fontcss}{style}</style></head><body>{p1}{p2}{p3}</body></html>'
+
+
+css_arg = sys_argv_css = None
+for a in ARGV:
+    if a.endswith(".css") and os.path.exists(a):
+        css_arg = open(a).read()
+html_path = os.path.join(ROOT, "docs", "products", "sofa-1600", "sofa-1600-bom.html")
+open(html_path, "w").write(build_html(css_arg or ""))
+print(html_path)

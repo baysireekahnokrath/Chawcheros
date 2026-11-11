@@ -4,12 +4,19 @@
 
 | ไฟล์ | ใช้ทำอะไร |
 |---|---|
-| `sofa-1600-drawing.pdf` | แบบ A3 6 แผ่น: ภาพรวม/ขนาด · ผังโครง+3D · แบบชิ้น CNC ①② · BOM ฟองน้ำ/อุปกรณ์ · ผังวางแผ่นไม้ |
+| `sofa-1600-drawing.pdf` | แบบ A3 7 แผ่น: ภาพรวม/ขนาด · ผังโครง+3D · แบบชิ้น CNC ①② · BOM ฟองน้ำ/อุปกรณ์ · ผังวางแผ่นไม้ · **แพทเทิร์นผ้า F1-F9 + ผังตัดบนม้วน 140 ซม.** |
 | `sofa-1600-cnc-18mm.dxf` | ไฟล์ตัด CNC 1:1 (มม.) วางบนไม้อัด 18 มม. 1220×2440 ทั้งหมด **2 แผ่น** · เลเยอร์ CUT_OUT / CUT_IN / DRILL / LABEL |
 | `sofa-1600-bom.xlsx` | BOM ต่อ 1 ตัว เทียบราคา: ราคาภายในจาก Master_วัสดุ ของโรงงาน (รหัส M, อัปเดต 28/5-16/6/26) กับราคาตลาดที่ค้นเจอ · แท็บ สรุป · BOM เทียบราคา · แหล่งราคา · ไม้ CNC · ฟองน้ำ · สร้างใหม่ด้วย `python3 docs/tools/build-sofa-1600-bom.py` |
+| `sofa-1600-fabric-pattern.dxf` | แพทเทิร์นผ้า 1:1 (รวมเผื่อเย็บ 15 · เผื่อยิงแม็ก 50 · เผื่อยัดร่อง 80) วางบนม้วนกว้าง 1400 · ผังตัด 4.08 ม. สั่ง 4.5 ม./ตัว |
+| `sofa-1600-bom.pdf` | BOM ฉบับพิมพ์ A4 (สรุป · ทุกบรรทัด · แหล่งราคา) |
 | `sofa-1600-parts-1to1.dxf` | ทุกชิ้นวางเรียงกัน ไม่จัดผัง สำหรับโรงงานที่จะจัดผังเองในโปรแกรม CAM |
 
 สร้างใหม่: `python3 docs/tools/build-sofa-1600-drawing.py` (ต้องมี shapely และ ezdxf) แล้วพิมพ์ `sofa-1600-drawing.html` เป็น PDF ขนาด A3 แนวนอน
+
+## ลิงก์ Google Drive
+- BOM (Google Sheet): https://docs.google.com/spreadsheets/d/1vU0rSBoAoHvxaKVsVe5q4B42Tjg0jShre8FZejZ3JDA/edit
+- ชีตราคาวัสดุที่ระบบใช้ “ราคาวัสดุ ฌ เฌอ”: https://docs.google.com/spreadsheets/d/1E4yTp2sLiQV4ULlUSwFmX40SuioMLOA-9yti6_TfNyE/edit · กรอกจาก Master_วัสดุ แล้ว 203 รายการ (แถว 5-207, 2026-11-11) ราคา = ราคาซื้อ @ ถ้าไม่มี @ ใช้ราคาคิดต้นทุนโรงงาน (ระบุในหมายเหตุ)
+- ต้นฉบับราคาโรงงาน: MidYear_CostingSystem.xlsx (Master_วัสดุ) https://drive.google.com/file/d/1orz_ivnE34Xbkauh-pNBz7pEmpKs5D6t/view
 
 ## ขนาดหลัก
 - ยาว 1600 · ลึกรวม 750 · สูงรวม 800 · ที่นั่งสูง 420 · ที่เท้าแขนสูง 520 · พนักพิงสูงจากที่นั่ง 380 · ที่นั่งลึก 500 · ขาสูง 80

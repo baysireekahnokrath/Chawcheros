@@ -386,7 +386,7 @@ def hatch_defs():
 
 LOGO = open(os.path.join(ROOT, "docs/brand/logo.svg")).read().replace("currentColor", NAVY)
 LOGO_URI = "data:image/svg+xml;base64," + base64.b64encode(LOGO.encode()).decode()
-N_SHEETS = 6
+N_SHEETS = 7
 REV = "A · ร่างเพื่อตรวจ"
 DATE = "2026-11-11"
 
@@ -1055,6 +1055,183 @@ def sheet_nest(placed, nsheets):
     return sh
 
 
+
+# ---------------------------------------------------------------- fabric pattern
+ROLL_W = 1400          # fabric width (mm)
+SEAM = 15              # sewing allowance on every edge
+STAPLE = 50            # extra on edges stapled to the frame
+TUCK = 80              # extra where seat and back meet (pushed into the crevice and stapled)
+FAB_WASTE = 0.10       # matching / test cut / mistakes
+
+
+def ring_arc(poly, a, b, via):
+    """Length along the polygon outline from point a to point b, taking the arc that passes near `via`."""
+    from shapely.geometry import LineString
+    ring = LineString(poly.exterior.coords)
+    L = ring.length
+    da, db, dv = ring.project(Point(a)), ring.project(Point(b)), ring.project(Point(via))
+    lo, hi = min(da, db), max(da, db)
+    inner = hi - lo
+    return inner if lo <= dv <= hi else L - inner
+
+
+def arc_len(f, x0, x1, n=400):
+    pts = [(x0 + (x1 - x0) * i / n, f(x0 + (x1 - x0) * i / n)) for i in range(n + 1)]
+    return sum(math.dist(pts[i], pts[i + 1]) for i in range(n))
+
+
+def strip(code, name, qty, w, h, note, add_w=(0, 0), add_h=(0, 0)):
+    """Rectangular pattern piece: w = along sofa length, h = developed length; adds seam + extra allowances."""
+    W = w + 2 * SEAM + add_w[0] + add_w[1]
+    Hh = h + 2 * SEAM + add_h[0] + add_h[1]
+    return dict(code=code, name=name, qty=qty, poly=box(0, 0, W, Hh), net=(w, h), note=note)
+
+
+def shaped(code, name, qty, poly, note, extra_bottom=0):
+    p = poly.buffer(SEAM, join_style=2)
+    if extra_bottom:
+        p = unary_union([affinity.translate(p, 0, -extra_bottom * k / 8) for k in range(9)])
+    b = p.bounds
+    return dict(code=code, name=name, qty=qty, poly=affinity.translate(clean(p), -b[0], -b[1]),
+                net=(poly.bounds[2] - poly.bounds[0], poly.bounds[3] - poly.bounds[1]), note=note)
+
+
+def fabric_pieces():
+    sec = finished_section()
+    J, NOSE, BOT_F = (172, SEAT_H), (SECTION_D, 260), (520, 80)
+    TOP_R, REAR_B = (0, 700), (0, 120)
+    seat_len = ring_arc(sec, J, BOT_F, NOSE)
+    back_in = ring_arc(sec, J, TOP_R, (125, 780))
+    back_out = ring_arc(sec, TOP_R, (40, 80), REAR_B)
+    front_w = arc_len(lambda x: delta(x) + SECTION_D, 70, 1390)
+    back_w = arc_len(lambda x: delta(x) + 150, 30, 1390)
+    rear_w = arc_len(lambda x: delta(x), 0, 1400) + 60
+    arm = box(0, 80, 500, 500)
+    arm = round_corner(arm, 0, 500, 160, 1, -1)
+    arm = round_corner(arm, 500, 500, 90, -1, -1)
+    arm = round_corner(arm, 0, 80, 50, 1, 1)
+    from shapely.geometry import LineString
+    arm_box = LineString(arm.exterior.coords).length - 450          # outline minus the bottom edge
+    pill_band = math.pi * (3 * (100 + 125) - math.sqrt((3 * 100 + 125) * (100 + 3 * 125)))
+    end = sec.buffer(0)
+    pcs = [
+        strip("F1", "เบาะนั่ง + หน้าฐาน (ชิ้นเดียว)", 1, front_w, seat_len,
+              f"จากร่องพนัก → หน้าเบาะ → จมูกหน้า → ใต้ฐาน · ยาวคลี่ {seat_len:.0f}", add_h=(TUCK, STAPLE)),
+        strip("F2", "พนักพิงด้านใน + หัวพนัก", 1, back_w, back_in,
+              f"จากร่องพนัก → หน้าพนัก → หัวพนัก · ยาวคลี่ {back_in:.0f}", add_h=(TUCK, 0)),
+        strip("F3", "พนักพิงด้านหลัง", 1, rear_w, back_out, f"หลังพนักถึงใต้ฐาน · ยาวคลี่ {back_out:.0f}", add_h=(0, STAPLE)),
+        shaped("F4", "ข้างซ้าย (ตามรูปตัด)", 1, end, "เย็บต่อ F1 F2 F3 รอบขอบ · ขอบล่างยิงแม็ก", STAPLE),
+        shaped("F5", "แขน ด้านนอก", 1, arm, "รูปด้านข้างแขน · ขอบล่างยิงแม็ก", STAPLE),
+        shaped("F6", "แขน ด้านใน", 1, arm, "ด้านติดเบาะ · ขอบล่างยิงแม็ก", STAPLE),
+        strip("F7", "แขน แถบรอบ (boxing)", 1, 220, arm_box, f"หลัง → บน → หน้าแขน · ยาวคลี่ {arm_box:.0f}", add_h=(STAPLE, STAPLE)),
+        shaped("F8", "หมอนข้าง ฝาบน/ล่าง", 2, ellipse(0, 0, 100, 125), "วงรี 200×250 · มีรูตาไก่ที่ฝาล่าง"),
+        strip("F9", "หมอนข้าง แถบรอบ", 1, pill_band, 460, f"รอบวงรี {pill_band:.0f} · ใส่ซิป 0.7 ม. ด้านหลัง"),
+    ]
+    return pcs, dict(seat_len=seat_len, back_in=back_in, back_out=back_out, arm_box=arm_box, pill_band=pill_band)
+
+
+def nest_roll(pcs, gap=10):
+    """MaxRects on a fabric roll ROLL_W wide; returns placed items and used length."""
+    items = []
+    for p in pcs:
+        for i in range(p["qty"]):
+            b = p["poly"].bounds
+            items.append(dict(code=p["code"] + (f"-{i + 1}" if p["qty"] > 1 else ""), poly=p["poly"],
+                              w0=b[2] - b[0] + gap, h0=b[3] - b[1] + gap))
+    items.sort(key=lambda t: -t["w0"] * t["h0"])
+    free = [(0, 0, ROLL_W + gap, 100000)]
+    for it in items:
+        best = None
+        for fx, fy, fw, fh in free:
+            for rot, (ww, hh) in ((False, (it["w0"], it["h0"])), (True, (it["h0"], it["w0"]))):
+                if ww <= fw and hh <= fh:
+                    sc = (fy + hh, fx)
+                    if best is None or sc < best[0]:
+                        best = (sc, fx, fy, ww, hh, rot)
+        if best is None:
+            raise ValueError(f"piece {it['code']} wider than roll")
+        _, x, y, ww, hh, rot = best
+        poly = affinity.rotate(it["poly"], 90, origin=(0, 0)) if rot else it["poly"]
+        b = poly.bounds
+        it["final"], it["rot"] = affinity.translate(poly, x - b[0], y - b[1]), rot
+        out = []
+        for fx, fy, fw, fh in free:
+            if x >= fx + fw or x + ww <= fx or y >= fy + fh or y + hh <= fy:
+                out.append((fx, fy, fw, fh)); continue
+            if x > fx: out.append((fx, fy, x - fx, fh))
+            if x + ww < fx + fw: out.append((x + ww, fy, fx + fw - x - ww, fh))
+            if y > fy: out.append((fx, fy, fw, y - fy))
+            if y + hh < fy + fh: out.append((fx, y + hh, fw, fy + fh - y - hh))
+        out = [f for f in out if f[2] > 1 and f[3] > 1]
+        free = [f for f in out if not any(g != f and g[0] <= f[0] and g[1] <= f[1] and g[0] + g[2] >= f[0] + f[2]
+                                          and g[1] + g[3] >= f[1] + f[3] for g in out)]
+    used = max(it["final"].bounds[3] for it in items)
+    return items, used
+
+
+def fabric_meters():
+    pcs, _ = fabric_pieces()
+    _, used = nest_roll(pcs)
+    return used / 1000, round(used / 1000 * (1 + FAB_WASTE) + 0.049, 1)
+
+
+def write_fabric_dxf(items, used):
+    doc = ezdxf.new("R2010", setup=True)
+    doc.units = ezdxf.units.MM
+    msp = doc.modelspace()
+    for name, col in (("ROLL", 8), ("CUT", 1), ("LABEL", 7)):
+        doc.layers.add(name, color=col)
+    msp.add_lwpolyline([(0, 0), (ROLL_W, 0), (ROLL_W, used), (0, used)], close=True, dxfattribs={"layer": "ROLL"})
+    for it in items:
+        msp.add_lwpolyline(list(it["final"].exterior.coords), close=True, dxfattribs={"layer": "CUT"})
+        c = it["final"].representative_point()
+        msp.add_text(it["code"], height=30, dxfattribs={"layer": "LABEL"}).set_placement((c.x, c.y))
+    doc.saveas(os.path.join(OUT, "sofa-1600-fabric-pattern.dxf"))
+
+
+def sheet_fabric():
+    sh = Sheet(7, "แพทเทิร์นผ้าหุ้ม (FABRIC PATTERN)", "1:30 / ผังตัด 1:40")
+    pcs, d = fabric_pieces()
+    items, used = nest_roll(pcs)
+    write_fabric_dxf(items, used)
+    net_m, buy_m = used / 1000, round(used / 1000 * (1 + FAB_WASTE) + 0.049, 1)
+    view_title(sh, 20, 20, "ชิ้นแพทเทิร์น (ขนาดตัด รวมเผื่อแล้ว) · 1:30", f"เผื่อเย็บ {SEAM} ทุกขอบ · เผื่อยิงแม็ก {STAPLE} · เผื่อยัดร่องพนัก {TUCK} · หน่วย มม.")
+    x, y, rowh = 22, 32, 0
+    s = 1 / 30
+    for p in pcs:
+        b = p["poly"].bounds
+        w, h = (b[2] - b[0]) * s, (b[3] - b[1]) * s
+        if x + w > 245:
+            x, y, rowh = 22, y + rowh + 12, 0
+        v = View(sh, x - b[0] * s, y + b[3] * s, s, flip=True)
+        v.poly(p["poly"], fill="#F3EEE6", stroke=NAVY, sw=0.3)
+        sh.add(f'<text x="{x}" y="{y - 1.2}" font-size="2.1" font-weight="600" fill="{NAVY}" font-family="{FONT}">{p["code"]} ×{p["qty"]}</text>')
+        sh.add(f'<text x="{x + w / 2:.1f}" y="{y + h + 3:.1f}" font-size="1.8" fill="{TAUPE}" text-anchor="middle" font-family="{FONT}">{b[2] - b[0]:.0f} × {b[3] - b[1]:.0f}</text>')
+        x += w + 8
+        rowh = max(rowh, h + 4)
+    rows = [(p["code"], p["name"], p["qty"], f'{p["poly"].bounds[2]:.0f} × {p["poly"].bounds[3]:.0f}', p["note"]) for p in pcs]
+    table(sh, 20, 196, [("รหัส", 10), ("ชิ้น", 46), ("จำนวน", 11), ("ขนาดตัด (มม.)", 24), ("หมายเหตุ", 134)], rows, size=1.95, rh=3.7)
+    # roll layout
+    view_title(sh, 262, 20, f"ผังตัดบนม้วนผ้า หน้ากว้าง {ROLL_W / 10:.0f} ซม.", "1:40 · ลูกศร = แนวม้วน")
+    rs = 0.025
+    v = View(sh, 268, 34, rs, flip=False)
+    v.poly(box(0, 0, ROLL_W, used), fill=OFF, stroke=INK, sw=0.25)
+    for it in items:
+        v.poly(it["final"], fill="#F3EEE6", stroke=NAVY, sw=0.25)
+        c = it["final"].representative_point()
+        v.text(c.x, c.y, it["code"], 1.8, NAVY, weight=600, dy=0.6)
+    v.dim((0, 0), (ROLL_W, 0), -4, "h", f"{ROLL_W}")
+    v.dim((ROLL_W, 0), (ROLL_W, used), 5, "v", f"{used:.0f}")
+    note_block(sh, 268, 40 + used * rs + 6, "ปริมาณผ้า", [
+        f"ยาวตามผังตัด {net_m:.2f} ม. (หน้ากว้าง {ROLL_W / 10:.0f} ซม.)",
+        f"เผื่อจัดลาย/ตัดเสีย {FAB_WASTE:.0%} → สั่ง {buy_m:.1f} ม./ตัว",
+        "ผ้าบูเคล่ไม่มีทิศขน วางหมุนชิ้นได้",
+        "!ผ้ามีลาย/ทิศขน ต้องจัดผังใหม่ ใช้มากขึ้น",
+        "ไฟล์ตัด: sofa-1600-fabric-pattern.dxf",
+        "!ตัดผ้าดิบลองตัวแรกก่อน แล้วแก้แพทเทิร์น",
+    ], size=2.05, lh=3.4)
+    return sh, net_m, buy_m
+
 # ---------------------------------------------------------------- main
 def main():
     css_path = sys.argv[1] if len(sys.argv) > 1 else None
@@ -1067,7 +1244,9 @@ def main():
                     '&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">')
     placed, nsheets = nest()
     write_dxf(placed, nsheets)
-    sheets = [sheet_ga(), sheet_frame(), sheet_parts_a(), sheet_parts_b(), sheet_bom({"sheets": nsheets}), sheet_nest(placed, nsheets)]
+    fab_sheet, net_m, buy_m = sheet_fabric()
+    print(f"fabric: {net_m:.2f} m on roll, order {buy_m} m")
+    sheets = [sheet_ga(), sheet_frame(), sheet_parts_a(), sheet_parts_b(), sheet_bom({"sheets": nsheets}), sheet_nest(placed, nsheets), fab_sheet]
     doc = f"""<!doctype html><html lang="th"><head><meta charset="utf-8">
 <title>SOFA 1600 Technical Drawing</title>{fontlink}
 <style>{fontcss}
