@@ -40,6 +40,7 @@ const baht = (n: number | null | undefined) => (n == null ? null : Number(n).toL
 export type Flags = {
   see_price: boolean; see_customer: boolean; see_money: boolean; see_address: boolean;
   customer_draft: boolean; draft_polite: 'ค่ะ' | 'ครับ'; can_slip: boolean; can_photo: boolean;
+  see_kb?: boolean;
 };
 export type Ctx = { groupId: string; flags: Flags };
 
@@ -56,6 +57,7 @@ type DueRow = {
   first_item: string | null; item_count: number; source: string; customer_name?: string | null;
 };
 type StockRow = { kind: string; item: string; location: string | null; status: string | null; units: number | null; source: string };
+type KbHit = { id: string; title: string; body: string; category: string; reviewed_at: string | null; public_body: string | null };
 type Clearance = {
   hidden?: boolean;
   expires_on: string | null; expired: boolean; updated_at: string | null; total: number;
@@ -82,6 +84,8 @@ export const HELP =
   '• ชื่อรุ่น ชื่อผ้า ชื่อหนัง + "มีในสต็อกไหม"\n' +
   '• "ราคา clearance ขุนทอง"\n' +
   '• "ผลิตกี่วัน"\n' +
+  '• ถามวิธีทำ/ความรู้ เช่น "ผ้ากันน้ำซักเครื่องได้ไหม" (ตอบจากคลังความรู้ที่ Bay ยืนยันแล้ว · กลุ่มที่เปิดไว้)\n' +
+  '• "@Team Bay จดเรื่องนี้ …" หรือ Reply ข้อความ แล้วพิมพ์ "@Team Bay จดเรื่องนี้" → จดเข้าคลังความรู้ให้ Bay ตรวจ\n' +
   '• ส่งรูปสลิป (กี่รูปก็ได้) แล้วพิมพ์ "@Team Bay สลิป" ภายใน 10 นาที (กลุ่มที่เปิดไว้)\n' +
   '• ส่งรูปงานเสร็จ (กี่รูปก็ได้) แล้วพิมพ์ "@Team Bay งานเสร็จ BLS3230" ภายใน 10 นาที\n' +
   'ถามหลายเรื่องในข้อความเดียวได้ · ผมตอบจากระบบและชีตเท่านั้น ไม่ตัดสินแทนทีมครับ';
@@ -215,6 +219,29 @@ async function one(it: Intent, ctx: Ctx): Promise<Rendered> {
       const list = c.items.slice(0, MAX_ROWS).map((x) =>
         `• ${x.name.replace(/\s+/g, ' ')}\n   เต็ม ${baht(x.retail) ?? '—'} · ลด ${x.disc ?? '—'} · เหลือ ${baht(x.price) ?? '—'}`).join('\n');
       return { answer: `ราคา Clearance (ถึง ${thDate(c.expires_on)})\n${list}` + src('Google Sheet · Clearance Sales 2026', c.updated_at), dataUsed: 'room_clearance', status: 'ตอบแล้ว' };
+    }
+
+    case 'knowledge': {
+      // คลังความรู้ · ข้อความที่ Bay ยืนยันแล้ว โค้ดวางให้ตรงๆ ไม่ให้ AI เรียบเรียงใหม่ (LR-24 · R4)
+      const q = (it.query ?? '').trim();
+      if (!q) return { answer: 'อยากรู้เรื่องอะไรครับ เช่น "ผ้ากันน้ำซักเครื่องได้ไหม"', dataUsed: '—', status: 'ตอบไม่ได้' };
+      const hits = await call<KbHit[] | { hidden: true } | null>('kb_search', { p_query: q, p_group_id: ctx.groupId });
+      if (hits && !Array.isArray(hits)) return { answer: 'กลุ่มนี้ยังไม่ได้เปิดให้ใช้คลังความรู้ครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
+      if (!hits || hits.length === 0) {
+        return {
+          answer: `ยังไม่มีเรื่อง "${q}" ในคลังความรู้ที่ยืนยันแล้วครับ · ผมไม่เดา\nถ้าทีมรู้คำตอบ พิมพ์ "@Team Bay จดเรื่องนี้ …" ไว้ให้ Bay ตรวจและเพิ่มเข้าคลังได้ครับ`,
+          dataUsed: 'kb_search', status: 'ตอบไม่ได้',
+        };
+      }
+      const [top, ...others] = hits;
+      const more = others.length ? `\nเรื่องใกล้เคียง: ${others.map((h) => h.title).join(' · ')}` : '';
+      const customer = f.customer_draft && top.public_body
+        ? `\n\n📋 ก็อปส่งลูกค้า\n${top.public_body}` : '';
+      return {
+        answer: `📚 ${top.title}\n${top.body}${more}`
+          + src('คลังความรู้ทีม CC · Bay ยืนยันแล้ว', top.reviewed_at) + customer,
+        dataUsed: 'kb_search', status: 'ตอบแล้ว',
+      };
     }
 
     default:

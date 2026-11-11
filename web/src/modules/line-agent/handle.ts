@@ -1,7 +1,7 @@
 /**
  * จัดการเหตุการณ์จาก LINE ทีละอัน
  *
- * ลำดับ: ห้องนี้อนุมัติไหม → ทักบอทไหม → พักอยู่ไหม → ซ้ำไหม → "ตอบผิด"? → เลือก BLS ของสลิป?
+ * ลำดับ: ห้องนี้อนุมัติไหม → ทักบอทไหม (ไม่ทัก = เก็บเข้าคลังถ้าห้องเปิดเก็บ) → พักอยู่ไหม → ซ้ำไหม → "ตอบผิด"? → เลือก BLS ของสลิป?
  *        → รูปงานเสร็จ? → งบพอไหม → สลิป? → Claude เลือกว่าจะดึงอะไร → โค้ดเขียนคำตอบตามสิทธิ์กลุ่ม → reply → บันทึก
  */
 import { call } from './db';
@@ -48,6 +48,31 @@ const RETRACT = /ตอบผิด|ผิดนะ|ไม่ถูก(ต้อ
 const CMD_PHOTO = /^\s*(รูป)?งานเสร็จ/;
 const CMD_SLIP = /^\s*(สลิป|slip)/i;
 const ASKING = /(ยัง|ไหม|มั้ย|หรือเปล่า|\?)/;
+// "@Team Bay จดเรื่องนี้ …" · ต้องขึ้นต้นด้วย "จดเรื่องนี้" หรือ "จดไว้" เท่านั้น (กัน "จดทะเบียน…" หลุดเข้ามา)
+const CMD_NOTE = /^\s*จด(เรื่องนี้|ไว้)[\s:：\-–]*/;
+
+/**
+ * เก็บบทสนทนา (KB-B) · เฉพาะห้องที่ Bay เปิดเก็บและโพสต์แจ้งทีมแล้ว (R2) · ฐานข้อมูลเป็นคนตัดสิน ไม่ใช่โค้ดนี้
+ * ข้อความที่ทักบอทไม่เก็บตรงนี้ (อยู่ใน requests อยู่แล้ว) · ผิดพลาดตรงนี้ต้องไม่ทำให้บอทตอบไม่ได้
+ */
+async function collect(ev: LineEvent, groupId: string, token: string) {
+  try {
+    const text = ev.message?.text;
+    if (!text || !ev.message?.id) return;
+    const r = await call<{ logged: boolean; need_name: boolean }>('kb_log_message', {
+      p: {
+        group_id: groupId, message_id: ev.message.id, line_user_id: ev.source.userId ?? null, text,
+        sent_at: new Date(ev.timestamp ?? Date.now()).toISOString(),
+      },
+    });
+    if (r?.need_name && ev.source.userId) {
+      const name = await memberName(token, groupId, ev.source.userId);
+      if (name) await call('kb_member_name', { p_user: ev.source.userId, p_name: name });
+    }
+  } catch (e) {
+    console.error('kb collect', ev.webhookEventId, e);
+  }
+}
 
 export async function handleEvent(ev: LineEvent, token: string) {
   const groupId = ev.source.groupId ?? ev.source.roomId;
@@ -76,9 +101,9 @@ export async function handleEvent(ev: LineEvent, token: string) {
   // แชทส่วนตัวกับบอท · เฟส 1 ยังไม่ทำ (หมวด ค) · เงียบ
   if (ev.type !== 'message' || ev.message?.type !== 'text' || !groupId || !ev.replyToken) return;
 
-  // ไม่ได้ทัก = เงียบ และไม่เก็บอะไรเลย (D1 · D3)
+  // ไม่ได้ทัก = เงียบ · เก็บข้อความเข้าคลังเฉพาะห้องที่ Bay เปิดเก็บและแจ้งทีมแล้ว (D1 · R2)
   const question = mentionedText(ev);
-  if (question === null) return;
+  if (question === null) { await collect(ev, groupId, token); return; }
 
   const state = await call<State>('room_state', { p_group_id: groupId });
   if (state.room === null) {
@@ -114,6 +139,23 @@ export async function handleEvent(ev: LineEvent, token: string) {
   if (question.length === 0) {
     const r = await reply(token, ev.replyToken, HELP);
     await finish({ status: r.ok ? 'ตอบแล้ว' : 'ล้มเหลว', answer: HELP, error: r.error ?? null, data_used: '—' });
+    return;
+  }
+
+  // คลังความรู้ · "@Team Bay จดเรื่องนี้ …" หรือ Reply ข้อความที่เก็บไว้ · ไม่เรียก Claude · เป็นแค่ร่าง Bay ต้องตรวจก่อนใช้ (R4)
+  if (CMD_NOTE.test(question)) {
+    const res = await call<{ ok: boolean; title?: string; error?: string }>('kb_note_add', {
+      p: { group_id: groupId, text: question.replace(CMD_NOTE, ''), quoted_message_id: ev.message?.quotedMessageId ?? null, display_name: who },
+    });
+    const answer = res.ok
+      ? `📝 จดแล้วครับ: "${res.title}"\nBay จะตรวจในคลังความรู้ก่อนใช้จริงครับ`
+      : res.error === 'no_quoted'
+        ? 'จดจากข้อความที่ Reply ไม่ได้ครับ (ผมไม่ได้เก็บข้อความนั้นไว้) · พิมพ์เนื้อหาต่อท้ายคำสั่งแทนนะครับ เช่น "@Team Bay จดเรื่องนี้ …"'
+        : res.error === 'empty'
+          ? 'ขอเนื้อหาที่จะจดด้วยครับ · พิมพ์ "@Team Bay จดเรื่องนี้ …" หรือ Reply ข้อความที่ต้องการจด'
+          : 'จดไม่ได้ครับ · ' + (res.error ?? '');
+    const r = await reply(token, ev.replyToken, answer);
+    await finish({ status: r.ok ? (res.ok ? 'ตอบแล้ว' : 'ตอบไม่ได้') : 'ไม่ทัน', answer, error: r.error ?? null, data_used: 'kb_note_add' });
     return;
   }
 

@@ -3,6 +3,8 @@ import { getMyCapabilities } from '@/modules/registry';
 import { LINE_MODELS } from '@/modules/line-agent/intent';
 import { botInfo, lineSecrets } from '@/modules/line-agent/line';
 import { closeChange, decideRoom, saveRoomFlags, saveSettings, setFlag, syncSheetsNow, togglePause } from '@/modules/line-agent/admin';
+import { startCollect, stopCollect } from '@/modules/line-agent/kb-admin';
+import { KB_NOTICE } from '@/modules/line-agent/kb-notice';
 import { serviceEmail } from '@/modules/sheets/google';
 
 export const metadata = { title: 'ผู้ช่วย LINE · Chaw Cher OS' };
@@ -11,6 +13,7 @@ type Room = {
   id: string; name: string | null; group_id: string; status: string; joined_at: string;
   see_price: boolean; see_customer: boolean; see_money: boolean; see_address: boolean;
   customer_draft: boolean; draft_polite: string; can_slip: boolean; can_photo: boolean; push_worksheet: boolean;
+  see_kb: boolean; kb_collect: boolean; kb_notice_at: string | null;
 };
 type Change = { id: string; bls: string | null; text: string; display_name: string | null; created_at: string };
 type Photo = { id: string; bls: string; image_path: string; display_name: string | null; created_at: string };
@@ -19,6 +22,7 @@ const FLAG_LABELS: [keyof Room, string][] = [
   ['see_address', 'เห็นที่ส่ง / รายละเอียดการส่ง'], ['customer_draft', 'แนบข้อความพร้อมส่งลูกค้า'],
   ['can_slip', 'อ่านสลิป (Reply รูป + "สลิป")'], ['can_photo', 'เก็บรูปงานเสร็จ (Reply รูป + "งานเสร็จ BLS…")'],
   ['push_worksheet', 'รับใบงานผลิตอัตโนมัติ (บอทพูดเอง · นับโควตา LINE)'],
+  ['see_kb', 'ตอบจากคลังความรู้ (เฉพาะข้อที่ Bay ยืนยันแล้ว)'],
 ];
 type Req = {
   id: string; created_at: string; display_name: string | null; question: string; answer: string | null;
@@ -188,10 +192,40 @@ export default async function LinePage({ searchParams }: PageProps<'/line'>) {
               </form>
             </details>
           )}
+          {r.status === 'อนุมัติ' && (
+            <div className="mt-2 border-t border-border pt-2 text-xs">
+              {r.kb_collect ? (
+                <div className="flex items-center justify-between gap-2">
+                  <span>📚 กำลังเก็บบทสนทนาเข้าคลังความรู้ · แจ้งทีมเมื่อ {r.kb_notice_at ? when(r.kb_notice_at) : '—'}</span>
+                  <form action={stopCollect}><input type="hidden" name="id" value={r.id} />
+                    <button className="rounded-lg border border-border px-2 py-1">หยุดเก็บ</button></form>
+                </div>
+              ) : (
+                <details>
+                  <summary className="cursor-pointer text-muted">
+                    📚 เก็บบทสนทนาห้องนี้เข้าคลังความรู้ · {r.kb_notice_at ? `หยุดอยู่ (เคยแจ้งทีม ${when(r.kb_notice_at)})` : 'ยังไม่เริ่ม'}
+                  </summary>
+                  <div className="mt-2 space-y-2">
+                    <p className="text-muted">ต้องโพสต์แจ้งทีมในห้องนี้ก่อน (R2) · คัดลอกข้อความนี้ไปโพสต์ใน LINE แล้วกดปุ่มด้านล่าง</p>
+                    <textarea readOnly rows={5} defaultValue={KB_NOTICE}
+                      className="w-full select-all rounded-lg border border-border bg-bg p-2 text-sm" />
+                    <form action={startCollect}><input type="hidden" name="id" value={r.id} />
+                      <button className="rounded-xl bg-accent px-3 py-1.5 text-sm text-accent-fg">โพสต์แจ้งทีมแล้ว · เริ่มเก็บ</button></form>
+                  </div>
+                </details>
+              )}
+            </div>
+          )}
         </div>
       )) : (
         <p className={card + ' text-sm text-muted'}>ยังไม่มีห้อง · เชิญบอทเข้าห้อง LINE แล้วห้องจะขึ้นที่นี่ให้กดอนุมัติ</p>
       )}
+
+      {/* คลังความรู้ */}
+      <a href="/knowledge" className={card + ' mt-3 flex items-center justify-between text-sm'}>
+        <span>📚 คลังความรู้และ FAQ</span>
+        <span className={pill('ok')}>เปิดหน้าคลังความรู้ →</span>
+      </a>
 
       {/* ชุด B · สลิป */}
       <a href="/line/slips" className={card + ' mt-3 flex items-center justify-between text-sm'}>

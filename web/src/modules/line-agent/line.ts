@@ -91,6 +91,7 @@ export type Mentionee = { index: number; length: number; type?: string; userId?:
 export type LineEvent = {
   type: string;
   webhookEventId: string;
+  timestamp?: number;                 // เวลาที่ส่ง (มิลลิวินาที)
   replyToken?: string;
   deliveryContext?: { isRedelivery?: boolean };
   source: { type: 'group' | 'room' | 'user'; groupId?: string; roomId?: string; userId?: string };
