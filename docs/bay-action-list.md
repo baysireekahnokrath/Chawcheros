@@ -119,3 +119,34 @@
 **ขั้น 5 · FAQ บน chawcher.com**
 13. ดู preview https://chawcher.com/?page_id=18148&preview=true (ต้องล็อกอิน WordPress) → ต้องเห็นข้อที่ยืนยันในข้อ 11
 14. พอใจแล้วบอก Claude "publish FAQ" หรือกด Publish เองที่ https://chawcher.com/wp-admin/post.php?post=18148&action=edit
+
+## รอบหน้าข่าว /news (2026-11-11) · ทำตามลำดับ
+
+> หน้าข่าว Chaw Cher + ASE · ค้นเองทุกเช้า 08:00 · Bay กด Preview / เผยแพร่ / ส่ง LINE · รายละเอียด `docs/modules/news/0-idea.md`
+
+**ขั้น 1 · สร้างรหัสให้ระบบโพสต์ chawcher.com ได้ (Application Password)**
+1. เปิด https://chawcher.com/wp-admin/profile.php (ล็อกอิน WordPress ด้วยบัญชีของพี่)
+2. เลื่อนลงล่างสุดถึงหัวข้อ **Application Passwords** → ช่อง New Application Password Name พิมพ์ `chawcher-os news` → กด **Add New Application Password**
+3. จะได้รหัส 24 ตัว (มีเว้นวรรค) → กดคัดลอกเก็บไว้ (ปิดหน้าแล้วจะดูอีกไม่ได้) · จดชื่อผู้ใช้ (Username) ที่อยู่บนสุดของหน้าเดียวกันไว้ด้วย
+   - ถ้าไม่เห็นหัวข้อ Application Passwords → บอก Claude (บางแผนของ WordPress.com ซ่อนไว้ จะหาทางอื่นให้)
+
+**ขั้น 2 · ใส่รหัสใน Vercel**
+4. เปิด https://vercel.com/bay8/chawcher-os/settings/environment-variables
+5. กด **Add Environment Variable** ใส่ทีละตัว (ติ๊ก Production + Preview ทุกตัว) แล้วกด Save:
+   - Key `WP_USER` · Value = ชื่อผู้ใช้จากข้อ 3
+   - Key `WP_APP_PASSWORD` · Value = รหัส 24 ตัวจากข้อ 3 (วางทั้งที่มีเว้นวรรค)
+
+**ขั้น 3 · ฐานข้อมูล (Supabase)**
+6. เปิด https://github.com/baysireekahnokrath/Chawcheros/blob/claude/sharp-pascal-6wg2mg/supabase/migrations/0049_news.sql → กดไอคอนคัดลอก (Copy raw file) ด้านขวาบน
+7. เปิด https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new → วาง → กด Run → ต้องขึ้น Success
+
+**ขั้น 4 · เอาโค้ดขึ้นเว็บจริง**
+8. เปิด https://github.com/baysireekahnokrath/Chawcheros/compare/claude/chaw-cher-os-setup-9k21w6...claude/sharp-pascal-6wg2mg → Create pull request → Merge pull request → Confirm merge
+9. รอ ~2 นาที แล้วเปิด https://chawcher-os.vercel.app/news → ต้องเห็นข่าว "Chaw Cher เยือน Dior Gold House" อยู่ในแท็บ "ร่างรอตรวจ" และไม่มีแถบเหลือง "ยังตั้งค่าไม่ครบ"
+
+**ขั้น 5 · ลองใช้**
+10. ที่ข่าว Dior → กด **Preview ↗** → ดูหน้าข่าวบนเว็บ (ยังไม่มีใครเห็นนอกจากคนที่ล็อกอิน WordPress)
+11. ok แล้ว → ติ๊ก "ดู Preview แล้ว…" → กด **เผยแพร่บนเว็บ**
+12. ส่ง LINE: ติ๊กกลุ่ม → ติ๊ก "ยืนยันส่ง" → กด **ส่ง LINE** (ส่งรูปปก + ข้อความ + ลิงก์ข่าว)
+13. ลองกด **ค้นข่าวตอนนี้** ด้านบน 1 ครั้ง (ใช้เวลา 1-3 นาที) → ข่าวใหม่ของ Chaw Cher/ASE ที่เจอจะขึ้นเป็นร่าง · พรุ่งนี้ 08:00 ระบบค้นเอง
+14. ข่าวที่มาจากทางนี้ (แบบวันนี้): กด **+ เพิ่มข่าวเอง** → เล่าเรื่อง + เลือกรูปจากมือถือ → **ร่างข่าว** → AI เขียนให้

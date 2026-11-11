@@ -12,7 +12,7 @@
 - **ก่อนถาม Bay ว่าอะไรคืออะไร ให้ค้น `docs/` (Grep) และเช็ก tools ที่เชื่อมไว้ก่อนเสมอ** · ทุก session เริ่มจากศูนย์ ความรู้ที่ไม่ได้เขียนลงไฟล์นี้หรือ `docs/` จะหายไป
 - ของที่ออกสู่ภายนอก (เผยแพร่หน้าเว็บ ส่งข้อความเข้ากลุ่ม LINE ลูกค้า) ต้องถาม Bay ยืนยันก่อนทุกครั้ง · ร่าง/draft ทำได้เลย
 - งาน LINE agent (Team Bay) → เริ่มที่ `docs/modules/line-agent/7-status.md`
-- งานข่าว Chaw Cher / ASE (เก็บข่าวทุกเช้า → ร่างโพสต์ WordPress + ข้อความ LINE) → `docs/modules/news/0-idea.md` · กันซ้ำด้วย `docs/modules/news/seen.md`
+- งานข่าว Chaw Cher / ASE (เก็บข่าวทุกเช้า → ร่างโพสต์ WordPress + ข้อความ LINE) → หน้า `https://chawcher-os.vercel.app/news` (ค้นเองทุกเช้า 08:00) · `docs/modules/news/0-idea.md` · เพจ ASE: `facebook.com/AseSofa` `instagram.com/ase.living`
 
 ## ที่อยู่ของระบบ (ข้อมูลที่ session ใหม่ต้องรู้เลย · อย่าถาม Bay)
 
