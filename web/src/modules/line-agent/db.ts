@@ -12,6 +12,7 @@ const ALLOWED = [
   'room_orders_undated', 'room_clearance', 'sheets_age_minutes',
   'room_join', 'room_leave', 'claim_event', 'finish_request', 'flag_last', 'room_state',
   'photo_add', 'slip_add', 'slip_pick', 'change_add', 'worksheets_pending', 'worksheet_rooms', 'worksheet_sent',
+  'image_seen', 'images_for',
 ] as const;
 type Fn = (typeof ALLOWED)[number];
 

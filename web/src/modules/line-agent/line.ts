@@ -94,7 +94,10 @@ export type LineEvent = {
   replyToken?: string;
   deliveryContext?: { isRedelivery?: boolean };
   source: { type: 'group' | 'room' | 'user'; groupId?: string; roomId?: string; userId?: string };
-  message?: { id?: string; type: string; text?: string; quotedMessageId?: string; mention?: { mentionees: Mentionee[] } };
+  message?: {
+    id?: string; type: string; text?: string; quotedMessageId?: string; mention?: { mentionees: Mentionee[] };
+    imageSet?: { id: string; index?: number; total?: number };   // ส่งหลายรูปพร้อมกัน (อัลบั้ม)
+  };
 };
 
 /**
