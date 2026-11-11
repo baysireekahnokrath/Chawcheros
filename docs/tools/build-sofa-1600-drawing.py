@@ -37,12 +37,20 @@ SECTION_D = 670                   # back -> seat front, measured in section
 SAG = 30                          # plan curve: ends come forward by 30
 T = 18                            # plywood thickness
 RIB_X = {"R1": 40, "R2": 310, "R3": 580, "R4": 850, "R5": 1120, "R6": 1390}
+RIB_T = {"R1": 36, "R2": 36, "R3": 36, "R4": 36, "R5": 36, "R6": 18}   # REV B: R1-R5 = 2 x 18 mm glued
+HALF = {k: v / 2 for k, v in RIB_T.items()}
 A1_X = 1560
 RY0, RYF = 15, 620                # rib rear / front edge (local y)
 POST_B, POST_T = 105, 75          # back-post front edge at Z290 / at top
-DIP, DIP_Z = (270, 470), 230      # webbing clearance dip
-HOLE = (290, 110, 450, 190)       # lightening hole (y0, z0, y1, z1)
-LEG_Y = (95, 550)                 # rear / front leg (local y) = centre of B2 / B1
+DIP, DIP_Z = (330, 430), 260      # webbing clearance dip (REV B: 30 mm deep, 100 mm teeth beside B3/B4)
+HOLE = (310, 110, 430, 190)       # lightening hole (y0, z0, y1, z1)
+LEG_Y = (95, 530)                 # rear / front leg (local y) = centre of B2 / B1
+LEG_X = (150, 715)                # REV B: mid-bay R1-R2 and R3-R4 (REV A had 850 = on top of R4)
+BRIDGE = 12                       # REV B: rib material left above the seat rails (closed slot)
+NOTCH_R = 6                       # REV B: inside-corner radius of notches (band edges chamfered 6 mm)
+BAY = 270 - 36                    # clear width between two 36 mm ribs
+STRIPS = 4                        # webbing strips per bay (REV B: 4, was 3)
+REV_TXT = "B"
 
 
 def delta(x):
@@ -72,7 +80,7 @@ def fillet_in(poly, cx, cy, r, sx, sy):
     return poly.union(add)
 
 
-def notch(y0, z0, y1, z1, clr=1.0):
+def notch(y0, z0, y1, z1, clr=2.0):
     """Slot/notch for an 18 mm member: +1 mm clearance on the width each side."""
     return box(y0 - clr, z0 - 0.0, y1 + clr, z1 + 0.0)
 
@@ -82,18 +90,17 @@ def clean(p):
     if isinstance(p, MultiPolygon):
         p = max(p.geoms, key=lambda g: g.area)
     return Polygon([(round(x, 2), round(y, 2)) for x, y in p.exterior.coords],
-                   [[(round(x, 2), round(y, 2)) for x, y in i.coords] for i in p.interiors]).simplify(0.05)
+                   [[(round(x, 2), round(y, 2)) for x, y in i.coords] for i in p.interiors]).simplify(0.01)
 
 
 # ---------------------------------------------------------------- bands (horizontal members, local y range, z range, x range)
 BANDS = {
     #       y0   y1   z0   z1    x0                  x1                  name TH
-    "B1": (500, 600, 80, 98, RIB_X["R1"] - 9, RIB_X["R6"] + 9, "คานล่างหน้า"),
-    "B2": (45, 145, 80, 98, RIB_X["R1"] - 9, RIB_X["R6"] + 9, "คานล่างหลัง"),
-    "B3": (520, 620, 272, 290, RIB_X["R1"] - 9, RIB_X["R6"] + 9, "คานรับสายยางหน้า"),
-    "B4": (130, 230, 272, 290, RIB_X["R1"] - 9, RIB_X["R6"] + 9, "คานรับสายยางหลัง"),
-    "B5": (20, 70, 702, 720, RIB_X["R2"] - 9, RIB_X["R6"] + 9, "คานบนพนักพิง"),
-    "B6": (15, 55, 490, 508, RIB_X["R1"] - 9, RIB_X["R6"] + 9, "คานกลางพนักพิงหลัง"),
+    "B1": (480, 580, 80, 98, RIB_X["R1"] - HALF["R1"], RIB_X["R6"] + 9, "คานล่างหน้า"),
+    "B2": (45, 145, 80, 98, RIB_X["R1"] - HALF["R1"], RIB_X["R6"] + 9, "คานล่างหลัง"),
+    "B3": (540, 620, 272, 290, RIB_X["R1"] - HALF["R1"], RIB_X["R6"] + 9, "คานรับสายยางหน้า"),
+    "B4": (140, 220, 272, 290, RIB_X["R1"] - HALF["R1"], RIB_X["R6"] + 9, "คานรับสายยางหลัง"),
+    "B5": (15, 65, 702, 720, RIB_X["R2"] - HALF["R2"], RIB_X["R6"] + 9, "คานบนพนักพิง"),
 }
 
 
@@ -102,6 +109,11 @@ def rib_profile(kind):
     base = box(RY0, 80, RYF, 290)
     post = Polygon([(RY0, 280), (POST_B, 280), (POST_T, top), (RY0, top)])
     p = base.union(post)
+    # REV B: 12 mm bridge over the seat rails -> B3/B4 run in closed slots, not open notches
+    for k in ("B3", "B4"):
+        y0, y1 = BANDS[k][0], BANDS[k][1]
+        p = p.union(box(y0 - 20, 280, min(y1 + 20, RYF), 290 + BRIDGE))
+    p = p.buffer(30, join_style=1, quad_segs=32).buffer(-30, join_style=1, quad_segs=32)   # R30 inside corners
     if kind == "R6":
         arm = box(RY0, 80, 490, 480)
         arm = round_corner(arm, 490, 480, 80, -1, -1)
@@ -109,7 +121,6 @@ def rib_profile(kind):
     p = round_corner(p, RYF, 80, 60, -1, 1)      # front-bottom
     p = round_corner(p, RY0, 80, 40, 1, 1)       # rear-bottom
     if kind != "R6":
-        p = fillet_in(p, POST_B, 290, 30, 1, 1)
         p = p.difference(box(DIP[0], DIP_Z, DIP[1], 300))          # webbing clearance dip
         p = p.difference(rrect(*HOLE, 25))                         # lightening hole
     else:
@@ -122,6 +133,7 @@ def rib_profile(kind):
         p = p.difference(notch(y0, z0, y1, z1))
     if kind == "R6":
         p = p.difference(arm_slots())
+    p = p.buffer(NOTCH_R, join_style=1, quad_segs=32).buffer(-NOTCH_R, join_style=1, quad_segs=32)   # REV B: R6 inside corners
     return clean(p)
 
 
@@ -193,6 +205,7 @@ def ap3():
 PILL_C = (1500, 625)
 PILL_R = (70, 100)        # core ellipse semi-axes (x, y)
 PILL_SPINE_Y = (545, 563)
+PILL_SPINE2_Y = (687, 705)   # REV B: front spine -> core is a closed box
 PILL_TAB_X = (1480, 1520)
 
 
@@ -203,6 +216,7 @@ def ellipse(cx, cy, rx, ry):
 def pl_disc():
     p = ellipse(*PILL_C, *PILL_R)
     p = p.difference(box(PILL_TAB_X[0] - 1, PILL_SPINE_Y[0] - 1, PILL_TAB_X[1] + 1, PILL_SPINE_Y[1] + 1))
+    p = p.difference(box(PILL_TAB_X[0] - 1, PILL_SPINE2_Y[0] - 1, PILL_TAB_X[1] + 1, PILL_SPINE2_Y[1] + 1))
     return clean(p)
 
 
@@ -214,6 +228,11 @@ def pl_spine():  # (x, z) plane
 
 def leg_pad():
     return clean(box(0, 0, 90, 90))
+
+
+def leg_doubler():
+    """REV B: pad spans the full bay between two ribs -> band + pad = 36 mm."""
+    return clean(box(0, 0, BAY, 90))
 
 
 def spacer_disc():
@@ -228,8 +247,8 @@ def add(code, name, qty, poly, holes=(), note=""):
     PARTS.append(dict(code=code, name=name, qty=qty, poly=poly, holes=list(holes), note=note))
 
 
-add("R1", "ซี่โครงปลายซ้าย (พนักต่ำ)", 1, rib_profile("R1"), note="พนักสูงถึง Z600 · ปลายมนด้วยฟองน้ำ")
-add("R2-R5", "ซี่โครงมาตรฐาน", 4, rib_profile("R2"), note="ตำแหน่ง X310 / 580 / 850 / 1120")
+add("R1", "ซี่โครงปลายซ้าย (พนักต่ำ) · 2 ชั้นกาวประกบ", 2, rib_profile("R1"), note="พนักสูงถึง Z600 · ปลายมนด้วยฟองน้ำ")
+add("R2-R5", "ซี่โครงมาตรฐาน · 2 ชั้นกาวประกบ", 8, rib_profile("R2"), note="ตำแหน่ง X310 / 580 / 850 / 1120 · ไม่มีร่อง B6 (REV B)")
 add("R6", "แผงข้างใน-ที่เท้าแขน", 1, rib_profile("R6"), note="ตัน · ร่องรับแผ่น AP1-3")
 add("A1", "แผงข้างนอก-ที่เท้าแขน", 1, a1_profile(), note="X1560")
 for k in BANDS:
@@ -239,7 +258,10 @@ add("AP2", "แผ่นล่างกล่องแขน", 1, ap2(), holes=[
 add("AP3", "แผ่นหน้ากล่องแขน (ยึดหมอนข้าง)", 1, ap3(), holes=[(1500, z, 9) for z in AP3_BOLTS_Z], note="รูน็อต M8")
 add("PL1-2", "แผ่นบน/ล่าง แกนหมอนข้าง", 2, pl_disc())
 add("PL3", "แกนตั้ง หมอนข้าง", 1, pl_spine(), holes=[(1500, z, 9) for z in AP3_BOLTS_Z], note="ตอกตะปูเกลียว T-nut M8 ด้านหน้า")
-add("LP", "แผ่นรองขา", 6, leg_pad(), holes=[(45, 45, 10)], note="ฝัง T-nut M8 จากด้านบน")
+add("LPL", "แผ่นเสริมคานใต้ขา (เต็มช่องซี่โครง)", 4, leg_doubler(), holes=[(BAY / 2, 45, 10)],
+    note="ขา L1-L4 · กาว+สกรู 8 ตัวทับคาน B1/B2 · T-nut M8 + แหวน Ø40")
+add("LP", "แผ่นรองขา (กล่องแขน)", 2, leg_pad(), holes=[(45, 45, 10)], note="ขา L5-L6 บน AP2 · T-nut M8 + แหวน Ø40")
+add("PL4", "แกนตั้งหน้า หมอนข้าง", 1, pl_spine(), note="ปิดเป็นกล่องกับ PL1-PL3 (REV B)")
 add("SP", "แผ่นรองระยะ หมอนข้าง", 4, spacer_disc(), holes=[(0, 0, 9)], note="กาวติดหลัง PL3 ซ้อน 2 ชั้น/จุด")
 
 
@@ -387,7 +409,7 @@ def hatch_defs():
 LOGO = open(os.path.join(ROOT, "docs/brand/logo.svg")).read().replace("currentColor", NAVY)
 LOGO_URI = "data:image/svg+xml;base64," + base64.b64encode(LOGO.encode()).decode()
 N_SHEETS = 7
-REV = "A · ร่างเพื่อตรวจ"
+REV = "B · แก้ตามผลทดสอบโครงสร้าง"
 DATE = "2026-11-11"
 
 
@@ -474,7 +496,7 @@ def sheet_ga():
     armf = round_corner(armf, 1600, 80, 60, -1, 1)
     v.poly(armf, fill=OFF, sw=0.45)
     v.poly(rrect(1400, 60, 1600, 520, 99), fill="#fff", sw=0.5)
-    for lx in (150, 850):
+    for lx in LEG_X:
         v.poly(box(lx - 25, 0, lx + 25, 80), fill="#E9DFCF", sw=0.35)
     v.poly(box(1450, 0, 1500, 60), fill="#E9DFCF", sw=0.3, dash="1.2,0.8")
     v.line([(-60, 0), (1660, 0)], sw=0.25)
@@ -562,8 +584,8 @@ def obl(x, y, z):
     return (x + d * math.cos(math.radians(35)), -z - d * math.sin(math.radians(35)))
 
 
-LEGS = [(150, LEG_Y[1] + delta(150)), (150, LEG_Y[0] + delta(150)), (850, LEG_Y[1] + delta(850)),
-        (850, LEG_Y[0] + delta(850)), (1475, LEG_Y[0] + DA), (1475, 420 + DA)]
+LEGS = [(LEG_X[0], LEG_Y[1] + delta(LEG_X[0])), (LEG_X[0], LEG_Y[0] + delta(LEG_X[0])), (LEG_X[1], LEG_Y[1] + delta(LEG_X[1])),
+        (LEG_X[1], LEG_Y[0] + delta(LEG_X[1])), (1475, LEG_Y[0] + DA), (1475, 420 + DA)]
 
 
 def sheet_frame():
@@ -575,7 +597,7 @@ def sheet_frame():
         p.poly(part(k)["poly"], fill=AQUA if k in ("B3", "B4") else OFF, sw=0.3, op=0.45)
     for k, x in RIB_X.items():
         y0, y1 = RY0 + delta(x), RYF + delta(x)
-        p.poly(box(x - 9, y0, x + 9, y1), fill=NAVY, sw=0.2)
+        p.poly(box(x - HALF[k], y0, x + HALF[k], y1), fill=NAVY, sw=0.2)
         p.text(x, y0 - 14, k, 2.3, NAVY, weight=600)
     p.poly(box(A1_X - 9, RY0 + DA, A1_X + 9, 490 + DA), fill=NAVY, sw=0.2)
     p.text(A1_X, RY0 + DA - 14, "A1", 2.3, NAVY, weight=600)
@@ -585,24 +607,25 @@ def sheet_frame():
     p.text(1475, 505 + DA, "AP3", 1.9, TAUPE, weight=600)
     p.poly(pl_disc(), stroke=NAVY, sw=0.3)
     p.poly(box(1460, PILL_SPINE_Y[0], 1540, PILL_SPINE_Y[1]), fill=NAVY, sw=0.2)
+    p.poly(box(1460, PILL_SPINE2_Y[0], 1540, PILL_SPINE2_Y[1]), fill=NAVY, sw=0.2)
     p.text(1500, 690, "PL", 1.9, NAVY, weight=600)
     for i, (x, y) in enumerate(LEGS):
         p.circle(x, y, 25, stroke="#9A3B2E", sw=0.35)
         p.text(x, y + 9, f"L{i + 1}", 1.6, "#9A3B2E", weight=600)
     xs = list(RIB_X.values())
     for b in range(5):
-        xa, xb = xs[b] + 9, xs[b + 1] - 9
-        for j in range(3):
-            xc = xa + (xb - xa) * (j + 0.5) / 3
+        xa, xb = xs[b] + list(HALF.values())[b], xs[b + 1] - list(HALF.values())[b + 1]
+        for j in range(STRIPS):
+            xc = xa + (xb - xa) * (j + 0.5) / STRIPS
             for dx in (-25, 25):
                 p.line([(xc + dx, 180 + delta(xc)), (xc + dx, 570 + delta(xc))], stroke=AQUA, sw=0.25)
-    for t, yy in (("B2 B5 B6", 70), ("B4", 180), ("B1 B3", 560)):
+    for t, yy in (("B2 B5", 70), ("B4", 180), ("B1 B3", 540)):
         p.text(-25, yy + delta(31) + 7, t, 1.9, TAUPE, "end", 600)
     allx = [0] + xs + [A1_X, 1600]
     for a, b in zip(allx[:-1], allx[1:]):
         p.dim((a, -10), (b, -10), -11, "h")
     p.text(0, 800, "ระยะ = กึ่งกลางความหนาไม้ · ซี่โครงทุกแผ่นตั้งฉากแกน X และเลื่อนไปหน้าตามแนวโค้ง delta(x) (ตารางแผ่นที่ 4)", 2.0, TAUPE, "start")
-    p.text(0, 835, "เส้นฟ้า = สายยางยืด 50 มม. แนวหน้า-หลัง 3 เส้น/ช่อง รวม 15 เส้น · วงแดง = ขา L1-L6 · แถบฟ้า = คานรับสายยาง B3 B4", 2.0, TAUPE, "start")
+    p.text(0, 835, f"เส้นฟ้า = สายยางยืด 50 มม. แนวหน้า-หลัง {STRIPS} เส้น/ช่อง รวม {STRIPS * 5} เส้น · วงแดง = ขา L1-L6 (กลางช่องซี่โครง มีแผ่นเสริม LPL) · แถบฟ้า = คานรับสายยาง B3 B4", 2.0, TAUPE, "start")
 
     # ---- 3D (oblique)
     view_title(sh, 215, 20, "ภาพ 3 มิติโครง · FRAME 3D", "ไม่ตามมาตราส่วน · มองจากด้านหน้า-ขวา-บน")
@@ -616,7 +639,7 @@ def sheet_frame():
     profs = {k: (part("R2-R5")["poly"] if k in ("R2", "R3", "R4", "R5") else part(k)["poly"]) for k in RIB_X}
     for k, x in RIB_X.items():
         prof, dy = profs[k], delta(x)
-        for xx, shade in ((x - 9, "#CFE2E5"), (x + 9, "#EEF5F6")):
+        for xx, shade in ((x - HALF[k], "#CFE2E5"), (x + HALF[k], "#EEF5F6")):
             rings = [[(xx, yy + dy, zz) for yy, zz in prof.exterior.coords]] + \
                     [[(xx, yy + dy, zz) for yy, zz in r.coords] for r in prof.interiors]
             layers.append((xx, f'<path d="{"".join(path3(r) for r in rings)}" fill="{shade}" fill-rule="evenodd" stroke="{NAVY}" stroke-width="0.2" fill-opacity="0.9"/>'))
@@ -662,7 +685,6 @@ def sheet_frame():
     tag(310, 40, 680, "R2", -4, -10)
     tag(1120, 40, 690, "R5", 0, -10)
     tag(800, 45, 720, "B5", 4, -16)
-    tag(1000, 35, 508, "B6", 8, -24)
     tag(250, 570 + delta(250), 290, "B3", -12, 10)
     tag(450, 180 + delta(450), 290, "B4", -10, -16)
     tag(450, 550 + delta(450), 80, "B1", 2, 14)
@@ -679,27 +701,30 @@ def sheet_frame():
     s.poly(part("R2-R5")["poly"], fill="#EEF5F6", stroke=NAVY, sw=0.35)
     for k, (y0, y1, z0, z1, *_r) in BANDS.items():
         s.poly(box(y0, z0, y1, z1), fill=TAUPE, stroke=TAUPE, sw=0.1)
-    for k, dx, dy in (("B1", 0, 4), ("B2", 0, 4), ("B3", 0, -3), ("B4", 0, -3), ("B5", 6, -2), ("B6", -6, 1)):
+    for k, dx, dy in (("B1", 0, 4), ("B2", 0, 4), ("B3", 0, -3), ("B4", 0, -3), ("B5", 6, -2)):
         y0, y1, z0, z1 = BANDS[k][:4]
         s.text((y0 + y1) / 2, (z0 + z1) / 2, k, 1.9, TAUPE, weight=600, dx=dx, dy=dy)
     s.line([(BANDS["B4"][0], 293), (BANDS["B3"][1], 293)], stroke=AQUA, sw=0.8)
-    s.line([(RYF + 4, 98), (RYF + 4, 290)], stroke="#9A3B2E", sw=0.5)
-    s.line([(RY0 - 4, 98), (RY0 - 4, 720)], stroke="#9A3B2E", sw=0.5)
+    arc_f = [(560 + 64 * math.cos(t), 140 - 64 * math.sin(t)) for t in [i * math.pi / 2 / 12 for i in range(13)]]
+    s.line([(RYF + 4, 290), (RYF + 4, 140)] + arc_f[::-1][::-1][:0] + [(560 + 64 * math.cos(t), 140 - 64 * math.sin(t)) for t in [i * math.pi / 24 for i in range(13)]] + [(BANDS["B1"][0], 76)], stroke="#9A3B2E", sw=0.5)
+    s.line([(RY0 - 4, 720), (RY0 - 4, 120)] + [(55 - 44 * math.cos(t), 120 - 44 * math.sin(t)) for t in [i * math.pi / 24 for i in range(13)]] + [(BANDS["B2"][1], 76)], stroke="#9A3B2E", sw=0.5)
     s.line([(POST_B + 4, 300), (POST_T + 4, 715)], stroke="#9A3B2E", sw=0.5)
     s.label(350, 293, "สายยางยืด 50 มม.", 6, -12, color="#2E7F8A")
-    s.label(RYF + 4, 200, "SK1 ไม้อัดดัด 4 มม.", 5, 0, color="#9A3B2E")
+    s.label(RYF + 4, 200, "SK1 ไม้อัดดัด 4 มม. ×2 อ้อมมุม ทับใต้ B1", 5, 0, color="#9A3B2E")
     s.label(RY0 - 4, 400, "SK2 ไม้อัดดัด 4 มม. ×2", -4, 0, color="#9A3B2E")
     s.label(POST_T + 18, 560, "SK3 ไม้อัดดัด 4 มม.", 12, -4, color="#9A3B2E")
     s.dim((RY0, 80), (RYF, 80), 6, "h")
     s.dim((RYF, 80), (RYF, 290), 5, "v")
     note_block(sh, 120, 196, "วิธีประกอบ (ย่อ)", [
+        "0. R1-R5 กาวประกบ 2 ชั้น (36 มม.) อัดแคลมป์ + สกรู 8 ตัว รอกาวแห้ง",
         "1. ตั้งซี่โครง R1-R6 บนจิ๊ก ตามระยะ X และเลื่อนหน้าตาม delta(x)",
-        "2. สอดคาน B1 B2 (ล่าง) → B3 B4 (รับสายยาง) → B6 → B5 ลงร่อง",
+        "2. สอดคาน B1 B2 (ล่าง) → B3 B4 (รับสายยาง) → B5 ลงร่อง",
         "   ทากาว PVA D3 + ยิงตะปูลม/สกรู 1¼\" ทุกจุดตัด",
         "3. ประกอบกล่องแขน AP1 AP2 AP3 เสียบเดือยระหว่าง R6 ↔ A1",
         "4. ตอก T-nut M8 ที่ LP แล้วกาว+สกรูทับคาน ณ ตำแหน่งขา",
-        "5. ดัดไม้อัด SK1 SK2 SK3 ทาบ ยิงแม็กทุก 50 มม.",
-        "6. ขึงสายยางยืด 15 เส้น ยืด 8-10% ยิงแม็ก 4 นัด/ปลาย",
+        "5. ไม้อัดดัด SK1/SK2 อ้อมมุมล่าง ทาบใต้คาน B1/B2 80 มม.",
+        "   ทากาวเต็มหน้า + ยิงแม็กทุก 40 มม. (เป็นคานกล่อง ห้ามข้าม)",
+        f"6. ขึงสายยางยืด {STRIPS * 5} เส้น ยืด 8-10% พับทบปลาย ยิงแม็ก 6 นัด",
         "7. วัดเช็กแนวทแยง + ระดับ + ไม่โยก ก่อนส่งบุฟองน้ำ",
     ], size=2.1, lh=3.4)
     return sh
@@ -710,7 +735,7 @@ def sheet_parts_a():
     sh = Sheet(3, "แบบชิ้นส่วน CNC ① ซี่โครง / แผงแขน", "1:5 และ 1:10")
     rib = part("R2-R5")["poly"]
     v = View(sh, 34, 190, 0.2)
-    view_title(sh, 20, 20, "R2-R5 · ซี่โครงมาตรฐาน (4 แผ่น)", "มาตราส่วน 1:5 · ไม้อัด 18 มม. · หน้าโซฟาอยู่ทางขวา")
+    view_title(sh, 20, 20, "R2-R5 · ซี่โครงมาตรฐาน (4 ตำแหน่ง × 2 ชั้น = 8 แผ่น)", "มาตราส่วน 1:5 · ไม้อัด 18 มม. กาวประกบ 2 ชั้น = 36 มม. · หน้าโซฟาอยู่ทางขวา")
     v.poly(rib, fill="#EEF5F6", stroke=INK, sw=0.4)
     v.dim((RY0, 80), (RYF, 80), 14, "h")
     v.dim((RY0, 720), (POST_T, 720), -6, "h")
@@ -729,18 +754,17 @@ def sheet_parts_a():
     v.dim((DIP[1], DIP_Z), (DIP[1], 290), 3, "v", f"{290 - DIP_Z}")
     v.dim((HOLE[0], HOLE[1]), (HOLE[2], HOLE[1]), 4, "h")
     v.dim((HOLE[2], HOLE[1]), (HOLE[2], HOLE[3]), 3, "v")
-    v.dim((RY0, 490), (BANDS["B6"][1], 490), -5, "h", f"B6 {BANDS['B6'][1] - BANDS['B6'][0]}")
     v.label(45, 711, "B5 50×18", 18, -6)
     v.label(POST_B + 8, 298, "R30", 14, 4)
     v.label(RYF - 18, 98, "R60", 10, 6)
     v.label(RY0 + 12, 92, "R40", -8, 8)
     v.label(370, 150, "ช่องลดน้ำหนัก R25", 30, 6)
-    sh.add(f'<text x="22" y="234" font-size="2.15" fill="{INK}" font-family="{FONT}">ร่องคานทุกร่อง: ลึก 18 · กว้าง = กว้างคาน + 2 มม. (เผื่อมุมโค้งแปลน) · มุมในร่องทำ dog-bone Ø6</text>')
+    sh.add(f'<text x="22" y="234" font-size="2.15" fill="{INK}" font-family="{FONT}">ร่องคาน: ลึก 18 · กว้าง = กว้างคาน + 4 มม. (เผื่อมุมโค้งแปลนผ่านซี่โครงหนา 36) · มุมในทุกมุม R6 ตามไฟล์ · ลบมุมขอบคานที่เข้าร่อง 6 มม. · B3/B4 เป็นช่องปิด (มีเนื้อไม้คาด 12 มม. ด้านบน)</text>')
     zz = " · ".join(f"{k} Z{BANDS[k][2]}-{BANDS[k][3]}" for k in BANDS)
-    sh.add(f'<text x="22" y="238" font-size="2.15" fill="{INK}" font-family="{FONT}">ระดับคาน: {zz} (B6 บากจากด้านหลัง)</text>')
+    sh.add(f'<text x="22" y="238" font-size="2.15" fill="{INK}" font-family="{FONT}">ระดับคาน: {zz}</text>')
 
     v1 = View(sh, 200, 115, 0.1)
-    view_title(sh, 185, 20, "R1 · ซี่โครงปลายซ้าย (1)", "1:10 · เหมือน R2-R5 แต่พนักสูงถึง Z600 · ไม่มีร่อง B5")
+    view_title(sh, 185, 20, "R1 · ซี่โครงปลายซ้าย (2 ชั้น)", "1:10 · เหมือน R2-R5 แต่พนักสูงถึง Z600 · ไม่มีร่อง B5")
     v1.poly(part("R1")["poly"], fill="#EEF5F6", stroke=INK, sw=0.4)
     v1.dim((RY0, 80), (RY0, 600), -6, "v")
     v1.dim((RY0, 80), (RYF, 80), 6, "h")
@@ -769,7 +793,7 @@ def sheet_parts_a():
         "ไฟล์ตัด: sofa-1600-cnc-18mm.dxf (1:1 หน่วย มม.)",
         "เลเยอร์ CUT_OUT ตัดนอก · CUT_IN ตัดใน (ตัดก่อน)",
         "DRILL เจาะรู · LABEL ไม่ต้องตัด (เขียนรหัสบนชิ้น)",
-        "ดอก Ø6 · ร่องเผื่อ +1 มม./ข้าง แล้วในไฟล์",
+        "ดอก Ø6 · ร่องเผื่อ +2 มม./ข้าง แล้วในไฟล์",
         "ความคลาดเคลื่อน ±0.5 มม. · ขัดลบคมทุกขอบ",
         "เขียนรหัสชิ้น + ลูกศรด้านหน้า (FRONT) ทุกชิ้น",
     ], size=2.05, lh=3.4)
@@ -779,7 +803,7 @@ def sheet_parts_a():
 # ---------------------------------------------------------------- SHEET 4 · parts (bands, plates, pill)
 def sheet_parts_b():
     sh = Sheet(4, "แบบชิ้นส่วน CNC ② คาน / แผ่นแขน / แกนหมอนข้าง", "1:10 และ 1:5")
-    view_title(sh, 20, 20, "คาน B1-B6 · มองจากด้านบน (โค้งตามแปลน)", "1:10 · เส้นประ = กึ่งกลางซี่โครงที่คานพาดผ่าน · ด้านล่างของภาพ = หน้าโซฟา")
+    view_title(sh, 20, 20, "คาน B1-B5 · มองจากด้านบน (โค้งตามแปลน)", "1:10 · เส้นประ = กึ่งกลางซี่โครงที่คานพาดผ่าน · ด้านล่างของภาพ = หน้าโซฟา")
     for i, k in enumerate(BANDS):
         y0, y1, z0, z1, x0, x1, name = BANDS[k]
         poly = part(k)["poly"]
@@ -789,13 +813,13 @@ def sheet_parts_b():
         v = View(sh, bx - x0 * 0.1, by - bb[1] * 0.1, 0.1, flip=False)
         v.poly(poly, fill="#EEF5F6", stroke=INK, sw=0.35)
         for x in RIB_X.values():
-            if x0 + 1 < x < x1 - 1 or abs(x - 9 - x0) < 2 or abs(x + 9 - x1) < 2:
+            if x0 - 20 < x < x1 + 20:
                 v.line([(x, y0 + delta(x) - 8), (x, y1 + delta(x) + 8)], stroke=TAUPE, sw=0.2, dash="1,0.6")
         sh.add(f'<text x="{bx}" y="{by - 2}" font-size="2.3" font-weight="600" fill="{NAVY}" font-family="{FONT}">{k} · {name}</text>')
         sh.add(f'<text x="{bx + 52}" y="{by - 2}" font-size="1.95" fill="{INK}" font-family="{FONT}">ยาว {x1 - x0:.0f} · กว้าง {y1 - y0:.0f} · ระยะโค้ง {bb[3] - bb[1] - (y1 - y0):.1f} · ระดับ Z{z0}-{z1}</text>')
     table(sh, 20, 110, [("รหัส", 14), ("ปลายซ้าย X", 22), ("ปลายขวา X", 22), ("ระยะกึ่งกลางซี่โครง วัดจากปลายซ้ายคาน (ตามแนว X)", 82)], [
         (k, f"{BANDS[k][4]:.0f}", f"{BANDS[k][5]:.0f}",
-         " / ".join(f"{x - BANDS[k][4]:.0f}" for x in RIB_X.values() if x - 9 >= BANDS[k][4] - 1))
+         " / ".join(f"{x - BANDS[k][4]:.0f}" for kk, x in RIB_X.items() if x - HALF[kk] >= BANDS[k][4] - 1))
         for k in BANDS], size=1.95, rh=3.7)
     sh.add(f'<text x="20" y="139" font-size="2.0" fill="{TAUPE}" font-family="{FONT}">แนวโค้ง delta(x) = {SAG} × ((x − 700) / 700)²  · x40 = {delta(40):.1f} · x310 = {delta(310):.1f} · x700 = 0 · x1120 = {delta(1120):.1f} · x1390 = {delta(1390):.1f} มม. (ไฟล์ DXF ใช้สูตรนี้แล้ว)</text>')
 
@@ -869,8 +893,8 @@ def sheet_bom(nest_info):
     view_title(sh, 20, y + 12, "2. ไม้อัดดัด / ไม้จริง (ตัดเลื่อย ไม่ใช้ CNC)")
     arc = sum(math.hypot(1, 2 * SAG * (x - 700) / 700 ** 2) for x in range(31, 1399)) + 60
     y2 = table(sh, 20, y + 18, [("รหัส", 14), ("รายการ", 70), ("จำนวน", 12), ("ขนาดตัด (มม.)", 34), ("หมายเหตุ", 50)], [
-        ("SK1", "ไม้อัดดัด 4 มม. หุ้มหน้าฐาน", 1, f"{arc:.0f} × 200", "ลายเสี้ยนขวางแนวโค้ง"),
-        ("SK2", "ไม้อัดดัด 4 มม. หุ้มหลัง (ฐาน+พนัก)", 2, f"{arc:.0f} × 640", "2 ชั้น สลับรอยต่อ · ตัดแต่งตาม R1"),
+        ("SK1", "ไม้อัดดัด 4 มม. หุ้มหน้าฐาน อ้อมมุม ทับใต้ B1", 2, f"{arc:.0f} × 330", "2 ชั้น กาวเต็มหน้า+แม็ก @40 · โครงสร้าง"),
+        ("SK2", "ไม้อัดดัด 4 มม. หุ้มหลัง อ้อมมุม ทับใต้ B2", 2, f"{arc:.0f} × 760", "2 ชั้น สลับรอยต่อ · โครงสร้าง"),
         ("SK3", "ไม้อัดดัด 4 มม. หน้าพนักพิง", 1, f"{arc - 270:.0f} × 440", "R2→R6 · เจาะรูระบายอากาศ Ø30 @150"),
         ("LEG", "ขาไม้ยาง/บีชกลึง Ø50 × 80 + สกรูสองหัว M8", 6, "Ø50 × 80", "สีเนเชอรัล ด้าน · ปุ่มสักหลาดรองใต้ขา"),
     ], size=1.95, rh=3.65)
@@ -892,8 +916,8 @@ def sheet_bom(nest_info):
 
     view_title(sh, 215, y3 + 8, "4. อุปกรณ์ / ฮาร์ดแวร์")
     y4 = table(sh, 215, y3 + 14, [("รายการ", 90), ("จำนวน", 20), ("ใช้ที่", 65)], [
-        ("สายยางยืด 50 มม. (Pirelli)", "~8 ม.", "15 เส้น × ตัด 480 (ยืด 8-10%)"),
-        ("T-nut M8", 8, "LP ×6 · PL3 ×2"),
+        ("สายยางยืด 50 มม. (Pirelli)", f"~{STRIPS * 5 * 0.52:.0f} ม.", f"{STRIPS * 5} เส้น × ตัด 520 (พับทบ 2 ปลาย)"),
+        ("T-nut M8 + แหวนอีแปะ Ø40", 8, "LPL ×4 · LP ×2 · PL3 ×2"),
         ("สกรูสองหัว M8 (hanger bolt)", 6, "ขา"),
         ("น็อตหัวจม M8×100 + แหวน", 2, "หมอนข้าง → AP3"),
         ("ตาไก่ทองเหลือง Ø10", 4, "ผ้าแขน + ผ้าหมอนข้าง"),
@@ -1032,11 +1056,14 @@ def write_dxf(placed, nsheets):
 
 
 def sheet_nest(placed, nsheets):
-    sh = Sheet(6, "ผังวางชิ้นบนแผ่นไม้อัด (NESTING)", "1:12.5")
+    sh = Sheet(6, "ผังวางชิ้นบนแผ่นไม้อัด (NESTING)", "1:12.5" if nsheets <= 2 else "1:17")
     view_title(sh, 20, 20, f"ไม้อัด 18 มม. 1220 × 2440 · {nsheets} แผ่น", "ตรงกับไฟล์ sofa-1600-cnc-18mm.dxf · ระยะห่างชิ้น 14 มม. · ขอบ 15 มม.")
-    s = 0.08
+    s = 0.08 if nsheets <= 2 else 0.06
     for si in range(nsheets):
-        ox, oy = 22, 40 + si * 108
+        if nsheets <= 2:
+            ox, oy = 22, 40 + si * 108
+        else:
+            ox, oy = 22 + (si % 2) * 160, 40 + (si // 2) * 92
         sh.add(f'<text x="{ox}" y="{oy - 2}" font-size="2.4" font-weight="600" fill="{NAVY}" font-family="{FONT}">แผ่นที่ {si + 1}</text>')
         v = View(sh, ox, oy, s, flip=False)
         v.poly(box(0, 0, SHEET_W, SHEET_H), fill=OFF, stroke=INK, sw=0.3)
@@ -1046,7 +1073,7 @@ def sheet_nest(placed, nsheets):
             v.poly(it["final"], fill="#EEF5F6", stroke=NAVY, sw=0.2)
             c = it["final"].representative_point()
             v.text(c.x, c.y, it["code"], 2.0, NAVY, weight=600, dy=0.7)
-    note_block(sh, 235, 44, "หมายเหตุ", [
+    note_block(sh, 235 if nsheets <= 2 else 182, 44 if nsheets <= 2 else 140, "หมายเหตุ", [
         "ผังนี้วางตามกรอบสี่เหลี่ยมของชิ้น (เผื่อเหลือ)",
         "โรงงานจัดผังใหม่ในโปรแกรม CAM ได้ ใช้ไฟล์ sofa-1600-parts-1to1.dxf",
         "ชิ้นเล็ก (LP SP PL) วางในช่องว่างของซี่โครงได้ เพื่อลดเศษ",
