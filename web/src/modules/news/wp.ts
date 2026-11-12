@@ -2,7 +2,8 @@
  * คุยกับ chawcher.com (WordPress REST API) · ฝั่งเซิร์ฟเวอร์เท่านั้น
  *
  * ใช้ Application Password ของผู้ใช้ WordPress 1 คน (Bay สร้างที่หน้าโปรไฟล์ WordPress)
- * env: WP_USER · WP_APP_PASSWORD · WP_SITE_URL (ไม่ใส่ = https://chawcher.com)
+ * env: WP_USER · WP_APP_PASSWORD · WP_URL (ไม่ใส่ = https://chawcher.com)
+ * ชุดเดียวกับโมดูลคอนเทนต์ R7 (branch wizardly-clarke-fiby92 · ใส่ใน Vercel แล้ว 2026-10-06 · ผู้ใช้ content-agent)
  *
  * ทำได้แค่ 3 อย่าง: อัปโหลดรูป · สร้าง/แก้โพสต์ "ร่าง" · เปลี่ยนเป็น publish (เรียกจากปุ่มที่ Bay กดเท่านั้น)
  * ไม่แตะสินค้า ราคา สต็อก (B2.5 · ระบบเราเป็นเจ้าของความจริง)
@@ -15,7 +16,7 @@ const CATEGORY_ID = Number(process.env.WP_NEWS_CATEGORY_ID ?? 150);
 export function wpConfig() {
   const user = process.env.WP_USER?.trim();
   const pass = process.env.WP_APP_PASSWORD?.trim().replace(/^["']|["']$/g, '');
-  const site = (process.env.WP_SITE_URL?.trim() || 'https://chawcher.com').replace(/\/+$/, '');
+  const site = (process.env.WP_URL?.trim() || process.env.WP_SITE_URL?.trim() || 'https://chawcher.com').replace(/\/+$/, '');
   return user && pass ? { site, auth: 'Basic ' + Buffer.from(`${user}:${pass}`).toString('base64') } : null;
 }
 
@@ -31,7 +32,9 @@ async function wp<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
   if (!res.ok) {
     const body = (await res.text()).slice(0, 300);
-    if (res.status === 401 || res.status === 403) throw new Error(`WordPress ไม่ยอมรับรหัส (${res.status}) · ตรวจ WP_USER / WP_APP_PASSWORD`);
+    if (res.status === 401 || res.status === 403) throw new Error(res.status === 403
+      ? `WordPress ไม่ให้สิทธิ์ (403) · ผู้ใช้ใน WP_USER ต้องเป็น Author ขึ้นไป (อัปโหลดรูป + publish ได้) · ${body.slice(0, 120)}`
+      : `WordPress ไม่ยอมรับรหัส (401) · ตรวจ WP_USER / WP_APP_PASSWORD · ${body.slice(0, 120)}`);
     throw new Error(`WordPress ตอบ ${res.status}: ${body}`);
   }
   return (await res.json()) as T;
@@ -113,6 +116,6 @@ export async function publishPost(wpId: number) {
   return post.link;
 }
 
-export const wpSite = () => (process.env.WP_SITE_URL?.trim() || 'https://chawcher.com').replace(/\/+$/, '');
+export const wpSite = () => (process.env.WP_URL?.trim() || process.env.WP_SITE_URL?.trim() || 'https://chawcher.com').replace(/\/+$/, '');
 export const previewUrl = (wpId: number) => `${wpSite()}/?p=${wpId}&preview=true`;
 export const editUrl = (wpId: number) => `${wpSite()}/wp-admin/post.php?post=${wpId}&action=edit`;

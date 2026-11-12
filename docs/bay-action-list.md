@@ -134,14 +134,10 @@
 4. เปิดหน้า Routines / งานตั้งเวลาของ Claude Code บนเว็บ https://claude.ai/code → หางานชื่อ **"Chaw Cher News · ร่างข่าวเช้า"** → แก้ไข → เพิ่มตัวเชื่อม **Google Sheets** → บันทึก
    - ⚠️ ผมสร้างงานนี้ให้แล้วแต่แนบตัวเชื่อมจากที่นี่ไม่ได้ · ถ้าไม่เจอปุ่มเพิ่มตัวเชื่อม บอก Claude (จะลบแล้วให้พี่สร้างใหม่จากหน้านั้น)
 
-**ขั้น 3 · สร้างรหัสให้ระบบโพสต์ chawcher.com ได้ (Application Password)**
-5. เปิด https://chawcher.com/wp-admin/profile.php → เลื่อนลงล่างสุด **Application Passwords** → ชื่อ `chawcher-os news` → **Add New Application Password**
-6. คัดลอกรหัส 24 ตัว (ปิดหน้าแล้วดูไม่ได้อีก) + จดชื่อผู้ใช้ (Username) ด้านบนสุดของหน้า
-
-**ขั้น 4 · ใส่รหัสใน Vercel**
-7. เปิด https://vercel.com/bay8/chawcher-os/settings/environment-variables → **Add Environment Variable** (ติ๊ก Production + Preview) → Save
-   - `WP_USER` = ชื่อผู้ใช้จากข้อ 6
-   - `WP_APP_PASSWORD` = รหัส 24 ตัวจากข้อ 6
+**ขั้น 3-4 · รหัส WordPress ใน Vercel · มีแล้ว ไม่ต้องทำ**
+- `WP_USER` (= `content-agent`) และ `WP_APP_PASSWORD` ใส่ไว้ตั้งแต่ 2026-10-06 ตอนทำโมดูลคอนเทนต์ · หน้า /news ใช้ชุดเดียวกัน
+- เช็กแค่ว่ามีครบ 2 ตัวที่ https://vercel.com/bay8/chawcher-os/settings/environment-variables
+- ผู้ใช้ content-agent ต้องเป็น **Author** ขึ้นไป (อัปโหลดรูป + publish ได้) · ดูได้ที่ https://chawcher.com/wp-admin/users.php
 
 **ขั้น 5 · ฐานข้อมูล**
 8. เปิด https://github.com/baysireekahnokrath/Chawcheros/blob/claude/sharp-pascal-6wg2mg/supabase/migrations/0049_news.sql → Copy raw file

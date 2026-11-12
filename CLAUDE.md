@@ -28,6 +28,7 @@
 - **ระบบ chawcher-os (production): `https://chawcher-os.vercel.app`** · โปรเจกต์ Vercel `chawcher-os` ทีม `bay8` · webhook LINE `https://chawcher-os.vercel.app/api/line/webhook` · หน้าสาธารณะ: `/pos` `/phoenix` `/faq` `/api/faq` · คู่มือกดทีละขั้น `docs/bay-action-list.md`
 - Vercel MCP ที่เชื่อมไว้เข้าถึงได้แค่โปรเจกต์อื่น (`bee-coder-islands`) และ `vercel.com` ถูกบล็อกจากเครื่องนี้ (`docs/deploy-vercel.md`) → **ดู/แก้ Vercel เองไม่ได้ · อย่าเสียเวลาลอง** · ใช้ `curl https://chawcher-os.vercel.app/...` เช็กว่าเว็บจริงขึ้นหรือยังได้
 - ฐานข้อมูล Supabase: Bay วาง migration ใน SQL Editor เอง (เราทดสอบในเครื่องด้วย `supabase/tests/README.md`) · โค้ดที่ Bay merge ขึ้น branch `claude/chaw-cher-os-setup-9k21w6` ถึงจะขึ้นเว็บจริง · แต่ละ session ทำงานบน branch ของตัวเองตามที่ระบบกำหนด
+- **WordPress REST จากระบบ:** Vercel มี `WP_USER`=`content-agent` + `WP_APP_PASSWORD` แล้ว (ใส่ 2026-10-06 สำหรับโมดูลคอนเทนต์ R7 · branch `claude/wizardly-clarke-fiby92` ยังไม่ merge) · หน้า /news ใช้ชุดเดียวกัน · ห้ามให้ Bay สร้างใหม่
 - บัญชีที่ระบบใช้อ่าน Google Sheet (แชร์ Viewer ให้ตัวนี้): `chawcher-sheets@chaw-cher-1563265514558.iam.gserviceaccount.com`
 - เว็บแบรนด์ chawcher.com: หน้า FAQ draft อยู่ที่ WordPress page id 18148 (`docs/modules/line-agent/8-knowledge.md`)
 
