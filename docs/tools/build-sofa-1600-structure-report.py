@@ -18,7 +18,7 @@ logo = open(os.path.join(ROOT, "docs/brand/logo.svg")).read().replace("currentCo
 logo_uri = "data:image/svg+xml;base64," + base64.b64encode(logo.encode()).decode()
 
 VERS = "Python 3.13 · NumPy 2.5 · SciPy 1.18 · scikit-fem 12.0.2 · triangle 20250106 · Shapely 2.2 · Matplotlib 3.11"
-AI = "Claude Opus 5.5 (claude-opus-5-5) — เขียนโค้ดคำนวณและรันใน session นี้"
+AI = "Claude (Anthropic) ผ่าน Claude Code — เขียนโค้ดคำนวณและรันใน session นี้"
 
 
 def header(t):

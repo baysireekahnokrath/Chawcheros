@@ -422,6 +422,7 @@ def hatch_defs():
 LOGO = open(os.path.join(ROOT, "docs/brand/logo.svg")).read().replace("currentColor", NAVY)
 LOGO_URI = "data:image/svg+xml;base64," + base64.b64encode(LOGO.encode()).decode()
 N_SHEETS = 7
+PRODUCT_LINE = "SOFA 1600 — โซฟาโค้ง 1600 × 750"
 REV = "B · แก้ตามผลทดสอบโครงสร้าง"
 DATE = "2026-11-11"
 
@@ -436,7 +437,7 @@ def frame_svg(sheet):
     s.append(f'<line x1="{x0 + 20}" y1="{y0}" x2="{x0 + 20}" y2="{y0 + 35}" stroke="{INK}" stroke-width="0.2"/>')
     t = lambda x, y, txt, sz=2.2, w=400, c=INK: s.append(
         f'<text x="{x}" y="{y}" font-size="{sz}" font-weight="{w}" fill="{c}" font-family="{FONT}">{html.escape(txt)}</text>')
-    t(x0 + 23, y0 + 5, "CHAW CHER · SOFA 1600 — โซฟาโค้ง 1600 × 750", 2.8, 600, NAVY)
+    t(x0 + 23, y0 + 5, "CHAW CHER · " + PRODUCT_LINE, 2.8, 600, NAVY)
     t(x0 + 23, y0 + 10.5, sheet.title, 3.2, 600, INK)
     s.append(f'<line x1="{x0 + 20}" y1="{y0 + 13.5}" x2="{x0 + 148}" y2="{y0 + 13.5}" stroke="{INK}" stroke-width="0.2"/>')
     cells = [("แผ่นที่ / SHEET", f"{sheet.no} / {N_SHEETS}"), ("มาตราส่วน / SCALE", sheet.scale_note),
