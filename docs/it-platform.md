@@ -69,7 +69,7 @@
 
 **ไม่สร้างโมดูลใหม่** · ใช้จริงทุกวันแล้วจดว่าอะไรติด · 13 พ.ย. – 10 ธ.ค. 2569
 
-เครื่องมือ: **สมุดใช้งานจริง** (หน้าเดียว ติ๊กสิ่งที่ใช้วันนี้ + จดเรื่องติด) · mockup `docs/phase-1/mockup.html` · รอ Bay ดูก่อนทำของจริง
+เครื่องมือ: **สมุดใช้งานจริง** (หน้าเดียว ติ๊กสิ่งที่ใช้วันนี้ + จดเรื่องติด) · https://claude.ai/artifact/8XXaKVtYznskqDXMM6eY4f · ไฟล์ `docs/phase-1/notebook.html` (mockup `docs/phase-1/mockup.html`) · เก็บข้อมูลใน collection `issues` และ `days` · Bay พิมพ์ "อ่านสมุด Phase 1" → Claude อ่านด้วย ArtifactData
 
 - ขายหน้าบูธด้วย `/pos` ทุกบิล · ดู `/pos-report` ทุกเย็น
 - ส่งราคาลูกค้าด้วย `/price` · `/quotes` แทนไฟล์ PDF
