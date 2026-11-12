@@ -57,7 +57,22 @@ type DueRow = {
 };
 type StockRow = { kind: string; item: string; location: string | null; status: string | null; units: number | null; source: string; exact?: boolean };
 type PriceList = { hidden?: boolean; exact: boolean; total: number;
-  items: { name: string; list_price: number | null; disc_pct: number | null; price: number | null; approved: boolean }[] };
+  items: { name: string; list_price: number | null; disc_pct: number | null; ontop_pct: number | null;
+    price: number | null; final: number | null; approved: boolean }[] };
+
+const TH_FULL = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+/** ตัวเลขแบบในไฟล์ราคา: 48150 · 30334.5 (ไม่มีจุลภาค) */
+const plain = (n: number | null | undefined) => (n == null ? '—' : String(Math.round(Number(n) * 100) / 100));
+/**
+ * แบบตอบราคาลูกค้าของ Bay (D13 · คอลัมน์ "ราคา งานไม้ โซฟา - Answer Customer" ในไฟล์ Standard Price 2026)
+ * ห้ามเปลี่ยนถ้อยคำเอง · ถ้าจะเปลี่ยนต้องให้ Bay ตกลงก่อน
+ */
+function priceSentence(x: PriceList['items'][number]) {
+  const [y, m] = todayBkk().split('-').map(Number);
+  return `${x.name} ราคา ${plain(x.list_price)} ลด ${plain(x.disc_pct)}% เหลือ ${plain(x.price)} ชำระเป็นเงินสด `
+    + `ลด on top เพิ่ม ${plain(x.ontop_pct)}% เหลือ ${plain(x.final)} ภายใน เดือน${TH_FULL[m - 1]} ${y + 543} `
+    + `และส่วนลดเพิ่มเติมตามโปรฯ ได้ที่ https://chawcher.com/category/promotion/`;
+}
 type Clearance = {
   hidden?: boolean;
   exact?: boolean;
@@ -218,11 +233,8 @@ async function one(it: Intent, ctx: Ctx): Promise<Rendered> {
       if (p?.hidden) return { answer: 'กลุ่มนี้ไม่ได้เปิดให้ดูราคาครับ · ถามในกลุ่ม PO ได้ครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
       if (!p || p.items.length === 0) return { answer: `ไม่มีรุ่น "${q}" ในไฟล์ราคาครับ · ลองพิมพ์แค่ชื่อรุ่น เช่น "ราคา kiwi"`, dataUsed: 'room_price', status: 'ตอบไม่ได้' };
       const near = p.exact ? '' : `ไม่เจอ "${q}" ตรงทุกคำในไฟล์ราคา · ใกล้เคียงที่สุด:\n`;
-      const list = p.items.slice(0, 8).map((x) => {
-        const name = x.name.replace(/^ฌ\s*เฌอ\s*\|\s*/, '').replace(/\s+/g, ' ');
-        const sale = x.price != null && x.disc_pct ? ` · ลด ${Number(x.disc_pct)}% เหลือ ${baht(x.price)}` : '';
-        return `• ${name}\n   ราคาเต็ม ${baht(x.list_price) ?? '—'}${sale}${x.approved ? '' : ' (ไฟล์ราคา ยังไม่ผ่านการตรวจ)'}`;
-      }).join('\n');
+      // แต่ละบรรทัด = ข้อความตามแบบของ Bay ก๊อปส่งลูกค้าได้ทันที
+      const list = p.items.slice(0, 8).map((x) => priceSentence(x) + (x.approved ? '' : '\n(ไฟล์ราคา · ยังไม่ผ่านการตรวจในระบบ)')).join('\n\n');
       const more = p.total > 8 ? `\n…และอีก ${p.total - 8} แบบ (ระบุผ้า/ไม้/ขนาดให้แคบลงได้)` : '';
       const cl = await call<Clearance | null>('room_clearance', { p_query: q, p_group_id: ctx.groupId });
       const clear = cl && !cl.hidden && !cl.expired && cl.exact && cl.items.length

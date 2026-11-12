@@ -18,11 +18,11 @@ begin
   if n <> 3 then raise exception '6 พัง: kiwi ต้องได้ทั้ง 3 ตัว ได้ %', n; end if;
 
   insert into catalog.import_batches (source_file) values ('ทดสอบ') returning id into b;
-  insert into catalog.import_variants (batch_id, source_row_no, collection, legacy_fullname, list_price_incl_vat, discount_pct) values
-    (b, 1, 'กีวี่', 'ฌ เฌอ | อาร์มแชร์   กีวี่ (Kiwi Armchair) ไม้โอ๊ค   ผ้า A เลือกสีได้ | ขนาด W66 D82 H77 cm', 30000, 20),
-    (b, 2, 'กระสา', 'ฌ เฌอ | โซฟา 3 ที่นั่ง กระสา (Krasa Sofa)   ผ้า A เลือกสีได้ | ขนาด W151 D75 H76 cm', 60000, 20);
+  insert into catalog.import_variants (batch_id, source_row_no, collection, legacy_fullname, list_price_incl_vat, discount_pct, ontop_pct) values
+    (b, 1, 'กีวี่', 'ฌ เฌอ | อาร์มแชร์   กีวี่ (Kiwi Armchair) ไม้โอ๊ค   ผ้า A เลือกสีได้ | ขนาด W66 D82 H77 cm', 33600, 20, 10),
+    (b, 2, 'กระสา', 'ฌ เฌอ | โซฟา 3 ที่นั่ง กระสา (Krasa Sofa)   ผ้า A เลือกสีได้ | ขนาด W151 D75 H76 cm', 60000, 20, 10);
   j := line_agent._price_full('kiwi armchair');
-  if j->'items'->0->>'name' !~ 'Kiwi Armchair' or (j->'items'->0->>'price')::numeric <> 24000 or not (j->>'exact')::boolean then
+  if j->'items'->0->>'name' !~ 'Kiwi Armchair' or (j->'items'->0->>'price')::numeric <> 26880 or (j->'items'->0->>'final')::numeric <> 24192 or not (j->>'exact')::boolean then
     raise exception '7 พัง: ราคา Kiwi Armchair %', j;
   end if;
   j := line_agent._price_full('krasa armchair');
@@ -30,6 +30,6 @@ begin
     raise exception '8 พัง: krasa armchair ไม่มีในไฟล์ ต้องได้ "ใกล้เคียง" Krasa Sofa %', j;
   end if;
   if not (line_agent.room_price('kiwi', 'Gprog')->>'hidden')::boolean then raise exception '9 พัง: กลุ่มไม่เห็นราคา'; end if;
-  if (line_agent.room_price('kiwi', 'Gpo')->'items'->0->>'list_price')::numeric <> 30000 then raise exception '10 พัง: กลุ่ม PO ต้องเห็นราคา'; end if;
-  raise notice '19 ผ่านทั้ง 10 ข้อ · armchair=1p · Kang-Kaen=kangkaen · ราคามาตรฐาน · ใกล้เคียงเมื่อไม่ตรง · สิทธิ์ราคา';
+  if (line_agent.room_price('kiwi', 'Gpo')->'items'->0->>'list_price')::numeric <> 33600 then raise exception '10 พัง: กลุ่ม PO ต้องเห็นราคา'; end if;
+  raise notice '19 ผ่านทั้ง 10 ข้อ · ราคาตรงไฟล์ Kiwi Armchair โอ๊ค 33600→26880→24192 · armchair=1p · Kang-Kaen=kangkaen · ราคามาตรฐาน · ใกล้เคียงเมื่อไม่ตรง · สิทธิ์ราคา';
 end $$;
