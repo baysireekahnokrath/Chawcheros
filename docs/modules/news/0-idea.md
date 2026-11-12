@@ -27,6 +27,7 @@
 ```
 | ส่วน | อยู่ที่ |
 |---|---|
+| ที่เก็บใน Drive | Chaw Cher › `07 News` https://drive.google.com/drive/folders/1xSLD-fGg9TRtZtjOSE9H55Yi4DNzfRxl · รูปแยกโฟลเดอร์ละข่าวใน `07 News › รูปข่าว` (รูป Dior อยู่ใน `2026-11-11 Dior Gold House`) |
 | ชีต | https://docs.google.com/spreadsheets/d/19vtyQJyNimSkFeh3RYz7BoE34mlFVIcm4ubce1iGlQA/edit (เจ้าของ arthitbay · แชร์ Viewer ให้ `chawcher-sheets@chaw-cher-1563265514558.iam.gserviceaccount.com` แล้ว) · แท็บ วิธีใช้ / ข่าวเข้า / ร่าง / Google News |
 | คอลัมน์แท็บ "ร่าง" | A รหัส YYYY-MM-DD-NN · B วันที่ร่าง · C แบรนด์ · D ลิงก์ต้นทาง · E หัวข้อต้นทาง · F วันที่ต้นทาง · G หัวข่าว · H เนื้อข่าว · I ข้อความ LINE · J ลิงก์รูป · K มาจาก · L สรุปต้นทาง |
 | งานตั้งเวลา Claude | `trig_018WUZozaYetcPKLkCrRFDTi` "Chaw Cher News · ร่างข่าวเช้า" · ทุกวัน 07:43 เวลาไทย · session ใหม่ทุกครั้ง · ⚠️ สร้างจาก session นี้แนบตัวเชื่อม Google Sheets ไม่ได้ → Bay ต้องเพิ่มเองที่หน้า Routines |
