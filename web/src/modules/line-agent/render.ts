@@ -5,6 +5,7 @@
  */
 import { call } from './db';
 import type { Intent } from './intent';
+import { priceSentence, type PriceList } from './price-text';
 
 const TH = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 const MAX_ROWS = 10;
@@ -57,23 +58,6 @@ type DueRow = {
   first_item: string | null; item_count: number; source: string; customer_name?: string | null;
 };
 type StockRow = { kind: string; item: string; location: string | null; status: string | null; units: number | null; source: string; exact?: boolean };
-type PriceList = { hidden?: boolean; exact: boolean; total: number;
-  items: { name: string; list_price: number | null; disc_pct: number | null; ontop_pct: number | null;
-    price: number | null; final: number | null; approved: boolean }[] };
-
-const TH_FULL = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-/** ตัวเลขแบบในไฟล์ราคา: 48150 · 30334.5 (ไม่มีจุลภาค) */
-const plain = (n: number | null | undefined) => (n == null ? '—' : String(Math.round(Number(n) * 100) / 100));
-/**
- * แบบตอบราคาลูกค้าของ Bay (D13 · คอลัมน์ "ราคา งานไม้ โซฟา - Answer Customer" ในไฟล์ Standard Price 2026)
- * ห้ามเปลี่ยนถ้อยคำเอง · ถ้าจะเปลี่ยนต้องให้ Bay ตกลงก่อน
- */
-function priceSentence(x: PriceList['items'][number]) {
-  const [y, m] = todayBkk().split('-').map(Number);
-  return `${x.name} ราคา ${plain(x.list_price)} ลด ${plain(x.disc_pct)}% เหลือ ${plain(x.price)} ชำระเป็นเงินสด `
-    + `ลด on top เพิ่ม ${plain(x.ontop_pct)}% เหลือ ${plain(x.final)} ภายใน เดือน${TH_FULL[m - 1]} ${y + 543} `
-    + `และส่วนลดเพิ่มเติมตามโปรฯ ได้ที่ https://chawcher.com/category/promotion/`;
-}
 type KbHit = { id: string; title: string; body: string; category: string; reviewed_at: string | null; public_body: string | null };
 type Clearance = {
   hidden?: boolean;

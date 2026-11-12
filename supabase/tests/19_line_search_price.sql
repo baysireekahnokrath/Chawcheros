@@ -21,6 +21,14 @@ begin
   insert into catalog.import_variants (batch_id, source_row_no, collection, legacy_fullname, list_price_incl_vat, discount_pct, ontop_pct) values
     (b, 1, 'กีวี่', 'ฌ เฌอ | อาร์มแชร์   กีวี่ (Kiwi Armchair) ไม้โอ๊ค   ผ้า A เลือกสีได้ | ขนาด W66 D82 H77 cm', 33600, 20, 10),
     (b, 2, 'กระสา', 'ฌ เฌอ | โซฟา 3 ที่นั่ง กระสา (Krasa Sofa)   ผ้า A เลือกสีได้ | ขนาด W151 D75 H76 cm', 60000, 20, 10);
+  -- 0052: % เงินสดมาจากโปรฯ · ใส่โปรของวันนี้เอง ไม่พึ่งโปรตั้งต้นที่หมดเขตสิ้นเดือน
+  if to_regclass('marketing.promotions') is not null and exists (select 1 from information_schema.columns
+       where table_schema = 'marketing' and table_name = 'promotions' and column_name = 'kind') then
+    execute $q$insert into marketing.promotions (name, kind, percent, starts_on, ends_on, status)
+      select 'ทดสอบ 19 เงินสด', 'ชำระเงินสด', 10, line_agent.today(), line_agent.today(), 'กำลังใช้'
+      where not exists (select 1 from marketing.promotions where kind = 'ชำระเงินสด' and status = 'กำลังใช้'
+                        and starts_on <= line_agent.today() and coalesce(ends_on, 'infinity') >= line_agent.today())$q$;
+  end if;
   j := line_agent._price_full('kiwi armchair');
   if j->'items'->0->>'name' !~ 'Kiwi Armchair' or (j->'items'->0->>'price')::numeric <> 26880 or (j->'items'->0->>'final')::numeric <> 24192 or not (j->>'exact')::boolean then
     raise exception '7 พัง: ราคา Kiwi Armchair %', j;
