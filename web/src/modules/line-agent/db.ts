@@ -9,7 +9,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const ALLOWED = [
   'room_order', 'room_orders_due', 'room_orders_overdue', 'room_stock',
-  'room_orders_undated', 'room_clearance', 'sheets_age_minutes',
+  'room_orders_undated', 'room_clearance', 'room_price', 'sheets_age_minutes',
   'room_join', 'room_leave', 'claim_event', 'finish_request', 'flag_last', 'room_state',
   'photo_add', 'slip_add', 'slip_pick', 'change_add', 'worksheets_pending', 'worksheet_rooms', 'worksheet_sent',
   'image_seen', 'images_for',

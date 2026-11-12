@@ -104,9 +104,10 @@ begin
     select id, 'Boucle-02', 'ครีม', 'หมดชั่วคราว' from materials.material_collections order by sort_order limit 1;
   select count(*) into n from line_agent.room_stock('boucle ครีม');
   if n <> 1 then raise exception 'ข้อ 8 พัง: ควรเจอ 1 แต่ได้ %', n; end if;
-  select count(*) into n from line_agent.room_stock('boucle เขียว');
-  if n <> 0 then raise exception 'ข้อ 8 พัง: ทุกคำต้องเจอ'; end if;
-  raise notice 'ข้อ 8 ผ่าน · ค้นสต็อก/วัสดุ ทุกคำต้องเจอ';
+  if (select bool_or(exact) from line_agent.room_stock('boucle เขียว')) then raise exception 'ข้อ 8 พัง: ไม่ครบทุกคำต้องเป็น "ใกล้เคียง"'; end if;
+  select count(*) into n from line_agent.room_stock('ไม่มีรุ่นนี้');
+  if n <> 0 then raise exception 'ข้อ 8 พัง: ชื่อรุ่นไม่ตรงต้องไม่เจอ'; end if;
+  raise notice 'ข้อ 8 ผ่าน · ค้นสต็อก/วัสดุ · ไม่ครบทุกคำ = ใกล้เคียง · ชื่อรุ่นไม่ตรง = ไม่เจอ';
 
   -- ===== ข้อ 9 =====
   begin

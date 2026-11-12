@@ -46,6 +46,10 @@ const CASES: Case[] = [
   ['วันนี้ฝนจะตกไหม', 'unknown'],
   // ชุด 1 · 2026-11-02
   ['ราคา clearance ขุนทองเท่าไหร่', 'clearance', { query: /ขุนทอง|koontong/i }],
+  // เคสจริง Bay 2026-11-12
+  ['ขอราคา krasa armchair', 'product_price', { query: /krasa/i }],
+  ['ขอสต็อค kiwi armchair', 'stock', { query: /kiwi/i }],
+  ['ราคา กีวี่ อาร์มแชร์', 'product_price', { query: /kiwi/i }],
   ['Kamin stool ผลิตกี่วัน', 'lead_time', { rush: false }],
   ['ลูกค้ารีบมาก ได้เร็วสุดกี่วัน', 'lead_time', { rush: true }],
   ['3230 ราคาเท่าไหร่', 'order_detail', { order_no: '3230' }],

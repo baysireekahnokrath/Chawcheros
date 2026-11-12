@@ -55,9 +55,12 @@ type DueRow = {
   order_no: string; wo: string | null; due_on: string; due_kind: 'ต้องเสร็จ' | 'ส่ง';
   first_item: string | null; item_count: number; source: string; customer_name?: string | null;
 };
-type StockRow = { kind: string; item: string; location: string | null; status: string | null; units: number | null; source: string };
+type StockRow = { kind: string; item: string; location: string | null; status: string | null; units: number | null; source: string; exact?: boolean };
+type PriceList = { hidden?: boolean; exact: boolean; total: number;
+  items: { name: string; list_price: number | null; disc_pct: number | null; price: number | null; approved: boolean }[] };
 type Clearance = {
   hidden?: boolean;
+  exact?: boolean;
   expires_on: string | null; expired: boolean; updated_at: string | null; total: number;
   items: { name: string; retail: number | null; disc: string | null; price: number | null }[];
 };
@@ -80,7 +83,7 @@ export const HELP =
   '• เลข BLS → รายละเอียด ราคา w/o วันส่ง\n' +
   '• "สัปดาห์นี้ต้องส่งอะไรบ้าง" / "งานไหนเลยกำหนด"\n' +
   '• ชื่อรุ่น ชื่อผ้า ชื่อหนัง + "มีในสต็อกไหม"\n' +
-  '• "ราคา clearance ขุนทอง"\n' +
+  '• "ราคา kiwi armchair" (ราคามาตรฐาน) · "clearance ขุนทอง"\n' +
   '• "ผลิตกี่วัน"\n' +
   '• ส่งรูปสลิป (กี่รูปก็ได้) แล้วพิมพ์ "@Team Bay สลิป" ภายใน 10 นาที (กลุ่มที่เปิดไว้)\n' +
   '• ส่งรูปงานเสร็จ (กี่รูปก็ได้) แล้วพิมพ์ "@Team Bay งานเสร็จ BLS3230" ภายใน 10 นาที\n' +
@@ -197,24 +200,44 @@ async function one(it: Intent, ctx: Ctx): Promise<Rendered> {
       const q = (it.query ?? '').trim();
       if (!q) return { answer: 'ขอชื่อรุ่น ชื่อผ้า หรือชื่อหนังด้วยครับ เช่น "Koontong มีในสต็อกไหม"', dataUsed: '—', status: 'ตอบไม่ได้' };
       const rows = await call<StockRow[]>('room_stock', { p_query: q });
-      if (rows.length === 0) return { answer: `หา "${q}" ไม่เจอในสต็อกครับ ลองพิมพ์ชื่อรุ่นหรือชื่อผ้าสั้นลง`, dataUsed: 'room_stock', status: 'ตอบไม่ได้' };
+      if (rows.length === 0) return { answer: `ไม่มีรุ่น "${q}" ในสต็อกเลยครับ (ทั้งชีตและระบบ) · ลองพิมพ์แค่ชื่อรุ่น เช่น "kiwi"`, dataUsed: 'room_stock', status: 'ตอบไม่ได้' };
+      const near = rows.some((r) => r.exact === false) ? `ไม่เจอ "${q}" ตรงทุกคำ · ใกล้เคียงที่สุด:\n` : '';
       const list = rows.slice(0, MAX_ROWS).map((r) => {
         if (r.kind === 'วัสดุ') return `• ${r.item} · ${r.units != null ? `คงเหลือ ${qty(r.units)}` : r.status ?? '—'}`;
         if (r.source === 'ชีต') return `• ${r.item}\n   คงเหลือ ${qty(r.units)}${r.location ? ` · ${r.location}` : ''}`;
         return `• ${r.item}\n   ${qty(r.units)} ตัว · ${r.location} · ${r.status}`;
       }).join('\n');
       const more = rows.length > MAX_ROWS ? `\n…และอีก ${rows.length - MAX_ROWS} รายการ` : '';
-      return { answer: list + more + src('สต็อก (ระบบ + Google Sheet)'), dataUsed: 'room_stock', status: 'ตอบแล้ว' };
+      return { answer: near + list + more + src('สต็อก (ระบบ + Google Sheet)'), dataUsed: 'room_stock', status: 'ตอบแล้ว' };
+    }
+
+    case 'product_price': {
+      const q = (it.query ?? '').trim();
+      if (!q) return { answer: 'ขอชื่อรุ่นด้วยครับ เช่น "ราคา kiwi armchair"', dataUsed: '—', status: 'ตอบไม่ได้' };
+      const p = await call<PriceList | null>('room_price', { p_query: q, p_group_id: ctx.groupId });
+      if (p?.hidden) return { answer: 'กลุ่มนี้ไม่ได้เปิดให้ดูราคาครับ · ถามในกลุ่ม PO ได้ครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
+      if (!p || p.items.length === 0) return { answer: `ไม่มีรุ่น "${q}" ในไฟล์ราคาครับ · ลองพิมพ์แค่ชื่อรุ่น เช่น "ราคา kiwi"`, dataUsed: 'room_price', status: 'ตอบไม่ได้' };
+      const near = p.exact ? '' : `ไม่เจอ "${q}" ตรงทุกคำในไฟล์ราคา · ใกล้เคียงที่สุด:\n`;
+      const list = p.items.slice(0, 8).map((x) => {
+        const name = x.name.replace(/^ฌ\s*เฌอ\s*\|\s*/, '').replace(/\s+/g, ' ');
+        const sale = x.price != null && x.disc_pct ? ` · ลด ${Number(x.disc_pct)}% เหลือ ${baht(x.price)}` : '';
+        return `• ${name}\n   ราคาเต็ม ${baht(x.list_price) ?? '—'}${sale}${x.approved ? '' : ' (ไฟล์ราคา ยังไม่ผ่านการตรวจ)'}`;
+      }).join('\n');
+      const more = p.total > 8 ? `\n…และอีก ${p.total - 8} แบบ (ระบุผ้า/ไม้/ขนาดให้แคบลงได้)` : '';
+      const cl = await call<Clearance | null>('room_clearance', { p_query: q, p_group_id: ctx.groupId });
+      const clear = cl && !cl.hidden && !cl.expired && cl.exact && cl.items.length
+        ? `\n\n🏷 มีใน Clearance ด้วย ${cl.items.length} รายการ · ถาม "clearance ${q}"` : '';
+      return { answer: near + list + more + clear + src('ไฟล์ราคา Standard Price 2026'), dataUsed: 'room_price', status: 'ตอบแล้ว' };
     }
 
     case 'clearance': {
       const c = await call<Clearance>('room_clearance', { p_query: it.query ?? '', p_group_id: ctx.groupId });
       if (c.hidden) return { answer: 'กลุ่มนี้ไม่ได้เปิดให้ดูราคาครับ · ถามในกลุ่ม PO ได้ครับ', dataUsed: '—', status: 'ตอบไม่ได้' };
       if (c.expired) return { answer: `ราคา Clearance หมดอายุแล้วครับ (ถึง ${thDate(c.expires_on)})\nรอราคาชุดใหม่จากทีม CC ครับ`, dataUsed: 'room_clearance', status: 'ตอบไม่ได้' };
-      if (c.items.length === 0) return { answer: `ไม่เจอ "${it.query ?? ''}" ในรายการ Clearance ครับ`, dataUsed: 'room_clearance', status: 'ตอบไม่ได้' };
+      if (c.items.length === 0) return { answer: `ไม่มีรุ่น "${it.query ?? ''}" ในรายการ Clearance ครับ · ถามราคาปกติได้ เช่น "ราคา ${it.query ?? ''}"`, dataUsed: 'room_clearance', status: 'ตอบไม่ได้' };
       const list = c.items.slice(0, MAX_ROWS).map((x) =>
         `• ${x.name.replace(/\s+/g, ' ')}\n   เต็ม ${baht(x.retail) ?? '—'} · ลด ${x.disc ?? '—'} · เหลือ ${baht(x.price) ?? '—'}`).join('\n');
-      return { answer: `ราคา Clearance (ถึง ${thDate(c.expires_on)})\n${list}` + src('Google Sheet · Clearance Sales 2026', c.updated_at), dataUsed: 'room_clearance', status: 'ตอบแล้ว' };
+      return { answer: `${c.exact === false ? `ไม่เจอ "${it.query ?? ''}" ตรงทุกคำ · ใกล้เคียงที่สุด:\n` : ''}ราคา Clearance (ถึง ${thDate(c.expires_on)})\n${list}` + src('Google Sheet · Clearance Sales 2026', c.updated_at), dataUsed: 'room_clearance', status: 'ตอบแล้ว' };
     }
 
     default:
