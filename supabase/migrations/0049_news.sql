@@ -114,9 +114,11 @@ revoke all on function content.news_import(jsonb) from public, anon, authenticat
 grant execute on function content.news_import(jsonb) to service_role;
 
 -- ---------------------------------------------------------------------------
--- ข่าวแรก (ทำมือ 2026-11-11 · WordPress draft 18153) · ให้หน้า /news มีของให้ลองกด
+-- ข่าวแรก (ทำมือ 2026-11-11) · ให้หน้า /news มีของให้ลองกด
+-- ไม่ผูก WordPress draft 18153 (สร้างด้วยบัญชี Bay) เพราะ content-agent เป็น Author แก้/publish โพสต์ของคนอื่นไม่ได้
+-- → กด "สร้างร่างบนเว็บ" แล้วระบบสร้างร่างใหม่ในชื่อ content-agent · ร่าง 18153 เดิมไม่ต้องใช้
 -- ---------------------------------------------------------------------------
-insert into content.news_items (brand, source, note, post_title, post_body, line_text, images, wp_post_id, wp_link)
+insert into content.news_items (brand, source, note, post_title, post_body, line_text, images)
 values ('Chaw Cher', 'Bay ส่งเอง',
   'ทีมงานของเราได้พบกับ คุณกรกช ที่ dior gold house เพื่อคุยกันเกี่ยวกับ collaboration',
   'Chaw Cher เยือน Dior Gold House · พูดคุยแนวทาง Collaboration กับคุณกรกช',
@@ -124,8 +126,7 @@ values ('Chaw Cher', 'Bay ส่งเอง',
   E'✨ Chaw Cher News\nทีม Chaw Cher เข้าพบคุณกรกช ที่ Dior Gold House\nคุยแนวทาง collaboration ด้านงานคราฟต์และการออกแบบ\nท่ามกลางผนังงานจักสานฝีมือช่างไทยใน Café Dior 🌿',
   '[{"url":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-team-2026-11-11.jpg","preview":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-team-2026-11-11-768x1024.jpg","wp_id":18151,"alt":"ทีม Chaw Cher และคุณกรกช หน้าผนังงานจักสาน Café Dior"},
     {"url":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-cafe-2026-11-11.jpg","preview":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-cafe-2026-11-11-1024x768.jpg","wp_id":18150,"alt":"ผนังงานจักสานใน Café Dior"},
-    {"url":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-team-2-2026-11-11.jpg","preview":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-team-2-2026-11-11-768x1024.jpg","wp_id":18152,"alt":"ทีม Chaw Cher ที่ Dior Gold House"}]'::jsonb,
-  18153, 'https://chawcher.com/?p=18153');
+    {"url":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-team-2-2026-11-11.jpg","preview":"https://chawcher.com/wp-content/uploads/2026/11/chawcher-dior-gold-house-team-2-2026-11-11-768x1024.jpg","wp_id":18152,"alt":"ทีม Chaw Cher ที่ Dior Gold House"}]'::jsonb);
 
 -- ทะเบียนโมดูล · เมนู "ข่าว" (Bay เห็น)
 insert into core.modules

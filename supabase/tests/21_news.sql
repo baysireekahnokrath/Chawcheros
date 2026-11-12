@@ -8,7 +8,7 @@
 --   3 ★ แถวจากชีตต้องมีรหัส
 --   4 ★ ของออกนอก: เผยแพร่ / ส่ง LINE ต้องมีคนกด (reviewed_by)
 --   6 ★ สิทธิ์: Bay เท่านั้น · ทีมขายไม่เห็น · ฟังก์ชันของตัวดึงชีตคนทั่วไปเรียกไม่ได้
---   7   A7 ห้ามลบ · ข่าวแรก (WP 18153) อยู่ในระบบ
+--   7   A7 ห้ามลบ · ข่าวแรก (Dior) อยู่ในระบบ
 -- ============================================================================
 
 insert into auth.users (id) values ('aaaaaaaa-0000-0000-0000-0000000000a1'), ('aaaaaaaa-0000-0000-0000-0000000000b2') on conflict do nothing;
@@ -23,8 +23,8 @@ do $$
 declare n int; nid uuid;
 begin
   -- ข้อ 7 (ส่วนแรก) · ข่าวแรกจาก migration
-  if not exists (select 1 from content.news_items where wp_post_id = 18153 and status = 'ร่าง' and jsonb_array_length(images) = 3) then
-    raise exception '7 พัง: ไม่มีข่าวแรก (WP 18153)';
+  if not exists (select 1 from content.news_items where post_title like 'Chaw Cher เยือน Dior%' and wp_post_id is null and status = 'ร่าง' and jsonb_array_length(images) = 3) then
+    raise exception '7 พัง: ไม่มีข่าวแรก (Dior)';
   end if;
 
   -- ข้อ 1 · กันซ้ำ (รหัสชีต + ลิงก์)
@@ -93,7 +93,7 @@ do $$
 declare n int;
 begin
   if (select count(*) from content.news_items) < 5 then raise exception '6 พัง: Bay ต้องเห็นข่าวทั้งหมด'; end if;
-  update content.news_items set post_title = 'แก้หัวข่าว' where wp_post_id = 18153;
+  update content.news_items set post_body = post_body || ' ' where post_title like 'Chaw Cher เยือน Dior%';
   get diagnostics n = row_count;
   if n <> 1 then raise exception '6 พัง: Bay แก้ข่าวไม่ได้'; end if;
 end $$;
@@ -103,7 +103,7 @@ reset role;
 do $$
 begin
   begin
-    delete from content.news_items where wp_post_id = 18153;
+    delete from content.news_items where post_title like 'Chaw Cher เยือน Dior%';
     raise exception 'ไม่ควรมาถึงตรงนี้';
   exception when restrict_violation then null; end;
   raise notice 'ข้อ 6-7 ผ่าน · Bay เท่านั้น · ตัวตั้งเวลาเรียกผ่าน service_role · ห้ามลบ';
