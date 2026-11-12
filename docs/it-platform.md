@@ -62,7 +62,7 @@
 - [x] Claude · ย้าย `APPLY-*.sql` รอบก่อนไป `docs/sql-archive/`
 - [x] Claude · สร้าง branch `main` จากของล่าสุด
 - [ ] Bay · รันไฟล์ 1 + ตั้ง PIN ฟีนิกซ์ → รันไฟล์ 2 ต้องเป็น ✅ ทุกแถว
-- [ ] Bay · Vercel → chawcher-os → Settings → Git → Production Branch = `main`
+- [x] Bay · Vercel → Settings → Environments → Production → Branch Tracking = `main` (2026-11-12)
 - [ ] Bay · Supabase → Database → Backups ดูว่ามี backup รายวันจริง
 
 ### Phase 1 · ใช้ของที่มีให้คุ้ม (4 สัปดาห์)

@@ -28,7 +28,7 @@ Vercel Dashboard → โปรเจกต์ **chawcher-os** → **Settings →
 | ช่อง | ใส่ |
 |---|---|
 | Repository | `baysireekahnokrath/Chawcheros` |
-| Production Branch | `main` (เดิม `claude/chaw-cher-os-setup-9k21w6` · เปลี่ยนใน Phase 0) |
+| Production Branch | `main` · ตั้งที่ Settings → Environments → Production → Branch Tracking (เปลี่ยนแล้ว 2026-11-12) |
 
 ### 2. ตั้ง Root Directory
 
