@@ -132,23 +132,29 @@ function idfOf(products: Product[]): Map<string, number> {
  * คะแนน · ชื่ออังกฤษตรงทั้งก้อนได้มากสุด ลงมาเป็นตรงทีละคำ
  * ขนาดที่ลูกค้าเขียน (เช่น 1.00m.) ถ้าตรงกับความกว้างจะได้แต้มเพิ่ม
  */
+/**
+ * ความกว้างที่คนเขียนขอมา หน่วยเซนติเมตร · ไม่เจอคืน null
+ *
+ * "1.00m." = 100 · "180 cm" = 180 · "tv200" = 200 · "Koontong Sideboard 120" = 120
+ *
+ * ★ หน่วยอ่านจากข้อความดิบ · norm() เปลี่ยนจุดเป็นช่องว่าง "1.55m." จะกลายเป็น 55
+ * ★ ตัวเลขเปล่าอ่านจากข้อความที่แยกตัวเลขออกแล้ว · "tv200" ต้องได้ 200
+ *   จำกัดช่วง 40-400 กันไปชนตัวเลขที่เป็นส่วนหนึ่งของชื่อรุ่น
+ */
+export function wantedWidth(text: string): number | null {
+  const mm = /(\d+(?:\.\d+)?)\s*(m\b|m\.|เมตร|cm\b|ซม)/i.exec(clean(text));
+  if (mm) return Math.round(+mm[1] * (/^(m\b|m\.|เมตร)/i.test(mm[2]) ? 100 : 1));
+  const bare = [...norm(text).matchAll(/\b(\d{2,3})\b/g)]
+    .map((x) => +x[1]).filter((n) => n >= 40 && n <= 400).pop();
+  return bare ?? null;
+}
+
 export function matchLine(text: string, products: Product[], limit = 8): Hit[] {
   const q = norm(text);
   if (!q) return [];
   const words = q.split(' ').filter((w) => w.length > 1);
 
-  /** ความกว้างที่ลูกค้าเขียน · "1.00m." = 100 ซม. · "180 cm" = 180 ซม.
-   *  ★ อ่านจากข้อความดิบ ไม่ใช่ตัวที่ normalize แล้ว · norm() เปลี่ยนจุดเป็นช่องว่าง
-   *    "1.55m." จึงกลายเป็น "1 55m" แล้วอ่านได้ 55 เมตร */
-  const raw = clean(text);
-  const mm = /(\d+(?:\.\d+)?)\s*(m\b|m\.|เมตร|cm\b|ซม)/i.exec(raw);
-  // ไม่มีหน่วยก็เดาได้ · คนเขียน "Koontong Sideboard 120" หมายถึง 120 ซม.
-  // จำกัดช่วง 40-400 กันไปชนตัวเลขที่เป็นส่วนหนึ่งของชื่อรุ่น
-  const bare = !mm && [...q.matchAll(/\b(\d{2,3})\b/g)]
-    .map((x) => +x[1]).filter((n) => n >= 40 && n <= 400).pop();
-  const wantW = mm
-    ? Math.round(+mm[1] * (/^(m\b|m\.|เมตร)/i.test(mm[2]) ? 100 : 1))
-    : (bare || null);
+  const wantW = wantedWidth(text);
 
   const idf = idfOf(products);
   const weightOf = (w: string) => idf.get(w) ?? 0;

@@ -21,7 +21,8 @@
 import { useMemo, useState } from 'react';
 import type { PriceRow } from '@/modules/pricing/queries';
 import { parseRequest } from '@/modules/quote/parse';
-import { buildProducts, confident, looksLikeProduct, matchLine, type Hit } from '@/modules/quote/match';
+import { buildProducts, confident, looksLikeProduct, matchLine, wantedWidth, type Hit } from '@/modules/quote/match';
+import { fitText, fitWidth, modulesOf, type Fit } from '@/modules/quote/fit';
 import { BAHT, quoteNo, thaiDate, totalsOf, type Quote, type QuoteLine } from '@/modules/quote/doc';
 
 type Row = {
@@ -91,6 +92,48 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
     return m;
   }, [docs, products]);
   const hitsFor = (raw: string) => cands.get(raw) ?? [];
+
+  /**
+   * "ขนาดเท่านี้ ต่อกันยังไงได้บ้าง" (Bay สั่งไว้ 2026-11-12)
+   *
+   * คนขายเขียน "taka 214" เพราะวัดพื้นที่มาได้ 214 ไม่ได้หมายถึงรุ่นชื่อ 214
+   * บอกแค่ "ไม่มีในใบราคา" เท่ากับโยนงานกลับไปให้คนถาม · คิดชุดให้เลย
+   */
+  const fits = useMemo(() => {
+    const m = new Map<string, Fit[]>();
+    const modCache = new Map<string, ReturnType<typeof modulesOf>>();
+    for (const d of docs) for (const r of d.rows) {
+      if (r.free || !r.raw || m.has(r.raw)) continue;
+      const want = wantedWidth(r.raw);
+      const coll = (r.pkey ? byKey.get(r.pkey) : (cands.get(r.raw) ?? [])[0]?.p)?.collection;
+      if (!want || !coll) continue;
+      let mods = modCache.get(coll);
+      if (!mods) { mods = modulesOf(products, coll); modCache.set(coll, mods); }
+      // เสนอเมื่อมีอะไรให้คิดจริง ๆ · มีตัวเดียวที่กว้างพอดีอยู่แล้วและไม่มีทางอื่นเลย ก็ไม่ต้องเสนอ
+      // แต่ถ้ามีทางอื่นด้วย ให้เห็นด้วย · ฟีนิกซ์ 355 มีทั้งตัวเดียวจบ และ 230 + เดย์เบด 125
+      const best = fitWidth(mods, want);
+      if (best.some((f) => f.pieces.length > 1 || f.diff !== 0)) m.set(r.raw, best);
+    }
+    return m;
+  }, [docs, products, byKey, cands]);
+
+  /** เอาชุดที่เลือกมาแทนบรรทัดนี้ · หนึ่งชิ้นหนึ่งบรรทัด */
+  const applyFit = (did: string, rid: string, f: Fit) =>
+    setDoc(did, (d) => {
+      const at = d.rows.findIndex((r) => r.id === rid);
+      const src = d.rows[at];
+      const made: Row[] = f.pieces.map((x) => {
+        const v = x.p.variants[0];
+        return {
+          id: uid(), raw: x.p.head.replace('ฌ เฌอ | ', ''), notes: [], spec: src?.spec ?? '',
+          qty: x.qty * (src?.qty ?? 1), pkey: x.p.key, gi: 0,
+          unit: v ? (v.sale ?? v.retail) : null, free: '',
+        };
+      });
+      const rows2 = [...d.rows];
+      rows2.splice(at, 1, ...made);
+      return { ...d, rows: rows2 };
+    });
 
   function run() {
     const drafts = parseRequest(text, (line) => looksLikeProduct(line, products));
@@ -325,6 +368,32 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                       onChange={(e) => setRow(d.id, r.id, (x) => ({ ...x, free: e.target.value }))}
                       className="mt-2 w-full rounded-lg border border-border bg-bg px-2 py-2 text-sm"
                     />
+                  )}
+
+                  {!r.free && (fits.get(r.raw)?.length ?? 0) > 0 && (
+                    <details className="mt-2 rounded-lg border border-accent/40 bg-accent/5 p-2">
+                      <summary className="cursor-pointer text-xs font-medium text-accent">
+                        ต่อกันให้ได้ ~{wantedWidth(r.raw)} ซม. · มี {fits.get(r.raw)!.length} แบบ
+                      </summary>
+                      <ul className="mt-2 space-y-1">
+                        {fits.get(r.raw)!.map((f, fi) => (
+                          <li key={fi} className="flex flex-wrap items-center gap-2 text-xs">
+                            <button type="button" onClick={() => applyFit(d.id, r.id, f)}
+                              className="rounded-md bg-accent px-2 py-1 font-medium text-accent-fg">
+                              ใส่ชุดนี้
+                            </button>
+                            <span className="font-medium">{fitText(f)}</span>
+                            <span className={f.diff === 0 ? 'text-ok' : 'text-muted'}>
+                              {f.diff === 0 ? 'พอดี' : `${f.diff > 0 ? 'เกิน' : 'ขาด'} ${Math.abs(f.diff)} ซม.`}
+                            </span>
+                            <span className="text-muted">ลึก {f.depth} · {BAHT(f.sale)} บาท</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-[0.68rem] text-muted">
+                        ราคาคือเกรดถูกที่สุดของแต่ละชิ้น · เลือกเกรดจริงได้หลังกดใส่ชุด
+                      </p>
+                    </details>
                   )}
 
                   {r.notes.length > 0 && (

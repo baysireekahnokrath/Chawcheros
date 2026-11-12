@@ -11,7 +11,9 @@ import { dirname, join } from 'node:path';
 // @ts-expect-error -- node --experimental-strip-types ต้องการนามสกุล .ts
 import { parseRequest } from '../src/modules/quote/parse.ts';
 // @ts-expect-error -- เหตุผลเดียวกัน
-import { buildProducts, confident, looksLikeProduct, matchLine, sizeText } from '../src/modules/quote/match.ts';
+import { buildProducts, confident, looksLikeProduct, matchLine, sizeText, wantedWidth } from '../src/modules/quote/match.ts';
+// @ts-expect-error -- เหตุผลเดียวกัน
+import { fitText, fitWidth, modulesOf } from '../src/modules/quote/fit.ts';
 // @ts-expect-error -- เหตุผลเดียวกัน
 import { quoteNo, renumber, thaiDate, totalsOf } from '../src/modules/quote/doc.ts';
 import type { Product } from '../src/modules/quote/match.ts';
@@ -186,6 +188,47 @@ ok('บรรทัดสองมีไม้กับขนาด', (() => {
   return h.p.sub;
 })(), 'ไม้โอ๊ค สีวอลนัท | ขนาด W120 D43.5 H79 cm');
 ok('ขนาดไม่ปัดทศนิยมทิ้ง', sizeText(120, 43.5, 79), 'W120 D43.5 H79');
+
+/* ── คิดชุดให้ · "ขนาดเท่านี้ ต่อกันยังไงได้บ้าง" ──
+     Bay สั่งไว้ 2026-11-12 · "ต้องฉลาดไปคิดให้ผม ว่าจะต่อกันยังไงให้ได้ขนาดนี้" */
+ok('อ่านความกว้างที่ขอ · หน่วยเมตร', wantedWidth('Emu Bench 1.00m.'), 100);
+ok('อ่านความกว้างที่ขอ · ตัวเลขติดตัวอักษร', wantedWidth('krasa tv200 สีเข้ม'), 200);
+ok('อ่านความกว้างที่ขอ · ตัวเลขเปล่า', wantedWidth('taka 214'), 214);
+ok('ไม่มีตัวเลขก็ไม่เดา', wantedWidth('Khonmai Stool'), null);
+
+const takaMods = modulesOf(products, 'ทากะ');
+ok('ทากะมีโมดูลให้ต่อ', takaMods.length >= 10, true);
+ok('นับโมดูลตัวต่อของทากะด้วย · หมวดชื่อ "1 ที่นั่ง 1 แขน" ไม่ใช่ "โซฟา"',
+   takaMods.some((m) => m.category.includes('ที่นั่ง') && m.w === 90), true);
+ok('ไม่เอาของที่ไม่ได้วางเรียงเป็นแถว · โต๊ะ ตู้ หมอน',
+   takaMods.some((m) => /โต๊ะ|ตู้|หมอน|ที่พักหัว/.test(m.category)), false);
+
+const taka214 = fitWidth(takaMods, 214);
+ok('ทากะ 214 · คิดชุดให้ได้อย่างน้อยหนึ่งแบบ', taka214.length > 0, true);
+ok('ทุกแบบอยู่ในระยะ ±12 ซม.', taka214.every((f) => Math.abs(f.diff) <= 12), true);
+ok('เรียงจากใกล้ที่สุดก่อน',
+   taka214.every((f, i) => i === 0 || Math.abs(f.diff) >= Math.abs(taka214[i - 1].diff)), true);
+
+const phx = modulesOf(products, 'ฟีนิกซ์');
+const phx355 = fitWidth(phx, 355);
+ok('ฟีนิกซ์ 355 · ได้ชุดที่ลงตัวพอดี', phx355[0].diff, 0);
+ok('ฟีนิกซ์ 355 · เสนอ 230 + เดย์เบด 125 ที่ Bay ยืนยันไว้เอง',
+   phx355.some((f) => f.width === 355 && f.pieces.length === 2
+     && f.pieces.some((x) => x.p.w === 230) && f.pieces.some((x) => x.p.w === 125)), true);
+ok('บอกความลึกของชุดด้วย · เดย์เบดลึกกว่าตัวโซฟา',
+   phx355.some((f) => f.depth >= 166), true);
+ok('ชื่อชุดแยกเดย์เบดออกจากสตูลได้ · กว้างเท่ากันแต่ลึกต่างกัน', (() => {
+  const two = phx355.filter((f) => f.pieces.length === 2 && f.width === 355);
+  return new Set(two.map(fitText)).size === two.length;
+})(), true);
+ok('ราคาชุดเท่ากับผลรวมของชิ้น', (() => {
+  const f = phx355[0];
+  return f.sale > 0 && f.retail >= f.sale;
+})(), true);
+
+ok('ขอขนาดที่ไม่มีทางต่อได้ · ไม่โกหกว่ามี', fitWidth(phx, 1200).length, 0);
+ok('ไม่ข้ามรุ่น · ทากะไม่โผล่ในชุดฟีนิกซ์',
+   phx355.every((f) => f.pieces.every((x) => x.p.collection === 'ฟีนิกซ์')), true);
 
 /* ── ตัวเลขท้ายใบ ── */
 const line = (over: Partial<QuoteLine> = {}): QuoteLine => ({
