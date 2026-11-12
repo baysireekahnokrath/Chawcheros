@@ -41,6 +41,16 @@
 
 ยังไม่ได้ทดสอบกับของจริง: อ่านชีตด้วย service account · WordPress REST · LINE push รูป · งานตั้งเวลา 07:43 รอบแรก
 
+## 2026-11-12 · Design Watch (Bay: "เอาแท็บ design watch เลย")
+ข่าววงการดีไซน์ ให้ Bay อ่านเอง · **ไม่เผยแพร่ ไม่เข้าแท็บ "ร่าง" ไม่เข้าระบบ** (ระบบอ่านแค่ `ร่าง!A2:L500`)
+| ส่วน | รายละเอียด |
+|---|---|
+| แท็บ "Design Watch" (sheetId 5) | IMPORTFEED จาก Google News RSS 4 กลุ่ม 7 วันล่าสุด กลุ่มละ 15 ข่าว · A-E Dezeen+designboom · G-K Wallpaper*/Frame/Sight Unseen/ArchDaily · M-Q เทรนด์/Salone/Maison&Objet/ผ้าหุ้ม · S-W ข่าวไทย โซฟา/เฟอร์นิเจอร์ ดีไซน์ · ทุกคำค้นมีคำว่า sofa/furniture/upholstery กรองให้ |
+| แท็บ "Design สรุป" (sheetId 4) | Claude 07:43 เขียน ≤5 เรื่อง/วัน · A วันที่ · B หมวด (เทรนด์/ดีไซเนอร์/สินค้าใหม่/วัสดุ/ผ้า/งานแฟร์/ไทย) · C หัวข้อไทย · D สรุป · E เกี่ยวกับ Chaw Cher ยังไง · F ลิงก์ · G ช่อง Bay จด |
+| งานตั้งเวลา | เพิ่มขั้นที่ 5 ใน `trig_018WUZozaYetcPKLkCrRFDTi` · ถ้า Design Watch ขึ้น #REF! ใช้ WebSearch ≤3 คำค้นแทน |
+- ⚠️ ยังขึ้น #REF! จนกว่า Bay กด "Allow access" ในชีต (ครั้งเดียวใช้ได้ทุกแท็บ) · ทดสอบ RSS จากเครื่อง Claude ไม่ได้ (ถูกบล็อก) → ยังไม่เห็นผลจริง
+- แหล่งอ้างอิงที่ Bay ถามไว้ (เว็บ งานแฟร์ ดีไซเนอร์) สรุปในแชท 2026-11-12: Dezeen · designboom · Wallpaper* · Frame · Sight Unseen · art4d · บ้านและสวน · Salone · Maison&Objet · 3daysofdesign · DEmark
+
 ## เครื่องมือ (สถานะ 2026-11-11)
 | ส่วน | ใช้อะไร | สถานะ |
 |---|---|---|
