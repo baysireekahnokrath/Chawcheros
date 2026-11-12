@@ -69,6 +69,17 @@ export async function push(token: string, to: string, text: string): Promise<{ o
   return { ok: false, error: `LINE push ${res.status}: ${(await res.text()).slice(0, 300)}` };
 }
 
+/** push หลายข้อความ (รูป + ตัวอักษร) · ใช้แค่ปุ่ม "ส่ง LINE" ในหน้า /news ที่ Bay กดเอง · LINE รับได้สูงสุด 5 ข้อความต่อครั้ง */
+export async function pushMessages(token: string, to: string, messages: object[]): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetch(`${API}/message/push`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ to, messages: messages.slice(0, 5) }),
+  });
+  if (res.ok) return { ok: true };
+  return { ok: false, error: `LINE push ${res.status}: ${(await res.text()).slice(0, 300)}` };
+}
+
 /** ดึงรูปจาก LINE · LINE เก็บไว้ให้ดึงแค่ช่วงสั้นๆ จึงต้องคัดลอกเข้าระบบทันที */
 export async function getContent(token: string, messageId: string): Promise<{ data: Buffer; type: string }> {
   const res = await fetch(`https://api-data.line.me/v2/bot/message/${encodeURIComponent(messageId)}/content`, {
@@ -91,10 +102,14 @@ export type Mentionee = { index: number; length: number; type?: string; userId?:
 export type LineEvent = {
   type: string;
   webhookEventId: string;
+  timestamp?: number;                 // เวลาที่ส่ง (มิลลิวินาที)
   replyToken?: string;
   deliveryContext?: { isRedelivery?: boolean };
   source: { type: 'group' | 'room' | 'user'; groupId?: string; roomId?: string; userId?: string };
-  message?: { id?: string; type: string; text?: string; quotedMessageId?: string; mention?: { mentionees: Mentionee[] } };
+  message?: {
+    id?: string; type: string; text?: string; quotedMessageId?: string; mention?: { mentionees: Mentionee[] };
+    imageSet?: { id: string; index?: number; total?: number };   // ส่งหลายรูปพร้อมกัน (อัลบั้ม)
+  };
 };
 
 /**
