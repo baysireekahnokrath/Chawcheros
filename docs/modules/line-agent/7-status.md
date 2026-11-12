@@ -77,3 +77,10 @@ Bay: *"ขอราคา krasa armchair บอกไม่เจอ · ขอ�
 
 ข้อเท็จจริงจากชีต: สต็อกไม่มีแถวชื่อ "Kiwi armchair" (มี Kiwi Sofa(1p) · Kiwi Side Chair) · ไฟล์ราคามี Kiwi Armchair · **ไม่มี Krasa armchair** (มี Krasa Sofa 3 ที่นั่ง · Krasa Bench ฯลฯ)
 ทดสอบ: `supabase/tests/19_line_search_price.sql` 10 ข้อผ่าน · ชุดคำถาม `web/scripts/line-eval.mts` เพิ่มเคสจริง 3 ข้อ
+
+## 2026-11-12 · ตอบราคาตามแบบของ Bay (0039)
+- ราคาสินค้าตอบเป็นประโยคตามคอลัมน์ "Answer Customer" (D13) เป๊ะ · ก๊อปส่งลูกค้าได้ทันที
+- 0039 เพิ่ม % on top + ราคาสุดท้าย · ทดสอบ 19 ผ่าน (Kiwi Armchair โอ๊ค 33600 → 26880 → 24192)
+- Bay ต้องรัน 0037 · 0038 · 0039 ใน Supabase (ถ้ายังไม่ได้รัน) แล้ว merge
+- ยังไม่ใส่ส่วนลดขั้นบันได J5 (50,000 +12% · 100,000 +18%) ในคำตอบราคา
+- เพิ่ม `CLAUDE.md` ที่ root · กฎทุก session (ค้นของเดิมก่อน · ลิงก์ต้องกดได้)
