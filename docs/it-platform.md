@@ -61,7 +61,7 @@
 - [x] Claude · รวม SQL ที่ค้างเป็นไฟล์เดียว `docs/sql-todo/1-RUN-ME-phase0.sql` + ไฟล์เช็กสถานะ `2-CHECK-status.sql` (ทดสอบแล้ว)
 - [x] Claude · ย้าย `APPLY-*.sql` รอบก่อนไป `docs/sql-archive/`
 - [x] Claude · สร้าง branch `main` จากของล่าสุด
-- [ ] Bay · รันไฟล์ 1 + ตั้ง PIN ฟีนิกซ์ → รันไฟล์ 2 ต้องเป็น ✅ ทุกแถว
+- [x] Bay · รันไฟล์ 1 + ตั้ง PIN ฟีนิกซ์ → ไฟล์เช็กขึ้น ✅ (2026-11-12)
 - [x] Bay · Vercel → Settings → Environments → Production → Branch Tracking = `main` (2026-11-12)
 - [ ] Bay · Supabase → Database → Backups ดูว่ามี backup รายวันจริง
 
