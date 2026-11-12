@@ -21,6 +21,7 @@ export type ParsedRow = {
   depth_cm: number | null;
   height_cm: number | null;
   seat_height_cm: number | null;
+  seat_depth_cm: number | null;
   legacy_nnsku: string | null;
   legacy_fullname: string | null;
   list_price_incl_vat: number | null;
@@ -110,14 +111,15 @@ const dim = (v: string | undefined): number | null => {
 };
 
 /**
- * "H72 (46)" → สูง 72 · สูงที่นั่ง 46
- * ความสูงที่นั่งของโซฟาซ่อนอยู่ในวงเล็บของช่องความสูง ไม่ได้แยกช่องไว้
+ * "H72 (46)"   → สูงรวมพนักพิง 72 · สูงที่นั่ง 46
+ * "D167 (101)" → ลึกรวม 167 · ลึกที่นั่ง 101
+ * ขนาดของตัวที่นั่งซ่อนอยู่ในวงเล็บ ไม่ได้แยกช่องไว้ และมีเฉพาะบางแถว
  */
-const heightPair = (v: string | undefined): { h: number | null; seat: number | null } => {
+const dimPair = (v: string | undefined): { full: number | null; seat: number | null } => {
   const s = v ?? '';
-  const h = s.match(/(\d+(?:\.\d+)?)/);
+  const full = s.match(/(\d+(?:\.\d+)?)/);
   const seat = s.match(/\(\s*(\d+(?:\.\d+)?)\s*\)/);
-  return { h: h ? Number(h[1]) : null, seat: seat ? Number(seat[1]) : null };
+  return { full: full ? Number(full[1]) : null, seat: seat ? Number(seat[1]) : null };
 };
 
 /** "B 34900.00" → 34900 · "30%" → 30 */
@@ -146,7 +148,8 @@ export function parsePriceCsv(text: string): ParseResult {
 
   table.slice(1).forEach((r, i) => {
     const rowNo = i + 1;                       // นับแบบเดียวกับที่คนเปิดไฟล์เห็น
-    const { h, seat } = heightPair(get(r, 'สูง (H)'));
+    const { full: h, seat: seatH } = dimPair(get(r, 'สูง (H)'));
+    const { full: d, seat: seatD } = dimPair(get(r, 'ลึก (D)'));
 
     const parsed: ParsedRow = {
       source_row_no: rowNo,
@@ -158,9 +161,10 @@ export function parsePriceCsv(text: string): ParseResult {
       wood_colour: clean(get(r, 'Wood Colour (สีไม้)')),
       material_grade: clean(get(r, 'วัสดุหุ้ม (Upholstery Material)')),
       width_cm: dim(get(r, 'กว้าง (W)')),
-      depth_cm: dim(get(r, 'ลึก (D)')),
+      depth_cm: d,
       height_cm: h,
-      seat_height_cm: seat,
+      seat_height_cm: seatH,
+      seat_depth_cm: seatD,
       legacy_nnsku: clean(get(r, 'NNSKU#')),
       legacy_fullname: clean(get(r, 'Full name')),
       list_price_incl_vat: num(get(r, 'Retail Price include VAT')),

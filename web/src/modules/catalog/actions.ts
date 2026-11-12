@@ -208,7 +208,7 @@ export async function fetchGroupRows(
     .schema('catalog')
     .from('import_variants')
     .select(
-      'id,source_row_no,brand,sub_category,material_grade,wood,wood_colour,width_cm,depth_cm,height_cm,seat_height_cm,list_price_incl_vat,discount_pct,legacy_nnsku,review_status',
+      'id,source_row_no,brand,sub_category,material_grade,wood,wood_colour,width_cm,depth_cm,height_cm,seat_height_cm,seat_depth_cm,list_price_incl_vat,discount_pct,legacy_nnsku,review_status',
     )
     .eq('collection', collection)
     .eq('category', category)

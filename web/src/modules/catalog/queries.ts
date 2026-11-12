@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { sortRows } from '@/lib/sortRows';
 
 /** 1 แถว = 1 รุ่น (Collection + หมวด) — มาจากวิว catalog.v_import_groups */
 export type ImportGroup = {
@@ -27,6 +28,7 @@ export type ImportRow = {
   depth_cm: number | null;
   height_cm: number | null;
   seat_height_cm: number | null;
+  seat_depth_cm: number | null;
   list_price_incl_vat: number | null;
   discount_pct: number | null;
   legacy_nnsku: string | null;
@@ -45,9 +47,14 @@ export async function getImportGroups(): Promise<ImportGroup[]> {
   const { data } = await supabase
     .schema('catalog')
     .from('v_import_groups')
-    .select('*')
-    .order('collection');
-  return (data ?? []) as ImportGroup[];
+    .select('*');
+  // กลุ่มใหญ่ขึ้นก่อน · 23 กลุ่มแรกคือ 64% ของสินค้าทั้งหมด
+  // เรียงตามตัวอักษรทำให้เจอกำแพง 95 ใบโดยไม่รู้ว่าอันไหนสำคัญ
+  // เรียงในเครื่อง เพราะ API เรียงตามชื่อคอลัมน์ภาษาไทยไม่ได้ (ดู lib/sortRows)
+  return sortRows((data ?? []) as ImportGroup[], [
+    { key: (r) => r.รอตรวจ, desc: true },
+    { key: (r) => r.จำนวนแถว, desc: true },
+  ]);
 }
 
 /** แถวทั้งหมดในกลุ่มเดียว — ใช้ตอนกดดูรายละเอียดก่อนอนุมัติ */
@@ -57,7 +64,7 @@ export async function getGroupRows(collection: string, category: string): Promis
     .schema('catalog')
     .from('import_variants')
     .select(
-      'id,source_row_no,brand,sub_category,material_grade,wood,wood_colour,width_cm,depth_cm,height_cm,seat_height_cm,list_price_incl_vat,discount_pct,legacy_nnsku,review_status',
+      'id,source_row_no,brand,sub_category,material_grade,wood,wood_colour,width_cm,depth_cm,height_cm,seat_height_cm,seat_depth_cm,list_price_incl_vat,discount_pct,legacy_nnsku,review_status',
     )
     .eq('collection', collection)
     .eq('category', category)
@@ -128,6 +135,7 @@ export type VariantRow = {
   depth_cm: number | null;
   height_cm: number | null;
   seat_height_cm: number | null;
+  seat_depth_cm: number | null;
 };
 
 export async function getProducts(): Promise<ProductRow[]> {
@@ -149,7 +157,7 @@ export async function getProductVariants(productId: string) {
     .schema('catalog')
     .from('product_variants')
     .select(
-      'id,sku,product_id,configuration,material_grade,wood_type,wood_colour,width_cm,depth_cm,height_cm,seat_height_cm',
+      'id,sku,product_id,configuration,material_grade,wood_type,wood_colour,width_cm,depth_cm,height_cm,seat_height_cm,seat_depth_cm',
     )
     .eq('product_id', productId)
     .eq('status', 'ขายอยู่')

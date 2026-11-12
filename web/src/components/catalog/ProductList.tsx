@@ -8,6 +8,12 @@ import type { ProductRow, VariantWithPrice } from '@/modules/catalog/queries';
 const baht = (n: number | null | undefined) =>
   n === null || n === undefined ? '—' : n.toLocaleString('th-TH', { maximumFractionDigits: 0 });
 
+/** ขนาดที่นั่งมาจากวงเล็บในไฟล์ราคา มีเฉพาะบางตัว ตัวที่ไม่มีไม่ต้องขึ้นอะไร */
+const seatOf = (d: number | null, h: number | null) => {
+  const parts = [d !== null && `ลึก ${d}`, h !== null && `สูง ${h}`].filter(Boolean);
+  return parts.length > 0 ? ` (นั่ง ${parts.join(' · ')})` : '';
+};
+
 type Props = {
   products: ProductRow[];
   grades: string[];
@@ -128,7 +134,9 @@ export default function ProductList({ products, grades, loadVariants }: Props) {
                               </div>
                               <div className="mt-0.5 text-[11px] text-muted">
                                 {[v.width_cm, v.depth_cm, v.height_cm].map((x) => x ?? '—').join('×')}
-                                {' cm · '}
+                                {' cm'}
+                                {seatOf(v.seat_depth_cm, v.seat_height_cm)}
+                                {' · '}
                                 {v.price?.ที่มาของราคา ?? 'ยังไม่มีราคา'}
                               </div>
                             </div>

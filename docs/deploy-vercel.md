@@ -28,7 +28,7 @@ Vercel Dashboard → โปรเจกต์ **chawcher-os** → **Settings →
 | ช่อง | ใส่ |
 |---|---|
 | Repository | `baysireekahnokrath/Chawcheros` |
-| Production Branch | `claude/chaw-cher-os-setup-9k21w6` |
+| Production Branch | `main` (เดิม `claude/chaw-cher-os-setup-9k21w6` · เปลี่ยนใน Phase 0) |
 
 ### 2. ตั้ง Root Directory
 
@@ -94,3 +94,19 @@ Framework ปล่อยให้ตรวจเองได้ (จะขึ�
 
 **ถ้าอยากให้ Claude ทำเองได้ในอนาคต** ต้องขยาย scope ของ Vercel connector
 ให้ครอบคลุมทั้งทีม ไม่ใช่ผูกกับโปรเจกต์เดียว
+
+---
+
+## POS หน้าบูธ (`/pos`) · เพิ่ม 2026-11-06
+
+| หน้า | ใครเปิดได้ | ทำอะไร |
+|---|---|---|
+| `https://<โดเมน vercel>/pos` | **ทุกคนที่มีลิงก์** (ไม่ต้องล็อกอิน) ใส่ PIN ร้านครั้งเดียวต่อเครื่อง | ขาย ออกใบเสร็จ · เน็ตหลุดก็ขายต่อได้ ระบบส่งเข้าฐานข้อมูลให้เองเมื่อเน็ตกลับ |
+| `https://<โดเมน vercel>/pos-admin` | Bay (ล็อกอิน + สิทธิ์ admin) | ดูบิลทุกเครื่อง · แก้ · ยกเลิก · ลบ · CSV · เปลี่ยน PIN |
+
+### ก่อนใช้ครั้งแรก
+1. แก้ PIN ในไฟล์ `docs/sql-done/APPLY-0037-pos.sql` (บรรทัด ★) แล้ววางรันใน Supabase SQL Editor
+2. ให้โค้ด branch นี้ขึ้น Production ของ Vercel (merge เข้า Production Branch หรือเปลี่ยน Production Branch)
+3. เปิด `/pos` ใส่ PIN → ขายทดสอบ 1 บิล → เปิด `/pos-admin` ดูว่าบิลเข้า → ลบบิลทดสอบ
+
+> ⚠️ Preview deployment ของ Vercel มักเปิดการป้องกัน (ต้องล็อกอิน Vercel) · ลิงก์ที่ส่งให้น้องต้องเป็น **Production** เท่านั้น

@@ -63,6 +63,17 @@ body { font-family: var(--font-thai), system-ui, sans-serif; }
    และ QR ต้องพิมพ์เป็นสีดำบนขาวเสมอ ไม่งั้นโหมดมืดจะพิมพ์ออกมาสแกนไม่ติด
 --------------------------------------------------------------------------- */
 @media print {
+
+  /* ใบเสนอราคา · ซ่อนตัวแก้ไข เหลือแต่ใบจริง หนึ่งใบต่อหนึ่งหน้า */
+  .no-print { display: none !important; }
+  .quote-sheet {
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .quote-sheet img { max-width: 3rem !important; }
+  .page-break { break-before: page; }
   header, nav, footer { display: none !important; }
   main { max-width: none !important; padding: 0 !important; }
 
@@ -76,6 +87,12 @@ body { font-family: var(--font-thai), system-ui, sans-serif; }
   }
   html, body { background: #fff !important; color: #000 !important; }
   svg { color: #000 !important; }
+
+  /* ลูกศรหน้าหัวข้อไม่ต้องติดไปบนกระดาษ
+     ส่วนการกางหมวดที่ยุบไว้ ทำด้วย JS ใน DataSheet.tsx
+     เคยลองสั่งด้วย CSS อย่างเดียว แล้ว render PDF ออกมาหมวดที่ยุบหายหมด */
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
 
   @page { margin: 8mm; }
 }
