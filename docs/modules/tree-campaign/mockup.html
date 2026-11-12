@@ -1,0 +1,950 @@
+<title>Tree Campaign Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky top bar (side tabs + timeline) → two columns: screen list + notes | phone frame. Stacks on phone. Colors from docs/brand (CI) · no green in brand set, semantic ok-color only for status */
+:root{
+  --bg:#F7F8F8; --surface:#FFFFFF; --fg:#1F2A36; --muted:#66707C; --line:#E1E5E8; --soft:#EEF2F4;
+  --navy:#2B4368; --slate:#2F4554; --aqua:#83B7BF; --aqua-soft:#E3EFF1; --taupe:#958C7B; --taupe-soft:#F1EEE9;
+  --ok:#3F6F4F; --ok-bg:#E7F0EA; --warn:#9A6B23; --warn-bg:#F6EFE3; --bad:#9B3B32; --bad-bg:#F6E6E3;
+  --phone:#FFFFFF; --phone-edge:#2F4554; --on-navy:#FFFFFF;
+  --th:"Noto Sans Thai",system-ui,sans-serif; --en:"Montserrat","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1A222B; --surface:#222D38; --fg:#E7EBEE; --muted:#9AA6B2; --line:#34424F; --soft:#2A3743;
+  --navy:#A9C4DA; --slate:#13202B; --aqua:#83B7BF; --aqua-soft:#24393D; --taupe:#C2B8A6; --taupe-soft:#353029;
+  --ok:#86B894; --ok-bg:#22362A; --warn:#D9A75E; --warn-bg:#3A3122; --bad:#E39187; --bad-bg:#3E2623;
+  --phone:#1F2933; --phone-edge:#0E161D; --on-navy:#13202B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A222B; --surface:#222D38; --fg:#E7EBEE; --muted:#9AA6B2; --line:#34424F; --soft:#2A3743;
+  --navy:#A9C4DA; --slate:#13202B; --aqua:#83B7BF; --aqua-soft:#24393D; --taupe:#C2B8A6; --taupe-soft:#353029;
+  --ok:#86B894; --ok-bg:#22362A; --warn:#D9A75E; --warn-bg:#3A3122; --bad:#E39187; --bad-bg:#3E2623;
+  --phone:#1F2933; --phone-edge:#0E161D; --on-navy:#13202B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--th);font-size:15px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.en{font-family:var(--en)}
+.num{font-variant-numeric:tabular-nums}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding-block:12px 10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:10px}
+.brandrow{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.brandrow .mark{font-family:var(--en);letter-spacing:.32em;font-size:12px;color:var(--navy)}
+.brandrow .mark b{font-weight:600}
+.brandrow h1{margin:0;font-size:17px;font-weight:600;color:var(--fg)}
+.brandrow .tag{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px;font-size:14px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:var(--on-navy);font-weight:500}
+.tl{display:flex;gap:0;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.tl button{flex:none;border:0;background:none;padding:4px 10px 6px;display:grid;justify-items:start;gap:2px;border-bottom:2px solid var(--line);text-align:left}
+.tl button .d{font-family:var(--en);font-size:11px;letter-spacing:.08em;color:var(--taupe);text-transform:uppercase}
+.tl button .t{font-size:13px;color:var(--muted);white-space:nowrap}
+.tl button[aria-pressed="true"]{border-bottom-color:var(--navy)}
+.tl button[aria-pressed="true"] .t{color:var(--fg);font-weight:500}
+.tl button.past .t{color:var(--fg)}
+.tl-label{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* page */
+.wrap{max-width:1180px;margin:0 auto;padding-block:22px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 392px;gap:28px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}.phone-col{order:-1}}
+@media (max-width:900px){.top{position:static}}
+.side-head{display:grid;gap:4px;margin-bottom:14px}
+.eyebrow{font-family:var(--en);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin:0}
+.side-head h2{margin:0;font-size:22px;font-weight:600;color:var(--navy);text-wrap:balance}
+.side-head p{margin:0;color:var(--muted);max-width:64ch}
+.list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 14px;text-align:left;width:100%}
+.item[aria-current="true"]{border-color:var(--aqua);box-shadow:0 0 0 1px var(--aqua)}
+.item b{font-weight:500}
+.item .who{font-size:12px;color:var(--muted)}
+.item .req{font-family:var(--en);font-size:11px;color:var(--taupe);white-space:nowrap}
+.notes{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:10px}
+.notes h3{margin:0;font-size:15px;color:var(--navy)}
+.notes ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.notes .q{background:var(--warn-bg);color:var(--fg);border-radius:8px;padding:8px 12px;font-size:14px}
+.notes .q b{color:var(--warn)}
+.chip{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.aqua{background:var(--aqua-soft);color:var(--navy)}
+
+/* phone */
+.phone-col{position:sticky;top:150px}
+@media (max-width:900px){.phone-col{position:static}}
+.phone{background:var(--phone);border:10px solid var(--phone-edge);border-radius:34px;overflow:hidden;max-width:392px;margin:0 auto;box-shadow:0 18px 40px rgba(20,30,40,.18)}
+.phone .bar{display:flex;justify-content:space-between;align-items:center;padding:6px 18px 4px;font-family:var(--en);font-size:11px;color:var(--muted)}
+.screen{height:min(720px,calc(100vh - 210px));overflow-y:auto;overscroll-behavior:contain;background:var(--phone)}
+@media (max-width:900px){.screen{height:auto;max-height:none}}
+.phone-cap{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+
+/* in-phone UI */
+.app{display:grid;gap:14px;padding:14px 16px 22px}
+.app-h{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:1}
+.app-h .back{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);padding:0 4px}
+.app-h b{font-size:15px;font-weight:600}
+.app-h .sub{font-size:12px;color:var(--muted)}
+.logo{font-family:var(--en);letter-spacing:.3em;font-size:12px;color:var(--navy);text-align:center;line-height:1.3}
+.logo b{font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px}
+.card h4{margin:0;font-size:14px;color:var(--navy);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h4 .en{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--taupe);font-weight:500}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.row .l{min-width:0}
+.small{font-size:13px;color:var(--muted)}
+.tiny{font-size:12px;color:var(--muted)}
+.big{font-size:22px;font-weight:600;color:var(--navy)}
+.hello{font-size:20px;font-weight:600;color:var(--navy);margin:0}
+.btn{border:1px solid var(--navy);background:var(--navy);color:var(--on-navy);border-radius:10px;padding:10px 14px;font-weight:500;width:100%}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.sm{width:auto;padding:6px 12px;font-size:13px;border-radius:8px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.field{display:grid;gap:4px}
+.field label{font-size:13px;color:var(--muted)}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--surface);width:100%}
+.check{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:start;font-size:14px}
+.check input{margin-top:4px;width:16px;height:16px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface);text-align:left;display:grid;gap:2px}
+.opt[aria-pressed="true"]{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
+.opt b{font-size:14px;font-weight:500}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.steps div{display:grid;gap:4px;font-size:11px;color:var(--muted);text-align:center}
+.steps i{height:4px;border-radius:2px;background:var(--line)}
+.steps .done i{background:var(--navy)}
+.steps .now i{background:var(--aqua)}
+.steps .now,.steps .done{color:var(--fg)}
+.pic{border-radius:10px;overflow:hidden;background:var(--aqua-soft);display:grid;place-items:center;aspect-ratio:4/3;max-width:100%;position:relative;color:var(--navy)}
+.pic svg{width:70%;height:auto}
+.pic .cap{position:absolute;left:8px;bottom:6px;font-size:11px;background:var(--surface);color:var(--muted);padding:1px 6px;border-radius:6px}
+.pic.sm{aspect-ratio:1;width:64px;flex:none}
+.pic.sm svg{width:80%}
+.sus{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:4px;text-align:center}
+.sus .tagl{font-family:var(--en);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe)}
+.sus .proof{font-size:13px;color:var(--fg)}
+.sus .proof b{font-weight:500;color:var(--navy)}
+.sus.band{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--taupe-soft);text-align:left}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-weight:500;color:var(--muted);font-size:12px}
+.tbl td.r,.tbl th.r{text-align:right}
+.scroll-x{overflow-x:auto}
+.cert{border:1px solid var(--taupe);border-radius:4px;padding:18px 16px;display:grid;gap:12px;text-align:center;background:var(--surface)}
+.cert .ttl{font-family:var(--en);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--taupe)}
+.cert .nm{font-size:19px;font-weight:600;color:var(--navy)}
+.cert .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left}
+.cert .grid2 div{border-top:1px solid var(--line);padding-top:6px;font-size:13px}
+.cert .grid2 span{display:block;font-size:11px;color:var(--muted)}
+.label{border:1px dashed var(--muted);border-radius:6px;padding:12px;display:grid;gap:6px;background:var(--surface);font-size:13px}
+.qr{width:64px;height:64px;background:
+  linear-gradient(90deg,var(--fg) 12%,transparent 12% 25%,var(--fg) 25% 37%,transparent 37% 62%,var(--fg) 62% 75%,transparent 75% 88%,var(--fg) 88%),
+  linear-gradient(var(--surface) 0 0);border:4px solid var(--surface);outline:1px solid var(--line);opacity:.85}
+.chat{background:var(--soft);display:grid;gap:10px;padding:14px}
+.bubble{background:var(--surface);border-radius:14px 14px 14px 4px;padding:10px 12px;max-width:88%;font-size:14px;display:grid;gap:8px}
+.bubble .link{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bubble .link .lt{padding:8px 10px;display:grid;gap:2px}
+.funnel{display:grid;gap:6px}
+.funnel .f{display:grid;grid-template-columns:110px minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:13px}
+.funnel .f i{display:block;height:14px;border-radius:3px;background:var(--aqua)}
+.funnel .f .bar{background:var(--soft);border-radius:3px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--soft);border-radius:10px;padding:10px;display:grid;gap:2px}
+.kpi b{font-size:20px;color:var(--navy);font-weight:600}
+.kpi span{font-size:11px;color:var(--muted)}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--slate);color:#FFFFFF;padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+.empty{padding:18px;text-align:center;color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:10px}
+
+/* wide (overview / sustain) */
+.wide{display:grid;gap:22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;min-width:0}
+.panel h3{margin:0;font-size:16px;color:var(--navy)}
+.panel p{margin:0;max-width:72ch}
+.lanes{display:grid;grid-template-columns:120px repeat(7,minmax(120px,1fr));gap:6px;min-width:1000px;font-size:13px}
+.lanes .h{font-family:var(--en);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);padding:4px}
+.lanes .who{font-weight:500;color:var(--navy);padding:8px 4px}
+.lanes .c{background:var(--soft);border-radius:8px;padding:8px;display:grid;gap:3px}
+.lanes .c.on{background:var(--aqua-soft);outline:1px solid var(--aqua)}
+.lanes .c a{color:var(--navy);font-size:12px}
+.lanes .c.none{background:transparent}
+.qs{display:grid;gap:10px}
+.qrow{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;border-top:1px solid var(--line);padding-top:10px}
+.qrow .id{font-family:var(--en);font-weight:600;color:var(--warn);font-size:13px}
+.qrow p{margin:0}
+.qrow .prop{color:var(--muted);font-size:14px}
+.taglines{display:grid;gap:8px}
+.tagopt{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px;align-items:start}
+.tagopt[data-on="true"]{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
+.tagopt .en{font-size:15px;font-weight:500;color:var(--navy);letter-spacing:.02em}
+.stk{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 14px;align-items:start}
+@media (max-width:640px){.stk{grid-template-columns:minmax(0,1fr)}.qrow{grid-template-columns:minmax(0,1fr)}}
+.stk textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--surface);min-height:58px;resize:vertical}
+.stk .who b{display:block;color:var(--navy);font-weight:500}
+.stk .who span{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brandrow">
+      <span class="mark">CHAW <b>CHER</b></span>
+      <h1>แคมเปญต้นไม้ · ด่าน 3 mockup</h1>
+      <span class="tag">ข้อมูลปลอมทั้งหมด · ไม่ต่อฐานข้อมูล · กดได้ทุกปุ่ม</span>
+    </div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="tl-label"><span>เลื่อนเวลา ออเดอร์ตัวอย่าง <b class="en">BLS3231</b></span><span class="chip aqua" id="tl-now"></span></div>
+    <div class="tl" id="timeline" aria-label="เส้นเวลาของออเดอร์ตัวอย่าง"></div>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============ ข้อมูลตัวอย่าง ============ */
+const STAGES = [
+  {d:'วัน 0',    t:'ออก PO · ส่งลิงก์'},
+  {d:'วัน 2',    t:'ลูกค้าเลือกต้นไม้'},
+  {d:'วัน 6',    t:'เพาะกล้าแล้ว'},
+  {d:'วัน 32',   t:'ผลิตเสร็จ · QC'},
+  {d:'วัน 41',   t:'ส่งถึงบ้าน'},
+  {d:'มิ.ย. 70', t:'ย้ายลงดิน'},
+  {d:'พ.ย. 70',  t:'ครบ 1 ปี'},
+];
+const SPECIES = [
+  {id:'pradu',   th:'ประดู่ป่า',   note:'ดอกเหลือง ออกดอกต้นฤดูร้อน'},
+  {id:'yangna',  th:'ยางนา',      note:'ไม้ใหญ่ อายุยืน'},
+  {id:'takhian', th:'ตะเคียนทอง', note:'ไม้มงคล เนื้อแข็ง'},
+  {id:'makha',   th:'มะค่าโมง',   note:'ไม้ป่าดั้งเดิม'},
+  {id:'sak',     th:'สัก',        note:'ไม้ที่ใช้ทำเฟอร์นิเจอร์'},
+  {id:'payung',  th:'พะยูง',      note:'ไม้มงคล โตช้า'},
+  {id:'ratcha',  th:'ราชพฤกษ์',   note:'ดอกเหลืองทั้งต้น'},
+];
+const PLOTS = [
+  {id:'bkj', th:'บางกระเจ้า', sub:'สมุทรปราการ · ~30 นาทีจากกรุงเทพ', gps:'13.6950, 100.5640'},
+  {id:'ky',  th:'เขาใหญ่',    sub:'นครราชสีมา · ~2.5 ชม. จากกรุงเทพ',  gps:'14.5201, 101.3712'},
+];
+const PARTS = ['โครงไม้','ที่นั่ง','ฟองน้ำ','วางแบบ','เย็บ','หุ้ม']; // OPEN-18 · Bay ตอบ 2026-11-02
+const CRAFT = [
+  {id:'c1', real:'สมชาย ใจมั่น', nick:'ช่างชาย', hide:false},
+  {id:'c2', real:'บุญเลิศ ศรีทอง', nick:'ช่างบุญ', hide:false},
+  {id:'c3', real:'มาลี วงศ์ดี', nick:'ช่างมาลี', hide:false},
+  {id:'c4', real:'ประยุทธ แก้วใส', nick:'ช่างยุทธ', hide:true},
+  {id:'c5', real:'นงลักษณ์ ทองคำ', nick:'ช่างนง', hide:false},
+  {id:'c6', real:'วิชัย สุขเกษม', nick:'ช่างชัย', hide:false},
+];
+const ORDER = {
+  no:'BLS3231', date:'6 พ.ย. 2569', customer:'คุณนภัส วงศ์ไพศาล', phone:'081-234-5678', seller:'Bay',
+  lines:[
+    {sku:'10422860', name:'Kiwi Sofa 3 ที่นั่ง', opt:'ผ้าเกรด A · สี Sand · ขาไม้โอ๊ค', price:55900, cat:'โซฟา', unit:'U0000412', serial:'CC-26-0412'},
+    {sku:'10388215', name:'Oom Cozy Chair', opt:'หนัง SM-Wheat · ล็อต FR-260601', price:38200, cat:'โคซี่แชร์', unit:'U0000413', serial:'CC-26-0413'},
+    {sku:'10461102', name:'Kamin Stool', opt:'หนัง SM-Wheat · ขาสีธรรมชาติ', price:9800, cat:'สตูล', unit:'U0000414', serial:'CC-26-0414'},
+  ]
+};
+const COUNTED = {'โซฟา':true,'อาร์มแชร์':true,'Recliner':true,'เลาจ์แชร์':true,'โคซี่แชร์':true,'โมดูลาร์':true,'สตูล':false,'ม้านั่ง':false,'เตียง':false,'เก้าอี้':false,'โต๊ะ':false};
+
+/* ข้อความความยั่งยืน · แก้ได้ในแท็บ "ข้อความความยั่งยืน" แล้วทุกหน้าเปลี่ยนตาม (C12) */
+const TAGLINES = [
+  {id:'t1', en:'Made to last. Planted to grow.', th:'ทำให้อยู่นาน · ปลูกให้เติบโต', why:'แนะนำ · พูดถึงสองเรื่องที่ ฌ เฌอ ทำจริงและพิสูจน์ได้ คือของที่ใช้ได้หลายสิบปี กับต้นไม้ที่โตทุกปี'},
+  {id:'t2', en:'We support sustainability by…', th:'เราดูแลความยั่งยืนด้วยการ…', why:'แบบที่พี่เสนอ · ใช้ได้ดีเป็นประโยคนำของ "ข้อพิสูจน์" แต่ถ้าใช้คำเดียวโดดๆ จะกว้างจนฟังเป็นคำโฆษณา'},
+  {id:'t3', en:'One piece. One tree.', th:'หนึ่งตัว หนึ่งต้น', why:'สั้น จำง่าย แต่พูดแค่เรื่องต้นไม้ ไม่ครอบเรื่องอื่นที่ทำ'},
+];
+const STAKE = [
+  {id:'customer', th:'ลูกค้า',               where:'หน้าลูกค้า · ใบรับรอง · ข้อความ LINE', text:'โซฟาของคุณมีต้นไม้ 1 ต้นในชื่อคุณ เราเพาะเอง ปลูกเองบนที่ดินของเรา และคุณมาเยี่ยมได้'},
+  {id:'public',   th:'คนที่เห็นใบรับรอง',     where:'ใบรับรองสาธารณะ · ภาพแชร์', text:'ทุกโซฟา ฌ เฌอ ทำด้วยมือช่างที่มีชื่อ และมีต้นไม้ 1 ต้นเติบโตแทน'},
+  {id:'sales',    th:'ทีมขาย / การตลาด',      where:'หน้าออเดอร์ · คิวทักลูกค้า · แดชบอร์ด', text:'ทุกออเดอร์ที่ปิดได้ คือต้นไม้ที่จะได้ปลูกจริง เดือนนี้ทีมเราปลูกไปแล้ว {trees} ต้น'},
+  {id:'factory',  th:'ช่าง ASE',              where:'หน้า key ชื่อช่าง · ป้ายสินค้า', text:'ชื่อของคุณอยู่บนใบรับรองของลูกค้าตลอดอายุโซฟา · เศษหนังจากการตัดเราเก็บไว้ทำชิ้นเล็ก ไม่ทิ้ง'},
+  {id:'nursery',  th:'คนดูแลแปลงเพาะ',        where:'แปลงเพาะ · ย้ายลงดิน · รูปรวมแปลง', text:'ทุกต้นที่คุณเพาะ มีครอบครัวหนึ่งรอดูรูปอยู่ · ตอนนี้แปลงของเราดูแล {trees} ต้น'},
+  {id:'delivery', th:'จัดส่ง',                where:'หน้าจัดส่ง', text:'รวมเที่ยวได้ รถก็วิ่งน้อยลง · เดือนนี้รวมเที่ยวได้ {shared} เที่ยว'},
+  {id:'supplier', th:'ซัพพลายเออร์',          where:'ใบสั่งซื้อวัสดุ (ท้ายใบ)', text:'เราเลือกวัสดุที่บอกที่มาได้ และกำลังเก็บข้อมูลเพื่อขอฉลากคาร์บอนฟุตพริ้นท์ของ อบก. ขอบคุณที่ส่งเอกสารวัสดุให้เรา'},
+];
+/* ทะเบียนข้อพิสูจน์ · ขึ้นบนหน้าได้เฉพาะข้อที่ยืนยันแล้ว (กัน greenwashing · R1) */
+const CLAIMS = [
+  {id:'k1', text:'ปลูกต้นไม้ 1 ต้น ต่อโซฟา/อาร์มแชร์ 1 ตัว', proof:'ระบบนับจากออเดอร์จริง · มีเลขต้นไม้ รูป พิกัด', ok:true},
+  {id:'k2', text:'เศษหนังจากการตัด เก็บไว้ทำชิ้นงานเล็ก', proof:'Bay ยืนยัน 2026-10-31 (PRQ14)', ok:true},
+  {id:'k3', text:'รวมเที่ยวส่งของเมื่อทำได้', proof:'ชีต Delivery2026 · ค่าส่งหารเท่ากัน 57% ของรายการ', ok:true},
+  {id:'k4', text:'รับซ่อมงานของเราเอง', proof:'มีงานซ่อมเปิดเป็นออเดอร์ในชีต (เช่นซ่อม BLS606)', ok:true},
+  {id:'k5', text:'ผ้ารีไซเคิลจากขวดพลาสติก (ผ้า GRACE)', proof:'⏳ รอ Davis ส่ง % รีไซเคิล + ใบรับรอง GRS', ok:false},
+  {id:'k6', text:'โซฟามีฉลากคาร์บอนฟุตพริ้นท์ อบก.', proof:'⏳ กำลังยื่น · ยังไม่ได้ใบ', ok:false},
+  {id:'k7', text:'ประมาณการคาร์บอนที่ต้นไม้กักเก็บ (ค่าต่ำ)', proof:'⏳ ปิดไว้ตาม O6 · รอพี่ตัดสิน (ถาม X1)', ok:false},
+];
+
+/* ============ สถานะที่ทุกหน้าใช้ร่วมกัน ============ */
+const S = {
+  side:'overview', screen:null, stage:0, tagline:'t1', carbon:false,
+  submitted:false, contact:'081-234-5678', consent1:false, consent2:false, certPublic:true, sameAll:true,
+  trees:[
+    {tr:'TR-0412', line:0, species:'pradu', plot:'bkj', name:'', status:'รอเลือก', seedPhoto:false, gps:null, replant:false},
+    {tr:'TR-0413', line:1, species:'pradu', plot:'bkj', name:'', status:'รอเลือก', seedPhoto:false, gps:null, replant:false},
+  ],
+  treeAdjust:0, adjustReason:'', linkToken:'k7Qm2xV9pL',
+  produced:false, qcPhoto:1, craft:{U0000412:{},U0000413:{},U0000414:{}}, craftUnit:'U0000412',
+  ship:{step:0, provider:'Lalamove', track:'', shared:true},
+  paid:'มัดจำ 50%', annual:false, sent:{}, queueTab:'link',
+  label:{serial:true,name:true,craft:true,qr:true,tree:true,sus:true},
+  pixel:[], conv:[], species4:['pradu','yangna','takhian','ratcha'],
+};
+const BASE = {links:64, opened:41, planted:28, c1:23, c2:16, treesMonth:37, shared:9};
+
+function applyStage(n){
+  S.stage = n;
+  const t0 = S.trees;
+  if (n >= 1 && !S.submitted){
+    S.submitted = true; S.consent1 = true; S.consent2 = true;
+    t0[0].name = t0[0].name || 'เจ้าอ้วน'; t0[1].name = t0[1].name || 'น้องวีท';
+    logEvents();
+  }
+  if (n === 0){ S.submitted=false; S.consent1=false; S.consent2=false; S.pixel=[]; S.conv=[]; t0.forEach(t=>{t.name='';}); }
+  t0.forEach(t=>{
+    t.status = n>=5 ? 'ลงดินแล้ว' : n>=2 ? 'เพาะแล้ว' : n>=1 ? 'รอเพาะ' : 'รอเลือก';
+    t.seedPhoto = n>=2; t.gps = n>=5 ? PLOTS.find(p=>p.id===t.plot).gps : null; t.replant=false;
+  });
+  S.produced = n>=3;
+  S.paid = n>=3 ? 'ชำระครบ' : 'มัดจำ 50%';
+  const keyed = n>=4;
+  ['U0000412','U0000413','U0000414'].forEach((u,i)=>{
+    S.craft[u] = keyed ? Object.fromEntries(PARTS.map((p,j)=>[p, CRAFT[(i+j)%CRAFT.length].id])) : {};
+  });
+  S.ship.step = n>=4 ? 3 : n>=3 ? 2 : n>=0 ? 1 : 0;
+  S.ship.track = n>=3 ? 'LLM-8842 1907' : '';
+  S.annual = n>=6;
+}
+function logEvents(){
+  const now = STAGES[Math.max(S.stage,1)].d;
+  S.pixel = [{ev:'PageView', when:STAGES[0].d}, {ev:'Lead · กดปลูกให้ผม', when:now}];
+  S.conv = S.consent2
+    ? [{to:'Meta CAPI', what:'Purchase 103,900 บาท · วันซื้อ 6 พ.ย. 69', st:'ส่งแล้ว'}, {to:'Google Ads', what:'Offline conversion 103,900 บาท', st:'ส่งแล้ว'}]
+    : [{to:'Meta / Google', what:'ไม่ส่ง · ลูกค้าไม่ยินยอมช่อง 2', st:'ไม่ส่ง'}];
+}
+
+/* ============ ตัวช่วย ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const baht = n => n.toLocaleString('th-TH') + ' บาท';
+const sp = id => SPECIES.find(s=>s.id===id);
+const pl = id => PLOTS.find(p=>p.id===id);
+const crafter = id => CRAFT.find(c=>c.id===id);
+const treesForOrder = () => ORDER.lines.filter(l=>COUNTED[l.cat]).length + S.treeAdjust;
+const total = () => ORDER.lines.reduce((a,l)=>a+l.price,0);
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2200); }
+function copy(text){
+  const done = () => toast('คัดลอกแล้ว · วางใน LINE ได้เลย');
+  try { navigator.clipboard.writeText(text).then(done, ()=>fallback()); } catch(e){ fallback(); }
+  function fallback(){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); }
+}
+function fill(str){ const trees = BASE.treesMonth + (S.submitted?2:0); return str.replace('{trees}', trees).replace('{shared}', BASE.shared + (S.ship.shared&&S.stage>=4?1:0)); }
+function tagline(){ return TAGLINES.find(t=>t.id===S.tagline); }
+function stakeText(id){ return fill(STAKE.find(s=>s.id===id).text); }
+function sus(id, band){
+  const t = tagline();
+  return `<div class="sus ${band?'band':''}"><span class="tagl">${esc(t.en)}</span><span class="proof">${esc(stakeText(id))}</span></div>`;
+}
+function craftDone(u){ return PARTS.every(p=>S.craft[u] && S.craft[u][p]); }
+function craftLine(u, publicView){
+  if (!craftDone(u)) return 'ผลิตที่โรงงาน ฌ เฌอ';
+  return PARTS.map(p=>{ const c=crafter(S.craft[u][p]); return `${p} · ${publicView && c.hide ? 'ช่าง ฌ เฌอ' : c.nick}`; }).join(' / ');
+}
+function orderStep(){ // 4 ขั้น คำนวณจากสิ่งที่เกิดขึ้นจริง (T-15)
+  if (S.stage>=4) return 3; if (S.stage>=3) return 2; return 1;
+}
+
+/* ภาพประกอบ (ไม่มีรูปจริงใน mockup) */
+const ICON = {
+  seed:`<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="2"><path d="M30 80h60"/><path d="M38 80l6-22h32l6 22" fill="var(--surface)"/><path d="M60 58V34"/><path d="M60 42c-14 0-20-10-20-18 10 0 20 6 20 18z" fill="var(--aqua)"/><path d="M60 36c12 0 18-9 18-16-9 0-18 5-18 16z" fill="var(--aqua)"/></svg>`,
+  tree:`<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 82h100"/><path d="M60 82V48"/><circle cx="60" cy="34" r="22" fill="var(--aqua)"/><circle cx="44" cy="44" r="12" fill="var(--aqua)"/><circle cx="77" cy="44" r="12" fill="var(--aqua)"/></svg>`,
+  field:`<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 70c30-8 80-8 112 0"/><path d="M4 84h112"/>${[14,30,46,62,78,94,108].map((x,i)=>`<g><path d="M${x} ${70-i%2*3}v-12"/><circle cx="${x}" cy="${54-i%2*3}" r="${6+i%3}" fill="var(--aqua)"/></g>`).join('')}<circle cx="96" cy="16" r="7"/></svg>`,
+  sofa:`<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="2"><rect x="18" y="30" width="84" height="26" rx="6" fill="var(--taupe-soft)"/><rect x="10" y="44" width="100" height="22" rx="6" fill="var(--surface)"/><path d="M22 66v8M98 66v8"/></svg>`,
+  chair:`<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="2"><rect x="38" y="20" width="44" height="34" rx="10" fill="var(--taupe-soft)"/><rect x="30" y="46" width="60" height="18" rx="6" fill="var(--surface)"/><path d="M38 64v10M82 64v10"/></svg>`,
+};
+const pic = (k, cap, sm) => `<div class="pic ${sm?'sm':''}">${ICON[k]}${cap?`<span class="cap">${esc(cap)}</span>`:''}</div>`;
+
+/* ============ หน้าจอ ============ */
+const SIDES = [
+  {id:'overview', th:'ภาพรวม'},
+  {id:'customer', th:'ฝั่งลูกค้า'},
+  {id:'sales',    th:'ฝั่งขาย · การตลาด'},
+  {id:'prod',     th:'ฝั่งผลิต · ปฏิบัติการ'},
+  {id:'sustain',  th:'ข้อความความยั่งยืน'},
+];
+const SCREENS = [
+  {id:'c-line',    side:'customer', t:'ข้อความ LINE ที่ลูกค้าได้รับ', who:'ลูกค้า', req:'W2 · N3'},
+  {id:'c-home',    side:'customer', t:'หน้าลูกค้า (ลิงก์ส่วนตัว)', who:'ลูกค้า · ไม่ต้องล็อกอิน', req:'T-13–22'},
+  {id:'c-pick',    side:'customer', t:'เลือกต้นไม้ + ความยินยอม', who:'ลูกค้า', req:'T-23–32'},
+  {id:'c-cert',    side:'customer', t:'ใบรับรองสาธารณะ', who:'ใครก็ได้ที่ลูกค้าแชร์ให้', req:'T-33–38'},
+  {id:'c-privacy', side:'customer', t:'ข้อมูลของฉัน · ถอนความยินยอม', who:'ลูกค้า', req:'T-27–29 · T-38'},
+  {id:'m-order',   side:'sales', t:'ออเดอร์ · ต้นไม้ของออเดอร์นี้', who:'ฝ่ายขาย · sales.write', req:'T-07–12'},
+  {id:'m-queue',   side:'sales', t:'ควรทักลูกค้ารอบนี้', who:'ฝ่ายขาย · ส่งเองทาง LINE', req:'T-64–66'},
+  {id:'m-dash',    side:'sales', t:'แดชบอร์ดแคมเปญ', who:'Bay · การตลาด', req:'T-39–44 · T-53'},
+  {id:'m-config',  side:'sales', t:'ตั้งค่าแคมเปญ', who:'admin', req:'T-07 · T-23–24 · T-55 · T-58 · T-74'},
+  {id:'p-qc',      side:'prod', t:'QC · เลือกรูปที่ลูกค้าเห็น', who:'พี่นุ้ย · Admin ถ่ายรูป', req:'OQ9'},
+  {id:'p-craft',   side:'prod', t:'key ชื่อช่างตามหลัง', who:'ASE · ผ่าน PIN (ถาม X3)', req:'T-54–57'},
+  {id:'p-label',   side:'prod', t:'พิมพ์ป้ายสินค้า', who:'stock.write', req:'T-58–60'},
+  {id:'p-seed',    side:'prod', t:'แปลงเพาะ · ต้องเพาะ', who:'คนดูแลแปลง · tree.write', req:'T-45–47'},
+  {id:'p-plant',   side:'prod', t:'ย้ายลงดิน · ปลูกซ่อม', who:'คนดูแลแปลง', req:'T-48–50 · T-52'},
+  {id:'p-plot',    side:'prod', t:'รูปรวมแปลงรายปี', who:'คนดูแลแปลง', req:'T-51 · T-53'},
+  {id:'p-ship',    side:'prod', t:'จัดส่ง · สถานะ + tracking', who:'พี่ภา · delivery.write', req:'T-15–18 · T-61–63'},
+];
+const SIDE_INTRO = {
+  customer:['ฝั่งลูกค้า','ลูกค้าเห็นแค่ลิงก์เดียวตลอดชีวิตโซฟา ส่วนใบรับรองที่แชร์ได้เป็นอีกลิงก์ที่ไม่มีราคา ที่อยู่ หรือเบอร์ (C1)'],
+  sales:['ฝั่งขาย · การตลาด','ระบบนับต้นไม้จากออเดอร์ ทำรายชื่อว่าควรทักใคร และวัดว่าลูกค้ากรอกจริงกี่ % ซึ่งเป็นตัวเลขที่ใช้ตัดสินว่าแคมเปญเวิร์กไหม'],
+  prod:['ฝั่งผลิต · ปฏิบัติการ','ASE ผลิต · QC ถ่ายรูป · key ชื่อช่างตามหลัง · พิมพ์ป้าย · แปลงเพาะดูแลต้นไม้ · พี่ภาส่งของ ทุกหน้ามือถือมาก่อน'],
+};
+
+/* ---------- ลูกค้า ---------- */
+function scrCLine(){
+  const link = `chawcher.com/my/${S.linkToken}`;
+  const msg = `สวัสดีค่ะ ${ORDER.customer}\nขอบคุณที่เลือก ฌ เฌอ ค่ะ ออเดอร์ ${ORDER.no} เข้าคิวผลิตแล้ว\nดูสถานะ และเลือกต้นไม้ ${treesForOrder()} ต้นที่เราจะปลูกให้ในชื่อคุณได้ที่ลิงก์นี้ค่ะ\n${link}`;
+  return `<div class="app-h"><b>CHAW CHER</b><span class="sub">LINE Official</span></div>
+  <div class="chat">
+    <div class="tiny" style="text-align:center">วันนี้ 14:20</div>
+    <div class="bubble"><span style="white-space:pre-line">${esc(msg)}</span>
+      <div class="link">${pic('seed')}<div class="lt"><b style="font-size:13px">ออเดอร์ ${ORDER.no} ของคุณ · CHAW CHER</b><span class="tiny">${esc(link)}</span></div></div>
+    </div>
+    <div class="bubble" style="font-size:13px">${esc(tagline().th)} · ${esc(stakeText('customer'))}</div>
+  </div>
+  <div class="app"><button class="btn" data-go="c-home">เปิดลิงก์ (เหมือนลูกค้ากด)</button>
+  <p class="tiny">ข้อความนี้ฝ่ายขายคัดลอกจากหน้า "ควรทักรอบนี้" ไปส่งเองทาง LINE (C8) · ภาพตัวอย่างลิงก์ (ภาพ + หัวข้อ) ขึ้นเองเมื่อวางลิงก์</p></div>`;
+}
+function scrCHome(){
+  const step = orderStep();
+  const hideWhere = S.stage>=5;
+  const stepNames = ['รับออเดอร์','กำลังผลิต','พร้อมส่ง / นัดส่ง','ส่งสำเร็จ'];
+  const trees = S.trees.slice(0, Math.max(0, treesForOrder()));
+  return `<div class="app">
+    <div class="logo">CHAW<br><b>CHER</b></div>
+    <p class="hello">สวัสดี ${esc(ORDER.customer)}</p>
+    <div class="card"><h4>คุณซื้ออะไรไป <span class="en">${ORDER.no}</span></h4>
+      ${ORDER.lines.map(l=>`<div class="row"><div class="l"><b style="font-weight:500">${esc(l.name)}</b><div class="tiny">${esc(l.opt)}</div>${COUNTED[l.cat]?'<span class="chip aqua">ได้ต้นไม้ 1 ต้น</span>':''}</div><span class="num small">${baht(l.price)}</span></div>`).join('')}
+      <div class="row" style="border-top:1px solid var(--line);padding-top:8px"><b>รวม</b><b class="num">${baht(total())}</b></div>
+      <div class="row small"><span>ชำระแล้ว</span><span>${S.paid}</span></div>
+      <button class="btn ghost sm" data-toast="เปิด PO ดิจิทัล (ไฟล์เดียวกับที่ฝ่ายขายออก · OQ9)">ดู PO ดิจิทัล</button>
+    </div>
+    ${hideWhere ? `<div class="empty">ส่วน "ของอยู่ไหน" ซ่อนแล้ว · ส่งครบเกิน 30 วัน (N7)</div>` : `
+    <div class="card"><h4>ตอนนี้ของอยู่ไหน</h4>
+      <div class="steps">${stepNames.map((s,i)=>`<div class="${i<step?'done':i===step?'now':''}"><i></i>${s}</div>`).join('')}</div>
+      ${step<=1?`<div class="small">คาดว่าผลิตเสร็จ <b>21 ธ.ค. 2569</b> (วันสั่ง + 45 วัน)</div>`:''}
+      ${S.produced?`<div class="row"><div class="l small">รูปสินค้าจริงของคุณ ผ่าน QC แล้ว</div></div>${pic(S.qcPhoto===2?'chair':'sofa','รูปจาก QC · ตัวที่เป็นของคุณ')}`:''}
+      ${S.ship.track?`<div class="row small"><span>${esc(S.ship.provider)} · <span class="en">${esc(S.ship.track)}</span></span><a href="https://www.lalamove.com/th" target="_blank" rel="noopener">ติดตามพัสดุ</a></div>`:''}
+    </div>`}
+    <div class="card"><h4>ต้นไม้ของคุณ <span class="en">${trees.length} TREES</span></h4>
+      ${!S.submitted ? `<p class="small" style="margin:0">ทุกโซฟาและอาร์มแชร์ที่คุณซื้อ เราปลูกต้นไม้ให้ 1 ต้น เลือกพันธุ์ เลือกที่ปลูก และตั้งชื่อได้เลย ถ้ายังไม่เลือกภายใน 30 วัน เราจะปลูกประดู่ป่าให้ก่อน</p>
+        <button class="btn" data-go="c-pick">เลือกต้นไม้ของฉัน</button>` :
+        trees.map(t=>treeCard(t)).join('')}
+    </div>
+    <div class="card"><h4>ใบรับรอง</h4>
+      <p class="small" style="margin:0">${S.stage>=4?'ครบแล้ว แชร์ได้เลย':'ขึ้นข้อมูลเพิ่มเรื่อยๆ ระหว่างผลิตและปลูก'} · ใบที่แชร์ไม่มีราคา ที่อยู่ หรือเบอร์</p>
+      <div class="btns"><button class="btn sm" data-go="c-cert">ดูใบรับรอง</button><button class="btn ghost sm" data-share>แชร์</button></div>
+    </div>
+    <button class="btn ghost sm" data-go="c-privacy" style="justify-self:start">ข้อมูลของฉัน · ความยินยอม</button>
+    ${sus('customer')}
+  </div>`;
+}
+function treeCard(t){
+  const plot = pl(t.plot), s = sp(t.species);
+  const statusChip = {'รอเลือก':'warn','รอเพาะ':'warn','เพาะแล้ว':'aqua','ลงดินแล้ว':'ok'}[t.status];
+  const line = ORDER.lines[t.line];
+  let body = '';
+  if (t.status==='รอเพาะ') body = `<div class="small">จะเพาะที่แปลงเพาะโรงงานภายใน 7 วัน แล้วส่งรูปกล้าให้ · ย้ายลงดินรอบ มิ.ย. 2570</div>`;
+  if (t.status==='เพาะแล้ว') body = `${pic('seed', t.replant?'ปลูกซ่อม 3 ธ.ค. 69':'กล้าของคุณ · เพาะ 12 พ.ย. 69')}<div class="small">ย้ายลงดินที่${plot.th} รอบ มิ.ย. 2570</div>`;
+  if (t.status==='ลงดินแล้ว') body = `${pic(S.annual?'field':'tree', S.annual?'รูปรวมแปลง พ.ย. 70':'ลงดิน 14 มิ.ย. 70')}
+     <div class="small">ปลูกลงดินแล้วที่${plot.th} · <span class="en num">${esc(t.gps)}</span>${S.annual?' · อายุ 1 ปี':''}</div>
+     <div class="btns"><a class="btn sm" style="text-decoration:none;text-align:center" href="https://www.google.com/maps?q=${encodeURIComponent(t.gps)}" target="_blank" rel="noopener">เปิดแผนที่</a><span class="tiny" style="align-self:center">มาเยี่ยมได้ ทักนัดทาง LINE ก่อน</span></div>`;
+  return `<div style="display:grid;gap:8px;border-top:1px solid var(--line);padding-top:10px">
+    <div class="row"><div class="l"><b style="font-weight:500">${esc(t.name||'ยังไม่ได้ตั้งชื่อ')}</b> <span class="tiny en">${t.tr}</span><div class="tiny">${esc(s.th)} · ${esc(plot.th)} · แทน ${esc(line.name)}</div></div><span class="chip ${statusChip}">${t.replant?'ปลูกซ่อม':t.status}</span></div>
+    ${body}</div>`;
+}
+function scrCPick(){
+  const trees = S.trees.slice(0, treesForOrder());
+  const list = S.species4.map(sp);
+  const lockSeed = S.stage>=2;
+  const one = (t,i) => `<div class="card"><h4>ต้นที่ ${i+1} <span class="en">${t.tr}</span></h4>
+    <div class="tiny">แทน ${esc(ORDER.lines[t.line].name)}</div>
+    <div class="field"><label>พันธุ์</label><div class="opts">${list.map(s=>`<button class="opt" data-sp="${i}:${s.id}" aria-pressed="${t.species===s.id}" ${lockSeed?'disabled':''}><b>${s.th}</b><span class="tiny">${s.note}</span></button>`).join('')}</div></div>
+    <div class="field"><label>ปลูกที่</label><div class="opts">${PLOTS.map(p=>`<button class="opt" data-pl="${i}:${p.id}" aria-pressed="${t.plot===p.id}" ${lockSeed?'disabled':''}><b>${p.th}</b><span class="tiny">${p.sub}</span></button>`).join('')}</div></div>
+    <div class="field"><label for="nm${i}">ตั้งชื่อต้นไม้ (ไม่บังคับ · ไม่เกิน 30 ตัว)</label><input id="nm${i}" maxlength="30" data-nm="${i}" value="${esc(t.name)}" placeholder="เช่น เจ้าอ้วน"></div>
+  </div>`;
+  return `<div class="app-h"><button class="back" data-go="c-home" aria-label="กลับ">‹</button><b>เลือกต้นไม้ของฉัน</b></div>
+  <div class="app">
+    <p class="small" style="margin:0">เราเพาะกล้าที่แปลงในโรงงานก่อน แล้วย้ายลงดินจริงรอบ มิ.ย. ทุกขั้นเราส่งรูปให้</p>
+    ${lockSeed?'<div class="chip warn" style="justify-self:start">เพาะแล้ว · แก้ได้แค่ชื่อ (T-31)</div>':''}
+    ${trees.length>1?`<label class="check"><input type="checkbox" id="sameAll" ${S.sameAll?'checked':''} ${lockSeed?'disabled':''}><span>ใช้พันธุ์และที่ปลูกเดียวกันทุกต้น</span></label>`:''}
+    ${trees.map(one).join('')}
+    <div class="card"><h4>ส่งข่าวต้นไม้ไปที่</h4>
+      <div class="field"><label for="ct">เบอร์โทรหรืออีเมล</label><input id="ct" value="${esc(S.contact)}"></div>
+      <label class="check"><input type="checkbox" id="cs1" ${S.consent1?'checked':''}><span>ส่งข่าวต้นไม้ของฉัน (เพาะแล้ว · ลงดินแล้ว · ครบรอบปี) ทาง LINE ปีละไม่กี่ครั้ง</span></label>
+      <label class="check"><input type="checkbox" id="cs2" ${S.consent2?'checked':''}><span>ให้ ฌ เฌอ ส่งข้อมูลการซื้อแบบเข้ารหัส (เบอร์/อีเมลที่แปลงเป็นรหัสแล้ว · ยอดซื้อ · วันที่) ให้ Meta และ Google เพื่อวัดผลโฆษณา</span></label>
+      <p class="tiny" style="margin:0">ไม่ติ๊กก็ได้ต้นไม้เหมือนกัน · เปลี่ยนใจได้ทุกเมื่อที่หน้า "ข้อมูลของฉัน" · ข้อความนี้ต้องให้ที่ปรึกษากฎหมายอ่านก่อนใช้จริง</p>
+    </div>
+    <button class="btn" data-submit>${S.submitted?'บันทึก':'ปลูกให้ผม'}</button>
+    ${sus('customer')}
+  </div>`;
+}
+function scrCCert(){
+  const s = S.trees[0];
+  const line = ORDER.lines[0];
+  const off = !S.certPublic;
+  return `<div class="app-h"><button class="back" data-go="c-home" aria-label="กลับ">‹</button><b>ใบรับรอง</b><span class="sub en">chawcher.com/c/CCU-2026-0412</span></div>
+  <div class="app">
+    ${off?`<div class="empty">เจ้าของปิดใบรับรองนี้แล้ว (T-38) · คนที่มีลิงก์จะเห็นหน้านี้</div>`:`
+    <div class="cert">
+      <div class="logo">CHAW<br><b>CHER</b></div>
+      <div class="ttl">Certificate of craft &amp; planting</div>
+      <div class="nm">${esc(line.name)}</div>
+      <div class="small">${esc(line.opt.split(' · ').slice(0,2).join(' · '))}</div>
+      <div class="grid2">
+        <div><span>เลขประจำตัวสินค้า</span><b class="en">${line.serial}</b></div>
+        <div><span>ผลิต</span>${S.produced?'ธ.ค. 2569 · โรงงาน ASE':'กำลังผลิต'}</div>
+        <div style="grid-column:1/-1"><span>ทำด้วยมือโดย</span>${esc(craftLine(line.unit,true))}</div>
+        <div><span>ต้นไม้</span><b>${esc(s.name||'ยังไม่ได้ตั้งชื่อ')}</b> <span class="en" style="display:inline">${s.tr}</span></div>
+        <div><span>พันธุ์</span>${esc(sp(s.species).th)}</div>
+        <div><span>ปลูกที่</span>${esc(pl(s.plot).th)}</div>
+        <div><span>สถานะ</span>${esc(s.status)}</div>
+        ${S.carbon && S.stage>=5 ? `<div style="grid-column:1/-1"><span>ประมาณการกักเก็บคาร์บอน 20 ปี (ค่าต่ำ)</span>≈ 3.6 ตัน CO₂e · <span class="tiny" style="display:inline">ไม่ใช่คาร์บอนเครดิต</span></div>`:''}
+      </div>
+      ${pic(s.status==='ลงดินแล้ว'?(S.annual?'field':'tree'):s.seedPhoto?'seed':'sofa', s.status==='ลงดินแล้ว'?'รูปล่าสุดจากแปลง':s.seedPhoto?'รูปกล้า':'รูปสินค้า')}
+      <div class="tiny">เราปลูกให้ ตรวจสอบได้ · เลขใบรับรอง <span class="en">CCU-2026-0412</span></div>
+      ${sus('public')}
+    </div>
+    <div class="card"><h4>ภาพตัวอย่างตอนแชร์ใน LINE / Facebook <span class="en">T-36</span></h4>
+      <div class="bubble" style="max-width:100%;border:1px solid var(--line)"><div class="link">${pic(s.status==='ลงดินแล้ว'?'tree':'sofa')}<div class="lt"><b style="font-size:13px">${esc(s.name||'ต้นไม้')} · ${esc(sp(s.species).th)} ที่${esc(pl(s.plot).th)}</b><span class="tiny">${esc(line.name)} ทำด้วยมือ · ${esc(tagline().en)}</span></div></div></div>
+    </div>`}
+    ${ORDER.lines.filter(l=>COUNTED[l.cat]).length>1?`<p class="tiny" style="margin:0">ออเดอร์นี้มีใบรับรอง 2 ใบ (1 ใบต่อ 1 ตัว · 1 ต้น) ใบที่ 2: <span class="en">CCU-2026-0413</span></p>`:''}
+  </div>`;
+}
+function scrCPrivacy(){
+  return `<div class="app-h"><button class="back" data-go="c-home" aria-label="กลับ">‹</button><b>ข้อมูลของฉัน</b></div>
+  <div class="app">
+    <div class="card"><h4>ความยินยอม</h4>
+      <label class="check"><input type="checkbox" id="pv1" ${S.consent1?'checked':''}><span>รับข่าวต้นไม้ทาง LINE</span></label>
+      <label class="check"><input type="checkbox" id="pv2" ${S.consent2?'checked':''}><span>ส่งข้อมูลการซื้อแบบเข้ารหัสให้ Meta / Google</span></label>
+      <p class="tiny" style="margin:0">ยอมรับเมื่อ 8 พ.ย. 2569 14:32 · ข้อความเวอร์ชัน v1 · ถอนแล้วหยุดส่งตั้งแต่วินาทีนั้น ข้อมูลที่ส่งไปก่อนหน้าไม่ถูกดึงกลับ (T-28–29)</p>
+    </div>
+    <div class="card"><h4>ใบรับรองสาธารณะ</h4>
+      <label class="check"><input type="checkbox" id="pv3" ${S.certPublic?'checked':''}><span>เปิดให้คนที่มีลิงก์ใบรับรองดูได้</span></label>
+    </div>
+    <div class="card"><h4>ลิงก์นี้</h4><p class="small" style="margin:0">ลิงก์ส่วนตัวของคุณ ห้ามส่งต่อ ถ้าส่งผิดคนทักเราทาง LINE เราออกลิงก์ใหม่ให้ได้ทันที</p></div>
+  </div>`;
+}
+
+/* ---------- ขาย / การตลาด ---------- */
+function scrMOrder(){
+  const counted = ORDER.lines.filter(l=>COUNTED[l.cat]).length;
+  return `<div class="app-h"><b>ออเดอร์ ${ORDER.no}</b><span class="sub">${esc(ORDER.customer)} · ${ORDER.date}</span></div>
+  <div class="app">
+    <div class="card"><h4>รายการ · ระบบนับต้นไม้ให้</h4>
+      <table class="tbl"><thead><tr><th>สินค้า</th><th>หมวด</th><th class="r">ต้น</th></tr></thead><tbody>
+      ${ORDER.lines.map(l=>`<tr><td>${esc(l.name)}<div class="tiny en">${l.sku}</div></td><td>${l.cat}</td><td class="r">${COUNTED[l.cat]?'1':'<span class="tiny">ไม่นับ</span>'}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="row"><span>ตามกฎ</span><b class="num">${counted} ต้น</b></div>
+      <div class="row"><span>ปรับโดยคนขาย</span><span class="btns"><button class="btn ghost sm" data-adj="-1" aria-label="ลด 1 ต้น">−</button><b class="num" style="min-width:28px;text-align:center">${S.treeAdjust>0?'+':''}${S.treeAdjust}</b><button class="btn ghost sm" data-adj="1" aria-label="เพิ่ม 1 ต้น">+</button></span></div>
+      ${S.treeAdjust!==0?`<div class="field"><label for="adr">เหตุผลที่ปรับ (บังคับ · เก็บประวัติว่าใครปรับ)</label><input id="adr" value="${esc(S.adjustReason)}" placeholder="เช่น โมดูลาร์ 6 ชิ้น ลูกค้าแยกไว้ 2 ห้อง"></div>`:''}
+      <div class="row"><b>รวม</b><b class="big num">${treesForOrder()} ต้น</b></div>
+      <div class="tiny">เลขต้นไม้ ${S.trees.slice(0,treesForOrder()).map(t=>t.tr).join(' · ')} ออกให้ทันทีที่นับ (C5)</div>
+    </div>
+    <div class="card"><h4>ลิงก์ลูกค้า <span class="en">T-11–12</span></h4>
+      <div class="small en" style="word-break:break-all">chawcher.com/my/${S.linkToken}</div>
+      <div class="small">1 ลิงก์ต่อลูกค้า เห็นทุกออเดอร์ของเขา · เดาไม่ได้</div>
+      <div class="btns"><button class="btn sm" data-copylink>คัดลอกข้อความ + ลิงก์</button><button class="btn ghost sm" data-relink>ออกลิงก์ใหม่ (ส่งผิดคน)</button></div>
+    </div>
+    <div class="card"><h4>ลูกค้าทำอะไรแล้วบ้าง</h4>
+      <div class="row small"><span>เปิดลิงก์</span><span>${S.stage>=0?'✓ 6 พ.ย. 14:31':'-'}</span></div>
+      <div class="row small"><span>เลือกต้นไม้</span><span>${S.submitted?'✓':'ยังไม่เลือก · เหลือ 30 วัน'}</span></div>
+      <div class="row small"><span>ยินยอมรับข่าว / ส่งข้อมูลโฆษณา</span><span>${S.consent1?'✓':'✗'} / ${S.consent2?'✓':'✗'}</span></div>
+    </div>
+    ${sus('sales', true)}
+  </div>`;
+}
+function scrMQueue(){
+  const tabs = [
+    {id:'link', th:'ส่งลิงก์ครั้งแรก', need:'all'},
+    {id:'seed', th:'เพาะแล้ว', need:'c1'},
+    {id:'plant', th:'ลงดินแล้ว', need:'c1'},
+    {id:'year', th:'ครบรอบปี', need:'c1'},
+  ];
+  const rows = {
+    link:[{c:ORDER.customer, o:ORDER.no, show:S.stage===0}, {c:'คุณธีรวัฒน์ ส.', o:'BLS3229', show:true}, {c:'บจก.อุรา กรุงเทพ คลินิก', o:'BLS3226', show:true}],
+    seed:[{c:ORDER.customer, o:ORDER.no, show:S.stage>=2&&S.stage<5&&S.consent1}, {c:'คุณกานต์ ร.', o:'BLS3218', show:true}],
+    plant:[{c:ORDER.customer, o:ORDER.no, show:S.stage>=5&&S.consent1}],
+    year:[{c:ORDER.customer, o:ORDER.no, show:S.stage>=6&&S.consent1}],
+  };
+  const msgs = {
+    link:o=>`ออเดอร์ ${o} เข้าคิวผลิตแล้วค่ะ ดูสถานะและเลือกต้นไม้ได้ที่ลิงก์นี้`,
+    seed:o=>`กล้าต้นไม้ของคุณเพาะแล้วค่ะ 🌱 ดูรูปได้ที่ลิงก์เดิม`,
+    plant:o=>`ต้นไม้ของคุณลงดินแล้วที่บางกระเจ้า มีพิกัดให้มาเยี่ยมในลิงก์ค่ะ`,
+    year:o=>`ต้นไม้ของคุณอายุครบ 1 ปีแล้วค่ะ ดูรูปแปลงล่าสุดได้ที่ลิงก์`,
+  };
+  const tab = S.queueTab;
+  const list = rows[tab].filter(r=>r.show && !S.sent[tab+r.o]);
+  return `<div class="app-h"><b>ควรทักรอบนี้</b><span class="sub">ฝ่ายขาย · ส่งเองทาง LINE</span></div>
+  <div class="app">
+    <div class="seg">${tabs.map(t=>`<button data-qtab="${t.id}" aria-pressed="${t.id===tab}">${t.th} <span class="num">${rows[t.id].filter(r=>r.show&&!S.sent[t.id+r.o]).length}</span></button>`).join('')}</div>
+    <p class="tiny" style="margin:0">${tab==='link'?'ส่งลิงก์ครั้งแรกขึ้นทุกคน':'ขึ้นเฉพาะคนที่ยินยอมรับข่าวต้นไม้ (ช่อง 1) · T-66'}</p>
+    ${list.length? list.map(r=>`<div class="card"><div class="row"><div class="l"><b style="font-weight:500">${esc(r.c)}</b><div class="tiny en">${r.o}</div></div></div>
+      <div class="small" style="background:var(--soft);border-radius:8px;padding:8px">${esc(msgs[tab](r.o))}<br><span class="en tiny">chawcher.com/my/…</span></div>
+      <div class="btns"><button class="btn sm" data-qcopy="${esc(msgs[tab](r.o))}">คัดลอก</button><button class="btn ghost sm" data-qsent="${tab+r.o}">ส่งแล้ว</button></div></div>`).join('')
+      : `<div class="empty">ไม่มีคนที่ต้องทักในหมวดนี้ตอนนี้ · ลองเลื่อนเวลาด้านบน</div>`}
+    ${sus('sales', true)}
+  </div>`;
+}
+function scrMDash(){
+  const add = S.submitted?1:0;
+  const F = [
+    ['ส่งลิงก์แล้ว', BASE.links+1], ['เปิดลิงก์', BASE.opened+1], ['กดปลูกให้ผม', BASE.planted+add],
+    ['ยินยอมรับข่าว', BASE.c1+(S.consent1?1:0)], ['ยินยอมส่งโฆษณา', BASE.c2+(S.consent2?1:0)],
+  ];
+  const max = F[0][1];
+  const pct = Math.round(F[2][1]/F[0][1]*100);
+  return `<div class="app-h"><b>แดชบอร์ดแคมเปญ</b><span class="sub">ตั้งแต่เริ่ม 1 พ.ย. 2569</span></div>
+  <div class="app">
+    <div class="kpis"><div class="kpi"><b class="num">${pct}%</b><span>กรอกจริง (จุดตัดสิน)</span></div><div class="kpi"><b class="num">${BASE.treesMonth+add*2}</b><span>ต้นไม้ที่ต้องปลูก</span></div><div class="kpi"><b class="num">${BASE.c2+(S.consent2?1:0)}</b><span>ส่ง offline conv.</span></div></div>
+    <div class="card"><h4>ลิงก์ → กรอก <span class="en">T-44</span></h4>
+      <div class="funnel">${F.map(f=>`<div class="f"><span>${f[0]}</span><span class="bar"><i style="width:${Math.round(f[1]/max*100)}%"></i></span><b class="num" style="text-align:right">${f[1]}</b></div>`).join('')}</div>
+      <p class="tiny" style="margin:0">ลูกค้าเก่า ~60 PO ส่งลิงก์แล้ว 41 ราย · ออเดอร์ใหม่ 24 ราย</p>
+    </div>
+    <div class="card"><h4>ต้นไม้ตามสถานะ <span class="en">T-53</span></h4>
+      <table class="tbl"><thead><tr><th>แปลง</th><th class="r">รอเพาะ</th><th class="r">เพาะแล้ว</th><th class="r">ลงดิน</th></tr></thead><tbody>
+      <tr><td>บางกระเจ้า</td><td class="r num">${4+(S.stage===1?2:0)}</td><td class="r num">${19+(S.stage>=2&&S.stage<5?2:0)}</td><td class="r num">${S.stage>=5?21:0}</td></tr>
+      <tr><td>เขาใหญ่</td><td class="r num">2</td><td class="r num">12</td><td class="r num">${S.stage>=5?12:0}</td></tr></tbody></table>
+    </div>
+    <div class="card"><h4>ส่งให้ Meta / Google · ออเดอร์นี้ <span class="en">T-40–43</span></h4>
+      ${S.pixel.length?`<table class="tbl"><tbody>${S.pixel.map(p=>`<tr><td>Pixel + Google tag</td><td>${esc(p.ev)}</td><td class="r tiny">${p.when}</td></tr>`).join('')}
+      ${S.conv.map(c=>`<tr><td>${esc(c.to)}</td><td>${esc(c.what)}</td><td class="r"><span class="chip ${c.st==='ส่งแล้ว'?'ok':'warn'}">${c.st}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty">ลูกค้ายังไม่กดปลูก · ยังไม่มีอะไรส่ง</div>'}
+      <div class="small">ทั้งหมด: ส่งแล้ว 16 · ไม่ส่ง (ไม่ยินยอม) 12 · <span class="chip warn">เลยกรอบเวลา 38</span> PO เก่าที่ซื้อเกินกรอบของแพลตฟอร์ม ระบบไม่ส่งและบอกเหตุผล</div>
+    </div>
+    ${sus('sales', true)}
+  </div>`;
+}
+function scrMConfig(){
+  const cats = Object.keys(COUNTED);
+  return `<div class="app-h"><b>ตั้งค่าแคมเปญ</b><span class="sub">admin · ไม่ฝังในโค้ด</span></div>
+  <div class="app">
+    <div class="card"><h4>หมวดที่ได้ต้นไม้ <span class="en">O3 · T-07</span></h4>
+      <div class="seg">${cats.map(c=>`<button data-cat="${c}" aria-pressed="${COUNTED[c]}">${c}</button>`).join('')}</div>
+      <div class="tiny">โมดูลาร์รุ่นเดียวกันในออเดอร์เดียว = 1 ต้น · ลองกด "สตูล" แล้วไปดูหน้าออเดอร์</div>
+    </div>
+    <div class="card"><h4>พันธุ์ที่ให้ลูกค้าเลือก (เลือก 3–4) <span class="en">ถาม X5</span></h4>
+      <div class="seg">${SPECIES.map(s=>`<button data-sp4="${s.id}" aria-pressed="${S.species4.includes(s.id)}">${s.th}</button>`).join('')}</div>
+      <div class="tiny">รายชื่อ 7 พันธุ์มาจากเครื่องมือหน่วยคาร์บอน (carbon-unit.html) · ตอนนี้เปิด ${S.species4.length} พันธุ์</div>
+    </div>
+    <div class="card"><h4>แปลง</h4>${PLOTS.map(p=>`<div class="row small"><span>${p.th}</span><span class="en">${p.gps}</span></div>`).join('')}<button class="btn ghost sm" data-toast="เพิ่มแปลงใหม่ได้ (T-24)" style="justify-self:start">+ เพิ่มแปลง</button></div>
+    <div class="card"><h4>ส่วนงานช่าง <span class="en">OPEN-18</span></h4><div class="seg">${PARTS.map(p=>`<button aria-pressed="true">${p}</button>`).join('')}</div><div class="tiny">ตามที่พี่ตอบ 2026-11-02 · เพิ่ม/เรียงใหม่ได้</div></div>
+    <div class="card"><h4>ประมาณการคาร์บอนบนใบรับรอง <span class="en">O6 · ถาม X1</span></h4>
+      <label class="check"><input type="checkbox" id="cbn" ${S.carbon?'checked':''}><span>แสดงค่าต่ำของช่วง + ข้อความ "ไม่ใช่คาร์บอนเครดิต" เมื่อลงดินแล้ว</span></label>
+      <div class="tiny">ตอนนี้ปิดตามที่ล็อกไว้ใน O6 · ลองเปิดแล้วเลื่อนเวลาไป "ย้ายลงดิน" ดูใบรับรอง</div>
+    </div>
+    <div class="card"><h4>ข้อความยินยอม</h4><div class="row small"><span>v1 · ใช้อยู่</span><span>8 พ.ย. 69</span></div><div class="tiny">แก้แล้วเป็นเวอร์ชันใหม่ ของเดิมไม่หาย ลูกค้าแต่ละคนผูกกับเวอร์ชันที่เขาเห็นตอนกด (T-28)</div></div>
+  </div>`;
+}
+
+/* ---------- ผลิต / ปฏิบัติการ ---------- */
+function scrPQc(){
+  if (!S.produced) return `<div class="app-h"><b>QC · ${ORDER.no}</b></div><div class="app"><div class="empty">ยังผลิตไม่เสร็จ · เลื่อนเวลาไป "ผลิตเสร็จ · QC"</div></div>`;
+  return `<div class="app-h"><b>QC · ${ORDER.no}</b><span class="sub">พี่นุ้ยตรวจ · Admin ถ่าย</span></div>
+  <div class="app">
+    <div class="card"><h4>${esc(ORDER.lines[0].name)} <span class="en">U0000412</span></h4>
+      <div class="row small"><span>ผล QC</span><span class="chip ok">ผ่าน · 3 ธ.ค. 69</span></div>
+      <div class="field"><label>รูปไหนให้ลูกค้าเห็น (OQ9 · ไม่เลือก = ไม่แสดง)</label>
+      <div class="opts" style="grid-template-columns:repeat(3,1fr)">${[1,2,3].map(n=>`<button class="opt" data-qcp="${n}" aria-pressed="${S.qcPhoto===n}" style="padding:4px">${pic(n===2?'chair':'sofa','รูป '+n)}</button>`).join('')}</div></div>
+      <button class="btn ghost sm" data-qcp="0" style="justify-self:start">ไม่แสดงรูป</button>
+    </div>
+    <p class="tiny" style="margin:0">รูปผูกกับตัวสินค้า ไม่ใช่ทั้งใบ (photo-check) · ระบบส่งเข้ากลุ่ม LINE เช็คงานเป็นชุด</p>
+  </div>`;
+}
+function scrPCraft(){
+  const units = ORDER.lines.map(l=>({u:l.unit, n:l.name}));
+  const pending = [
+    ...units.filter(x=>!craftDone(x.u)).map(x=>({...x, o:ORDER.no, due:'ส่ง 17 ธ.ค.'})),
+    {u:'U0000398', n:'Emu Sofa 2 ที่นั่ง', o:'BLS3219', due:'ส่ง 20 ธ.ค.'},
+  ];
+  const cur = S.craftUnit;
+  const curName = units.find(x=>x.u===cur)?.n || '';
+  return `<div class="app-h"><b>key ชื่อช่าง</b><span class="sub">ASE · เข้าด้วย PIN</span></div>
+  <div class="app">
+    <div class="card"><h4>ยังไม่มีชื่อช่าง <span class="en">${pending.length} ตัว</span></h4>
+      ${pending.map(x=>`<button class="opt" data-cu="${x.u}" aria-pressed="${x.u===cur}" style="width:100%"><span class="row"><b>${esc(x.n)}</b><span class="tiny">${x.due}</span></span><span class="tiny en">${x.u} · ${x.o}</span></button>`).join('')}
+      <div class="tiny">เรียงจากวันส่งใกล้สุด · ส่งของก่อน key ได้ ใบรับรองจะขึ้น "ผลิตที่โรงงาน ฌ เฌอ" ไปก่อน</div>
+    </div>
+    <div class="card"><h4>${esc(curName)} <span class="en">${cur}</span></h4>
+      ${PARTS.map(p=>`<div class="field"><label for="cr-${p}">${p}</label><select id="cr-${p}" data-cr="${p}"><option value="">— เลือกช่าง —</option>${CRAFT.map(c=>`<option value="${c.id}" ${S.craft[cur]?.[p]===c.id?'selected':''}>${c.nick} (${c.real})${c.hide?' · ไม่แสดงชื่อ':''}</option>`).join('')}</select></div>`).join('')}
+      <div class="field"><label for="crd">วันผลิตเสร็จ</label><input id="crd" value="2 ธ.ค. 2569"></div>
+      <button class="btn" data-crsave>บันทึก</button>
+      <div class="tiny">ใบรับรองใช้ชื่อเล่น · ช่างที่ขอไม่แสดงชื่อ ขึ้นเป็น "ช่าง ฌ เฌอ" (O19)</div>
+    </div>
+    ${sus('factory', true)}
+  </div>`;
+}
+function scrPLabel(){
+  const l = ORDER.lines[0], f = S.label;
+  const fields = [['serial','เลขสินค้า'],['name','ชื่อสินค้า'],['craft','ชื่อช่าง'],['tree','ต้นไม้'],['qr','QR ไปใบรับรอง'],['sus','ข้อความความยั่งยืน']];
+  return `<div class="app-h"><b>พิมพ์ป้ายสินค้า</b><span class="sub">รูปแบบตั้งค่าได้ · C12</span></div>
+  <div class="app">
+    <div class="card"><h4>ช่องที่จะพิมพ์</h4><div class="seg">${fields.map(([k,t])=>`<button data-lf="${k}" aria-pressed="${f[k]}">${t}</button>`).join('')}</div></div>
+    <div class="label">
+      <div class="row"><div class="l">
+        <div class="logo" style="text-align:left">CHAW <b>CHER</b></div>
+        ${f.name?`<b>${esc(l.name)}</b><div class="tiny">${esc(l.opt)}</div>`:''}
+        ${f.serial?`<div class="en" style="font-size:15px;font-weight:600">${l.serial}</div>`:''}
+      </div>${f.qr?'<div class="qr" aria-label="QR"></div>':''}</div>
+      ${f.craft?`<div class="tiny">ทำโดย: ${esc(craftLine(l.unit,true))}</div>`:''}
+      ${f.tree?`<div class="tiny">ต้นไม้ ${S.trees[0].tr}${S.trees[0].name?' · '+esc(S.trees[0].name):''} · ${esc(pl(S.trees[0].plot).th)}</div>`:''}
+      ${f.sus?`<div class="tiny" style="border-top:1px solid var(--line);padding-top:4px"><span class="en">${esc(tagline().en)}</span></div>`:''}
+    </div>
+    <div class="row tiny"><span>ขนาด 100×150 มม. (เครื่องพิมพ์ใบปะหน้าเดิม)</span>${craftDone(l.unit)?'<span class="chip ok">มีชื่อช่างแล้ว</span>':'<span class="chip warn">ยังไม่ key ช่าง</span>'}</div>
+    <button class="btn" data-toast="ส่งไปเครื่องพิมพ์ (ใช้ระบบสติกเกอร์ของโมดูลคลัง)">พิมพ์ป้าย</button>
+    <p class="tiny" style="margin:0">ข้อมูลแก้ที่ฐานข้อมูลที่เดียว · ป้ายพิมพ์ใหม่ได้เมื่อข้อมูลเปลี่ยน (T-59)</p>
+  </div>`;
+}
+function scrPSeed(){
+  const mine = S.trees.slice(0,treesForOrder()).filter(t=>t.status==='รอเพาะ');
+  const others = [{tr:'TR-0409', sp:'ยางนา', nm:'ต้นกล้าของพลอย', plot:'เขาใหญ่', wait:5}, {tr:'TR-0410', sp:'ประดู่ป่า', nm:'', plot:'บางกระเจ้า', wait:4}];
+  return `<div class="app-h"><b>แปลงเพาะ · ต้องเพาะ</b><span class="sub">แปลงในโรงงาน</span></div>
+  <div class="app">
+    <div class="btns"><button class="btn sm" data-toast="พิมพ์ป้ายต้นไม้ทุกต้นในรายการ (เลข TR + ชื่อ)">พิมพ์ป้ายต้นไม้ทั้งหมด</button></div>
+    ${mine.map(t=>`<div class="card"><div class="row"><div class="l"><b class="en">${t.tr}</b> <span class="small">${esc(sp(t.species).th)}</span><div class="tiny">ชื่อ: ${esc(t.name||'—')} · ไป${esc(pl(t.plot).th)} · ${esc(ORDER.no)}</div></div><span class="chip warn">รอ 1 วัน</span></div>
+      <label class="btn sm ghost" style="text-align:center">ถ่ายรูป + เพาะแล้ว<input type="file" accept="image/*" data-seed="${t.tr}" hidden></label>
+      <button class="btn sm" data-seedok="${t.tr}">เพาะแล้ว (ใช้รูปตัวอย่าง)</button></div>`).join('')}
+    ${others.map(o=>`<div class="card"><div class="row"><div class="l"><b class="en">${o.tr}</b> <span class="small">${o.sp}</span><div class="tiny">ชื่อ: ${esc(o.nm||'—')} · ไป${o.plot}</div></div><span class="chip ${o.wait>4?'bad':'warn'}">รอ ${o.wait} วัน</span></div></div>`).join('')}
+    ${!mine.length&&S.stage<1?'<div class="empty">ต้นของ BLS3231 ยังไม่ขึ้น · ลูกค้ายังไม่เลือก (หรือรอครบ 30 วันใส่ค่าตั้งต้น)</div>':''}
+    <p class="tiny" style="margin:0">ทำหลายต้นต่อกันได้เร็ว · กดแล้วลูกค้าเห็นรูปกล้าทันที และขึ้นในคิว "ควรทักรอบนี้"</p>
+    ${sus('nursery', true)}
+  </div>`;
+}
+function scrPPlant(){
+  const ready = S.trees.slice(0,treesForOrder()).filter(t=>t.status==='เพาะแล้ว' || t.status==='ลงดินแล้ว');
+  return `<div class="app-h"><b>ย้ายลงดิน · รอบ มิ.ย. 2570</b><span class="sub">ล็อตบางกระเจ้า</span></div>
+  <div class="app">
+    <div class="kpis"><div class="kpi"><b class="num">21</b><span>พร้อมย้าย บางกระเจ้า</span></div><div class="kpi"><b class="num">12</b><span>พร้อมย้าย เขาใหญ่</span></div><div class="kpi"><b class="num">2</b><span>ตาย · ปลูกซ่อมแล้ว</span></div></div>
+    ${ready.length?ready.map(t=>`<div class="card"><div class="row"><div class="l"><b class="en">${t.tr}</b> <span class="small">${esc(sp(t.species).th)} · ${esc(t.name||'—')}</span><div class="tiny">ไป${esc(pl(t.plot).th)}</div></div><span class="chip ${t.status==='ลงดินแล้ว'?'ok':t.replant?'warn':'aqua'}">${t.replant?'ปลูกซ่อม':t.status}</span></div>
+      ${t.status==='ลงดินแล้ว'?`<div class="small">พิกัด <span class="en num">${esc(t.gps)}</span> · จับจากมือถือ</div>`:
+      `<div class="btns"><button class="btn sm" data-plant="${t.tr}">ปลูกแล้ว · จับพิกัด + รูป</button><button class="btn ghost sm" data-dead="${t.tr}">ต้นตาย → ปลูกซ่อม</button></div>`}</div>`).join('')
+    : '<div class="empty">ยังไม่มีกล้าของ BLS3231 พร้อมย้าย · เลื่อนเวลาไป "เพาะกล้าแล้ว" ขึ้นไป</div>'}
+    <p class="tiny" style="margin:0">ต้นตาย: ประวัติต้นเดิมไม่หาย ปลูกใหม่ใช้เลข TR เดิม และหน้าลูกค้าขึ้นว่า "ปลูกซ่อม" ตรงๆ (C7) · ออเดอร์ยกเลิก: ต้นที่เพาะแล้วเป็น "ต้นของ ฌ เฌอ" (T-52)</p>
+    ${sus('nursery', true)}
+  </div>`;
+}
+function scrPPlot(){
+  return `<div class="app-h"><b>รูปรวมแปลงประจำปี</b><span class="sub">โดรน · แปลงละ 1 ชุด</span></div>
+  <div class="app">
+    ${PLOTS.map(p=>`<div class="card"><h4>${p.th} <span class="en">${p.id==='bkj'?'33':'12'} TREES</span></h4>
+      ${S.annual||p.id==='ky'?pic('field', p.id==='bkj'?'พ.ย. 2570':'พ.ย. 2570 (ตัวอย่าง)'):'<div class="empty">ยังไม่มีรูปปีนี้</div>'}
+      <div class="row small"><span>เพาะอยู่ ${p.id==='bkj'?6:2} · ลงดินแล้ว ${p.id==='bkj'?(S.stage>=5?21:0):12}</span>
+      ${p.id==='bkj'&&!S.annual?'<button class="btn sm" data-annual>อัปโหลดรูปปีนี้</button>':''}</div></div>`).join('')}
+    <p class="tiny" style="margin:0">อัปรูปแปลงครั้งเดียว ทุกต้นในแปลงเห็นรูปนี้ · ต้นทุนคงที่ไม่ว่ากี่พันต้น (O10)</p>
+    ${sus('nursery', true)}
+  </div>`;
+}
+function scrPShip(){
+  const names = ['รับออเดอร์','กำลังผลิต','พร้อมส่ง / นัดส่ง','ส่งสำเร็จ'];
+  return `<div class="app-h"><b>จัดส่ง · ${ORDER.no}</b><span class="sub">พี่ภา</span></div>
+  <div class="app">
+    <div class="card"><h4>สถานะที่ลูกค้าเห็น</h4>
+      <div class="steps">${names.map((s,i)=>`<div class="${i<orderStep()?'done':i===orderStep()?'now':''}"><i></i>${s}</div>`).join('')}</div>
+      <div class="tiny">คำนวณจากสิ่งที่เกิดขึ้นจริง (มีตัวสินค้า · ผ่าน QC · ชำระครบ · ส่งถึง) ไม่ใช่ช่องที่คนพิมพ์ (order 1-workflow)</div>
+    </div>
+    <div class="card"><h4>รอบส่ง 1 / 1</h4>
+      <div class="field"><label for="prov">ผู้ส่ง</label><select id="prov">${['Lalamove','RTT','R3P','คนขับอิสระ · คุณชัยยงค์'].map(p=>`<option ${S.ship.provider===p?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="field"><label for="trk">เลข tracking (ถ้ามี)</label><input id="trk" value="${esc(S.ship.track)}" placeholder="ใส่แล้วลูกค้าเห็นปุ่มติดตาม"></div>
+      <label class="check"><input type="checkbox" id="shr" ${S.ship.shared?'checked':''}><span>รวมเที่ยวกับ <span class="en">BLS3229</span> (บางนา) · หารค่าเที่ยวเท่ากัน</span></label>
+      <div class="row small"><span>ค่าเที่ยว</span><span class="num">${S.ship.shared?'1,293 ÷ 2 = 646.50':'1,293'} บาท</span></div>
+      <button class="btn" data-shipsave>บันทึก</button>
+    </div>
+    ${sus('delivery', true)}
+  </div>`;
+}
+
+/* ---------- ภาพรวม ---------- */
+function viewOverview(){
+  const lanes = [
+    ['ลูกค้า', ['c-line','c-pick','','','c-home','c-home','c-cert']],
+    ['ขาย · การตลาด', ['m-order','m-dash','m-queue','','','m-queue','m-queue']],
+    ['ASE · QC', ['','','','p-qc','p-craft','',''] ],
+    ['ป้าย · จัดส่ง', ['','','','p-label','p-ship','','']],
+    ['แปลงเพาะ', ['','','p-seed','','','p-plant','p-plot']],
+  ];
+  const cellText = {
+    'c-line':'ได้ลิงก์ทาง LINE','c-pick':'เลือกพันธุ์ ที่ปลูก ตั้งชื่อ ยินยอม','c-home':'ดูสถานะ รูปจริง พิกัด','c-cert':'ใบรับรอง + แชร์',
+    'm-order':'ระบบนับต้น ออกลิงก์','m-dash':'pixel + offline conv.','m-queue':'รายชื่อที่ควรทัก',
+    'p-qc':'QC เลือกรูปให้ลูกค้า','p-craft':'key ชื่อช่างตามหลัง','p-label':'พิมพ์ป้าย','p-ship':'ส่ง + tracking',
+    'p-seed':'เพาะ + ติดป้าย + รูป','p-plant':'ลงดิน + GPS','p-plot':'รูปรวมแปลง',
+  };
+  const Q = [
+    ['X1','ใบรับรองโชว์ประมาณการคาร์บอนไหม · O6 ล็อกไว้ว่าเฟสแรกไม่โชว์ แต่หลังจากนั้นพี่สร้างเครื่องมือหน่วยคาร์บอนที่โชว์ ตัน CO₂e (ค่าต่ำ + ไม่ใช่คาร์บอนเครดิต)','เปิดได้ แต่โชว์เฉพาะต้นที่ลงดินแล้ว ค่าต่ำของช่วง พร้อมคำว่า "ไม่ใช่คาร์บอนเครดิต" ทุกครั้ง · mockup ทำปุ่มเปิด/ปิดไว้ที่ตั้งค่าแคมเปญ'],
+    ['X2','T-01–06 (import ชีต PO) ยังต้องมีไหม · ตอนนี้ออเดอร์อยู่ในระบบแล้ว (/orders) และ OQ3 ให้ย้ายชีตทั้งหมดเข้าระบบ','ตัด T-01–06 · ต้นไม้นับจากรายการออเดอร์ในระบบตรงๆ · ลูกค้าเก่า ~60 PO ได้ต้นไม้หลังย้ายชีตเสร็จ'],
+    ['X3','คน ASE เป็นคนนอกระบบ (B38) จะ key ชื่อช่างยังไง','หน้า PIN แบบเดียวกับ /phoenix ไม่ต้องล็อกอิน · ทำได้อย่างเดียวคือ key ช่างของตัวสินค้า'],
+    ['X4','ข้อความความยั่งยืน ใช้ประโยคไหน (แท็บ "ข้อความความยั่งยืน")','"Made to last. Planted to grow." เป็นประโยคหลัก + ข้อพิสูจน์ที่ต่างกันตามคนอ่าน · ขึ้นได้เฉพาะข้อที่ยืนยันแล้ว'],
+    ['X5','เลือก 3–4 พันธุ์จาก 7 พันธุ์ในเครื่องมือหน่วยคาร์บอน','ประดู่ป่า · ยางนา · ตะเคียนทอง · ราชพฤกษ์ (ผมไม่ใช่ผู้เชี่ยวชาญเรื่องดิน ควรถามคนดูแลแปลงว่าพันธุ์ไหนขึ้นได้ทั้งสองที่)'],
+    ['X6','เลขใบรับรอง · เครื่องมือหน่วยคาร์บอนใช้ CCU-ปี-รหัส ส่วนต้นไม้ใช้ TR-เลข','ใบรับรอง 1 ใบต่อ 1 ต้น ใช้ CCU-2026-0412 ผูกกับ TR-0412 เลขชุดเดียวกัน อ่านแล้วรู้ว่าคู่กัน'],
+  ];
+  return `<div class="wide">
+    <div class="side-head"><p class="eyebrow">Stage 3 · Mockup</p><h2>ทุกหน้า ทุกฝั่ง ของออเดอร์ตัวอย่างใบเดียว</h2>
+      <p>เลื่อนเวลาด้านบนจากวันออก PO ถึงครบ 1 ปี แล้วกดดูแต่ละหน้า ทุกหน้าใช้ข้อมูลชุดเดียวกัน กดอะไรในฝั่งหนึ่ง อีกฝั่งเปลี่ยนตาม เช่น แปลงเพาะกด "เพาะแล้ว" หน้าลูกค้าขึ้นรูปกล้าทันที</p></div>
+    <div class="panel"><h3>ใครทำอะไร เมื่อไหร่ · กดช่องเพื่อเปิดหน้านั้น</h3>
+      <div class="scroll-x"><div class="lanes">
+        <div></div>${STAGES.map((s,i)=>`<div class="h">${s.d}<br>${s.t}</div>`).join('')}
+        ${lanes.map(([who,cells])=>`<div class="who">${who}</div>${cells.map((c,i)=>c?`<div class="c ${i===S.stage?'on':''}"><span>${cellText[c]}</span><a href="#${c}" data-open="${c}">เปิดหน้า →</a></div>`:`<div class="c none"></div>`).join('')}`).join('')}
+      </div></div>
+    </div>
+    <div class="panel"><h3>คำถามใหม่ที่เจอตอนอ่านเอกสารทั้งหมด</h3>
+      <p class="small">ผมไม่ได้แก้ decisions-log เอง · ทุกข้อมีคำตอบที่เสนอไว้</p>
+      <div class="qs">${Q.map(q=>`<div class="qrow"><span class="id">${q[0]}</span><div><p>${q[1]}</p><p class="prop">ผมเสนอ: ${q[2]}</p></div></div>`).join('')}</div>
+    </div>
+    <div class="panel"><h3>สิ่งที่ mockup นี้ยังไม่มี</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:4px"><li>ตัด L4 แผนที่รวม · L5 ชวนเพื่อน · L6 เจ้าของคนที่สอง · L7 รางวัลช่าง ออกตาม requirement</li><li>ส่ง LINE อัตโนมัติ · ดึงสถานะจากขนส่ง</li><li>รูปทั้งหมดเป็นภาพวาดแทน ของจริงใช้รูปจริงจาก QC และแปลง</li></ul>
+    </div>
+  </div>`;
+}
+
+/* ---------- ข้อความความยั่งยืน ---------- */
+function viewSustain(){
+  return `<div class="wide">
+    <div class="side-head"><p class="eyebrow">Sustainability message</p><h2>ข้อความเดียว ที่ทุกคนในธุรกิจเห็น</h2>
+      <p>พี่เสนอ "We support sustainability by…" ผมเห็นด้วยว่าทุกคนควรเห็นเรื่องนี้ แต่แนะนำให้ใช้เป็น 2 ชั้น ชั้นแรกคือประโยคหลักสั้นๆ ที่เหมือนกันทุกที่ ชั้นที่สองคือ "ข้อพิสูจน์" ที่ต่างกันตามคนอ่าน และต้องเป็นเรื่องที่เราทำจริง ตรวจได้ ไม่งั้นจะโดนมองว่า greenwashing (R1)</p></div>
+    <div class="panel"><h3>1 · ประโยคหลัก · เลือกแล้วทุกหน้าเปลี่ยนตาม</h3>
+      <div class="taglines">${TAGLINES.map(t=>`<label class="tagopt" data-on="${S.tagline===t.id}"><input type="radio" name="tg" value="${t.id}" ${S.tagline===t.id?'checked':''}><span><span class="en">${esc(t.en)}</span><br>${esc(t.th)}<br><span class="small">${esc(t.why)}</span></span></label>`).join('')}</div>
+    </div>
+    <div class="panel"><h3>2 · ข้อพิสูจน์ ตามคนอ่าน · แก้ได้ แล้วไปดูในหน้าจอ</h3>
+      <div class="stk">${STAKE.map(s=>`<div class="who"><b>${s.th}</b><span>${s.where}</span></div><textarea id="stk-${s.id}" data-stk="${s.id}">${esc(s.text)}</textarea>`).join('')}</div>
+      <p class="tiny" style="margin:0">{trees} และ {shared} คือตัวเลขที่ระบบเติมเองจากข้อมูลจริง ไม่มีใครพิมพ์ (A10)</p>
+    </div>
+    <div class="panel"><h3>3 · ทะเบียนข้อพิสูจน์ · ขึ้นบนหน้าได้เฉพาะข้อที่ยืนยันแล้ว</h3>
+      <div class="scroll-x"><table class="tbl"><thead><tr><th>เรื่องที่พูดได้</th><th>หลักฐาน</th><th>สถานะ</th></tr></thead><tbody>
+      ${CLAIMS.map(c=>`<tr><td>${esc(c.text)}</td><td class="small">${esc(c.proof)}</td><td><span class="chip ${c.ok?'ok':'warn'}">${c.ok?'พูดได้':'ยังห้ามพูด'}</span></td></tr>`).join('')}
+      </tbody></table></div>
+      <p class="small" style="margin:0">เรื่องผ้ารีไซเคิลและฉลาก CFP เป็นข่าวดีที่ใหญ่ที่สุด แต่ต้องรอเอกสารก่อน · พอได้ใบจาก Davis และ อบก. ก็แค่เปลี่ยนสถานะ ข้อความในทุกหน้าใช้ได้ทันที</p>
+    </div>
+    <div class="panel"><h3>4 · คำที่ไม่ใช้</h3>
+      <p>carbon neutral · ชดเชยคาร์บอน · net zero · eco-friendly 100% · รักษ์โลก (ลอยๆ ไม่มีข้อพิสูจน์) · "ต้นไม้ 1 ต้นชดเชยโซฟา 1 ตัว"</p>
+    </div>
+    <div class="panel"><h3>ตัวอย่างในหน้าจอ</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">${['customer','sales','factory','delivery'].map(id=>`<div>${sus(id,true)}<div class="tiny" style="margin-top:4px">${STAKE.find(s=>s.id===id).th}</div></div>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+/* ============ วาดหน้า ============ */
+const RENDER = {'c-line':scrCLine,'c-home':scrCHome,'c-pick':scrCPick,'c-cert':scrCCert,'c-privacy':scrCPrivacy,'m-order':scrMOrder,'m-queue':scrMQueue,'m-dash':scrMDash,'m-config':scrMConfig,'p-qc':scrPQc,'p-craft':scrPCraft,'p-label':scrPLabel,'p-seed':scrPSeed,'p-plant':scrPPlant,'p-plot':scrPPlot,'p-ship':scrPShip};
+const NOTES = {
+  'c-line':['ข้อความสั้น มีลิงก์เดียว','ลิงก์ส่งทันทีหลังออก PO ไม่รอส่งของ (C2)'],
+  'c-home':['ลองเลื่อนเวลา: สถานะ 4 ขั้น รูป QC เลข tracking ต้นไม้ ใบรับรอง เปลี่ยนตาม','หลังส่งครบ 30 วัน ส่วน "ของอยู่ไหน" ซ่อนเอง (N7)','ไม่มีต้นทุน กำไร หรือข้อมูลลูกค้าคนอื่น (T-22)','Kamin Stool ไม่ได้ต้นไม้ เพราะสตูลไม่นับ (Q10)'],
+  'c-pick':['ลองติ๊ก "ใช้พันธุ์เดียวกันทุกต้น" แล้วเลือกพันธุ์','ช่องยินยอมไม่ติ๊กไว้ก่อน ไม่ติ๊กก็กดปลูกได้','กดปลูกแล้วไปดูแดชบอร์ด: pixel ยิง และส่ง offline conversion เฉพาะเมื่อติ๊กช่อง 2','เลื่อนเวลาไป "เพาะกล้าแล้ว" แก้ได้แค่ชื่อ'],
+  'c-cert':['ไม่มีราคา ที่อยู่ เบอร์','ก่อน key ช่าง ขึ้น "ผลิตที่โรงงาน ฌ เฌอ" · ลองไปหน้า key ช่างแล้วกลับมาดู','ช่างที่ขอไม่แสดงชื่อ ขึ้นเป็น "ช่าง ฌ เฌอ"'],
+  'c-privacy':['ถอนช่อง 2 แล้วไปดูแดชบอร์ด · ปิดใบรับรองแล้วไปดูหน้าใบรับรอง'],
+  'm-order':['ลองกด + / − แล้วดูว่าต้องใส่เหตุผล','ลองไปตั้งค่า เปิดหมวด "สตูล" แล้วกลับมาดู'],
+  'm-queue':['เลื่อนเวลาแล้วรายชื่อเปลี่ยน','ถ้าลูกค้าไม่ยินยอมช่อง 1 จะไม่ขึ้นในหมวดข่าวต้นไม้'],
+  'm-dash':['% กรอก คือจุดตัดสินว่าแคมเปญเวิร์กไหม (0-idea ข้อ 9)','PO เก่าที่เลยกรอบเวลาของแพลตฟอร์ม ระบบไม่ส่งและบอกเหตุผล'],
+  'm-config':['ทุกอย่างในหน้านี้เป็นการตั้งค่า ไม่ฝังในโค้ด','ปุ่มคาร์บอน = คำถาม X1'],
+  'p-qc':['ไม่เลือกรูป = ลูกค้าไม่เห็นรูป (OQ9)','ลองเลือกรูป 2 แล้วไปดูหน้าลูกค้า'],
+  'p-craft':['ส่วนงาน 6 ขั้นตามที่พี่ตอบ OPEN-18','คน ASE เข้าด้วย PIN = คำถาม X3','บันทึกแล้วไปดูใบรับรองกับป้าย'],
+  'p-label':['เลือกช่องที่จะพิมพ์ได้ = รูปแบบที่ตั้งค่าไว้ (C12)','ป้ายพิมพ์หลัง key ช่าง จึงมีชื่อช่างได้'],
+  'p-seed':['ปุ่ม "ถ่ายรูป" ในของจริงเปิดกล้องมือถือ · ในนี้ใช้รูปตัวอย่าง','กดแล้วไปดูหน้าลูกค้า'],
+  'p-plant':['พิกัดจับจากมือถือตอนกด','ลองกด "ต้นตาย" แล้วดูหน้าลูกค้า'],
+  'p-plot':['รูปแปลงเดียว ทุกต้นในแปลงเห็น'],
+  'p-ship':['ลองใส่เลข tracking แล้วดูหน้าลูกค้า','รวมเที่ยวไปเติมตัวเลขในข้อความความยั่งยืนของฝ่ายจัดส่ง'],
+};
+
+function render(){
+  // tabs
+  $('#tabs').innerHTML = SIDES.map(s=>`<button class="tab" role="tab" aria-selected="${S.side===s.id}" data-side="${s.id}">${s.th}</button>`).join('');
+  $('#timeline').innerHTML = STAGES.map((s,i)=>`<button aria-pressed="${S.stage===i}" class="${i<S.stage?'past':''}" data-stage="${i}"><span class="d">${s.d}</span><span class="t">${s.t}</span></button>`).join('');
+  $('#tl-now').textContent = STAGES[S.stage].d + ' · ' + STAGES[S.stage].t;
+  const main = $('#main');
+  const keepScroll = document.querySelector('.screen')?.scrollTop || 0;
+  if (S.side==='overview'){ main.innerHTML = viewOverview(); return; }
+  if (S.side==='sustain'){ main.innerHTML = viewSustain(); return; }
+  const list = SCREENS.filter(x=>x.side===S.side);
+  if (!S.screen || !list.find(x=>x.id===S.screen)) S.screen = list[0].id;
+  const cur = SCREENS.find(x=>x.id===S.screen);
+  const intro = SIDE_INTRO[S.side];
+  main.innerHTML = `<div class="cols">
+    <div style="min-width:0">
+      <div class="side-head"><p class="eyebrow">${list.length} หน้า</p><h2>${intro[0]}</h2><p>${intro[1]}</p></div>
+      <ul class="list">${list.map(x=>`<li><button class="item" data-screen="${x.id}" aria-current="${x.id===S.screen}"><span><b>${x.t}</b><br><span class="who">${x.who}</span></span><span class="req">${x.req}</span></button></li>`).join('')}</ul>
+      <div class="notes"><h3>ลองดูอะไรในหน้า "${cur.t}"</h3><ul>${(NOTES[cur.id]||[]).map(n=>`<li>${n}</li>`).join('')}</ul>
+      <span class="small">อ้างอิง: ${cur.req} ใน 2-requirements.md</span></div>
+    </div>
+    <div class="phone-col"><div class="phone"><div class="bar"><span>9:41</span><span>${cur.side==='customer'?'chawcher.com':'chawcher-os'}</span></div><div class="screen" id="screen">${RENDER[cur.id]()}</div></div>
+      <div class="phone-cap">${cur.t} · ${cur.who}</div></div>
+  </div>`;
+  if (location.hash.slice(1) !== cur.id){ try{ history.replaceState(null,'','#'+cur.id); }catch(e){} }
+  if (render._same) $('#screen').scrollTop = keepScroll;
+  render._same = false;
+}
+function go(id){ const sc = SCREENS.find(x=>x.id===id); if(!sc) return; S.side = sc.side; S.screen = id; render(); const s=$('#screen'); if(s) s.scrollTop=0; if (window.innerWidth<=900){ const p=document.querySelector('.phone'); p&&p.scrollIntoView({block:'start'}); } }
+function rerender(){ render._same = true; render(); }
+
+/* ============ เหตุการณ์ ============ */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('button,a,[data-open]');
+  if (!b) return;
+  const d = b.dataset;
+  if (d.side){ S.side=d.side; S.screen=null; render(); if(S.side==='overview'||S.side==='sustain'){ try{history.replaceState(null,'','#'+S.side);}catch(err){} } return; }
+  if (d.stage!==undefined){ applyStage(+d.stage); rerender(); toast('ไปที่ '+STAGES[S.stage].d+' · '+STAGES[S.stage].t); return; }
+  if (d.screen){ go(d.screen); return; }
+  if (d.open){ e.preventDefault(); go(d.open); return; }
+  if (d.go){ go(d.go); return; }
+  if (d.toast){ toast(d.toast); return; }
+  if (d.share!==undefined){ copy('chawcher.com/c/CCU-2026-0412'); return; }
+  if (d.sp){ const [i,id]=d.sp.split(':'); S.trees.forEach((t,j)=>{ if(+i===j || S.sameAll) t.species=id; }); rerender(); return; }
+  if (d.pl){ const [i,id]=d.pl.split(':'); S.trees.forEach((t,j)=>{ if(+i===j || S.sameAll) t.plot=id; }); rerender(); return; }
+  if (d.submit!==undefined){
+    S.contact = $('#ct').value; S.consent1 = $('#cs1').checked; S.consent2 = $('#cs2').checked;
+    const first = !S.submitted;
+    S.submitted = true;
+    S.trees.forEach(t=>{ if(t.status==='รอเลือก') t.status='รอเพาะ'; });
+    if (S.stage<1) S.stage = 1;
+    logEvents();
+    toast(first ? 'บันทึกแล้ว · เราจะเพาะภายใน 7 วัน แล้วส่งรูปให้' : 'บันทึกแล้ว');
+    go('c-home'); return;
+  }
+  if (d.adj){ S.treeAdjust = Math.max(-ORDER.lines.filter(l=>COUNTED[l.cat]).length, Math.min(1, S.treeAdjust + +d.adj)); if(S.trees.length<treesForOrder()) S.trees.push({tr:'TR-0414', line:2, species:'pradu', plot:'bkj', name:'', status:S.submitted?'รอเพาะ':'รอเลือก', seedPhoto:false, gps:null, replant:false}); rerender(); return; }
+  if (d.copylink!==undefined){ copy(`สวัสดีค่ะ ${ORDER.customer} ออเดอร์ ${ORDER.no} เข้าคิวผลิตแล้ว ดูสถานะและเลือกต้นไม้ได้ที่ chawcher.com/my/${S.linkToken}`); return; }
+  if (d.relink!==undefined){ S.linkToken = Math.random().toString(36).slice(2,12); rerender(); toast('ออกลิงก์ใหม่แล้ว · ลิงก์เดิมใช้ไม่ได้ทันที'); return; }
+  if (d.qtab){ S.queueTab=d.qtab; rerender(); return; }
+  if (d.qcopy){ copy(d.qcopy); return; }
+  if (d.qsent){ S.sent[d.qsent]=true; rerender(); toast('ออกจากรายการแล้ว · เก็บว่าใครส่ง เมื่อไหร่'); return; }
+  if (d.cat){ COUNTED[d.cat]=!COUNTED[d.cat]; rerender(); return; }
+  if (d.sp4){ const a=S.species4, i=a.indexOf(d.sp4); if(i>=0){ if(a.length>2) a.splice(i,1); } else if(a.length<4) a.push(d.sp4); else toast('เลือกได้สูงสุด 4 พันธุ์'); rerender(); return; }
+  if (d.qcp!==undefined){ S.qcPhoto=+d.qcp; rerender(); toast(+d.qcp? 'ลูกค้าจะเห็นรูป '+d.qcp : 'ลูกค้าจะไม่เห็นรูป'); return; }
+  if (d.cu){ S.craftUnit=d.cu; rerender(); return; }
+  if (d.crsave!==undefined){ const u=S.craftUnit; if(!S.craft[u]) S.craft[u]={}; PARTS.forEach(p=>{ const v=$('#cr-'+p).value; if(v) S.craft[u][p]=v; }); rerender(); toast(craftDone(u)?'บันทึกแล้ว · ใบรับรองและป้ายมีชื่อช่างแล้ว':'บันทึกบางส่วน · ยังอยู่ในรายการ'); return; }
+  if (d.lf){ S.label[d.lf]=!S.label[d.lf]; rerender(); return; }
+  if (d.seedok){ const t=S.trees.find(x=>x.tr===d.seedok); t.status='เพาะแล้ว'; t.seedPhoto=true; rerender(); toast('เพาะแล้ว · หน้าลูกค้าขึ้นรูปกล้าแล้ว'); return; }
+  if (d.plant){ const t=S.trees.find(x=>x.tr===d.plant); t.status='ลงดินแล้ว'; t.gps=pl(t.plot).gps; t.replant=false; rerender(); toast('ลงดินแล้ว · จับพิกัด '+t.gps); return; }
+  if (d.dead){ const t=S.trees.find(x=>x.tr===d.dead); t.replant=true; t.status='เพาะแล้ว'; rerender(); toast('บันทึกต้นตาย · ปลูกซ่อมเลขเดิม '+t.tr); return; }
+  if (d.annual!==undefined){ S.annual=true; rerender(); toast('อัปรูปแปลงแล้ว · ทุกต้นในบางกระเจ้าเห็นรูปนี้'); return; }
+  if (d.shipsave!==undefined){ S.ship.provider=$('#prov').value; S.ship.track=$('#trk').value.trim(); S.ship.shared=$('#shr').checked; rerender(); toast('บันทึกแล้ว'+(S.ship.track?' · ลูกค้าเห็นปุ่มติดตาม':'')); return; }
+});
+document.addEventListener('change', e=>{
+  const el = e.target;
+  if (el.id==='sameAll'){ S.sameAll=el.checked; if(el.checked){ S.trees.forEach(t=>{t.species=S.trees[0].species; t.plot=S.trees[0].plot;}); } rerender(); }
+  if (el.id==='pv1'){ S.consent1=el.checked; toast(el.checked?'รับข่าวต้นไม้':'หยุดส่งข่าวต้นไม้แล้ว'); }
+  if (el.id==='pv2'){ S.consent2=el.checked; if(S.submitted) logEvents(); if(!el.checked) S.conv.push({to:'Meta / Google', what:'ลูกค้าถอนยินยอม · หยุดส่งต่อจากนี้', st:'หยุดส่ง'}); toast(el.checked?'ยินยอมแล้ว':'ถอนแล้ว · หยุดส่งให้ Meta/Google'); }
+  if (el.id==='pv3'){ S.certPublic=el.checked; toast(el.checked?'เปิดใบรับรองแล้ว':'ปิดใบรับรองแล้ว'); }
+  if (el.id==='cbn'){ S.carbon=el.checked; toast(el.checked?'เปิดประมาณการคาร์บอน (ค่าต่ำ)':'ปิดตาม O6'); }
+  if (el.name==='tg'){ S.tagline=el.value; rerender(); }
+  if (el.dataset.seed){ const t=S.trees.find(x=>x.tr===el.dataset.seed); t.status='เพาะแล้ว'; t.seedPhoto=true; rerender(); toast('เพาะแล้ว · ได้รูปจากเครื่องคุณ'); }
+});
+document.addEventListener('input', e=>{
+  const el = e.target;
+  if (el.dataset.nm!==undefined){ S.trees[+el.dataset.nm].name = el.value; }
+  if (el.id==='adr'){ S.adjustReason = el.value; }
+  if (el.dataset.stk){ STAKE.find(s=>s.id===el.dataset.stk).text = el.value; }
+});
+function fromHash(){
+  const h = location.hash.slice(1);
+  if (SCREENS.find(x=>x.id===h)){ S.side = SCREENS.find(x=>x.id===h).side; S.screen = h; }
+  else if (SIDES.find(s=>s.id===h)){ S.side = h; }
+}
+window.addEventListener('hashchange', ()=>{ fromHash(); render(); });
+applyStage(0); fromHash(); render();
+</script>
