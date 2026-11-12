@@ -3,12 +3,11 @@
 -- ============================================================================
 --   psql -1 -v ON_ERROR_STOP=1 -d t1 -f supabase/tests/21_news.sql   (ต้องมี -1)
 --
---   1 ★ กันซ้ำ: ลิงก์เดียวกัน (http/https · www · / ท้าย) สร้างซ้ำไม่ได้ · รอบบันทึกนับเป็น "ซ้ำ"
+--   1 ★ กันซ้ำ: รหัสแถวชีตซ้ำ หรือลิงก์เดียวกัน (http/https · www · / ท้าย) = ข้าม · รอบดึงนับ "ซ้ำ"
 --   2 ★ ข่าวที่ "ไม่ใช้" ยังกันซ้ำ · ไม่เด้งกลับมา
---   3 ★ ค้นอัตโนมัติต้องมีลิงก์ต้นทาง
+--   3 ★ แถวจากชีตต้องมีรหัส
 --   4 ★ ของออกนอก: เผยแพร่ / ส่ง LINE ต้องมีคนกด (reviewed_by)
---   5   ข้อมูลให้ AI: รายการที่มีแล้ว + ค่าใช้จ่ายเดือนนี้ + วันนี้ค้นแล้วหรือยัง
---   6 ★ สิทธิ์: Bay เท่านั้น · ทีมขายไม่เห็น · ฟังก์ชันของตัวตั้งเวลาคนทั่วไปเรียกไม่ได้
+--   6 ★ สิทธิ์: Bay เท่านั้น · ทีมขายไม่เห็น · ฟังก์ชันของตัวดึงชีตคนทั่วไปเรียกไม่ได้
 --   7   A7 ห้ามลบ · ข่าวแรก (WP 18153) อยู่ในระบบ
 -- ============================================================================
 
@@ -21,42 +20,42 @@ insert into core.user_capabilities (user_id, capability) values
   ('aaaaaaaa-0000-0000-0000-0000000000b2', 'sales.write') on conflict do nothing;
 
 do $$
-declare n int; r jsonb; nid uuid;
+declare n int; nid uuid;
 begin
   -- ข้อ 7 (ส่วนแรก) · ข่าวแรกจาก migration
   if not exists (select 1 from content.news_items where wp_post_id = 18153 and status = 'ร่าง' and jsonb_array_length(images) = 3) then
     raise exception '7 พัง: ไม่มีข่าวแรก (WP 18153)';
   end if;
 
-  -- ข้อ 1 · กันซ้ำ
-  n := content.news_run_save('{"run_by":"ตั้งเวลา","model":"m","input_tokens":1000000,"output_tokens":100000,"web_searches":5,
-      "usd_per_mtok_in":2,"usd_per_mtok_out":10,"usd_per_search":0.01,"thb_per_usd":36,
-      "items":[
-        {"brand":"ASE","source_url":"https://www.facebook.com/AseSofa/posts/1/","source_title":"ASE งานบ้านและสวน","summary":"s","post_title":"ASE ออกบูธ","post_body":"b","line_text":"l"},
-        {"brand":"Chaw Cher","source_url":"https://news.example.com/a?","source_title":"ข่าว","summary":"s","post_title":"CC ได้รางวัล","post_body":"b","line_text":"l"}
+  -- ข้อ 1 · กันซ้ำ (รหัสชีต + ลิงก์)
+  n := content.news_import('{"run_by":"ตั้งเวลา","items":[
+        {"sheet_ref":"2026-11-12-01","brand":"ASE","source_url":"https://www.facebook.com/AseSofa/posts/1/","source_title":"ASE งานบ้านและสวน","source_date":"2026-11-10","summary":"s","post_title":"ASE ออกบูธ","post_body":"b","line_text":"l","images":[{"url":"https://x/1.jpg"}]},
+        {"sheet_ref":"2026-11-12-02","brand":"Chaw Cher","source_url":"https://news.example.com/a?","source_title":"ข่าว","source_date":"","summary":"s","post_title":"CC ได้รางวัล","post_body":"b","line_text":"l","images":[]},
+        {"sheet_ref":"2026-11-12-03","brand":"chaw cher","source_url":"","post_title":"เล่าเอง ไม่มีลิงก์","post_body":"b","line_text":"l","images":[]}
       ]}'::jsonb);
-  if n <> 2 then raise exception '1 พัง: ควรสร้าง 2 ได้ %', n; end if;
-  n := content.news_run_save('{"run_by":"ตั้งเวลา","items":[
-        {"brand":"ASE","source_url":"http://facebook.com/asesofa/posts/1","source_title":"ซ้ำ","summary":"s","post_title":"ซ้ำ","post_body":"b","line_text":"l"},
-        {"brand":"Chaw Cher","source_url":"https://news.example.com/b","source_title":"ใหม่","summary":"s","post_title":"ใหม่","post_body":"b","line_text":"l"}
+  if n <> 3 then raise exception '1 พัง: ควรสร้าง 3 ได้ %', n; end if;
+  n := content.news_import('{"run_by":"กดเอง","items":[
+        {"sheet_ref":"2026-11-12-01","brand":"ASE","post_title":"รหัสซ้ำ","post_body":"","line_text":""},
+        {"sheet_ref":"2026-11-13-01","brand":"ASE","source_url":"http://facebook.com/asesofa/posts/1","post_title":"ลิงก์ซ้ำ","post_body":"","line_text":""},
+        {"sheet_ref":"2026-11-13-02","brand":"Chaw Cher","source_url":"https://news.example.com/b","post_title":"ใหม่","post_body":"","line_text":""}
       ]}'::jsonb);
-  if n <> 1 then raise exception '1 พัง: ลิงก์ซ้ำ (http/www/ท้าย /) ต้องไม่ถูกสร้าง ได้ %', n; end if;
-  if (select skipped_dupes from content.news_runs order by created_at desc, id limit 1) is distinct from 1
-     and not exists (select 1 from content.news_runs where skipped_dupes = 1) then
-    raise exception '1 พัง: รอบบันทึกต้องนับซ้ำ 1';
+  if n <> 1 then raise exception '1 พัง: รหัสซ้ำ/ลิงก์ซ้ำ ต้องไม่ถูกสร้าง ได้ %', n; end if;
+  if not exists (select 1 from content.news_runs where run_by = 'กดเอง' and rows_read = 3 and created = 1 and skipped_dupes = 2) then
+    raise exception '1 พัง: รอบดึงต้องบันทึก อ่าน 3 ใหม่ 1 ซ้ำ 2';
   end if;
+  if (select source_date from content.news_items where sheet_ref = '2026-11-12-01') <> '2026-11-10' then raise exception '1 พัง: วันที่ต้นทาง'; end if;
 
   -- ข้อ 2 · ไม่ใช้แล้วก็ยังกันซ้ำ
-  update content.news_items set status = 'ไม่ใช้' where source_url = 'https://news.example.com/b';
-  n := content.news_run_save('{"run_by":"กดเอง","items":[{"brand":"Chaw Cher","source_url":"https://news.example.com/b/","source_title":"x","summary":"s","post_title":"x","post_body":"b","line_text":"l"}]}'::jsonb);
+  update content.news_items set status = 'ไม่ใช้' where sheet_ref = '2026-11-13-02';
+  n := content.news_import('{"items":[{"sheet_ref":"2026-11-14-01","brand":"Chaw Cher","source_url":"https://news.example.com/b/","post_title":"x","post_body":"","line_text":""}]}'::jsonb);
   if n <> 0 then raise exception '2 พัง: ข่าวที่ไม่ใช้เด้งกลับมา'; end if;
 
-  -- ข้อ 3 · ค้นอัตโนมัติต้องมีลิงก์
+  -- ข้อ 3 · แถวจากชีตต้องมีรหัส
   begin
-    insert into content.news_items (brand, source, post_title) values ('ASE', 'ค้นอัตโนมัติ', 'ไม่มีลิงก์');
+    insert into content.news_items (brand, source, post_title) values ('ASE', 'ชีตข่าว', 'ไม่มีรหัส');
     raise exception 'ไม่ควรมาถึงตรงนี้';
   exception when check_violation then null; end;
-  insert into content.news_items (brand, source, post_title) values ('ASE', 'Bay ส่งเอง', 'เล่าเอง ไม่มีลิงก์ได้') returning id into nid;
+  insert into content.news_items (brand, source, post_title) values ('ASE', 'Bay ส่งเอง', 'เพิ่มเองในเว็บ') returning id into nid;
 
   -- ข้อ 4 · ของออกนอกต้องมีคนกด
   begin
@@ -73,15 +72,7 @@ begin
   exception when check_violation then null; end;
   update content.news_items set status = 'เผยแพร่แล้ว', wp_post_id = 99999, reviewed_by = 'aaaaaaaa-0000-0000-0000-0000000000a1' where id = nid;
 
-  -- ข้อ 5 · ข้อมูลให้ AI
-  r := content.news_run_input();
-  if jsonb_array_length(r->'seen') < 4 then raise exception '5 พัง: seen ควรมีอย่างน้อย 4 ได้ %', r->'seen'; end if;
-  if not (r->'seen')::text like '%facebook.com/AseSofa%' then raise exception '5 พัง: seen ไม่มีลิงก์ ASE'; end if;
-  -- 1M in × $2 + 0.1M out × $10 + 5 × $0.01 = $3.05 × 36 = ฿109.80
-  if abs((r->>'spent_thb_month')::numeric - 109.80) > 0.01 then raise exception '5 พัง: ค่าใช้จ่าย % ควรเป็น 109.80', r->>'spent_thb_month'; end if;
-  if (r->>'ran_today')::boolean is not true then raise exception '5 พัง: ค้นแล้ววันนี้ ต้องเป็น true'; end if;
-
-  raise notice 'ข้อ 1-5 ผ่าน · กันซ้ำ · ไม่ใช้ก็กันซ้ำ · ต้องมีลิงก์ · ของออกนอกต้องมีคนกด · ข้อมูลให้ AI ครบ';
+  raise notice 'ข้อ 1-4 ผ่าน · กันซ้ำด้วยรหัส+ลิงก์ · ไม่ใช้ก็กันซ้ำ · แถวชีตต้องมีรหัส · ของออกนอกต้องมีคนกด';
 end $$;
 
 -- ข้อ 6 · สิทธิ์
@@ -93,11 +84,7 @@ begin
   if (select count(*) from content.news_items) <> 0 then raise exception '6 พัง: ทีมขายเห็นข่าว'; end if;
   if (select count(*) from content.news_runs) <> 0 then raise exception '6 พัง: ทีมขายเห็นค่าใช้จ่าย'; end if;
   begin
-    perform content.news_run_input();
-    raise exception 'ไม่ควรมาถึงตรงนี้';
-  exception when insufficient_privilege then null; end;
-  begin
-    perform content.news_run_save('{"items":[]}'::jsonb);
+    perform content.news_import('{"items":[]}'::jsonb);
     raise exception 'ไม่ควรมาถึงตรงนี้';
   exception when insufficient_privilege then null; end;
 end $$;

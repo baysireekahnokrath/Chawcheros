@@ -5,19 +5,22 @@
 --   1. ทุกเช้า 08:00 ไปเช็กข่าว Chaw Cher + ASE · ข่าวซ้ำไม่เอา
 --   2. ทำเป็นร่างโพสต์ chawcher.com + ข้อความสั้นพร้อมภาพสำหรับ LINE
 --   3. หน้าสรุปให้ Bay กด preview → ok กด publish หรือส่ง LINE
+--   2026-11-12 Bay: "ไม่เสียตังค์" → ไม่เรียก Claude API · ข่าวเข้า Google Sheet "Chaw Cher News"
+--     Claude (แพ็กเกจของ Bay) ร่างลงแท็บ "ร่าง" ทุกเช้า 08:00 → ระบบดึงแท็บนั้น 09:00 → Bay approve ที่ /news
 --
 -- กฎที่ไฟล์นี้บังคับในฐานข้อมูล
 --   กันซ้ำ   : ลิงก์ต้นทาง (ตัด http/www/? ท้าย) ซ้ำไม่ได้ · ข่าวที่ "ไม่ใช้" ก็ยังกันซ้ำ (ไม่เด้งกลับมาอีก)
 --   ห้ามลบ  : A7 (apply_standard_rules) · ไม่เอา = เปลี่ยนเป็น "ไม่ใช้"
 --   ของออกนอก : publish / ส่ง LINE ต้องมีคนกด (reviewed_by) · บอทตั้งเวลาทำได้แค่ "ร่าง"
---   สิทธิ์   : Bay (admin) เท่านั้น · ตัวตั้งเวลาเขียนผ่านฟังก์ชัน 2 ตัวด้วย service_role
+--   สิทธิ์   : Bay (admin) เท่านั้น · ตัวดึงชีตเขียนผ่านฟังก์ชัน content.news_import ด้วย service_role
 -- ============================================================================
 
 create table content.news_items (
   id            uuid primary key default gen_random_uuid(),
   brand         text not null check (brand in ('Chaw Cher', 'ASE')),
-  source        text not null check (source in ('ค้นอัตโนมัติ', 'Bay ส่งเอง')),
-  source_url    text,                                  -- ลิงก์ข่าวต้นทาง (ค้นอัตโนมัติ)
+  source        text not null check (source in ('ชีตข่าว', 'Bay ส่งเอง')),
+  sheet_ref     text unique,                           -- ช่อง "รหัส" ในแท็บ "ร่าง" · กันดึงแถวเดิมซ้ำ
+  source_url    text,                                  -- ลิงก์ข่าวต้นทาง
   source_key    text generated always as (
                   nullif(regexp_replace(regexp_replace(lower(btrim(source_url)), '^https?://(www\.|m\.)?', ''),
                                         '[/?#]+$', ''), '')) stored,
@@ -39,7 +42,7 @@ create table content.news_items (
   updated_at    timestamptz not null default now(),
   updated_by    uuid references core.app_users(id),
 
-  constraint news_auto_has_url check (source <> 'ค้นอัตโนมัติ' or source_key is not null),
+  constraint news_sheet_has_ref check (source <> 'ชีตข่าว' or sheet_ref is not null),
   constraint news_published_has_reviewer check (status <> 'เผยแพร่แล้ว' or (reviewed_by is not null and wp_post_id is not null)),
   constraint news_line_has_reviewer check (line_sent_at is null or reviewed_by is not null),
   constraint news_images_array check (jsonb_typeof(images) = 'array' and jsonb_array_length(images) <= 10)
@@ -48,27 +51,20 @@ create unique index news_items_source_key_uq on content.news_items (source_key) 
 create index news_items_status_idx on content.news_items (status, created_at desc);
 
 comment on table content.news_items is
-  'ข่าว Chaw Cher / ASE · ระบบตั้งเวลาร่างได้อย่างเดียว · ขึ้นเว็บ/ส่ง LINE ต้องมีคนกด (reviewed_by) · source_key กันข่าวซ้ำ';
+  'ข่าว Chaw Cher / ASE · ตัวดึงชีตสร้างได้แค่ร่าง · ขึ้นเว็บ/ส่ง LINE ต้องมีคนกด (reviewed_by) · sheet_ref + source_key กันข่าวซ้ำ';
 
 create table content.news_runs (
-  id                   uuid primary key default gen_random_uuid(),
-  run_by               text not null check (run_by in ('ตั้งเวลา', 'กดเอง')),
-  found                int not null default 0,
-  created              int not null default 0,
-  skipped_dupes        int not null default 0,
-  model                text,
-  input_tokens         int,
-  output_tokens        int,
-  web_searches         int,
-  usd_per_mtok_in      numeric(8,3),
-  usd_per_mtok_out     numeric(8,3),
-  usd_per_search       numeric(8,4),
-  thb_per_usd          numeric(8,2),
-  error                text,
-  created_at           timestamptz not null default now(),
-  updated_at           timestamptz not null default now(),
-  updated_by           uuid references core.app_users(id)
+  id             uuid primary key default gen_random_uuid(),
+  run_by         text not null check (run_by in ('ตั้งเวลา', 'กดเอง')),
+  rows_read      int not null default 0,
+  created        int not null default 0,
+  skipped_dupes  int not null default 0,
+  error          text,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  updated_by     uuid references core.app_users(id)
 );
+comment on table content.news_runs is 'รอบดึงแท็บ "ร่าง" จากชีต Chaw Cher News · 1 แถว = 1 รอบ';
 
 select core.apply_standard_rules('content.news_items');
 select core.apply_standard_rules('content.news_runs');
@@ -85,60 +81,37 @@ grant select, insert, update on content.news_items to authenticated;
 grant select on content.news_runs to authenticated;
 
 -- ---------------------------------------------------------------------------
--- ตัวตั้งเวลา (ไม่มีคนล็อกอิน · service_role) ใช้ได้แค่ 2 ฟังก์ชันนี้
+-- ตัวดึงชีต (ไม่มีคนล็อกอิน · service_role) ใช้ได้แค่ฟังก์ชันนี้
+-- แถวที่รหัสซ้ำ หรือลิงก์ต้นทางซ้ำกับข่าวที่มีแล้ว (รวมที่ "ไม่ใช้") = ข้าม
 -- ---------------------------------------------------------------------------
-
--- สิ่งที่ AI ต้องรู้ก่อนค้น: ข่าวที่มีแล้ว 90 วัน (กันซ้ำ) + ค่าใช้จ่ายเดือนนี้
-create or replace function content.news_run_input()
-returns jsonb
-language sql stable security definer
-set search_path = content, line_agent, public
-as $$
-  select jsonb_build_object(
-    'seen', coalesce((select jsonb_agg(jsonb_build_object('url', coalesce(n.source_url, n.wp_link), 'title', coalesce(n.source_title, n.post_title)))
-                      from (select * from content.news_items
-                             where created_at > now() - interval '90 days'
-                             order by created_at desc limit 200) n), '[]'::jsonb),
-    'spent_thb_month', coalesce((select sum(((r.input_tokens * r.usd_per_mtok_in + r.output_tokens * r.usd_per_mtok_out) / 1e6
-                                            + coalesce(r.web_searches, 0) * r.usd_per_search) * r.thb_per_usd)
-                                 from content.news_runs r
-                                 where (r.created_at at time zone 'Asia/Bangkok') >= date_trunc('month', now() at time zone 'Asia/Bangkok')), 0),
-    'thb_per_usd', coalesce((select thb_per_usd from line_agent.settings limit 1), 36),
-    'ran_today', exists (select 1 from content.news_runs r
-                          where r.run_by = 'ตั้งเวลา' and r.error is null
-                            and (r.created_at at time zone 'Asia/Bangkok')::date = (now() at time zone 'Asia/Bangkok')::date))
-$$;
-
--- บันทึกผลรอบ · ข่าวซ้ำ (ลิงก์เดิม) ข้ามเงียบๆ · คืนจำนวนที่สร้างจริง
-create or replace function content.news_run_save(p jsonb)
+create or replace function content.news_import(p jsonb)
 returns int
 language plpgsql security definer
 set search_path = content, public
 as $$
-declare it jsonb; n int := 0; dup int := 0; rid uuid;
+declare it jsonb; n int := 0; dup int := 0; total int := 0;
 begin
   for it in select * from jsonb_array_elements(coalesce(p->'items', '[]'::jsonb)) loop
-    insert into content.news_items (brand, source, source_url, source_title, source_date, note, post_title, post_body, line_text, images)
-    values (it->>'brand', 'ค้นอัตโนมัติ', it->>'source_url', left(it->>'source_title', 300),
-            nullif(it->>'source_date', '')::date, left(it->>'summary', 2000),
+    total := total + 1;
+    insert into content.news_items (brand, source, sheet_ref, source_url, source_title, source_date, note,
+                                    post_title, post_body, line_text, images)
+    values (case when it->>'brand' ilike 'ase%' then 'ASE' else 'Chaw Cher' end, 'ชีตข่าว', it->>'sheet_ref',
+            nullif(btrim(it->>'source_url'), ''), left(nullif(it->>'source_title', ''), 300),
+            case when it->>'source_date' ~ '^\d{4}-\d{2}-\d{2}' then left(it->>'source_date', 10)::date end,
+            left(nullif(it->>'summary', ''), 2000),
             left(it->>'post_title', 200), left(coalesce(it->>'post_body', ''), 8000), left(coalesce(it->>'line_text', ''), 1000),
             coalesce(it->'images', '[]'::jsonb))
-    on conflict (source_key) where source_key is not null do nothing;
+    on conflict do nothing;
     if found then n := n + 1; else dup := dup + 1; end if;
   end loop;
-  insert into content.news_runs (run_by, found, created, skipped_dupes, model, input_tokens, output_tokens, web_searches,
-                                 usd_per_mtok_in, usd_per_mtok_out, usd_per_search, thb_per_usd, error)
-  values (coalesce(p->>'run_by', 'ตั้งเวลา'), jsonb_array_length(coalesce(p->'items', '[]'::jsonb)), n, dup, p->>'model',
-          (p->>'input_tokens')::int, (p->>'output_tokens')::int, (p->>'web_searches')::int,
-          (p->>'usd_per_mtok_in')::numeric, (p->>'usd_per_mtok_out')::numeric, (p->>'usd_per_search')::numeric,
-          (p->>'thb_per_usd')::numeric, nullif(p->>'error', ''))
-  returning id into rid;
+  insert into content.news_runs (run_by, rows_read, created, skipped_dupes, error)
+  values (coalesce(p->>'run_by', 'ตั้งเวลา'), total, n, dup, nullif(p->>'error', ''));
   return n;
 end;
 $$;
 
-revoke all on function content.news_run_input(), content.news_run_save(jsonb) from public, anon, authenticated;
-grant execute on function content.news_run_input(), content.news_run_save(jsonb) to service_role;
+revoke all on function content.news_import(jsonb) from public, anon, authenticated;
+grant execute on function content.news_import(jsonb) to service_role;
 
 -- ---------------------------------------------------------------------------
 -- ข่าวแรก (ทำมือ 2026-11-11 · WordPress draft 18153) · ให้หน้า /news มีของให้ลองกด
@@ -160,4 +133,4 @@ insert into core.modules
 values
   ('news', 'ข่าว Chaw Cher', 'News', 'newspaper', 'content',
    '{core,content}', 'admin', '/news', 92, false,
-   'ข่าว Chaw Cher + ASE ทุกเช้า 08:00 · AI ร่าง · Bay กด preview / publish chawcher.com / ส่ง LINE');
+   'ข่าว Chaw Cher + ASE · Claude ร่างในชีตทุกเช้า · Bay กด preview / publish chawcher.com / ส่ง LINE');

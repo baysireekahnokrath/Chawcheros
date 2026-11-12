@@ -4,7 +4,7 @@
  * ปุ่มในหน้า /news · Bay (admin) เท่านั้น · RLS ใน 0049 กันอีกชั้น
  *
  * ขั้นของข่าว 1 ชิ้น
- *   ร่าง (ในระบบ) → [สร้าง/อัปเดตร่างบนเว็บ] → [Preview ใน WordPress] → [เผยแพร่บนเว็บ] → [ส่ง LINE]
+ *   ร่าง (ดึงจากชีต / เพิ่มเอง) → [สร้าง/อัปเดตร่างบนเว็บ] → [Preview ใน WordPress] → [เผยแพร่บนเว็บ] → [ส่ง LINE]
  * publish และ ส่ง LINE เกิดจากปุ่มที่ Bay กดเท่านั้น (ตัวตั้งเวลาไม่มีทางเรียกไฟล์นี้)
  */
 import { revalidatePath } from 'next/cache';
@@ -12,7 +12,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getMyCapabilities } from '@/modules/registry';
 import { lineSecrets, pushMessages } from '@/modules/line-agent/line';
-import { collectNews, draftFromNote } from './ai';
+import { importFromSheet } from './sheet';
 import { ensureOnSite, publishPost, saveDraft, uploadMedia, wpConfig, type NewsImage } from './wp';
 
 type Item = {
@@ -53,36 +53,33 @@ async function uploadFiles(formData: FormData, name: string) {
   return out;
 }
 
-export async function collectNow() {
+/** ปุ่ม "ดึงจากชีต" · อ่านแท็บ "ร่าง" ของชีต Chaw Cher News เดี๋ยวนี้ (ปกติดึงเองทุกเช้า 09:00) */
+export async function importNow() {
   if (!(await admin())) return;
   let r;
-  try { r = await collectNews('กดเอง'); } catch (e) { return back({ err: 'ค้นไม่สำเร็จ · ' + errText(e) }); }
-  back(r.ok ? { ok: `${r.note} · ค่า Claude ≈ ฿${r.thb.toFixed(2)}` } : { err: r.note });
+  try { r = await importFromSheet('กดเอง'); } catch (e) { return back({ err: 'ดึงชีตไม่สำเร็จ · ' + errText(e) }); }
+  back(r.ok ? { ok: r.note } : { err: r.note });
 }
 
-/** Bay เล่าเรื่อง + แนบรูป → AI ร่าง (ถ้ากดแบบไม่ใช้ AI = เอาข้อความไปเป็นเนื้อข่าวตรงๆ) */
+/** Bay เพิ่มข่าวเอง (หัวข่าว + เรื่อง + รูปจากมือถือ) · ไม่ใช้ AI · อยากให้ Claude เขียน ใส่ในชีตแท็บ "ข่าวเข้า" แทน */
 export async function addNews(formData: FormData) {
   const a = await admin(); if (!a) return;
   const brand = formData.get('brand') === 'ASE' ? 'ASE' : 'Chaw Cher';
   const note = String(formData.get('note') ?? '').trim();
-  if (!note) return back({ err: 'พิมพ์เรื่องก่อน' });
+  const title = String(formData.get('post_title') ?? '').trim() || note.split('\n')[0].slice(0, 90);
+  if (!note && !title) return back({ err: 'พิมพ์หัวข่าวหรือเรื่องก่อน' });
   if (!wpConfig() && formData.getAll('images').some((f) => f instanceof File && f.size > 0)) {
     return back({ err: 'ยังเก็บรูปไม่ได้ · ต้องใส่ WP_USER / WP_APP_PASSWORD ใน Vercel ก่อน (docs/bay-action-list.md)' });
   }
   let images: NewsImage[];
   try { images = await uploadFiles(formData, brand + '-news'); } catch (e) { return back({ err: 'อัปโหลดรูปไม่ได้ · ' + errText(e) }); }
 
-  let draft = { post_title: note.split('\n')[0].slice(0, 90), post_body: note, line_text: `✨ ${brand} News\n${note.slice(0, 200)}`, alts: [] as string[] };
-  let aiNote = '';
-  try { draft = await draftFromNote({ brand, note, images }); } catch (e) { aiNote = ' · AI ร่างไม่ได้ (' + errText(e) + ') ใช้ข้อความของ Bay ไปก่อน'; }
-  images = images.map((im, i) => ({ ...im, alt: draft.alts[i] ?? im.alt ?? '' }));
-
   const { data, error } = await a.db.from('news_items').insert({
-    brand, source: 'Bay ส่งเอง', note, post_title: draft.post_title, post_body: draft.post_body,
-    line_text: draft.line_text, images,
+    brand, source: 'Bay ส่งเอง', note, post_title: title, post_body: note,
+    line_text: `✨ ${brand} News\n${title}`, images,
   }).select('id').single();
   if (error) return back({ err: error.message });
-  back({ ok: 'ร่างแล้ว · ตรวจข้อความ แล้วกด "สร้างร่างบนเว็บ"' + aiNote }, data.id);
+  back({ ok: 'เพิ่มแล้ว · แก้ข้อความได้ แล้วกด "สร้างร่างบนเว็บ"' }, data.id);
 }
 
 /** บันทึกที่ Bay แก้ + รูปที่เพิ่ม/ลบ/ย้ายเป็นรูปแรก */
@@ -161,7 +158,14 @@ export async function sendLine(formData: FormData) {
   const { data: rooms } = await a.supabase.schema('line_agent').from('rooms')
     .select('id, group_id, name').in('id', roomIds).eq('status', 'อนุมัติ');
   const text = it.line_text.trim() + (it.status === 'เผยแพร่แล้ว' && it.wp_link ? `\n\nอ่านต่อ 👉 ${it.wp_link}` : '');
-  const img = it.images[0];
+  // รูปจากชีต (Drive/เว็บอื่น) → เก็บเข้า chawcher.com ก่อน · LINE ต้องการลิงก์รูปตรงๆ ที่เปิดได้เลย
+  let img = it.images[0];
+  if (img && !img.wp_id && wpConfig()) {
+    try {
+      img = await ensureOnSite(img, it.brand + '-news');
+      await a.db.from('news_items').update({ images: [img, ...it.images.slice(1)] }).eq('id', id);
+    } catch { /* ส่งด้วยลิงก์เดิม */ }
+  }
   const messages: object[] = [];
   if (img && /^https:\/\//.test(img.url)) messages.push({ type: 'image', originalContentUrl: img.url, previewImageUrl: img.preview || img.url });
   messages.push({ type: 'text', text: text.slice(0, 4900) });

@@ -41,7 +41,7 @@ export default function ImageForm({ action, children, className }: {
       }}
     >
       <fieldset disabled={busy} className="contents">{children}</fieldset>
-      {busy && <p className="mt-2 text-xs text-muted">กำลังทำงาน… (ร่างด้วย AI ใช้เวลาราว 10-30 วินาที)</p>}
+      {busy && <p className="mt-2 text-xs text-muted">กำลังทำงาน…</p>}
     </form>
   );
 }

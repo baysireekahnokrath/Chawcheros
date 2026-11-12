@@ -1,10 +1,10 @@
 /**
- * ประตูของตัวตั้งเวลา (ไม่มีคนล็อกอิน) · ใช้ secret key ของ Supabase
- * ในฐานข้อมูล key นี้เรียกได้แค่ content.news_run_input / news_run_save (0049) · ห้ามเพิ่ม .from() ตาราง
+ * ประตูของตัวดึงชีตข่าว (ไม่มีคนล็อกอิน) · ใช้ secret key ของ Supabase
+ * ในฐานข้อมูล key นี้เรียกได้แค่ content.news_import (0049) · ห้ามเพิ่ม .from() ตาราง
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const ALLOWED = ['news_run_input', 'news_run_save'] as const;
+const ALLOWED = ['news_import'] as const;
 type Fn = (typeof ALLOWED)[number];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ไม่มีไฟล์ type ของฐานข้อมูล

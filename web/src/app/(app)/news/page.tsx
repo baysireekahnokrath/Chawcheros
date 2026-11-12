@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { getMyCapabilities } from '@/modules/registry';
-import { addNews, collectNow, publishNews, saveNews, sendLine, setNewsStatus } from '@/modules/news/actions';
+import { addNews, importNow, publishNews, saveNews, sendLine, setNewsStatus } from '@/modules/news/actions';
 import { editUrl, previewUrl, wpConfig, type NewsImage } from '@/modules/news/wp';
 import { lineSecrets } from '@/modules/line-agent/line';
+import { NEWS_SHEET_URL } from '@/modules/news/sheet';
 import ImageForm from '@/components/news/ImageForm';
 
 export const metadata = { title: 'ข่าว Chaw Cher · Chaw Cher OS' };
@@ -13,11 +14,7 @@ type Item = {
   images: NewsImage[]; status: 'ร่าง' | 'เผยแพร่แล้ว' | 'ไม่ใช้'; wp_post_id: number | null; wp_link: string | null;
   published_at: string | null; line_sent_at: string | null; line_sent_to: { name: string | null; at: string }[]; created_at: string;
 };
-type Run = {
-  run_by: string; created_at: string; found: number; created: number; skipped_dupes: number; error: string | null;
-  input_tokens: number | null; output_tokens: number | null; web_searches: number | null;
-  usd_per_mtok_in: number | null; usd_per_mtok_out: number | null; usd_per_search: number | null; thb_per_usd: number | null;
-};
+type Run = { run_by: string; created_at: string; rows_read: number; created: number; skipped_dupes: number; error: string | null };
 
 const TABS = [['draft', 'ร่างรอตรวจ', 'ร่าง'], ['pub', 'เผยแพร่แล้ว', 'เผยแพร่แล้ว'], ['off', 'ไม่ใช้', 'ไม่ใช้']] as const;
 const card = 'rounded-2xl border border-border bg-surface p-4';
@@ -29,9 +26,6 @@ const pill = (tone: 'ok' | 'warn' | 'bad' | 'mute') =>
   (tone === 'ok' ? 'bg-ok/15 text-ok' : tone === 'warn' ? 'bg-warn/15 text-warn' : tone === 'bad' ? 'bg-danger/15 text-danger' : 'bg-border text-muted');
 const when = (iso: string) =>
   new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
-const runThb = (r: Run) => r.input_tokens == null ? 0
-  : ((r.input_tokens * Number(r.usd_per_mtok_in) + (r.output_tokens ?? 0) * Number(r.usd_per_mtok_out)) / 1e6
-     + (r.web_searches ?? 0) * Number(r.usd_per_search ?? 0)) * Number(r.thb_per_usd ?? 36);
 
 export default async function NewsPage({ searchParams }: PageProps<'/news'>) {
   const caps = await getMyCapabilities();
@@ -44,19 +38,16 @@ export default async function NewsPage({ searchParams }: PageProps<'/news'>) {
 
   const supabase = await createClient();
   const db = supabase.schema('content');
-  const monthStart = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date()).slice(0, 7) + '-01T00:00:00+07:00';
   const [{ data }, counts, runs, rooms] = await Promise.all([
     db.from('news_items').select('*').eq('status', tab[2]).order('created_at', { ascending: false }).limit(60),
     Promise.all(TABS.map(([, , st]) => db.from('news_items').select('id', { count: 'exact', head: true }).eq('status', st))),
-    db.from('news_runs').select('*').gte('created_at', monthStart)
-      .order('created_at', { ascending: false }).limit(60),
+    db.from('news_runs').select('*').order('created_at', { ascending: false }).limit(1),
     supabase.schema('line_agent').from('rooms').select('id, name').eq('status', 'อนุมัติ').order('name'),
   ]);
   const items = (data ?? []) as Item[];
   const n = counts.map((c) => c.count ?? 0);
   const runList = (runs.data ?? []) as Run[];
   const last = runList[0];
-  const spent = runList.reduce((s, r) => s + runThb(r), 0);
   const roomList = (rooms.data ?? []) as { id: string; name: string | null }[];
   const wpReady = !!wpConfig();
   const lineReady = !!lineSecrets();
@@ -65,8 +56,9 @@ export default async function NewsPage({ searchParams }: PageProps<'/news'>) {
     <>
       <h1 className="text-xl font-semibold tracking-tight">ข่าว Chaw Cher · ASE</h1>
       <p className="mt-1 text-sm text-muted">
-        ทุกเช้า 08:00 ระบบค้นข่าวใหม่ของ Chaw Cher และ ASE (ข่าวซ้ำไม่เอา) แล้วร่างโพสต์ + ข้อความ LINE ไว้ให้ ·
-        ตรวจ → กด Preview → ok แล้วกดเผยแพร่ หรือส่ง LINE · ไม่มีอะไรออกไปข้างนอกถ้า Bay ไม่กด
+        ข่าวเข้าชีต <a className="underline" href={NEWS_SHEET_URL} target="_blank" rel="noreferrer">Chaw Cher News ↗</a> (Google News + ที่ทีมใส่) ·
+        08:00 Claude ร่างลงแท็บ &quot;ร่าง&quot; · 09:00 ระบบดึงมาที่นี่ (ข่าวซ้ำไม่เอา) ·
+        ตรวจ → Preview → เผยแพร่ หรือส่ง LINE · ไม่มีอะไรออกไปข้างนอกถ้า Bay ไม่กด · ไม่มีค่า API
       </p>
 
       {ok && <p className={pill('ok') + ' mt-3 block !rounded-xl !px-3 !py-2 text-sm'}>{ok}</p>}
@@ -79,24 +71,24 @@ export default async function NewsPage({ searchParams }: PageProps<'/news'>) {
 
       <div className={card + ' mt-4 flex items-center justify-between gap-3 text-sm'}>
         <div className="text-xs text-muted">
-          {last ? <>ค้นล่าสุด {when(last.created_at)} ({last.run_by}) · เจอ {last.found} · ใหม่ {last.created} · ซ้ำ {last.skipped_dupes}
-            {last.error ? <span className="text-danger"> · {last.error}</span> : null}</> : 'ยังไม่เคยค้น · รอบแรก 08:00 พรุ่งนี้ หรือกดปุ่มขวา'}
-          <br />ค่า Claude เดือนนี้ ≈ ฿{spent.toFixed(2)} (เพดาน ฿300)
+          {last ? <>ดึงชีตล่าสุด {when(last.created_at)} ({last.run_by}) · อ่าน {last.rows_read} แถว · ใหม่ {last.created} · ซ้ำ {last.skipped_dupes}
+            {last.error ? <span className="text-danger"> · {last.error}</span> : null}</> : 'ยังไม่เคยดึง · ระบบดึงเองทุกเช้า 09:00 หรือกดปุ่มขวา'}
         </div>
-        <form action={collectNow}><button className={btnMain + ' shrink-0'}>ค้นข่าวตอนนี้</button></form>
+        <form action={importNow}><button className={btnMain + ' shrink-0'}>ดึงจากชีต</button></form>
       </div>
 
       <details className={card + ' mt-3 text-sm'}>
-        <summary className="cursor-pointer font-medium">+ เพิ่มข่าวเอง (เล่าเรื่อง + แนบรูป → AI ร่างให้)</summary>
+        <summary className="cursor-pointer font-medium">+ เพิ่มข่าวเอง (พิมพ์เอง + รูปจากมือถือ · อยากให้ Claude เขียน ใส่ในชีตแท็บ &quot;ข่าวเข้า&quot;)</summary>
         <ImageForm action={addNews} className="mt-3 space-y-2">
           <select name="brand" defaultValue="Chaw Cher" className={input}>
             <option>Chaw Cher</option><option>ASE</option>
           </select>
-          <textarea name="note" rows={3} required className={input}
-            placeholder="เช่น ทีมงานของเราได้พบกับคุณ… ที่… เพื่อคุยกันเกี่ยวกับ…" />
+          <input name="post_title" placeholder="หัวข่าว" className={input} />
+          <textarea name="note" rows={4} className={input}
+            placeholder="เนื้อข่าว (เว้นบรรทัด = ย่อหน้าใหม่)" />
           <label className="block text-xs text-muted">รูป (เลือกได้หลายรูป · รูปแรก = รูปปก + รูปที่ส่ง LINE)
             <input type="file" name="images" accept="image/*" multiple className={input + ' mt-1'} /></label>
-          <button className={btnMain}>ร่างข่าว</button>
+          <button className={btnMain}>เพิ่มข่าว</button>
         </ImageForm>
       </details>
 
@@ -125,7 +117,7 @@ export default async function NewsPage({ searchParams }: PageProps<'/news'>) {
               <div className="mt-2 rounded-lg bg-bg p-2 text-xs text-muted">
                 {it.source_url && <div>ต้นทาง: <a className="underline" href={it.source_url} target="_blank" rel="noreferrer">
                   {it.source_title || it.source_url}</a>{it.source_date ? ` · ${it.source_date}` : ''}</div>}
-                {it.note && <div className="mt-1 whitespace-pre-line">{it.source === 'Bay ส่งเอง' ? 'Bay เล่า: ' : 'สรุปต้นทาง: '}{it.note}</div>}
+                {it.note && <div className="mt-1 whitespace-pre-line">{it.source === 'Bay ส่งเอง' ? 'Bay เขียน: ' : 'สรุปต้นทาง: '}{it.note}</div>}
               </div>
             )}
 

@@ -120,33 +120,37 @@
 13. ดู preview https://chawcher.com/?page_id=18148&preview=true (ต้องล็อกอิน WordPress) → ต้องเห็นข้อที่ยืนยันในข้อ 11
 14. พอใจแล้วบอก Claude "publish FAQ" หรือกด Publish เองที่ https://chawcher.com/wp-admin/post.php?post=18148&action=edit
 
-## รอบหน้าข่าว /news (2026-11-11) · ทำตามลำดับ
+## รอบหน้าข่าว /news (อัปเดต 2026-11-12 · แบบไม่มีค่า API) · ทำตามลำดับ
 
-> หน้าข่าว Chaw Cher + ASE · ค้นเองทุกเช้า 08:00 · Bay กด Preview / เผยแพร่ / ส่ง LINE · รายละเอียด `docs/modules/news/0-idea.md`
+> ข่าวเข้าชีต **Chaw Cher News** → 07:43 Claude (แพ็กเกจของ Bay) ร่างลงแท็บ "ร่าง" → 09:00 ระบบดึงมาที่ /news → Bay กด Preview / เผยแพร่ / ส่ง LINE
+> ไม่ต้องใส่ ANTHROPIC key · รายละเอียด `docs/modules/news/0-idea.md`
 
-**ขั้น 1 · สร้างรหัสให้ระบบโพสต์ chawcher.com ได้ (Application Password)**
-1. เปิด https://chawcher.com/wp-admin/profile.php (ล็อกอิน WordPress ด้วยบัญชีของพี่)
-2. เลื่อนลงล่างสุดถึงหัวข้อ **Application Passwords** → ช่อง New Application Password Name พิมพ์ `chawcher-os news` → กด **Add New Application Password**
-3. จะได้รหัส 24 ตัว (มีเว้นวรรค) → กดคัดลอกเก็บไว้ (ปิดหน้าแล้วจะดูอีกไม่ได้) · จดชื่อผู้ใช้ (Username) ที่อยู่บนสุดของหน้าเดียวกันไว้ด้วย
-   - ถ้าไม่เห็นหัวข้อ Application Passwords → บอก Claude (บางแผนของ WordPress.com ซ่อนไว้ จะหาทางอื่นให้)
+**ขั้น 1 · เปิดให้ชีตดึง Google News ได้ (ครั้งเดียว · ต้องใช้คอม)**
+1. เปิด https://docs.google.com/spreadsheets/d/19vtyQJyNimSkFeh3RYz7BoE34mlFVIcm4ubce1iGlQA/edit ในเบราว์เซอร์บนคอม (มือถือกดไม่ได้)
+2. ไปแท็บ **Google News** → กดช่อง A2 ที่ขึ้น #REF! → กดปุ่ม **Allow access** → รอสักครู่ต้องเห็นรายการข่าว
 
-**ขั้น 2 · ใส่รหัสใน Vercel**
-4. เปิด https://vercel.com/bay8/chawcher-os/settings/environment-variables
-5. กด **Add Environment Variable** ใส่ทีละตัว (ติ๊ก Production + Preview ทุกตัว) แล้วกด Save:
-   - Key `WP_USER` · Value = ชื่อผู้ใช้จากข้อ 3
-   - Key `WP_APP_PASSWORD` · Value = รหัส 24 ตัวจากข้อ 3 (วางทั้งที่มีเว้นวรรค)
+**ขั้น 2 · ให้ Claude ตอนเช้าเขียนชีตได้**
+3. เปิด https://claude.ai/customize/connectors → ตรวจว่า **Google Sheets** (หรือ Google Drive) เชื่อมอยู่
+4. เปิดหน้า Routines / งานตั้งเวลาของ Claude Code บนเว็บ https://claude.ai/code → หางานชื่อ **"Chaw Cher News · ร่างข่าวเช้า"** → แก้ไข → เพิ่มตัวเชื่อม **Google Sheets** → บันทึก
+   - ⚠️ ผมสร้างงานนี้ให้แล้วแต่แนบตัวเชื่อมจากที่นี่ไม่ได้ · ถ้าไม่เจอปุ่มเพิ่มตัวเชื่อม บอก Claude (จะลบแล้วให้พี่สร้างใหม่จากหน้านั้น)
 
-**ขั้น 3 · ฐานข้อมูล (Supabase)**
-6. เปิด https://github.com/baysireekahnokrath/Chawcheros/blob/claude/sharp-pascal-6wg2mg/supabase/migrations/0049_news.sql → กดไอคอนคัดลอก (Copy raw file) ด้านขวาบน
-7. เปิด https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new → วาง → กด Run → ต้องขึ้น Success
+**ขั้น 3 · สร้างรหัสให้ระบบโพสต์ chawcher.com ได้ (Application Password)**
+5. เปิด https://chawcher.com/wp-admin/profile.php → เลื่อนลงล่างสุด **Application Passwords** → ชื่อ `chawcher-os news` → **Add New Application Password**
+6. คัดลอกรหัส 24 ตัว (ปิดหน้าแล้วดูไม่ได้อีก) + จดชื่อผู้ใช้ (Username) ด้านบนสุดของหน้า
 
-**ขั้น 4 · เอาโค้ดขึ้นเว็บจริง**
-8. เปิด https://github.com/baysireekahnokrath/Chawcheros/compare/claude/chaw-cher-os-setup-9k21w6...claude/sharp-pascal-6wg2mg → Create pull request → Merge pull request → Confirm merge
-9. รอ ~2 นาที แล้วเปิด https://chawcher-os.vercel.app/news → ต้องเห็นข่าว "Chaw Cher เยือน Dior Gold House" อยู่ในแท็บ "ร่างรอตรวจ" และไม่มีแถบเหลือง "ยังตั้งค่าไม่ครบ"
+**ขั้น 4 · ใส่รหัสใน Vercel**
+7. เปิด https://vercel.com/bay8/chawcher-os/settings/environment-variables → **Add Environment Variable** (ติ๊ก Production + Preview) → Save
+   - `WP_USER` = ชื่อผู้ใช้จากข้อ 6
+   - `WP_APP_PASSWORD` = รหัส 24 ตัวจากข้อ 6
 
-**ขั้น 5 · ลองใช้**
-10. ที่ข่าว Dior → กด **Preview ↗** → ดูหน้าข่าวบนเว็บ (ยังไม่มีใครเห็นนอกจากคนที่ล็อกอิน WordPress)
-11. ok แล้ว → ติ๊ก "ดู Preview แล้ว…" → กด **เผยแพร่บนเว็บ**
-12. ส่ง LINE: ติ๊กกลุ่ม → ติ๊ก "ยืนยันส่ง" → กด **ส่ง LINE** (ส่งรูปปก + ข้อความ + ลิงก์ข่าว)
-13. ลองกด **ค้นข่าวตอนนี้** ด้านบน 1 ครั้ง (ใช้เวลา 1-3 นาที) → ข่าวใหม่ของ Chaw Cher/ASE ที่เจอจะขึ้นเป็นร่าง · พรุ่งนี้ 08:00 ระบบค้นเอง
-14. ข่าวที่มาจากทางนี้ (แบบวันนี้): กด **+ เพิ่มข่าวเอง** → เล่าเรื่อง + เลือกรูปจากมือถือ → **ร่างข่าว** → AI เขียนให้
+**ขั้น 5 · ฐานข้อมูล**
+8. เปิด https://github.com/baysireekahnokrath/Chawcheros/blob/claude/sharp-pascal-6wg2mg/supabase/migrations/0049_news.sql → Copy raw file
+9. เปิด https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new → วาง → Run → ต้องขึ้น Success
+
+**ขั้น 6 · เอาโค้ดขึ้นเว็บจริง**
+10. เปิด https://github.com/baysireekahnokrath/Chawcheros/compare/claude/chaw-cher-os-setup-9k21w6...claude/sharp-pascal-6wg2mg → Create pull request → Merge pull request → Confirm merge
+11. รอ ~2 นาที → เปิด https://chawcher-os.vercel.app/news → ต้องเห็นข่าว Dior ในแท็บ "ร่างรอตรวจ" และไม่มีแถบเหลือง
+
+**ขั้น 7 · ลองใช้**
+12. ข่าว Dior → **Preview ↗** → ok → ติ๊ก "ดู Preview แล้ว" → **เผยแพร่บนเว็บ** → ติ๊กกลุ่ม LINE + ยืนยัน → **ส่ง LINE**
+13. ลองใส่ข่าว: ชีตแท็บ **ข่าวเข้า** เพิ่มแถว (แบรนด์ + ลิงก์หรือเล่าเรื่อง) → พรุ่งนี้ 07:43 Claude ร่าง → 09:00 ขึ้นที่ /news (หรือกด **ดึงจากชีต** เมื่อแท็บ "ร่าง" มีแถวแล้ว)
