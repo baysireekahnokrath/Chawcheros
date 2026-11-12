@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { sortRows } from '@/lib/sortRows';
 
 export type CustomerRow = {
   id: string;
@@ -41,8 +42,9 @@ export async function getCustomers(q?: string): Promise<CustomerRow[]> {
   const supabase = await createClient();
   let query = supabase.schema('crm').from('v_customers').select('*');
   if (q?.trim()) query = query.ilike('ชื่อลูกค้า', `%${q.trim()}%`);
-  const { data } = await query.order('ชื่อลูกค้า').limit(200);
-  return (data ?? []) as CustomerRow[];
+  // ตัดเอา 200 รายล่าสุดด้วยคอลัมน์ ASCII แล้วค่อยเรียงตามชื่อในเครื่อง
+  const { data } = await query.order('created_at', { ascending: false }).limit(200);
+  return sortRows((data ?? []) as CustomerRow[], [{ key: (r) => r.ชื่อลูกค้า }]);
 }
 
 export async function getCustomer(

@@ -16,6 +16,25 @@ const baht = (n: number | null) =>
 const key = (g: ImportGroup) => `${g.collection}\u0000${g.category}`;
 const isPending = (g: ImportGroup) => g.รอตรวจ > 0;
 
+/** หมวดที่จริงๆ เป็น "รูปทรง" ไม่ใช่หมวดสินค้า — ข้อมูลกรอกผิดช่องมาตั้งแต่ต้นทาง */
+const SHAPE_AS_CATEGORY = /^\d+\s*ที่นั่ง/;
+
+/**
+ * ธงบอกว่ากลุ่มไหนต้องดูละเอียดกว่าปกติ
+ * ไม่ได้แปลว่าผิด แค่แปลว่าอย่าเพิ่งกดอนุมัติทั้งกลุ่มโดยไม่เปิดดู
+ */
+function flagsOf(g: ImportGroup): string[] {
+  const out: string[] = [];
+  const lo = g.ราคาต่ำสุด ?? 0;
+  const hi = g.ราคาสูงสุด ?? 0;
+  if (lo > 0 && hi / lo >= 4)
+    out.push(`ช่วงราคาต่างกัน ${Math.round(hi / lo)} เท่า — อาจเป็นคนละรุ่นที่ถูกรวมกัน`);
+  if (SHAPE_AS_CATEGORY.test(g.category))
+    out.push('หมวดนี้ที่จริงเป็นรูปทรง ไม่ใช่หมวดสินค้า — ข้อมูลกรอกผิดช่อง');
+  if (g.ไม่มีราคา > 0) out.push(`ไม่มีราคา ${g.ไม่มีราคา} ตัว`);
+  return out;
+}
+
 const ATTRS = [
   ['wood', 'ไม้/โครง'],
   ['wood_colour', 'สี'],
@@ -64,6 +83,8 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
 
   const pendingGroups = groups.filter(isPending);
   const doneGroups = groups.filter((g) => !isPending(g));
+  const totalRows = groups.reduce((s, g) => s + g.จำนวนแถว, 0);
+  const doneRows = groups.reduce((s, g) => s + g.อนุมัติแล้ว + g.ไม่เอา, 0);
   const visible = showDone ? groups : pendingGroups;
 
   const pendingRowsOf = (k: string) =>
@@ -204,10 +225,15 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
           <span className="text-sm font-medium">ตรวจแล้ว {done} จาก {totalGroups} กลุ่ม</span>
           <span className="text-xs text-muted">เหลือ {totalGroups - done}</span>
         </div>
+        {/* นับเป็น "ตัว" ด้วย เพราะกลุ่มไม่ได้ใหญ่เท่ากัน — 23 กลุ่มแรกคือ 64% ของสินค้า */}
+        <div className="mt-1 text-xs text-muted">
+          {doneRows.toLocaleString('th-TH')} จาก {totalRows.toLocaleString('th-TH')} ตัว
+          {totalRows > 0 && ` · ${Math.round((doneRows / totalRows) * 100)}% ของสินค้าทั้งหมด`}
+        </div>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-border">
           <div
             className="h-full rounded-full bg-ok transition-all"
-            style={{ width: totalGroups === 0 ? '0%' : `${(done / totalGroups) * 100}%` }}
+            style={{ width: totalRows === 0 ? '0%' : `${(doneRows / totalRows) * 100}%` }}
           />
         </div>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs">
@@ -288,6 +314,12 @@ export default function ReviewList({ groups }: { groups: ImportGroup[] }) {
                     <div className="mt-1.5 text-xs text-muted">
                       {g.จำนวนแถว} ตัว · {baht(g.ราคาต่ำสุด)}–{baht(g.ราคาสูงสุด)} บาท
                     </div>
+                    {pending &&
+                      flagsOf(g).map((f) => (
+                        <div key={f} className="mt-1 text-xs text-warn">
+                          ⚠ {f}
+                        </div>
+                      ))}
                     {partial && (
                       <div className="mt-1 text-xs text-accent">เลือกไว้ {n} จาก {pend.length} ตัว</div>
                     )}

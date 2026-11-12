@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { sortRows } from '@/lib/sortRows';
 
 export type Location = {
   id: string;
@@ -91,9 +92,8 @@ export async function getOverdueLoans(): Promise<OverdueLoan[]> {
   const { data } = await supabase
     .schema('stock')
     .from('v_overdue_loans')
-    .select('*')
-    .order('มูลค่าที่จมอยู่', { ascending: false, nullsFirst: false });
-  return (data ?? []) as OverdueLoan[];
+    .select('*');
+  return sortRows((data ?? []) as OverdueLoan[], [{ key: (r) => r.มูลค่าที่จมอยู่, desc: true }]);
 }
 
 export async function getOnHand(): Promise<OnHand[]> {
@@ -101,9 +101,8 @@ export async function getOnHand(): Promise<OnHand[]> {
   const { data } = await supabase
     .schema('stock')
     .from('v_on_hand')
-    .select('*')
-    .order('รุ่น');
-  return (data ?? []) as OnHand[];
+    .select('*');
+  return sortRows((data ?? []) as OnHand[], [{ key: (r) => r.รุ่น }]);
 }
 
 export async function getStockCounts() {
