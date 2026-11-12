@@ -11,7 +11,7 @@ import { dirname, join } from 'node:path';
 // @ts-expect-error -- node --experimental-strip-types ต้องการนามสกุล .ts
 import { parseRequest } from '../src/modules/quote/parse.ts';
 // @ts-expect-error -- เหตุผลเดียวกัน
-import { buildProducts, confident, matchLine, sizeText } from '../src/modules/quote/match.ts';
+import { buildProducts, confident, looksLikeProduct, matchLine, sizeText } from '../src/modules/quote/match.ts';
 // @ts-expect-error -- เหตุผลเดียวกัน
 import { quoteNo, renumber, thaiDate, totalsOf } from '../src/modules/quote/doc.ts';
 import type { Product } from '../src/modules/quote/match.ts';
@@ -79,7 +79,9 @@ MGB
 - Khonmai Stool PVC SM White 4 ตัว
 บริษัท อุรา กรุงเทพ คลินิก จำกัด (สาขา 00013) อาคารศูนย์การค้าเมกาบางนา ห้องเลขที่ 1222/4, 1224/1, 1722 ชั้น 1 เลขที่ 39 หมู่ 6 ถนนบางนา-ตราด ตำบลบางแก้ว อำเภอบางพลี จังหวัดสมุทรปราการ 10540`;
 
-const docs = parseRequest(MSG);
+const productsEarly = buildProducts(rows);
+const looksProduct = (line: string) => looksLikeProduct(line, productsEarly);
+const docs = parseRequest(MSG, looksProduct);
 
 ok('แยกได้ 3 ใบ · CLP สองตัวเลือก + MGB', docs.length, 3);
 ok('หัวใบถูก', docs.map((d) => `${d.title} ${d.option}`.trim()),
@@ -105,7 +107,7 @@ ok('คำทักทายไม่กลายเป็นรายการ'
    JSON.stringify(docs).includes('สวัสดี'), false);
 
 /* ── จับคู่กับใบราคา ── */
-const products: Product[] = buildProducts(rows);
+const products: Product[] = productsEarly;
 ok('รวม 751 แถวเป็นสินค้าได้', products.length > 100 && products.length < 400, true);
 
 const top = (t: string) => matchLine(t, products)[0];
@@ -137,6 +139,39 @@ ok('สินค้ามีเกรดวัสดุครบ · เลาจ
    top('Krata Lounge Chair').p.variants.length, 5);
 ok('ราคาเต็มของเกรดถูกสุดคือ 36500',
    top('Krata Lounge Chair').p.variants[0].retail, 36500);
+
+/* ── ข้อความจริงของ Bay เอง · ไม่มีขีดนำหน้าสักบรรทัด ──
+     เคสนี้ทำให้ต้องเปลี่ยนวิธีแกะ จากดูเครื่องหมายวรรคตอน มาเป็นลองจับคู่ใบราคาดู */
+const BAY = `ยินดีครับ
+taka 214
+ห้องนอน 234
+Taka 214 ห้องคุณแม่
+โต๊ะกลาง phoenix ขนาดเหมาะกับ Taka 234
+Phoenix coffee ขนาด 60*100
+หินขาวลายจุด
+krasa tv200 สีเข้ม 2 ชุด`;
+
+const bay = parseRequest(BAY, looksProduct);
+ok('ข้อความไม่มีขีด · ยังได้ใบเดียว', bay.length, 1);
+ok('ไม่ใช่เหลือรายการเดียวแบบของเดิม', bay[0].lines.length >= 4, true);
+ok('คำทักทายไม่กลายเป็นรายการ',
+   bay[0].lines.some((l) => l.raw.includes('ยินดี')), false);
+ok('krasa tv200 เป็นรายการ และอ่านจำนวนได้ 2 ชุด', (() => {
+  const l = bay[0].lines.find((x) => /krasa/i.test(x.raw));
+  return [!!l, l?.qty];
+})(), [true, 2]);
+ok('krasa tv200 จับคู่ได้ตรงตัว · ชั้นวางทีวี กระสา W200', (() => {
+  const l = bay[0].lines.find((x) => /krasa/i.test(x.raw))!;
+  const h = matchLine(l.name || l.raw, products)[0];
+  return [h.p.collection, h.p.category, h.p.w];
+})(), ['กระสา', 'ชั้นวางทีวี', 200]);
+ok('หินขาวลายจุดไม่หาย · ไปเป็นหมายเหตุของโต๊ะบรรทัดบน',
+   bay[0].lines.some((l) => l.notes.some((n) => n.includes('หินขาว'))), true);
+ok('taka 214 ไม่ถูกมองเป็นหัวข้อใบ', bay[0].title.toLowerCase().includes('taka'), false);
+
+/* หัวข้อจริงต้องยังเป็นหัวข้ออยู่ · CLP MGB จับคู่ใบราคาไม่ติด */
+ok('CLP ยังเป็นหัวข้อ ไม่ใช่สินค้า', looksProduct('CLP'), false);
+ok('MGB ยังเป็นหัวข้อ ไม่ใช่สินค้า', looksProduct('MGB'), false);
 
 /* ── บรรทัดที่จะไปโผล่ในใบเสนอราคา ── */
 ok('บรรทัดแรกเป็นรูปแบบเดียวกับใบจริงของ Bay', (() => {

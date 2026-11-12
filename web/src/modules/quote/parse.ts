@@ -26,6 +26,8 @@
 export type DraftLine = {
   /** ข้อความดิบของบรรทัดนี้ เอาไว้โชว์ให้คนตรวจว่าแกะมาจากอะไร */
   raw: string;
+  /** บรรทัดต่อ ๆ มาที่ไม่ใช่สินค้า · วัสดุ สี ห้อง หมายเหตุ */
+  notes: string[];
   /** ชื่อสินค้าที่เดาได้ หลังตัดจำนวนกับวัสดุออก */
   name: string;
   /** คำที่น่าจะเป็นวัสดุ/สี เช่น PVC SM Wheat */
@@ -59,16 +61,30 @@ const QTY = /(\d+)\s*(?:ตัว|ชิ้น|ชุด|อัน|pcs?|units?)(
 const OPTION = /^(?:option|ตัวเลือก(?:ที่)?)\s*([0-9]+)$/i;
 
 /** บรรทัดที่เป็นชื่อบริษัท/ที่อยู่ลูกค้า */
-const COMPANY = /(บริษัท|ห้างหุ้นส่วน|หจก\.|บจก\.|คุณ|โครงการ)/;
-const ADDRESSY = /(เลขที่|ถนน|แขวง|เขต|ตำบล|อำเภอ|จังหวัด|หมู่|ซอย|ชั้น|ห้อง|อาคาร|\b\d{5}\b)/;
+const COMPANY = /(บริษัท|ห้างหุ้นส่วน|หจก\.|บจก\.|โครงการ)/;
+const ADDR_WORD = /(เลขที่|ถนน|แขวง|เขต|ตำบล|อำเภอ|จังหวัด|หมู่|ซอย|ชั้น|ห้อง|อาคาร|\b\d{5}\b)/g;
+/**
+ * ที่อยู่จริงมีคำบอกตำแหน่งหลายคำเสมอ
+ *
+ * ★ ต้องเจออย่างน้อยสองคำ · คำเดียวไม่พอ
+ *   "ห้องนอน 234" มีคำว่า "ห้อง" คำเดียว แต่มันคือหมายเหตุของโซฟาบรรทัดบน
+ *   ของเดิมนับคำเดียวก็พอ เลยกลืนบรรทัดนี้ไปเป็นที่อยู่ลูกค้าแล้วหายไปเลย
+ */
+const ADDRESSY = (s: string) => (s.match(ADDR_WORD) ?? []).length >= 2;
 
 /** เบอร์โทร · 08x-xxx-xxxx / 02-xxx-xxxx / 10 หลักติดกัน */
 const TEL = /(0\d[\d\s-]{7,12}\d)/;
 
-/** หัวใบ · บรรทัดสั้น ๆ ที่เป็นชื่อย่อโครงการ เช่น CLP, MGB, ชั้น 2 */
-const isHeading = (s: string) =>
-  s.length > 0 && s.length <= 24 && !BULLET.test(s) && !COMPANY.test(s) &&
-  !ADDRESSY.test(s) && !OPTION.test(s) && !/[.!?]$/.test(s) &&
+/**
+ * หัวใบ · บรรทัดสั้น ๆ ที่เป็นชื่อย่อโครงการ เช่น CLP, MGB, ชั้น 2
+ *
+ * ★ ต้องยืนอยู่ลำพัง · มีบรรทัดว่างคั่นมาก่อน หรือเป็นบรรทัดแรกของข้อความ
+ *   ถ้าไม่มีเงื่อนไขนี้ "หินขาวลายจุด" (ท็อปหินของโต๊ะบรรทัดบน) จะถูกอ่านเป็นหัวใบ
+ *   แล้วตัดใบออกเป็นสองใบกลางคัน · เคยพลาดมาแล้วตอน Bay ลองข้อความของตัวเอง
+ */
+const isHeading = (s: string, alone: boolean) =>
+  alone && s.length > 0 && s.length <= 24 && !BULLET.test(s) && !COMPANY.test(s) &&
+  !ADDRESSY(s) && !OPTION.test(s) && !/[.!?]$/.test(s) &&
   !/(ค่ะ|ครับ|คะ|นะ|ขอ|สวัสดี)/.test(s);
 
 /** ตัดจำนวนกับคำที่น่าจะเป็นวัสดุออกจากชื่อสินค้า */
@@ -84,14 +100,31 @@ function splitLine(raw: string): DraftLine {
   const spec = sm ? clean(sm[1]) : '';
   if (sm) rest = clean(rest.slice(0, sm.index));
 
-  return { raw: clean(raw), name: rest, spec, qty: qty > 0 ? qty : 1 };
+  return { raw: clean(raw), notes: [], name: rest, spec, qty: qty > 0 ? qty : 1 };
 }
 
 /**
  * แกะข้อความทั้งก้อน · คืนร่างใบเสนอราคาหนึ่งใบต่อหนึ่งหัวข้อ/ตัวเลือก
  * ไม่มีหัวข้อเลยก็ได้ใบเดียว
+ *
+ * ★ isProduct · ตัวบอกว่าบรรทัดนี้ "น่าจะเป็นสินค้า" โดยลองจับคู่กับใบราคาดู
+ *   จำเป็นเพราะคนไม่ได้ใส่ขีดหน้าทุกบรรทัด · ข้อความจริงของ Bay หน้าตาแบบนี้
+ *
+ *     ยินดีครับ
+ *     taka 214
+ *     ห้องนอน 234
+ *     Phoenix coffee ขนาด 60*100
+ *     หินขาวลายจุด
+ *     krasa tv200 สีเข้ม 2 ชุด
+ *
+ *   ไม่มีขีดสักอัน · ถ้าดูแค่เครื่องหมายวรรคตอน จะแยกไม่ออกเลยว่าอะไรเป็นรายการ
+ *   บรรทัดที่จับคู่ไม่ติด (หินขาวลายจุด) ไปเกาะเป็นหมายเหตุของรายการก่อนหน้า
+ *   ไม่ทิ้ง เพราะมันคือวัสดุที่ลูกค้าสั่ง
  */
-export function parseRequest(text: string): DraftDoc[] {
+export function parseRequest(
+  text: string,
+  isProduct: (line: string) => boolean = () => false,
+): DraftDoc[] {
   const rows = (text ?? '').split(/\r?\n/).map(clean);
   const docs: DraftDoc[] = [];
 
@@ -113,15 +146,25 @@ export function parseRequest(text: string): DraftDoc[] {
   /** ใบที่เปิดอยู่ทั้งหมดของหัวข้อนี้ · ที่อยู่ที่มาทีหลังใส่ให้ทุกตัวเลือก */
   const sameTitle = () => docs.filter((d) => d.title === title);
 
+  let last: DraftLine | null = null;
+  let alone = true;          // บรรทัดนี้มีบรรทัดว่างคั่นมาก่อนไหม
+
   for (const line of rows) {
-    if (!line) continue;
+    if (!line) { alone = true; continue; }
+    const standalone = alone;
+    alone = false;
 
     const opt = OPTION.exec(line);
-    if (opt) { option = `Option ${opt[1]}`; docFor(); continue; }
+    if (opt) { option = `Option ${opt[1]}`; docFor(); last = null; continue; }
 
-    if (BULLET.test(line)) { docFor().lines.push(splitLine(line)); continue; }
+    // ขีดนำหน้า = รายการแน่นอน ไม่ต้องเดา
+    if (BULLET.test(line)) {
+      last = splitLine(line);
+      docFor().lines.push(last);
+      continue;
+    }
 
-    if (COMPANY.test(line) || ADDRESSY.test(line)) {
+    if (COMPANY.test(line) || ADDRESSY(line)) {
       const tel = TEL.exec(line)?.[1] ?? '';
       // ชื่อบริษัทอยู่หน้า ที่อยู่ตามหลัง · ตัดที่คำว่า "อาคาร" หรือ "เลขที่" ก่อน
       const cut = line.search(/(อาคาร|เลขที่|\d+\/\d+|\d+ หมู่)/);
@@ -136,12 +179,25 @@ export function parseRequest(text: string): DraftDoc[] {
         const d = docFor();
         d.customer = name; d.address = addr; d.tel = clean(tel);
       }
+      last = null;
       continue;
     }
 
-    if (isHeading(line)) { title = line; option = ''; continue; }
+    // ไม่มีขีดก็เป็นรายการได้ · ตัดสินด้วยการลองจับคู่ใบราคาดู
+    // เช็คหลังที่อยู่ เพราะบรรทัดที่อยู่ยาว ๆ มีคำไปพ้องกับชื่อสินค้าได้
+    if (isProduct(line)) {
+      last = splitLine(line);
+      docFor().lines.push(last);
+      continue;
+    }
 
-    // บรรทัดทักทาย/คำสั่งอื่น ๆ ข้ามไป ไม่เดา
+    if (isHeading(line, standalone)) { title = line; option = ''; last = null; continue; }
+
+    // จับคู่ไม่ติดและไม่ใช่หัวข้อ · ถ้ามีรายการอยู่ก่อนหน้า ถือเป็นหมายเหตุของรายการนั้น
+    // "หินขาวลายจุด" คือท็อปของโต๊ะบรรทัดบน · ทิ้งไปไม่ได้
+    if (last) { last.notes.push(line); continue; }
+
+    // ไม่มีอะไรให้เกาะ · เป็นคำทักทายหรือคำสั่ง ข้ามไป ไม่เดา
   }
 
   return docs.filter((d) => d.lines.length > 0);

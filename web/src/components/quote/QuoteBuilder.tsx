@@ -21,12 +21,14 @@
 import { useMemo, useState } from 'react';
 import type { PriceRow } from '@/modules/pricing/queries';
 import { parseRequest } from '@/modules/quote/parse';
-import { buildProducts, confident, matchLine, type Hit } from '@/modules/quote/match';
+import { buildProducts, confident, looksLikeProduct, matchLine, type Hit } from '@/modules/quote/match';
 import { BAHT, quoteNo, thaiDate, totalsOf, type Quote, type QuoteLine } from '@/modules/quote/doc';
 
 type Row = {
   id: string;
   raw: string;
+  /** บรรทัดที่จับคู่ไม่ติดซึ่งตามมาหลังรายการนี้ · วัสดุ สี ห้อง */
+  notes: string[];
   spec: string;
   qty: number;
   pkey: string;
@@ -54,6 +56,13 @@ type Doc = {
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
+
+/**
+ * ชื่อในรายชื่อให้เลือก · ต้องใส่ไม้กับสีด้วย
+ * ไม่งั้นโต๊ะกลางสวอนสามสีจะขึ้นเป็นบรรทัดเดียวกันเป๊ะสามอัน แยกไม่ออกว่าอันไหนคืออันไหน
+ */
+const optLabel = (p: { head: string; size: string; wood: string }) =>
+  [p.head.replace('ฌ เฌอ | ', ''), p.size, p.wood].filter(Boolean).join(' · ');
 
 const SAMPLE = `CLP
 Option1
@@ -84,7 +93,7 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
   const hitsFor = (raw: string) => cands.get(raw) ?? [];
 
   function run() {
-    const drafts = parseRequest(text);
+    const drafts = parseRequest(text, (line) => looksLikeProduct(line, products));
     if (!drafts.length) { setToast('แกะไม่ออก · ลองใส่ขีดหน้าแต่ละรายการ เช่น "- Krata Lounge Chair 3 ตัว"'); return; }
     const out: Doc[] = drafts.map((d, i) => ({
       id: uid(),
@@ -97,7 +106,7 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
         const h = matchLine(l.name || l.raw, products);
         const pick = confident(h) ? h[0].p : null;
         return {
-          id: uid(), raw: l.name || l.raw, spec: l.spec, qty: l.qty,
+          id: uid(), raw: l.name || l.raw, notes: l.notes, spec: l.spec, qty: l.qty,
           pkey: pick?.key ?? '', gi: 0,
           unit: pick ? (pick.variants[0].sale ?? pick.variants[0].retail) : null,
           free: '',
@@ -268,12 +277,10 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                       >
                         <option value="">— ยังไม่ได้เลือก —</option>
                         {cands.map((h) => (
-                          <option key={h.p.key} value={h.p.key}>
-                            {h.p.head.replace('ฌ เฌอ | ', '')} · {h.p.size}
-                          </option>
+                          <option key={h.p.key} value={h.p.key}>{optLabel(h.p)}</option>
                         ))}
                         {p && !cands.some((h) => h.p.key === p.key) && (
-                          <option value={p.key}>{p.head.replace('ฌ เฌอ | ', '')} · {p.size}</option>
+                          <option value={p.key}>{optLabel(p)}</option>
                         )}
                       </select>
 
@@ -320,9 +327,38 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                     />
                   )}
 
+                  {r.notes.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+                      <span className="text-muted">ลูกค้าเขียนต่อท้าย:</span>
+                      {r.notes.map((n, ni) => (
+                        <span key={ni} className="inline-flex items-center gap-1 rounded-md border border-border bg-bg px-1.5 py-1">
+                          {n}
+                          <button type="button" title="ใส่เป็นบรรทัดวัสดุของรายการนี้"
+                            onClick={() => setRow(d.id, r.id, (x) => ({
+                              ...x, spec: [x.spec, n].filter(Boolean).join(' '),
+                              notes: x.notes.filter((_, j) => j !== ni),
+                            }))}
+                            className="rounded bg-accent/15 px-1 font-medium text-accent">↑ วัสดุ</button>
+                          <button type="button" title="แยกออกมาเป็นรายการของตัวเอง"
+                            onClick={() => setDoc(d.id, (x) => {
+                              const at = x.rows.findIndex((y) => y.id === r.id);
+                              const rows2 = x.rows.map((y) => (y.id === r.id
+                                ? { ...y, notes: y.notes.filter((_, j) => j !== ni) } : y));
+                              rows2.splice(at + 1, 0, { id: uid(), raw: n, notes: [], spec: '',
+                                qty: 1, pkey: '', gi: 0, unit: null, free: '' });
+                              return { ...x, rows: rows2 };
+                            })}
+                            className="rounded bg-bg px-1 font-medium">+ รายการ</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   {!p && !r.free && (
                     <p className="mt-2 text-xs text-warn">
-                      ยังไม่เจอตัวที่ตรง · เลือกจากรายชื่อ หรือถ้าไม่มีในใบราคาให้ลบบรรทัดนี้แล้วใส่เป็นรายการอิสระ
+                      {cands.length
+                        ? `ยังไม่ได้เลือก · มี ${cands.length} ตัวที่ใกล้เคียงในรายชื่อข้างบน`
+                        : 'ไม่เจอในใบราคาเลย · ลบบรรทัดนี้แล้วใส่เป็นรายการอิสระ หรือแก้คำค้นให้ตรงขึ้น'}
                     </p>
                   )}
 
@@ -339,11 +375,11 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
             <div className="flex flex-wrap gap-2">
               <button type="button"
                 onClick={() => setDoc(d.id, (x) => ({ ...x, rows: [...x.rows,
-                  { id: uid(), raw: '', spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: '' }] }))}
+                  { id: uid(), raw: '', notes: [], spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: '' }] }))}
                 className="rounded-lg border border-border px-3 py-2 text-sm">+ เพิ่มสินค้า</button>
               <button type="button"
                 onClick={() => setDoc(d.id, (x) => ({ ...x, rows: [...x.rows,
-                  { id: uid(), raw: 'ค่าขนส่ง', spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: 'ค่าขนส่ง' }] }))}
+                  { id: uid(), raw: 'ค่าขนส่ง', notes: [], spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: 'ค่าขนส่ง' }] }))}
                 className="rounded-lg border border-border px-3 py-2 text-sm">+ ค่าขนส่ง / รายการอิสระ</button>
             </div>
           </div>
