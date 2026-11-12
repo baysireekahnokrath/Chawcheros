@@ -54,6 +54,8 @@
 - **ก่อนถาม Bay ว่าอะไรคืออะไร ให้ค้น `docs/` (Grep) และเช็ก tools ที่เชื่อมไว้ก่อนเสมอ** · ทุก session เริ่มจากศูนย์ ความรู้ที่ไม่ได้เขียนลงไฟล์นี้หรือ `docs/` จะหายไป
 - ของที่ออกสู่ภายนอก (เผยแพร่หน้าเว็บ ส่งข้อความเข้ากลุ่ม LINE ลูกค้า) ต้องถาม Bay ยืนยันก่อนทุกครั้ง · ร่าง/draft ทำได้เลย
 - งาน LINE agent (Team Bay) → เริ่มที่ `docs/modules/line-agent/7-status.md`
+- งานต้นทุน / สูตรวัสดุ / เอกสารโรงงาน → เริ่มที่ `docs/modules/production/2-ning-files.md` (★ โรงงานมีระบบคอมพิวเตอร์ที่ปรินต์ "ใบขอเบิกวัตถุดิบ" แยก 6 แผนก พร้อมช่อง *จำนวนตาม STD* อยู่แล้ว → BOM อยู่ในฐานข้อมูลของโรงงาน ไม่ใช่แค่กระดาษ · ห้ามเริ่มด้วยการถอดสูตรจากกระดาษ) แล้วค่อย `1-cost-sheet.md` · `0-paper-reality.md` · `docs/modules/costing/2-design.md`
+- **ตัวเลขต้นทุน/กำไรห้ามลง repo เด็ดขาด** · เอกสารในโฟลเดอร์ Drive ของโรงงานอ่านอย่างเดียว เก็บได้แค่ "โครงสร้างของใบ"
 - งานข่าว Chaw Cher / ASE (เก็บข่าวทุกเช้า → ร่างโพสต์ WordPress + ข้อความ LINE) → ชีต `Chaw Cher News` (id `19vtyQJyNimSkFeh3RYz7BoE34mlFVIcm4ubce1iGlQA`) → Claude ร่าง 07:43 (งานตั้งเวลา `trig_018WUZozaYetcPKLkCrRFDTi`) → ระบบดึง 09:00 → หน้า `https://chawcher-os.vercel.app/news` · ไม่ใช้ Claude API (Bay สั่ง ไม่เสียตังค์) · `docs/modules/news/0-idea.md` · เพจ ASE: `facebook.com/AseSofa` `instagram.com/ase.living`
 
 ## Google Drive ของโปรเจกต์ (Bay ติ 2026-11-12 · ห้ามสร้างไฟล์ไว้หน้าแรกของ Drive)
