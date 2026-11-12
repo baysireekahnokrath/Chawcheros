@@ -1,16 +1,17 @@
 import Link from 'next/link';
-import { getToday, getCampaigns, getChannels, getDiscountTargets } from '@/modules/marketing/queries';
-import { CampaignForm, PromotionForm } from '@/components/marketing/Forms';
+import { getToday, getCampaigns, getChannels, getDiscountTargets, getLivePromotions } from '@/modules/marketing/queries';
+import { CampaignForm, PromotionForm, PromoExtraForm, LivePromos } from '@/components/marketing/Forms';
 
 const baht = (n: number | null | undefined) =>
   n == null ? '—' : n.toLocaleString('th-TH', { maximumFractionDigits: 0 }) + ' ฿';
 
 export default async function MarketingPage() {
-  const [today, campaigns, channels, targets] = await Promise.all([
+  const [today, campaigns, channels, targets, promos] = await Promise.all([
     getToday(),
     getCampaigns(),
     getChannels(),
     getDiscountTargets(),
+    getLivePromotions(),
   ]);
 
   return (
@@ -50,6 +51,8 @@ export default async function MarketingPage() {
       </section>
 
       <section className="mt-6 space-y-3">
+        <LivePromos rows={promos} />
+        <PromoExtraForm categories={targets.categories} products={targets.products} />
         <PromotionForm
           campaigns={campaigns.map((c) => ({ id: c.id, name: c.name }))}
           categories={targets.categories}
