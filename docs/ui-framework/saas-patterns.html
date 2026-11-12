@@ -1,0 +1,175 @@
+<title>SaaS Navigation Patterns</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@500;600&display=swap">
+<style>
+/* Layout: pattern picker on top, then one phone wireframe + short verdict card side by side */
+:root{
+  --bg:#F7F8F8; --panel:#FFFFFF; --ink:#2F4554; --muted:#5B6670; --line:#DDE1E3;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E4EEF0; --taupe:#958C7B;
+  --ok:#2E6B4F; --ok-bg:#E3EFE8; --warn:#7A5A12; --warn-bg:#F6EEDB; --ghost:#E9ECEE;
+  --th:"Noto Sans Thai",Tahoma,sans-serif; --en:"Montserrat","Noto Sans Thai",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --ghost:#2E414D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --ghost:#2E414D; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+.eyebrow{font-family:var(--en);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:4px 0 6px;font-size:26px;font-weight:600;color:var(--navy);text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.picker button{font:inherit;font-size:14px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-height:40px}
+.picker button[aria-pressed="true"]{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.picker button.rec{border-color:var(--aqua)}
+button:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.stage{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:700px){.stage{grid-template-columns:minmax(0,1fr)}.phone{max-width:300px;margin:0 auto;width:100%}}
+.phone{border:1px solid var(--line);border-radius:28px;background:var(--panel);padding:9px}
+.scr{border-radius:20px;overflow:hidden;background:var(--bg);height:560px;display:flex;flex-direction:column;position:relative;font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px}
+.card h2{margin:0;font-size:20px;color:var(--navy)}
+.card .who{font-size:13px;color:var(--muted)}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.pc{grid-template-columns:1fr}}
+.pc h3{margin:0 0 4px;font-size:13px;font-weight:600}
+.pc ul{margin:0;padding-left:18px;font-size:14px;color:var(--muted)}
+.fit{font-size:14px;border-radius:8px;padding:10px 12px}
+.fit.good{background:var(--ok-bg);color:var(--ok)} .fit.meh{background:var(--warn-bg);color:var(--warn)}
+/* wireframe parts */
+.tb{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line);flex:none;font-weight:600}
+.tb .lg{font-family:var(--en);font-size:10px;letter-spacing:.22em;color:var(--muted);margin-left:auto;font-weight:500}
+.body{flex:1;overflow:hidden;padding:10px;display:grid;gap:8px;align-content:start}
+.g{background:var(--ghost);border-radius:6px;height:10px}
+.blk{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;display:grid;gap:4px;justify-items:center;font-size:11.5px}
+.tile i{font-style:normal;width:26px;height:26px;border-radius:8px;background:var(--aqua-soft);display:grid;place-items:center}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.row{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-top:1px solid var(--line);background:var(--panel)}
+.row:first-child{border-top:0}
+.rows{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.num{font-family:var(--en);font-variant-numeric:tabular-nums}
+.side{position:absolute;inset:44px auto 0 0;width:70%;background:var(--panel);border-right:1px solid var(--line);padding:10px;display:grid;gap:4px;align-content:start;box-shadow:6px 0 18px rgba(0,0,0,.12)}
+.side div{padding:8px 10px;border-radius:8px}
+.side .on{background:var(--aqua-soft);font-weight:600}
+.side .h{font-size:10.5px;color:var(--taupe);letter-spacing:.12em;text-transform:uppercase;padding:8px 10px 2px}
+.shade{position:absolute;inset:44px 0 0 0;background:rgba(0,0,0,.18)}
+.tabs{display:flex;gap:4px;padding:0 8px;background:var(--panel);border-bottom:1px solid var(--line);overflow:hidden;flex:none}
+.tabs span{padding:9px 8px;white-space:nowrap;font-size:12px;color:var(--muted)}
+.tabs .on{color:var(--navy);font-weight:600;border-bottom:2px solid var(--navy)}
+.bottom{flex:none;display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-top:1px solid var(--line);padding:6px 0 8px}
+.bottom span{display:grid;justify-items:center;gap:2px;font-size:10.5px;color:var(--muted)}
+.bottom span b{font-size:16px;font-weight:400}
+.bottom .on{color:var(--navy);font-weight:600}
+.split{display:grid;grid-template-columns:42% 58%;flex:1;min-height:0}
+.split .l{border-right:1px solid var(--line);background:var(--panel);overflow:hidden}
+.split .l div{padding:8px;border-bottom:1px solid var(--line);font-size:11.5px}
+.split .l .on{background:var(--aqua-soft)}
+.split .r{padding:10px;display:grid;gap:8px;align-content:start}
+.cmd{margin:10px;background:var(--panel);border:1px solid var(--aqua);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.14);overflow:hidden}
+.cmd .in{padding:12px;border-bottom:1px solid var(--line);font-weight:500}
+.cmd div.it{padding:9px 12px;display:flex;justify-content:space-between;font-size:12.5px}
+.cmd .it.on{background:var(--aqua-soft)}
+.cmd .it small{color:var(--muted)}
+.pill{font-size:10.5px;border-radius:999px;padding:1px 7px;background:var(--warn-bg);color:var(--warn)}
+.daily{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.daily span{background:var(--navy);color:var(--on-navy);border-radius:10px;padding:10px;font-weight:600;font-size:12px;min-height:44px;display:flex;align-items:flex-end}
+.note{font-size:13px;color:var(--muted);margin:0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12.5px;color:var(--muted);font-weight:500}
+.tbl{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">CHAW CHER OS · ศึกษา SaaS · Mockup</p>
+    <h1>SaaS จัดหน้าจอได้ 6 แบบ</h1>
+    <p class="lead">ดูจากโปรแกรมธุรกิจที่คนใช้กันทั่วโลก แยกตาม "วิธีเดินไปหน้าต่างๆ" ได้ 6 แบบ · กดแต่ละแบบเพื่อดูว่าถ้าเป็นระบบเรา จะหน้าตาแบบไหน · ข้อมูลเป็นตัวอย่าง</p>
+  </header>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>#</th><th>แบบ</th><th>ตัวอย่างโปรแกรม</th><th>เหมาะกับ</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>เมนูข้าง</td><td>Salesforce · HubSpot · Shopify (คอม)</td><td>คอม · โมดูลเยอะ</td></tr>
+        <tr><td>2</td><td>แท็บด้านบน</td><td>Zoho CRM · Salesforce รุ่นเก่า</td><td>คอม · โมดูลไม่เกิน 7-8</td></tr>
+        <tr><td>3</td><td>หน้ารวมแอป</td><td>Odoo · Google Workspace · Zoho One</td><td>เปิดใช้ทีละแอป</td></tr>
+        <tr><td>4</td><td>แถบล่าง</td><td>Shopify (มือถือ) · Square POS · LINE</td><td>มือถือ · ใช้ซ้ำทุกวัน</td></tr>
+        <tr><td>5</td><td>รายการซ้าย ละเอียดขวา</td><td>Gmail · Intercom · Linear</td><td>คอม · ไล่ทีละรายการ</td></tr>
+        <tr><td>6</td><td>ค้นหาเป็นหลัก</td><td>Linear · Slack · Notion (กด ⌘K)</td><td>คนที่ใช้ระบบคล่องแล้ว</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="picker" id="picker">
+    <button type="button" data-k="1">1 · เมนูข้าง</button>
+    <button type="button" data-k="2">2 · แท็บด้านบน</button>
+    <button type="button" data-k="3">3 · หน้ารวมแอป</button>
+    <button type="button" data-k="4">4 · แถบล่าง</button>
+    <button type="button" data-k="5">5 · รายการ + ละเอียด</button>
+    <button type="button" data-k="6">6 · ค้นหาเป็นหลัก</button>
+    <button type="button" data-k="R" class="rec">★ ที่แนะนำ</button>
+  </div>
+
+  <div class="stage">
+    <div class="phone"><div class="scr" id="scr"></div></div>
+    <div class="card" id="card"></div>
+  </div>
+
+  <p class="note">ทุกแบบใช้สีและฟอนต์ CI ชุดเดียวกัน ต่างกันแค่วิธีเดินระหว่างหน้า · ตอนนี้ chawcher-os ใช้แบบ 3 (หน้ารวมแอป) อย่างเดียว</p>
+</div>
+
+<script>
+const TB=t=>`<div class="tb">${t}<span class="lg">CHAW CHER</span></div>`;
+const ORDERS=`<div class="rows">${[['คุณสมชาย','48,900'],['คุณนภา','126,500'],['บ.ดีไซน์ เฮาส์','312,000'],['คุณวิทย์','35,700']].map(([n,v])=>`<div class="row"><span>${n}</span><span class="num">฿ ${v}</span></div>`).join('')}</div>`;
+const BOTTOM=on=>`<div class="bottom">${[['⌂','หน้าแรก'],['🛒','ขาย'],['📦','สินค้า'],['👥','ลูกค้า'],['☰','เมนู']].map(([i,t])=>`<span class="${t===on?'on':''}"><b>${i}</b>${t}</span>`).join('')}</div>`;
+const P={
+'1':{s:TB('☰ ออเดอร์')+`<div class="body">${ORDERS}</div><div class="shade"></div><div class="side"><div class="h">ขาย</div><div>ขายหน้าบูธ</div><div class="on">ออเดอร์</div><div>ลูกค้า</div><div class="h">สินค้า</div><div>ใบราคา</div><div>Data Sheet</div><div>คลัง</div><div class="h">การตลาด</div><div>โปรโมชัน</div><div>คอนเทนต์</div></div>`,
+  n:'เมนูข้าง',w:'Salesforce · HubSpot · Shopify บนคอม',
+  g:['เห็นทุกโมดูลเป็นหมวดในที่เดียว','เพิ่มโมดูลกี่ตัวก็ไม่รก','คนคุ้นเคย (มาตรฐาน SaaS)'],
+  b:['บนมือถือต้องกด ☰ ก่อนทุกครั้ง','ที่จอเล็กเมนูบังเนื้อหา'],
+  f:['meh','ดีบนคอม · บนมือถือช้าไปหนึ่งจังหวะ']},
+'2':{s:TB('ออเดอร์')+`<div class="tabs"><span>หน้าแรก</span><span>ขาย</span><span class="on">ออเดอร์</span><span>ลูกค้า</span><span>สินค้า</span><span>คลัง…</span></div><div class="body">${ORDERS}</div>`,
+  n:'แท็บด้านบน',w:'Zoho CRM · Salesforce รุ่นเก่า',
+  g:['กดครั้งเดียวถึง','เห็นว่าอยู่หน้าไหน'],
+  b:['มือถือใส่ได้แค่ 4-5 แท็บ ที่เหลือล้น','ระบบเรามี 15 โมดูล ใส่ไม่พอ'],
+  f:['meh','ไม่พอสำหรับโมดูลที่เรามี']},
+'3':{s:TB('หน้าแรก')+`<div class="body"><div class="grid3">${['🛒 ขายหน้าบูธ','📊 ยอดขาย','💵 ใบราคา','📝 ใบเสนอราคา','👥 ลูกค้า','🧾 ออเดอร์','📦 สินค้า','📐 Data Sheet','🛋️ ฟีนิกซ์','🏬 คลัง','📣 การตลาด','✍️ คอนเทนต์'].map(x=>{const[i,...t]=x.split(' ');return `<div class="tile"><i>${i}</i>${t.join(' ')}</div>`}).join('')}</div></div>`,
+  n:'หน้ารวมแอป',w:'Odoo · Google Workspace · Zoho One',
+  g:['หน้าแรกเห็นทุกอย่าง','เปิด/ปิดโมดูลแล้วไอคอนหายเอง (ระบบเราทำได้แล้ว)'],
+  b:['จะไปหน้าอื่นต้องกลับหน้าแรกก่อนทุกครั้ง','ไม่มีทางลัดของที่ใช้ทุกวัน'],
+  f:['meh','คือแบบที่ใช้อยู่ตอนนี้ · ใช้ได้ แต่เดินช้า']},
+'4':{s:TB('ขาย')+`<div class="body"><div class="blk"><b>ยอดวันนี้</b><span class="num" style="font-size:20px;font-weight:600">฿ 184,000</span></div>${ORDERS}</div>`+BOTTOM('ขาย'),
+  n:'แถบล่าง',w:'Shopify บนมือถือ · Square POS · LINE',
+  g:['นิ้วโป้งกดถึง ไม่ต้องเอื้อม','ของที่ใช้ทุกวันอยู่ตรงนั้นตลอด กดครั้งเดียว','เหมาะกับคนยืนขายหน้าบูธ'],
+  b:['ใส่ได้ 5 ช่อง · ที่เหลือต้องไปอยู่ใน "เมนู"'],
+  f:['good','เหมาะกับการใช้มือถือหน้าบูธที่สุด']},
+'5':{s:TB('ออเดอร์')+`<div class="split"><div class="l"><div class="on">คุณสมชาย<br><span class="num">฿ 48,900</span></div><div>คุณนภา<br><span class="num">฿ 126,500</span></div><div>บ.ดีไซน์ เฮาส์<br><span class="num">฿ 312,000</span></div><div>คุณวิทย์<br><span class="num">฿ 35,700</span></div></div><div class="r"><b>คุณสมชาย</b><span class="pill" style="justify-self:start">รอมัดจำ</span><div class="g"></div><div class="g" style="width:70%"></div><div class="g" style="width:85%"></div><div class="blk"><span>รวม</span><span class="num">฿ 48,900</span></div></div></div>`,
+  n:'รายการซ้าย ละเอียดขวา',w:'Gmail · Intercom · Linear',
+  g:['ไล่ดูทีละรายการได้เร็วมาก','ไม่ต้องเข้าออกหน้า'],
+  b:['มือถือจอแคบ เบียดกันจนอ่านยาก','เหมาะกับคอมเท่านั้น'],
+  f:['meh','ใช้ได้บางหน้าบนคอม (ออเดอร์ · สลิป LINE)']},
+'6':{s:TB('ค้นหา')+`<div class="cmd"><div class="in">phx 280|</div><div class="it on"><span>Phoenix L-Shape 280</span><small>สินค้า</small></div><div class="it"><span>ใบราคา · Phoenix</span><small>หน้า</small></div><div class="it"><span>จัดชุดฟีนิกซ์</span><small>แอป</small></div><div class="it"><span>คุณสมชาย · Phoenix 280</span><small>ออเดอร์</small></div></div>`,
+  n:'ค้นหาเป็นหลัก',w:'Linear · Slack · Notion (กด ⌘K)',
+  g:['พิมพ์ชื่ออะไรก็เจอ ไม่ต้องจำว่าอยู่เมนูไหน','เร็วที่สุดสำหรับคนคล่อง'],
+  b:['ต้องรู้ว่าจะหาอะไร','คนใหม่ไม่รู้ว่าระบบมีอะไรบ้าง'],
+  f:['meh','ดีเป็นตัวเสริม ไม่ควรเป็นทางหลัก']},
+'R':{s:TB('หน้าแรก <span style="margin-left:auto;font-weight:400">🔍</span>')+`<div class="body"><div class="daily"><span>ขายหน้าบูธ</span><span>ยอดวันนี้</span><span>ใบราคา</span><span>ใบเสนอราคา</span></div><div class="grid3">${['👥 ลูกค้า','🧾 ออเดอร์','📐 Data Sheet','🛋️ ฟีนิกซ์','🏬 คลัง','📣 การตลาด'].map(x=>{const[i,...t]=x.split(' ');return `<div class="tile"><i>${i}</i>${t.join(' ')}</div>`}).join('')}</div></div>`+BOTTOM('หน้าแรก'),
+  n:'★ แนะนำ · แถบล่าง + หน้ารวมแอป + ค้นหา',w:'แบบเดียวกับ Shopify: มือถือใช้แถบล่าง · คอมแถบเดียวกันย้ายไปเป็นเมนูข้าง',
+  g:['มือถือ: แถบล่าง 5 ช่อง (หน้าแรก · ขาย · สินค้า · ลูกค้า · เมนู) กดถึงทุกที่ในครั้งเดียว','หน้าแรก: ปุ่มใช้ทุกวัน 4 ปุ่ม + แอปที่เหลือ (ของเดิม ไม่ต้องรื้อ)','🔍 มุมขวาบน: พิมพ์หาสินค้า ลูกค้า ออเดอร์ได้ทุกหน้า','คอม: 5 ช่องเดียวกันไปอยู่เมนูข้าง (แบบ 1) ไม่ต้องเรียนใหม่'],
+  b:['ต้องเลือกให้ดีว่า 5 ช่องคืออะไร · ที่เหลืออยู่ใน "เมนู"'],
+  f:['good','รวมข้อดีของแบบ 1 + 3 + 4 + 6 · เหมาะกับใช้มือถือคนเดียวและขยายเป็นทีมได้']}
+};
+function show(k){const p=P[k];
+  document.getElementById('scr').innerHTML=p.s;
+  document.getElementById('card').innerHTML=`<h2>${p.n}</h2><span class="who">${p.w}</span><div class="pc"><div><h3>ข้อดี</h3><ul>${p.g.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h3>ข้อเสีย</h3><ul>${p.b.map(x=>`<li>${x}</li>`).join('')}</ul></div></div><div class="fit ${p.f[0]}">กับ CHAW CHER: ${p.f[1]}</div>`;
+  document.querySelectorAll('#picker button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));}
+document.querySelectorAll('#picker button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.k)));
+show('1');
+</script>
