@@ -41,13 +41,31 @@ export default function ResetForm() {
       const q = new URLSearchParams(window.location.search);
       const h = new URLSearchParams(window.location.hash.replace(/^#/, ''));
       const bad = q.get('error_code') ?? q.get('error') ?? h.get('error_code') ?? h.get('error');
+      const sb = createClient();
+
+      /**
+       * ★ magic link ต้องรับเองตรงนี้ · ปล่อยให้ไลบรารีจัดการไม่ได้
+       *
+       * createBrowserClient ของ @supabase/ssr บังคับ flowType = 'pkce' ตายตัว
+       * (ตั้งทับ options เสมอ แก้ไม่ได้) แล้วในไลบรารีเขียนไว้ว่า
+       *   case 'implicit': if (this.flowType === 'pkce') throw 'Not a valid PKCE flow url.'
+       * แปลว่า token ที่มาทางแฮช (#access_token=...) ถูกปฏิเสธทิ้งทุกครั้ง
+       *
+       * ลิงก์กู้รหัสจากหน้า Supabase (Authentication > Users > Send magic link)
+       * ส่ง token มาทางแฮชแบบนี้ · ถ้าไม่รับเอง คนกดจะเข้าระบบไม่ได้เลย
+       * ทั้งที่ token ใช้ได้จริง · Bay เจอของจริง 2026-11-12
+       *
+       * setSession ไม่สนใจ flowType จึงใช้ได้
+       */
+      const at = h.get('access_token'), rt = h.get('refresh_token');
+      if (at && rt) await sb.auth.setSession({ access_token: at, refresh_token: rt });
 
       // getSession รอให้แลกโค้ดในลิงก์เสร็จก่อน จึงตอบได้แน่นอนว่ามี session ไหม
-      const { data } = await createClient().auth.getSession();
+      const { data } = await sb.auth.getSession();
       if (!alive) return;
       if (data.session) {
         setState('form');
-        // เก็บโค้ดออกจากแถบที่อยู่ กันกดรีเฟรชแล้วงง
+        // เก็บ token ออกจากแถบที่อยู่ ทั้ง query และแฮช · กันกดรีเฟรชแล้วงง และกัน token ติดอยู่ในประวัติ
         window.history.replaceState(null, '', window.location.pathname);
         return;
       }
@@ -152,6 +170,11 @@ export default function ResetForm() {
       >
         {busy ? 'กำลังบันทึก…' : 'บันทึกรหัสผ่านใหม่'}
       </button>
+
+      {/* มาถึงหน้านี้ด้วย magic link ก็เท่ากับล็อกอินแล้ว · ไม่อยากเปลี่ยนรหัสก็ข้ามได้ */}
+      <Link href="/" className="mt-4 block text-center text-xs text-muted underline underline-offset-2">
+        เข้าใช้งานเลย ไม่เปลี่ยนรหัสผ่าน
+      </Link>
     </form>
   );
 }
