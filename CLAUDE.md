@@ -56,6 +56,8 @@
 - งาน LINE agent (Team Bay) → เริ่มที่ `docs/modules/line-agent/7-status.md`
 - งานต้นทุน / สูตรวัสดุ / เอกสารโรงงาน → เริ่มที่ `docs/modules/production/2-ning-files.md` (★ **ระบบโรงงาน = Microsoft Access** (Bay ยืนยัน 2026-11-12) ปรินต์ "ใบขอเบิกวัตถุดิบ" แยก 6 แผนก (โครงไม้ · ฟองน้ำ · วางแบบ · เย็บ · หุ้ม · QC) พร้อมช่อง *จำนวนตาม STD* → **BOM อยู่ในฐานข้อมูลโรงงานแล้ว** · ห้ามเริ่มด้วยการถอดสูตรจากกระดาษ ให้ขอไฟล์ `.mdb/.accdb` มา import (อ่านด้วย `apt-get install mdbtools` → `mdb-tables` / `mdb-export` ทดสอบแล้วใช้ได้) · ช่อง *ผลต่าง* ที่กรอกมือ **ไม่มีใครเอากลับเข้าระบบ** = ช่องรั่วที่ใหญ่ที่สุด) แล้วค่อย `1-cost-sheet.md` · `0-paper-reality.md` · `docs/modules/costing/2-design.md`
 - **ตัวเลขต้นทุน/กำไรห้ามลง repo เด็ดขาด** · เอกสารในโฟลเดอร์ Drive ของโรงงานอ่านอย่างเดียว เก็บได้แค่ "โครงสร้างของใบ"
+- **คนที่โรงงาน:** พี่หนิง = เบญจวรรณ (`benjawan694ms@gmail.com`) ทำ costing/จัดซื้อ · **คุณมาลิ** = คนปรับราคาใน COSTING เมื่อราคาวัสดุขึ้นเยอะ · คุณสุทัศน์ · คุณเชียงศักดิ์ = เจ้าของแบบ (DRAWING)
+- **กันพลาดซ้ำ (2026-11-13):** ไฟล์ที่ได้จากโรงงาน ต้องถามก่อนว่าเป็น "ของจริงจากระบบ" หรือ "ทำขึ้นให้ดูเฉพาะกิจ" ก่อนจะสรุปอะไรจากตัวเลขในนั้น · เคยสรุปผิดว่าต้นทุนโรงงานต่ำกว่าจริงครึ่งหนึ่ง ทั้งที่ไฟล์นั้นไม่ใช่ฟอร์ม COSTING จริง
 - งานข่าว Chaw Cher / ASE (เก็บข่าวทุกเช้า → ร่างโพสต์ WordPress + ข้อความ LINE) → ชีต `Chaw Cher News` (id `19vtyQJyNimSkFeh3RYz7BoE34mlFVIcm4ubce1iGlQA`) → Claude ร่าง 07:43 (งานตั้งเวลา `trig_018WUZozaYetcPKLkCrRFDTi`) → ระบบดึง 09:00 → หน้า `https://chawcher-os.vercel.app/news` · ไม่ใช้ Claude API (Bay สั่ง ไม่เสียตังค์) · `docs/modules/news/0-idea.md` · เพจ ASE: `facebook.com/AseSofa` `instagram.com/ase.living`
 
 ## Google Drive ของโปรเจกต์ (Bay ติ 2026-11-12 · ห้ามสร้างไฟล์ไว้หน้าแรกของ Drive)
