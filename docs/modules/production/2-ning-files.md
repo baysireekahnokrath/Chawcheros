@@ -321,6 +321,80 @@ PI (เลขที่เอกสาร + Rev.)  ← ลูกค้าสั�
 
 ---
 
+## 6.9 · ✅ ได้ไฟล์ Access แล้ว · 16/11/69 · เปิดอ่านได้ทั้งฐาน
+
+พี่หนิงอัป `.mdb` เข้า `From Ning` 3 ไฟล์ · อ่านด้วย `mdbtools` บนเครื่องนี้ได้ทันที
+(ไฟล์ 75 MB เกินลิมิตตัวเชื่อม Drive ต้องโหลดตรง → เพิ่ม `drive.google.com` กับ
+`drive.usercontent.google.com` เข้า allowlist ของสภาพแวดล้อม `ccOS` แล้ว)
+
+| ไฟล์ | ขนาด | เป็นอะไร |
+|---|---|---|
+| `CostPrg2.mdb` | 75 MB | **ฐานข้อมูลจริงของโปรแกรม COST** · JET4 (Access 2000/2003) · 19 ตาราง |
+| `INVOICE.mdb` | 6.4 MB | โปรแกรมใบแจ้งหนี้ (ยังไม่ได้เปิด) |
+| `prgPO_Backup_Backup_Backup.mdb` | 4.9 MB | โปรแกรมใบสั่งซื้อ · มีแค่ 5 ตาราง (Menu/menuGroup/Year) = **ไฟล์หน้าจอ** ข้อมูลอยู่ที่อื่น |
+
+### 🔴 แต่เป็นชุดเก่า · ข้อมูลหยุดปี 2019
+
+| | |
+|---|---|
+| CostNo ปีล่าสุด | **19** (ปี 2000-2019 ครบทุกปี ปีละ 100-220 ใบ · ไม่มี 20-26 เลย) |
+| ไม่มีในฐาน | PHOENIX · TAKA (มีแค่ stool ปี 2011) · KOONTONG · NOKKAEW · KRATA · MALDINI · MINIZORO · และ **SE-04 (77/26) ที่กำลังดูอยู่** |
+| มีในฐานแล้ว | EMU (35) · KIWI (26) · TERRA (7) · TREVI (11) · ELCO (17) · KAMIN (6) · CROWN (4) · OMU (4) · KRASA (3) |
+
+### ✅ ไฟล์จริงอยู่ที่ไหน · รูปหน้าจอ File → Info ตอบแล้ว
+
+ตัวจริงที่โปรแกรมเปิดอยู่คือ `D:` `\Cost\CostPrg.mdb`
+
+โฟลเดอร์ `ALL DATA` บนเดสก์ท็อป (`C:` `\Documents and Settings\User\Desktop\ALL DATA`)
+มีแต่ **ทางลัด 1 KB** 5 อัน (CostPrg · INVOICE · prgPO_Backup.mdb · prgPO_Backup_Backup_Backup · ALL DATA)
+→ ไฟล์จริงทั้งหมดอยู่ใน **ไดรฟ์ D:** ไม่ใช่บนเดสก์ท็อป
+→ รายการ Recent ใน Access: `CostPrg.mdb` · `prgPO_Backup_Bac…` · `prgPO_Backup.mdb` · `INVOICE.mdb`
+
+**ที่พี่หนิงส่งมาชื่อ `CostPrg2.mdb` (มีเลข 2) จึงเป็นสำเนาเก่าคนละไฟล์กับตัวที่ใช้งานจริง**
+
+---
+
+## 6.10 · โครงฐานข้อมูลจริงของโปรแกรม COST · 19 ตาราง
+
+| ตาราง | แถว | คอลัมน์ | คืออะไร |
+|---|---|---|---|
+| **`Cost`** | **273,961** | `CostNo · PartId · Item · MaterialID · Description · Unit · Unit1 · Net · Rec · Rec1 · GroupID · DepID · Remark · SelectIssu · SysDate · PTypeC1 · PTypeC2 · PRICE` | ★ **สูตรวัสดุทั้งหมด** · 1 แถว = 1 วัสดุในสูตรหนึ่ง · ผูกแผนก (`DepID`) และหมวด (`GroupID`) มาแล้ว |
+| **`MainCost`** | 5,654 | `CostNo · PartID · ModelID · CostDate · Width · Depth · Height · SH · SW · SD · Leg · Arm · 40 · 40HQ · CBM · Complete` | ★ **ขนาดสินค้าทุกรุ่น** พร้อม **CBM และจำนวนที่บรรจุตู้ 40/40HQ** |
+| `CostDetial` | 45,887 | `CostNo · PartId · Item · No · Description · Unit · Net · Remark` | รายละเอียดเพิ่มของสูตร |
+| `SpecPack` | 2,394 | `CostNo · ModelID · FIXSEAT · SLIDINGSEAT · RECLINER · BACKRECLINER · SILICONFILL · POCKETSPRING · DOUBLESPRING · COILSPRING · SSPRING · …` | ★ **ช่อง "ส่วนประกอบพิเศษ" บนใบ P-1 ทั้งแถบ** เก็บเป็นคอลัมน์ไว้แล้ว |
+| `PI` / `SubPI` | 4,008 / 31,190 | `CustomerID · No · Rev · Date · WO · week · Item` / `… CostNo · PartId · ColorID · Amount · SelectPrintIssu` | ใบสั่ง + รายการในใบสั่ง |
+| `BackupPI` / `BackupSubPI` / `PIBank` | 1,222 / 9,471 / 1,010 | เหมือน PI | สำรอง |
+| `Department` | 15 | `DepID · DepName` | วางแบบ · โครงไม้ · ฟองน้ำ · เย็บ · หุ้ม · QC · PACK · ซ่อมบำรุง · จัดซื้อ · บุคคลและบัญชี · Export · ผลิต · ผู้บริหาร · R&D · สโตร์ |
+| `Group` | 11 | `GroupID · GroupName` | C=หุ้ม · CT=ผ้า · F=ใย · I=โครงเหล็ก · L=หนัง · P=PVC · S=ฟองน้ำ · W=โครงไม้ · NS · SL · RA |
+| `TypeColorCOST` | 15 | `TypeC · TypeCName` | สีดำ · สีขาว · สีน้ำตาล · สีครีม · สีSB · สีเชอรี่ · สีธรรมชาติ · … |
+| `Menu` / `menuGroup` | 20 / 3 | | เมนูของโปรแกรม |
+| **`StockIssu`** | **0** | `IssuNO · CustomerID · No · ModelID · IssuDate · GroupID · Description · Unit1 · Total · DepID · WO · Price · IssuAmount` | 🔴 **ว่างเปล่า** |
+| `Purchase` | 0 | `… Stock · Purchase · DateIN …` | 🔴 ว่างเปล่า |
+| `SubSpecial` / `Special` | 0 / 0 | | ว่างเปล่า |
+
+### 🔴 `StockIssu` มี 0 แถว · หลักฐานยืนยัน `PRQ32`
+
+ตารางนี้ออกแบบไว้ครบ — มีช่อง `IssuAmount` (จำนวนที่เบิกจริง) · `DepID` · `WO` · `IssuDate` · `Price`
+**แต่ไม่เคยมีใครบันทึกลงไปสักแถวเดียวใน 24 ปี**
+
+→ ตรงกับที่ Bay ตอบไว้ว่า *"ไม่มี"* ใครเอาช่อง `ผลต่าง` บนกระดาษกลับเข้าระบบ
+→ ระบบโรงงานรู้แต่ **ควรใช้เท่าไหร่ (STD)** ไม่เคยรู้ว่า **ใช้จริงเท่าไหร่**
+→ `Purchase` ว่างด้วย แปลว่าฝั่งรับของก็ไม่เคยบันทึก
+
+**นี่คือช่องว่างที่ระบบเราเสียบเข้าไปแล้วได้ของที่โรงงานไม่เคยมี** — ไม่ใช่การทำซ้ำของเดิม
+
+### สิ่งที่ได้ทันทีเมื่อได้ไฟล์ปัจจุบัน
+
+| ได้อะไร | จากตาราง |
+|---|---|
+| ขนาดสินค้าทุกรุ่นทุกส่วนประกอบ (W/D/H/SH/SW/SD/ขา/แขน) | `MainCost` → ตอบ `PRQ24` `PRQ25` และคำถาม Taka L-shape ที่ค้างมานาน |
+| **CBM และจำนวนบรรจุตู้** | `MainCost.40` `.40HQ` `.CBM` → ตอบ `PRQ30` และปลดล็อกโมดูลขนส่ง |
+| สูตรวัสดุทุกรุ่น แยกแผนก | `Cost` + `Department` + `Group` |
+| สเปคพิเศษของแต่ละรุ่น | `SpecPack` |
+| ประวัติใบสั่ง 24 ปี | `PI` + `SubPI` |
+
+---
+
 ## 7 · คำถาม
 
 | # | คำถาม | ทำไมต้องรู้ |
