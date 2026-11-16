@@ -1,0 +1,159 @@
+<title>Phase 0 Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@500;600&display=swap">
+<style>
+/* Layout: step list on top, then a phone-sized frame that switches between 4 after-state screens */
+:root{
+  --bg:#F7F8F8; --surface:#FFFFFF; --fg:#1F2A36; --muted:#6B7480; --line:#E2E5E8;
+  --navy:#2B4368; --aqua:#83B7BF; --taupe:#958C7B; --ok:#3F6F4F; --ok-bg:#E7F0EA; --warn:#9A6B23; --warn-bg:#F6EFE3;
+  --app-bg:#FAF9F7; --app-surface:#FFFFFF; --app-border:#E7E2DB; --app-text:#1C1917; --app-muted:#78716C; --app-accent:#6B5B4A;
+  --code-bg:#F1F3F4;
+  --th:"Noto Sans Thai",system-ui,sans-serif; --en:"Montserrat","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2530; --surface:#243140; --fg:#E8ECEF; --muted:#9AA6B2; --line:#33424F; --navy:#A9C9CF;
+  --ok:#7FB08D; --ok-bg:#24372B; --warn:#D5A45C; --warn-bg:#3A3326;
+  --app-bg:#171513; --app-surface:#211E1B; --app-border:#38322C; --app-text:#F5F2EE; --app-muted:#A8A29E; --app-accent:#C4AD94;
+  --code-bg:#1A222C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C2530; --surface:#243140; --fg:#E8ECEF; --muted:#9AA6B2; --line:#33424F; --navy:#A9C9CF;
+  --ok:#7FB08D; --ok-bg:#24372B; --warn:#D5A45C; --warn-bg:#3A3326;
+  --app-bg:#171513; --app-surface:#211E1B; --app-border:#38322C; --app-text:#F5F2EE; --app-muted:#A8A29E; --app-accent:#C4AD94;
+  --code-bg:#1A222C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+.eyebrow{font-family:var(--en);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:4px 0 6px;font-size:26px;font-weight:600;color:var(--navy);text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
+@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+h2{font-size:13px;font-family:var(--en);letter-spacing:.14em;text-transform:uppercase;color:var(--taupe);margin:0 0 10px}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;cursor:pointer}
+.step[aria-current="true"]{border-color:var(--aqua);box-shadow:0 0 0 1px var(--aqua)}
+.step:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--en);font-weight:600;font-size:13px;background:var(--navy);color:var(--surface)}
+.step b{display:block}
+.who{font-size:12px;padding:1px 8px;border-radius:999px;margin-left:6px;font-weight:500;vertical-align:1px}
+.who.bay{background:var(--warn-bg);color:var(--warn)}
+.who.done{background:var(--ok-bg);color:var(--ok)}
+.step p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--code-bg);padding:1px 6px;border-radius:4px;overflow-wrap:anywhere}
+.note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin:0}
+/* phone frame */
+.phone{position:sticky;top:16px;border:1px solid var(--line);border-radius:28px;background:var(--surface);padding:10px}
+.screen{border-radius:20px;overflow:hidden;background:var(--app-bg);color:var(--app-text);min-height:560px;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--app-border);font-size:12px;color:var(--app-muted);font-family:var(--en)}
+.bar .dot{width:8px;height:8px;border-radius:50%;background:var(--app-border)}
+.bar span{margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pane{padding:18px 16px;flex:1}
+.pane h3{margin:0;font-size:18px;font-weight:600}
+.sub{margin:2px 0 14px;font-size:12.5px;color:var(--app-muted)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{background:var(--app-surface);border:1px solid var(--app-border);border-radius:14px;padding:11px;position:relative}
+.tile i{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:color-mix(in srgb,var(--app-accent) 12%,transparent);color:var(--app-accent);font-style:normal;font-size:14px}
+.tile div{margin-top:7px;font-weight:500;font-size:13.5px}
+.tile.new{border-color:var(--aqua);box-shadow:0 0 0 1px var(--aqua)}
+.badge{position:absolute;top:8px;right:8px;font-size:10.5px;font-weight:600;background:var(--aqua);color:#1C2530;border-radius:999px;padding:1px 7px}
+.gate{display:grid;place-items:center;text-align:center;padding-top:40px}
+.gate input{width:100%;max-width:240px;margin-top:22px;padding:12px;font-size:20px;letter-spacing:.4em;text-align:center;border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface);color:var(--app-text)}
+.gate button{margin-top:10px;width:100%;max-width:240px;padding:11px;border:0;border-radius:12px;background:var(--app-accent);color:var(--app-bg);font:inherit;font-weight:600;cursor:pointer}
+.gate .msg{font-size:12.5px;margin-top:10px;min-height:20px}
+.gate .msg.ok{color:var(--ok)} .gate .msg.bad{color:#B04A4A}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+td,th{padding:6px 8px;border-bottom:1px solid var(--app-border);text-align:left}
+th{color:var(--app-muted);font-weight:500}
+.supa-hd{font-family:var(--en);font-size:12px;color:var(--app-muted);margin-bottom:8px}
+.field{background:var(--app-surface);border:1px solid var(--app-border);border-radius:10px;padding:12px;margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--app-muted)}
+.field .val{font-family:ui-monospace,Menlo,monospace;font-size:14px;margin-top:4px}
+.old{text-decoration:line-through;color:var(--app-muted);font-size:12px}
+.save{display:inline-block;padding:7px 14px;border-radius:8px;background:var(--app-text);color:var(--app-bg);font-size:13px;font-weight:600}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tabs button{flex:1;min-width:0;font:inherit;font-size:12px;padding:7px 4px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">CHAW CHER OS · Mockup</p>
+    <h1>Phase 0 · เก็บบ้าน</h1>
+    <p class="lead">หน้าจอที่พี่จะเห็นหลังทำเสร็จ · ข้อมูลในจอเป็นตัวอย่าง กดแต่ละขั้นทางซ้ายเพื่อดูจอของขั้นนั้น</p>
+  </header>
+
+  <div class="cols">
+    <section>
+      <h2>4 ขั้น · รวมราว 15 นาที</h2>
+      <ol class="steps" id="steps">
+        <li class="step" tabindex="0" data-s="sql" aria-current="true"><span class="num">1</span><div><b>รัน SQL ไฟล์เดียว <span class="who bay">Bay</span></b><p>ลอก <code>docs/sql-todo/1-RUN-ME-phase0.sql</code> ทั้งไฟล์ → วางใน Supabase SQL Editor → Run · เสร็จแล้วรัน <code>select pricing.set_phx_pin('…');</code> ใส่ PIN ที่อยากใช้</p></div></li>
+        <li class="step" tabindex="0" data-s="check"><span class="num">2</span><div><b>เช็กว่าครบ <span class="who bay">Bay</span></b><p>วาง <code>docs/sql-todo/2-CHECK-status.sql</code> → Run · ควรเป็น ✅ ทุกแถว · แถวไหน ❌ แคปจอส่งมา</p></div></li>
+        <li class="step" tabindex="0" data-s="vercel"><span class="num">3</span><div><b>เปลี่ยน branch ของเว็บจริงเป็น main <span class="who bay">Bay</span></b><p>Vercel → chawcher-os → Settings → Git → Production Branch พิมพ์ <code>main</code> → Save · branch <code>main</code> ผมสร้างให้แล้ว</p></div></li>
+        <li class="step" tabindex="0" data-s="home"><span class="num">4</span><div><b>เปิดหน้าแรกบนมือถือ <span class="who bay">Bay</span></b><p>เห็นปุ่ม Data Sheet กับจัดชุดฟีนิกซ์ · กดฟีนิกซ์แล้วใส่ PIN เข้าได้ = จบ Phase 0</p></div></li>
+        <li class="step" tabindex="0" data-s="backup"><span class="num">✓</span><div><b>จัดไฟล์ + เช็ก backup <span class="who done">Claude ทำแล้ว</span></b><p>ไฟล์ SQL เก่าย้ายไป <code>docs/sql-archive/</code> · ที่ต้องรันอยู่ใน <code>docs/sql-todo/</code> โฟลเดอร์เดียว · backup ดูได้ที่ Supabase → Database → Backups</p></div></li>
+      </ol>
+      <p class="note" style="margin-top:16px">ทดสอบแล้วกับฐานข้อมูลจำลองในเครื่อง · ไฟล์ 1 รันซ้ำได้ไม่พัง · ไฟล์ 2 อ่านอย่างเดียว ไม่แก้อะไร</p>
+    </section>
+
+    <aside class="phone" aria-label="ตัวอย่างหน้าจอ">
+      <div class="screen" id="screen"></div>
+      <div class="tabs" id="tabs">
+        <button data-s="sql">SQL</button><button data-s="check">เช็ก</button><button data-s="vercel">Vercel</button><button data-s="home">หน้าแรก</button><button data-s="phx">ฟีนิกซ์</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const S = {
+  sql: {url:'supabase.com › SQL Editor', html:`
+    <div class="supa-hd">SQL Editor · New query</div>
+    <div class="field"><label>วางทั้งไฟล์ 1-RUN-ME-phase0.sql แล้วกด Run</label><div class="val">insert into core.modules … (datasheet)<br>create table if not exists pricing.phx_settings …<br>…</div></div>
+    <div class="field"><label>ผลลัพธ์</label><div class="val" style="font-size:12.5px">NOTICE: ติดตั้งเรียบร้อย · เหลืออีกขั้นเดียว ตั้ง PIN</div></div>
+    <div class="field"><label>query ใหม่ · บรรทัดเดียว</label><div class="val">select pricing.set_phx_pin('******');</div></div>
+    <span class="save">Run</span>`},
+  check: {url:'supabase.com › SQL Editor', html:`
+    <div class="supa-hd">ผลของ 2-CHECK-status.sql</div>
+    <table><thead><tr><th>เรื่อง</th><th>สถานะ</th></tr></thead><tbody>
+    ${['0031 ความลึกที่นั่ง','0032 ลูกค้า (CRM)','0033 ออเดอร์','0037 POS','0039 ต้นทุน/สูตรวัสดุ','0040 ดูบิลย้อนหลัง POS','0041 รูปสินค้า','0042 ใบราคา','0044 ปุ่ม Data Sheet','0045 POS ค่าส่ง','0047 จัดชุดฟีนิกซ์','PIN ฟีนิกซ์ตั้งแล้ว'].map(t=>`<tr><td>${t}</td><td>✅</td></tr>`).join('')}
+    </tbody></table>`},
+  vercel: {url:'vercel.com › chawcher-os › Settings › Git', html:`
+    <h3>Git</h3><p class="sub">Connected: baysireekahnokrath/Chawcheros</p>
+    <div class="field"><label>Production Branch</label><div class="val">main</div><div class="old">claude/chaw-cher-os-setup-9k21w6</div></div>
+    <div class="field"><label>Root Directory (ไม่ต้องแตะ)</label><div class="val">web</div></div>
+    <span class="save">Save</span>`},
+  home: {url:'chawcher-os.vercel.app', html:`
+    <h3>เลือกงานที่จะทำ</h3><p class="sub">16 โมดูลที่คุณเข้าได้</p>
+    <div class="tiles">
+      ${[['📦','สินค้า'],['🏷️','ใบราคา'],['📐','Data Sheet',1],['🛋️','จัดชุดฟีนิกซ์',1],['🛒','ขายหน้าบูธ'],['👥','ลูกค้า'],['🧾','ออเดอร์'],['🏬','คลัง'],['📣','การตลาด'],['✍️','คอนเทนต์'],['💬','ผู้ช่วย LINE'],['⚙️','ตั้งค่าระบบ']]
+        .map(([i,n,isNew])=>`<div class="tile${isNew?' new':''}">${isNew?'<span class="badge">ใหม่</span>':''}<i>${i}</i><div>${n}</div></div>`).join('')}
+    </div>`},
+  phx: {url:'chawcher-os.vercel.app/phoenix', html:`
+    <div class="gate"><h3 style="font-size:22px">จัดชุดฟีนิกซ์</h3><p class="sub">ฌ เฌอ · Phoenix</p>
+    <label for="pin" class="sub" style="margin:0">ใส่ PIN (ลองพิมพ์ 123456)</label>
+    <input id="pin" inputmode="numeric" maxlength="12" autocomplete="off">
+    <button id="go" type="button">เข้า</button><div class="msg" id="msg" aria-live="polite"></div></div>`}
+};
+S.backup = S.check;
+const screen = document.getElementById('screen');
+function show(k){
+  const s = S[k];
+  screen.innerHTML = `<div class="bar"><i class="dot"></i><i class="dot"></i><span>${s.url}</span></div><div class="pane">${s.html}</div>`;
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.s===k || (k==='backup'&&b.dataset.s==='check')));
+  document.querySelectorAll('.step').forEach(li=>li.setAttribute('aria-current', li.dataset.s===k));
+  if(k==='phx'){
+    const go=()=>{const v=document.getElementById('pin').value,m=document.getElementById('msg');
+      if(v==='123456'){m.className='msg ok';m.textContent='เข้าได้ · กำลังเปิดใบราคา…';}
+      else{m.className='msg bad';m.textContent='PIN ไม่ถูกต้อง';}};
+    document.getElementById('go').addEventListener('click',go);
+    document.getElementById('pin').addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+  }
+}
+document.querySelectorAll('.step').forEach(li=>{
+  const f=()=>show(li.dataset.s==='home'?'home':li.dataset.s);
+  li.addEventListener('click',f); li.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});
+});
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.s)));
+show('sql');
+</script>

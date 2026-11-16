@@ -1,0 +1,191 @@
+<title>Phase 1 Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@500;600&display=swap">
+<style>
+/* Layout: single mobile-first column · progress → today's routine → quick log → log list → top 3 */
+:root{
+  --bg:#F7F8F8; --surface:#FFFFFF; --fg:#1F2A36; --muted:#6B7480; --line:#E2E5E8;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E6F1F2; --taupe:#958C7B;
+  --p3:#9B3232; --p3-bg:#F6E6E6; --p2:#9A6B23; --p2-bg:#F6EFE3; --p1:#4F6B78; --p1-bg:#E8EEF1;
+  --ok:#3F6F4F; --ok-bg:#E7F0EA; --mock:#F6EFE3; --mock-fg:#7A5A22;
+  --th:"Noto Sans Thai",system-ui,sans-serif; --en:"Montserrat","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2530; --surface:#243140; --fg:#E8ECEF; --muted:#9AA6B2; --line:#33424F;
+  --navy:#A9C9CF; --on-navy:#1C2530; --aqua-soft:#24393D;
+  --p3:#E08A8A; --p3-bg:#3D2626; --p2:#D5A45C; --p2-bg:#3A3326; --p1:#9FBCC9; --p1-bg:#25343C;
+  --ok:#7FB08D; --ok-bg:#24372B; --mock:#3A3326; --mock-fg:#E2C58F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C2530; --surface:#243140; --fg:#E8ECEF; --muted:#9AA6B2; --line:#33424F;
+  --navy:#A9C9CF; --on-navy:#1C2530; --aqua-soft:#24393D;
+  --p3:#E08A8A; --p3-bg:#3D2626; --p2:#D5A45C; --p2-bg:#3A3326; --p1:#9FBCC9; --p1-bg:#25343C;
+  --ok:#7FB08D; --ok-bg:#24372B; --mock:#3A3326; --mock-fg:#E2C58F; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.mock{background:var(--mock);color:var(--mock-fg);font-size:12.5px;border-radius:8px;padding:8px 12px}
+.eyebrow{font-family:var(--en);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:2px 0 4px;font-size:24px;font-weight:600;color:var(--navy);text-wrap:balance}
+.lead{margin:0;color:var(--muted);font-size:14px}
+h2{font-size:16px;font-weight:600;margin:0 0 10px;display:flex;align-items:baseline;gap:8px}
+h2 small{font-weight:400;font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+/* progress */
+.weeks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.wk{border-radius:8px;padding:8px;font-size:12px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.wk b{display:block;color:var(--fg);font-size:13px}
+.wk.now{border-color:var(--aqua);background:var(--aqua-soft)}
+.stats{display:flex;gap:18px;margin-top:12px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.stats b{font-family:var(--en);font-size:20px;color:var(--fg);font-variant-numeric:tabular-nums;margin-right:4px}
+/* routine */
+.routine{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.routine label{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:start;cursor:pointer}
+.routine input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--navy)}
+.routine .t{font-size:12px;color:var(--taupe);font-family:var(--en);white-space:nowrap;padding-top:2px}
+.routine a{color:var(--navy);font-weight:500}
+.routine label:has(input:checked) span:not(.t){color:var(--muted);text-decoration:line-through}
+/* form */
+form{display:grid;gap:12px}
+.lbl{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+select,textarea{width:100%;font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+textarea{min-height:72px;resize:vertical}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{padding:7px 12px;border-radius:999px;border:1px solid var(--line);font-size:13.5px;cursor:pointer;background:var(--bg)}
+.seg input:checked+label{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.seg input:focus-visible+label{outline:2px solid var(--aqua);outline-offset:2px}
+button.primary{font:inherit;font-weight:600;padding:12px;border:0;border-radius:10px;background:var(--navy);color:var(--on-navy);cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.toast{font-size:13px;color:var(--ok);min-height:18px;margin:0}
+/* list */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{font:inherit;font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+ul.log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px}
+.pain{grid-row:span 2;align-self:start;font-size:11.5px;font-weight:600;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.pain.p3{background:var(--p3-bg);color:var(--p3)} .pain.p2{background:var(--p2-bg);color:var(--p2)} .pain.p1{background:var(--p1-bg);color:var(--p1)}
+.item .txt{font-size:14.5px}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.meta .page{font-family:var(--en)}
+.item.done{opacity:.55}
+.item.done .txt{text-decoration:line-through}
+/* top3 */
+ol.top{margin:0;padding-left:20px;display:grid;gap:6px}
+.note{font-size:13px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <p class="mock">MOCKUP · ข้อมูลในหน้านี้เป็นตัวอย่าง · กดเล่นได้ทุกปุ่ม แต่ยังไม่บันทึกจริง</p>
+
+  <header>
+    <p class="eyebrow">CHAW CHER OS · Phase 1</p>
+    <h1>สมุดใช้งานจริง 4 สัปดาห์</h1>
+    <p class="lead">ใช้ของที่มีให้คุ้ม · เจออะไรติด จดตรงนี้ 10 วินาที · จบ 4 สัปดาห์เลือกแก้ 3 เรื่องที่เจ็บที่สุด</p>
+  </header>
+
+  <section class="card" aria-labelledby="h-prog">
+    <h2 id="h-prog">ความคืบหน้า <small>13 พ.ย. – 10 ธ.ค. 2569</small></h2>
+    <div class="weeks">
+      <div class="wk now"><b>สัปดาห์ 1</b>13–19 พ.ย.</div>
+      <div class="wk"><b>สัปดาห์ 2</b>20–26 พ.ย.</div>
+      <div class="wk"><b>สัปดาห์ 3</b>27 พ.ย.–3 ธ.ค.</div>
+      <div class="wk"><b>สัปดาห์ 4</b>4–10 ธ.ค.</div>
+    </div>
+    <div class="stats"><span><b id="s-all">0</b>เรื่องที่จด</span><span><b id="s-p3">0</b>เจ็บมาก</span><span><b id="s-done">0</b>แก้แล้ว</span></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-day">
+    <h2 id="h-day">วันนี้ใช้อะไรบ้าง <small>ติ๊กเมื่อใช้แล้ว</small></h2>
+    <ul class="routine">
+      <li><label><input type="checkbox" id="r1"><span>ออกบิลหน้าบูธด้วย <a href="https://chawcher-os.vercel.app/pos" target="_blank" rel="noopener">ขายหน้าบูธ</a> ทุกบิล</span><span class="t">ทั้งวัน</span></label></li>
+      <li><label><input type="checkbox" id="r2"><span>ส่งราคาลูกค้าด้วย <a href="https://chawcher-os.vercel.app/price" target="_blank" rel="noopener">ใบราคา</a> แทน PDF</span><span class="t">เมื่อมีคนถาม</span></label></li>
+      <li><label><input type="checkbox" id="r3"><span>ออก <a href="https://chawcher-os.vercel.app/quotes" target="_blank" rel="noopener">ใบเสนอราคา</a> จากข้อความลูกค้า</span><span class="t">เมื่อมีคนขอ</span></label></li>
+      <li><label><input type="checkbox" id="r4"><span>เปิด <a href="https://chawcher-os.vercel.app/pos-report" target="_blank" rel="noopener">รายงานยอดขาย</a> ดูยอดวันนี้</span><span class="t">ก่อนปิดร้าน</span></label></li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="h-log">
+    <h2 id="h-log">จดเรื่องที่ติด <small>10 วินาที</small></h2>
+    <form id="f">
+      <div>
+        <label class="lbl" for="page">หน้าไหน</label>
+        <select id="page">
+          <option>ขายหน้าบูธ</option><option>รายงานยอดขาย</option><option>ใบราคา</option><option>ใบเสนอราคา</option>
+          <option>Data Sheet</option><option>จัดชุดฟีนิกซ์</option><option>ลูกค้า</option><option>ออเดอร์</option>
+          <option>คลัง</option><option>การตลาด</option><option>คอนเทนต์</option><option>ผู้ช่วย LINE</option><option>อื่นๆ</option>
+        </select>
+      </div>
+      <div>
+        <span class="lbl" id="k-l">เป็นอะไร</span>
+        <div class="seg" role="radiogroup" aria-labelledby="k-l">
+          <input type="radio" name="k" id="k1" value="ติด/พัง" checked><label for="k1">ติด/พัง</label>
+          <input type="radio" name="k" id="k2" value="ช้า/ยุ่งยาก"><label for="k2">ช้า/ยุ่งยาก</label>
+          <input type="radio" name="k" id="k3" value="ข้อมูลไม่ตรง"><label for="k3">ข้อมูลไม่ตรง</label>
+          <input type="radio" name="k" id="k4" value="อยากได้เพิ่ม"><label for="k4">อยากได้เพิ่ม</label>
+        </div>
+      </div>
+      <div>
+        <label class="lbl" for="txt">เกิดอะไรขึ้น (ประโยคเดียวพอ)</label>
+        <textarea id="txt" placeholder="เช่น ยอดรวมในรายงานไม่ตรงกับบิลวันที่ 10"></textarea>
+      </div>
+      <div>
+        <span class="lbl" id="p-l">เจ็บแค่ไหน</span>
+        <div class="seg" role="radiogroup" aria-labelledby="p-l">
+          <input type="radio" name="p" id="p3" value="3"><label for="p3">มาก · ขายไม่ได้</label>
+          <input type="radio" name="p" id="p2" value="2" checked><label for="p2">กลาง · เสียเวลา</label>
+          <input type="radio" name="p" id="p1" value="1"><label for="p1">น้อย · ทนได้</label>
+        </div>
+      </div>
+      <button class="primary" type="submit">จดไว้</button>
+      <p class="toast" id="toast" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section aria-labelledby="h-list">
+    <h2 id="h-list">ที่จดไว้ <small>เรียงจากเจ็บมากสุด</small></h2>
+    <div class="filters" id="filters">
+      <button type="button" data-f="open" aria-pressed="true">ยังไม่แก้</button>
+      <button type="button" data-f="all" aria-pressed="false">ทั้งหมด</button>
+      <button type="button" data-f="done" aria-pressed="false">แก้แล้ว</button>
+    </div>
+    <ul class="log" id="log"></ul>
+  </section>
+
+  <section class="card" aria-labelledby="h-top">
+    <h2 id="h-top">3 เรื่องที่จะแก้ <small>ผมสรุปให้ทุกศุกร์ · ตัดสินจริงตอนจบสัปดาห์ 4</small></h2>
+    <ol class="top" id="top"></ol>
+  </section>
+
+  <p class="note">ของจริงจะเก็บข้อมูลไว้ให้ Claude อ่านได้ · พิมพ์ "อ่านสมุด Phase 1" ใน session ไหนก็ได้ ผมจะดึงไปสรุปและวางแผนแก้ให้</p>
+</div>
+
+<script>
+const PAIN={3:'มาก',2:'กลาง',1:'น้อย'};
+let items=[
+ {id:1,page:'รายงานยอดขาย',k:'ข้อมูลไม่ตรง',txt:'ยอดรวมวันที่ 10 ไม่ตรงกับบิลที่พิมพ์ออกมา ต่างกัน 1,290 บาท',p:3,d:'12 พ.ย.',done:false},
+ {id:2,page:'ขายหน้าบูธ',k:'ช้า/ยุ่งยาก',txt:'ค้นชื่อรุ่นต้องพิมพ์เต็ม พิมพ์ "phx" แล้วไม่เจอ Phoenix',p:2,d:'12 พ.ย.',done:false},
+ {id:3,page:'ใบเสนอราคา',k:'อยากได้เพิ่ม',txt:'อยากใส่ส่วนลดท้ายบิลเป็นบาท ไม่ใช่แค่ %',p:2,d:'11 พ.ย.',done:false},
+ {id:4,page:'ใบราคา',k:'ติด/พัง',txt:'เปิดบนมือถือแล้วตารางล้นจอ ต้องเลื่อนข้าง',p:1,d:'11 พ.ย.',done:true},
+];
+let filter='open', nextId=5;
+const $=id=>document.getElementById(id);
+function render(){
+  const list=items.filter(i=>filter==='all'||(filter==='done'?i.done:!i.done)).sort((a,b)=>(a.done-b.done)||(b.p-a.p)||(b.id-a.id));
+  $('log').innerHTML=list.length?list.map(i=>`<li class="item${i.done?' done':''}"><span class="pain p${i.p}">${PAIN[i.p]}</span><span class="txt">${esc(i.txt)}</span><span class="meta"><span class="page">${i.page}</span><span>${i.k}</span><span>${i.d}</span></span></li>`).join(''):'<li class="note">ยังไม่มีเรื่องในกลุ่มนี้</li>';
+  const open=items.filter(i=>!i.done).sort((a,b)=>(b.p-a.p)||(b.id-a.id));
+  $('top').innerHTML=open.slice(0,3).map(i=>`<li>${esc(i.txt)} <span class="meta" style="display:inline">· ${i.page}</span></li>`).join('')||'<li>ยังไม่มีเรื่องค้าง</li>';
+  $('s-all').textContent=items.length; $('s-p3').textContent=items.filter(i=>i.p===3&&!i.done).length; $('s-done').textContent=items.filter(i=>i.done).length;
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+$('f').addEventListener('submit',e=>{
+  e.preventDefault();
+  const t=$('txt').value.trim();
+  if(!t){$('toast').style.color='var(--p3)';$('toast').textContent='พิมพ์สั้นๆ ว่าเกิดอะไรขึ้นก่อน';$('txt').focus();return;}
+  items.push({id:nextId++,page:$('page').value,k:document.querySelector('input[name=k]:checked').value,txt:t,p:+document.querySelector('input[name=p]:checked').value,d:'วันนี้',done:false});
+  $('txt').value='';$('toast').style.color='';$('toast').textContent='จดแล้ว (ตัวอย่าง · ยังไม่บันทึกจริง)';render();
+});
+document.querySelectorAll('#filters button').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.f;document.querySelectorAll('#filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));render();}));
+render();
+</script>
