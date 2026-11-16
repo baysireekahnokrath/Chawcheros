@@ -45,10 +45,13 @@
 ข่าววงการดีไซน์ ให้ Bay อ่านเอง · **ไม่เผยแพร่ ไม่เข้าแท็บ "ร่าง" ไม่เข้าระบบ** (ระบบอ่านแค่ `ร่าง!A2:L500`)
 | ส่วน | รายละเอียด |
 |---|---|
-| แท็บ "Design Watch" (sheetId 5) | IMPORTFEED จาก Google News RSS 4 กลุ่ม 7 วันล่าสุด กลุ่มละ 15 ข่าว · A-E Dezeen+designboom · G-K Wallpaper*/Frame/Sight Unseen/ArchDaily · M-Q เทรนด์/Salone/Maison&Objet/ผ้าหุ้ม · S-W ข่าวไทย โซฟา/เฟอร์นิเจอร์ ดีไซน์ · ทุกคำค้นมีคำว่า sofa/furniture/upholstery กรองให้ |
+| แท็บ "Design Watch" (sheetId 5) | IMPORTFEED จาก Google News RSS 4 กลุ่ม กลุ่มละ 15 ข่าว · **กลุ่มละ 4 คอลัมน์ (Title, URL, Date Created, Summary) · แถว 2 = หัวคอลัมน์ ข่าวเริ่มแถว 3** · A-D Dezeen+designboom (7 วัน) · G-J แบรนด์โลก B&B Italia/Minotti/Cassina/Ligne Roset/Gubi/Vitra/Edra/Poliform/Moroso/Fritz Hansen (14 วัน) · M-P `sofa design` (14 วัน) · S-V ข่าวไทย โซฟา/เฟอร์นิเจอร์ ดีไซน์ (7 วัน) · ว่าง = "ยังไม่มีข่าวในช่วงนี้" |
 | แท็บ "Design สรุป" (sheetId 4) | Claude 07:43 เขียน ≤5 เรื่อง/วัน · A วันที่ · B หมวด (เทรนด์/ดีไซเนอร์/สินค้าใหม่/วัสดุ/ผ้า/งานแฟร์/ไทย) · C หัวข้อไทย · D สรุป · E เกี่ยวกับ Chaw Cher ยังไง · F ลิงก์ · G ช่อง Bay จด |
 | งานตั้งเวลา | เพิ่มขั้นที่ 5 ใน `trig_018WUZozaYetcPKLkCrRFDTi` · ถ้า Design Watch ขึ้น #REF! ใช้ WebSearch ≤3 คำค้นแทน |
-- ⚠️ ยังขึ้น #REF! จนกว่า Bay กด "Allow access" ในชีต (ครั้งเดียวใช้ได้ทุกแท็บ) · ทดสอบ RSS จากเครื่อง Claude ไม่ได้ (ถูกบล็อก) → ยังไม่เห็นผลจริง
+- 2026-11-16 Bay กด Allow access แล้ว · ✅ ทั้ง 4 กลุ่มมีข่าวขึ้นจริง · แท็บ Google News (Chaw Cher/ASE) ขึ้น #N/A = ไม่มีข่าวในฟีด (ไม่ใช่ข้อผิดพลาด)
+- บทเรียน: คำค้น `site:wallpaper.com OR …` และคำค้นเทรนด์ยาวๆ ได้ผลว่าง → เปลี่ยนเป็นชื่อแบรนด์ / คำสั้น `sofa design` · ครอบ IFERROR ทุกช่อง
+- ⚠️ **งานตั้งเวลา 07:43 ไม่เคยทำงานจริง** (13-16 พ.ย.) เพราะไม่มีตัวเชื่อม Google Sheets แนบอยู่ · Claude แนบเองไม่ได้ (`connectors` ถูกปิดสำหรับองค์กรนี้) → **Bay ต้องแนบเองในหน้า Routines** · แก้คำสั่งให้แจ้งเตือนทันทีถ้าไม่มีตัวเชื่อม
+- 2026-11-16 Claude สรุป Design สรุป รอบแรกให้เอง 5 เรื่อง (FIND Design Fair Asia · Fritz Hansen BKK · ILM น้ำท่วม · DEDON TRICOT · Metropolis วัสดุ)
 - แหล่งอ้างอิงที่ Bay ถามไว้ (เว็บ งานแฟร์ ดีไซเนอร์) สรุปในแชท 2026-11-12: Dezeen · designboom · Wallpaper* · Frame · Sight Unseen · art4d · บ้านและสวน · Salone · Maison&Objet · 3daysofdesign · DEmark
 
 ## เครื่องมือ (สถานะ 2026-11-11)
