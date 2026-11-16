@@ -1,36 +1,42 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Chaw Cher OS — โทนสีอบอุ่น มินิมอล ตามแบรนด์เฟอร์นิเจอร์ไม้
+   Chaw Cher OS — ชุดสีตาม CI (docs/brand/README.md) · ชุดเดียวกับหน้า /pos
+   ทุกหน้าใช้สีผ่านตัวแปรนี้เท่านั้น ห้ามใส่รหัสสีตรงๆ ในหน้า (docs/ui-framework/README.md)
    มือถือมาก่อน desktop เป็นรอง (กฎ A9)
 --------------------------------------------------------------------------- */
 :root {
-  --bg:        #faf9f7;
-  --surface:   #ffffff;
-  --border:    #e7e2db;
-  --text:      #1c1917;
-  --muted:     #78716c;
-  --accent:    #6b5b4a;
-  --accent-fg: #ffffff;
-  --ok:        #3f6f4f;
-  --warn:      #9a6b23;
-  --danger:    #9b3232;
-  --locked:    #7c3f58;
+  --bg:        #F7F8F8;  /* Off-white */
+  --surface:   #FFFFFF;
+  --border:    #DDE1E3;
+  --text:      #2F4554;  /* Slate */
+  --muted:     #5B6670;
+  --accent:    #2B4368;  /* Navy · ปุ่มหลัก หัวเรื่อง */
+  --accent-fg: #F7F8F8;
+  --aqua:      #83B7BF;  /* ไฮไลต์ เส้นโฟกัส */
+  --aqua-soft: #E4EEF0;
+  --taupe:     #958C7B;  /* หัวข้อย่อย */
+  --ok:        #2E6B4F;
+  --warn:      #7A5A12;
+  --danger:    #9B2C2C;
+  --locked:    #6E5F4A;  /* ต้นทุน · เจ้าของเท่านั้น */
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:      #171513;
-    --surface: #211e1b;
-    --border:  #38322c;
-    --text:    #f5f2ee;
-    --muted:   #a8a29e;
-    --accent:  #c4ad94;
-    --accent-fg: #1c1917;
-    --ok:      #7fb08d;
-    --warn:    #d5a45c;
-    --danger:  #e08a8a;
-    --locked:  #d49bb6;
+    --bg:        #1C2A33;
+    --surface:   #24343F;
+    --border:    #344853;
+    --text:      #E6ECEF;
+    --muted:     #A3B1BA;
+    --accent:    #A9CDD3;
+    --accent-fg: #1C2A33;
+    --aqua-soft: #2C4250;
+    --taupe:     #B8AE9C;
+    --ok:        #8FD0AE;
+    --warn:      #E8CF8F;
+    --danger:    #F0A3A3;
+    --locked:    #D2C4AE;
   }
 }
 
@@ -46,11 +52,20 @@
   --color-warn:      var(--warn);
   --color-danger:    var(--danger);
   --color-locked:    var(--locked);
+  --color-aqua:      var(--aqua);
+  --color-aqua-soft: var(--aqua-soft);
+  --color-taupe:     var(--taupe);
   --font-sans:       var(--font-thai);
 }
 
 html, body { background: var(--bg); color: var(--text); }
 body { font-family: var(--font-thai), system-ui, sans-serif; }
+
+/* ตัวเลข ราคา ภาษาอังกฤษ · Montserrat ตาม CI · หลักเรียงตรงกัน */
+.num { font-family: var(--font-num), var(--font-thai), sans-serif; font-variant-numeric: tabular-nums; }
+
+/* เส้นโฟกัสเวลาใช้คีย์บอร์ด */
+:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
 
 /* ปุ่มบนมือถือต้องกดง่าย — อย่างน้อย 44px ตามมาตรฐาน touch target */
 @media (pointer: coarse) {

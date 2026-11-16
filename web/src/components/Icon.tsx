@@ -10,6 +10,17 @@ const PATHS: Record<string, string> = {
   lock:     'M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z M7 11V7a5 5 0 0110 0v4',
   megaphone:'M3 11l18-5v12L3 14v-3z M11.6 16.8a3 3 0 11-5.8-1.6',
   box:      'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z',
+  home:     'M3 10.5L12 3l9 7.5 M5 9v11h5v-6h4v6h5V9',
+  receipt:  'M6 2h12v20l-3-2-3 2-3-2-3 2V2z M9 7h6 M9 11h6 M9 15h4',
+  users:    'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M9 11a4 4 0 100-8 4 4 0 000 8z M23 21v-2a4 4 0 00-3-3.87 M16 3.13a4 4 0 010 7.75',
+  menu:     'M4 6h16 M4 12h16 M4 18h16',
+  cart:     'M3 3h2l2.4 12.4a2 2 0 002 1.6h8.2a2 2 0 002-1.6L21 7H6 M9 21h.01 M18 21h.01',
+  chart:    'M3 3v18h18 M7 15l4-4 3 3 5-6',
+  'file-text': 'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6 M8 13h8 M8 17h5',
+  ruler:    'M3 17L17 3l4 4L7 21z M7 13l2 2 M10 10l2 2 M13 7l2 2',
+  sofa:     'M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3 M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2z M5 18v2 M19 18v2',
+  blueprint:'M4 4h16v16H4z M4 9h16 M9 9v11',
+  search:   'M11 18a7 7 0 100-14 7 7 0 000 14z M21 21l-4.3-4.3',
 };
 
 export default function Icon({ name, className = 'w-6 h-6' }: Props) {
