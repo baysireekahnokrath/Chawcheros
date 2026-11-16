@@ -67,6 +67,8 @@
   `01 Google Ads` · `02 Landing Pages` · `03 Website Redesign` · `04 Product & Business Data` · `05 QC Checklist & Ad Agent Workflow` · `06 Claude Project Docs` · `07 News` · (`CC CI Images` · `From factory`)
 - **ก่อนสร้างไฟล์/ชีต/เอกสารใน Drive ทุกครั้ง** → ใส่ `parentId` เป็นโฟลเดอร์ย่อยที่ตรงเรื่อง · ไม่มีเรื่องที่ตรง = สร้างโฟลเดอร์ใหม่เลขถัดไป (`08 …`) ใน "Chaw Cher" · ห้ามปล่อยไว้ My Drive หน้าแรก
 - รูป/ไฟล์ที่ Bay ส่งมาในแชท → เก็บสำเนาใน Drive โฟลเดอร์ของเรื่องนั้นด้วย (ตั้งชื่อ `YYYY-MM-DD เรื่อง`)
+- `08 Content` = `https://drive.google.com/drive/folders/1zxBM-dSttbYK0ul5qR3akPxgLCGm_CJK` (สร้าง 2026-11-16) · มี Google Doc รายการถ่ายสำหรับน้องญ่า (id `1y-TKHvp_aCqiNyVsDs-O2BTdbpcDcS01nX4POS8Blkg`) · งานคอนเทนต์ที่ต้องส่งต่อคนนอก repo ให้ทำเป็น Google Doc ที่นี่
+- **หน้านัดโชว์รูม** = WordPress page draft id 18156 · slug `showroom-visit` · ปุ่มไป LINE `lin.ee/VwZJkcC` (หน้า Contact Us ใช้ลิงก์ LINE อีกตัว `lin.ee/ThihISaM` · ยังไม่รู้ว่าต่างกันยังไง) · ข้อมูลโชว์รูมบนเว็บ: จ–ศ 10.00–18.00 เสาร์–อาทิตย์นัดล่วงหน้า
 - `07 News` = `https://drive.google.com/drive/folders/1xSLD-fGg9TRtZtjOSE9H55Yi4DNzfRxl` · มีชีต Chaw Cher News + โฟลเดอร์ `รูปข่าว` (`1M1vxIqwpP8bTQ0XPmbd8jIFeCXyZcN99`) แยกโฟลเดอร์ละข่าว
 - โฟลเดอร์ "chawcher" (`1RDyJ3IIUmxx730qIG8nMGWk_bIAQnobE`) ที่มี chawcher-os / product-launch / google-ads-search / product-facts = ไฟล์ skill ของ Claude · ไม่ใช่ที่เก็บงาน
 
