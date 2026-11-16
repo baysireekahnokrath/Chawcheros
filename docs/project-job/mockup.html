@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>งานโครงการ · mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F8F8; --panel:#FFFFFF; --ink:#2F4554; --muted:#5B6670; --line:#DDE1E3;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E4EEF0; --taupe:#958C7B;
+  --ok:#2E6B4F; --ok-bg:#E3EFE8; --warn:#7A5A12; --warn-bg:#F6EEDB; --bad:#9B2C2C; --bad-bg:#F6E3E3;
+  --th:"Noto Sans Thai","Sukhumvit Set",Tahoma,sans-serif; --num:"Montserrat","Noto Sans Thai",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.55}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;min-height:52px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.top b{color:var(--navy);font-weight:600}
+.top .sp{flex:1}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 72px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.eyebrow{font-family:var(--num);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:2px 0 4px;font-size:22px;font-weight:600;color:var(--navy)}
+h2{margin:0 0 8px;font-size:16px;font-weight:600;color:var(--navy)}
+p{margin:0}
+.muted{color:var(--muted);font-size:13.5px}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chip{font:inherit;font-size:14px;font-weight:500;white-space:nowrap;border-radius:999px;padding:8px 14px;min-height:40px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.badge{font-size:12px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap;display:inline-block}
+.b-ok{background:var(--ok-bg);color:var(--ok)}.b-warn{background:var(--warn-bg);color:var(--warn)}.b-bad{background:var(--bad-bg);color:var(--bad)}.b-new{background:var(--aqua-soft);color:var(--ink)}
+.note{border-radius:10px;padding:10px 12px;font-size:13.5px}
+.note.warn{background:var(--warn-bg);color:var(--warn)}.note.bad{background:var(--bad-bg);color:var(--bad)}.note.ok{background:var(--ok-bg);color:var(--ok)}
+.steps{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.steps li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.steps .n{font-family:var(--num);font-weight:600;color:var(--navy)}
+.steps small{display:block;color:var(--muted);font-size:13px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile .v{font-family:var(--num);font-size:22px;font-weight:600;color:var(--navy)}
+.tile .l{font-size:12.5px;color:var(--muted)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-weight:500;font-size:12.5px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right}
+tr:last-child td{border-bottom:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;font-size:14px}
+.kv dt{color:var(--muted)}.kv dd{margin:0}
+.was{text-decoration:line-through;color:var(--muted)}
+.qty{font:inherit;font-family:var(--num);width:76px;min-height:40px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-align:right}
+.btn{font:inherit;font-weight:600;font-size:14px;border-radius:10px;padding:10px 16px;border:1px solid transparent;cursor:pointer;min-height:44px}
+.btn.pri{background:var(--navy);color:var(--on-navy)}.btn.sec{background:var(--panel);color:var(--ink);border-color:var(--line)}
+.bottom{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:8px;justify-content:center}
+.bottom .btn{flex:1;max-width:260px}
+svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto}
+.dw .ln{fill:none;stroke:var(--muted);stroke-width:1.2}
+.dw .fillp{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.dw .dim{stroke:var(--taupe);stroke-width:.8;fill:none}
+.dw text{font-family:var(--num);font-size:10px;fill:var(--muted)}
+.dw .hot{fill:var(--aqua-soft);stroke:var(--navy);stroke-width:2}
+.dw text.hotx{fill:var(--navy);font-weight:600}
+.dw .chg{stroke:var(--bad);stroke-width:1.4;stroke-dasharray:4 3;fill:none}
+.dw text.chgx{fill:var(--bad);font-weight:600}
+[hidden]{display:none!important}
+@media print{.top,.tabs,.bottom{display:none}.wrap{padding:0}}
+</style>
+</head>
+<body>
+<div class="top"><span>←</span><b>งานโครงการ</b><span class="sp"></span><span class="badge b-warn">mockup · ข้อมูลตัวอย่าง</span></div>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">H2B GR · ASE</p>
+    <h1>จากแบบลูกค้า ถึงใบงานหน้าเครื่อง</h1>
+    <p class="muted">ตัวเลขเงินทุกตัวในหน้านี้เป็นเลขสมมติ ไม่ใช่ต้นทุนจริง · จำนวนวัสดุในใบงานเป็นตัวอย่าง รอสูตรจริงจากโรงงาน</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="chip" data-tab="flow" aria-pressed="true">1 · ขั้นตอน</button>
+    <button class="chip" data-tab="quote" aria-pressed="false">2 · ใบเสนอราคา</button>
+    <button class="chip" data-tab="job" aria-pressed="false">3 · ใบงานแยกแผนก</button>
+  </div>
+
+  <!-- ================= 1 FLOW ================= -->
+  <section id="flow" class="wrap" style="padding:0">
+    <ol class="steps">
+      <li><span class="n">1</span><div>รับรายการจากลูกค้า<small>งานแคตตาล็อก: วางข้อความลูกค้าในหน้าใบเสนอราคา ระบบจับคู่กับใบราคา · งานโครงการ: ยังไม่มีที่รับแบบ</small></div><span class="badge b-warn">มีครึ่งเดียว</span></li>
+      <li><span class="n">2</span><div>ลงทะเบียนรายการ (MF-06A …)<small>ฐานข้อมูลรับได้ แต่ยังไม่มีหน้าจอให้กด</small></div><span class="badge b-warn">ไม่มีหน้าจอ</span></li>
+      <li><span class="n">3</span><div>สูตรวัสดุของแต่ละรายการ<small>ตารางพร้อม มี revision · ยังไม่มีข้อมูลสูตรเลย</small></div><span class="badge b-bad">ไม่มีข้อมูล</span></li>
+      <li><span class="n">4</span><div>ราคาวัสดุ<small>ตารางพร้อม เก็บเป็นประวัติ · ยังไม่มีราคาสักตัว</small></div><span class="badge b-bad">ไม่มีข้อมูล</span></li>
+      <li><span class="n">5</span><div>ระบบคิดต้นทุน → ราคาตามกำไรที่ตั้ง → ใบเสนอราคา<small>ทดสอบแล้วคิดถูก · บังคับตอบเรื่องค่าส่งก่อนส่ง</small></div><span class="badge b-ok">ใช้ได้</span></li>
+      <li><span class="n">6</span><div>ลูกค้ารับ → กลายเป็นออเดอร์<small>ไม่ต้องพิมพ์ใหม่</small></div><span class="badge b-ok">ใช้ได้</span></li>
+      <li><span class="n">7</span><div>แบบ + revision + ผลอนุมัติของลูกค้า<small>วันนี้อยู่ในรูปกับ Freeform</small></div><span class="badge b-bad">ยังไม่มี</span></li>
+      <li><span class="n">8</span><div>ใบงานแยกแผนก (แท็บ 3)<small>มีแค่ตัวทดลองใบเบิกวัตถุดิบ ยังไม่มีแบบ ไม่มีรายการแก้</small></div><span class="badge b-bad">ยังไม่มี</span></li>
+      <li><span class="n">9</span><div>เบิกจริง เทียบกับสูตร<small>โรงงานก็ไม่เคยเก็บ</small></div><span class="badge b-bad">ยังไม่มี</span></li>
+    </ol>
+  </section>
+
+  <!-- ================= 2 QUOTE ================= -->
+  <section id="quote" class="wrap" style="padding:0" hidden>
+    <div class="tiles">
+      <div class="tile"><div class="v num">15</div><div class="l">รายการในงาน</div></div>
+      <div class="tile"><div class="v num">1</div><div class="l">คิดราคาได้แล้ว</div></div>
+      <div class="tile"><div class="v num">14</div><div class="l">ยังไม่มีสูตร</div></div>
+      <div class="tile"><div class="v num">27.5%</div><div class="l">ของต้นทุนยังเป็นค่าประเมิน</div></div>
+    </div>
+
+    <div class="note bad"><b>แบบ MF-06A ขึ้น REV.02 หลังส่งใบเสนอราคาแล้ว</b><br>
+      เพิ่มพ็อกเก็ตสปริง + สปริงพื้น → ต้นทุน <span class="num">8,900 → 10,200</span> (+14.6%) · กำไร <span class="num">30% → 19.8%</span> ถ้าขายราคาเดิม
+      <div class="row" style="margin-top:8px"><button class="btn sec">ออกใบเสนอราคาเพิ่ม</button><button class="btn sec">รับไว้ ไม่ปรับราคา</button></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2>QT-2611-0002</h2><span class="badge b-new">ส่งแล้ว</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>รายการ</th><th class="r">จำนวน</th><th class="r">ราคา/ตัว</th><th class="r">🔒 ต้นทุน</th><th class="r">🔒 กำไร</th><th>สถานะ</th></tr></thead>
+        <tbody>
+          <tr><td>MF-06A โซฟา 2200<br><span class="muted">สูตร REV.02 · 7 บรรทัด</span></td><td class="r num">83</td><td class="r num">13,604</td><td class="r num">10,200</td><td class="r num">19.8%</td><td><span class="badge b-bad">ต่ำกว่าที่ตั้ง</span></td></tr>
+          <tr><td>MF-13C-L โซฟาเบด 1700</td><td class="r num">5</td><td class="r num">—</td><td class="r num">—</td><td class="r num">—</td><td><span class="badge b-warn">ยังไม่มีสูตร</span></td></tr>
+          <tr><td>MF-14A สตูลกลม Ø520</td><td class="r num">42</td><td class="r num">—</td><td class="r num">—</td><td class="r num">—</td><td><span class="badge b-warn">ยังไม่มีสูตร</span></td></tr>
+          <tr><td>MF-20AL โซฟาตัว L 3000</td><td class="r num">2</td><td class="r num">—</td><td class="r num">—</td><td class="r num">—</td><td><span class="badge b-warn">ยังไม่มีสูตร</span></td></tr>
+          <tr><td colspan="6" class="muted">… อีก 11 รายการ</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="card">
+      <h2>🔒 ต้นทุน MF-06A ทีละบรรทัด</h2>
+      <div class="tw"><table>
+        <thead><tr><th>วัสดุ</th><th class="r">ใช้</th><th class="r">ได้เนื้อ</th><th class="r">ต้องซื้อ</th><th class="r">ราคา/หน่วย</th><th class="r">มูลค่า</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>โครงไม้ + ฐานไม้แอช</td><td class="r num">1</td><td class="r num">1.0</td><td class="r num">1</td><td class="r num">2,000</td><td class="r num">2,000</td><td></td></tr>
+          <tr><td>ฟองน้ำ</td><td class="r num">1.8</td><td class="r num">0.9</td><td class="r num">2</td><td class="r num">900</td><td class="r num">1,800</td><td></td></tr>
+          <tr><td>ผ้า Octavia-J</td><td class="r num">12</td><td class="r num">0.8</td><td class="r num">15</td><td class="r num">200</td><td class="r num">3,000</td><td></td></tr>
+          <tr><td>หมอนอิง 4 ใบ</td><td class="r num">1</td><td class="r num">1.0</td><td class="r num">1</td><td class="r num">600</td><td class="r num">600</td><td></td></tr>
+          <tr><td>ค่าแรง</td><td class="r num">1</td><td class="r num">1.0</td><td class="r num">1</td><td class="r num">1,500</td><td class="r num">1,500</td><td><span class="badge b-warn">ประเมิน</span></td></tr>
+          <tr><td>พ็อกเก็ตสปริงในเบาะ <span class="badge b-new">REV.02</span></td><td class="r num">1</td><td class="r num">1.0</td><td class="r num">1</td><td class="r num">800</td><td class="r num">800</td><td><span class="badge b-warn">ประเมิน</span></td></tr>
+          <tr><td>สปริงพื้น <span class="badge b-new">REV.02</span></td><td class="r num">1</td><td class="r num">1.0</td><td class="r num">1</td><td class="r num">500</td><td class="r num">500</td><td><span class="badge b-warn">ประเมิน</span></td></tr>
+          <tr><td colspan="5"><b>ต้นทุนรวม</b> · ราคาตามกำไร 30% = <span class="num">14,571</span> ก่อน VAT</td><td class="r num"><b>10,200</b></td><td></td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="margin-top:8px">บรรทัดที่มี 🔒 เห็นเฉพาะเจ้าของ · ฉบับส่งลูกค้าและใบงานโรงงานไม่มีตัวเลขเงิน</p>
+    </div>
+  </section>
+
+  <!-- ================= 3 JOB SHEET ================= -->
+  <section id="job" class="wrap" style="padding:0" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">MF-13C-L · โซฟาเบด</h2>
+        <span class="row"><span class="badge b-new num">REV.02</span><span class="badge b-warn">อนุมัติแบบมีหมายเหตุ 9/11</span></span>
+      </div>
+      <dl class="kv" style="margin:10px 0 0">
+        <dt>งาน</dt><dd>H2B GR · ห้อง K-B1, CS</dd>
+        <dt>ขนาด</dt><dd class="num">1700 × 850 × 730 มม.</dd>
+        <dt>จำนวน</dt><dd><span class="num">5</span> ตัว · รอบนี้ทำ <b>ตัวอย่างโครงไม่หุ้ม 1 ตัว</b></dd>
+        <dt>กำหนด</dt><dd>ตัวอย่างเสร็จ <span class="num">3/12</span> · ผลิตจริงส่ง <span class="num">15/1</span></dd>
+      </dl>
+    </div>
+
+    <div class="tabs" id="deps"></div>
+
+    <div class="note warn" id="chg"></div>
+
+    <div class="card">
+      <h2>แบบ · ส่วนของแผนกนี้เป็นสีเข้ม</h2>
+      <svg class="dw" viewBox="0 0 425 402" role="img" aria-label="แบบ MF-13C-L มุมบนและมุมหน้า">
+        <!-- TOP VIEW · 0.2 px/mm · origin 40,40 -->
+        <text x="40" y="10">มุมบน</text>
+        <rect class="fillp g-frame g-cover g-qc" x="40" y="40" width="340" height="170" rx="10"/>
+        <path class="fillp g-foam g-cover" d="M70 70 h250 v-30 h50 a10 10 0 0 1 10 10 v150 a10 10 0 0 1 -10 10 h-290 a10 10 0 0 1 -10 -10 z"/>
+        <path class="fillp g-frame g-foam g-cover" d="M40 50 a10 10 0 0 1 10 -10 h270 v30 h-250 v70 h-30 z"/>
+        <rect class="fillp g-pattern g-sew" x="110" y="74" width="117" height="30" rx="12"/>
+        <rect class="fillp g-pattern g-sew" x="232" y="74" width="60" height="30" rx="12"/>
+        <path class="dim" d="M40 30 h340 M40 26 v8 M380 26 v8 M320 26 v8"/>
+        <text x="170" y="27">1400</text><text x="340" y="27">300</text>
+        <path class="dim" d="M390 40 v170 M386 40 h8 M386 210 h8"/><text x="394" y="128">850</text>
+        <path class="dim" d="M40 220 h340 M40 216 v8 M70 216 v8 M380 216 v8"/>
+        <text class="chgx" x="44" y="234">150</text><text x="210" y="234">1550</text>
+        <path class="chg" d="M36 36 h38 v108 h-38 z"/>
+        <path class="dim" d="M30 70 v140 M26 70 h8 M26 210 h8"/><text class="chgx" x="6" y="144">700</text>
+
+        <!-- FRONT VIEW · origin 40,250 · height 730 -> 146 -->
+        <text x="40" y="248">มุมหน้า</text>
+        <rect class="fillp g-frame" x="46" y="386" width="306" height="10"/>
+        <rect class="fillp g-frame g-cover" x="40" y="360" width="340" height="26" rx="4"/>
+        <rect class="fillp g-foam g-cover g-qc" x="70" y="306" width="310" height="54" rx="10"/>
+        <rect class="fillp g-frame g-foam g-cover" x="40" y="262" width="30" height="98" rx="4"/>
+        <rect class="fillp g-foam g-cover" x="70" y="262" width="250" height="44" rx="8"/>
+        <rect class="fillp g-pattern g-sew" x="110" y="254" width="117" height="52" rx="5"/>
+        <rect class="fillp g-pattern g-sew" x="232" y="266" width="60" height="40" rx="5"/>
+        <path class="dim" d="M392 250 v146 M388 250 h8 M388 396 h8 M388 306 h8"/>
+        <text x="396" y="282">280</text><text x="396" y="356">450</text>
+        <text x="180" y="340" class="g-foamx">เบาะ 1550 × 700 × 270</text>
+        <text x="150" y="378" class="g-framex">ฐาน 130 + ไม้ 50</text>
+      </svg>
+      <p class="muted" style="margin-top:6px">เส้นประแดง = จุดที่เปลี่ยนจากรอบก่อน</p>
+    </div>
+
+    <div class="card">
+      <h2 id="specT">ที่ต้องทำ</h2>
+      <ul id="spec" style="margin:0;padding-left:20px"></ul>
+    </div>
+
+    <div class="card" id="matCard">
+      <h2>เบิกวัตถุดิบ · ต่อ 1 ตัว</h2>
+      <div class="tw"><table>
+        <thead><tr><th>รายการ</th><th class="r">ตามสูตร</th><th class="r">เบิกจริง</th><th class="r">ผลต่าง</th></tr></thead>
+        <tbody id="mat"></tbody>
+      </table></div>
+      <p class="muted" style="margin-top:8px">กรอกจำนวนที่เบิกจริง ระบบคิดผลต่างให้ · ไม่มีราคาในใบนี้</p>
+    </div>
+
+    <div class="card" id="qcCard" hidden>
+      <h2>ตรวจก่อนส่งให้ลูกค้าดู</h2>
+      <div id="qc" style="display:grid;gap:8px"></div>
+    </div>
+  </section>
+</div>
+
+<div class="bottom" id="bar" hidden>
+  <button class="btn sec" onclick="window.print()">พิมพ์ใบนี้</button>
+  <button class="btn pri" id="done">เสร็จ ส่งต่อแผนกถัดไป</button>
+</div>
+
+<script>
+const DEPS = [
+  {id:'frame', name:'โครงไม้', hot:'g-frame',
+   chg:'แขนกว้าง <span class="was">100</span> → <b>150</b> มม. · ที่นั่งลึก <span class="was">750</span> → <b>700</b> มม. · ต้องติดสปริงพื้นที่ฐาน',
+   spec:['โครงรวม 1700 × 850 · สูงพนัก 730 · สูงแขน 730 ลาดลงตามแบบแขนใหม่','ฐานไม้แอช WD-01A 1530 × 740 × 50 ทำสีลายไม้','ติดสปริงพื้นเต็มพื้นที่นั่ง','มุมโค้ง R50 ทุกมุมนอก','ติดแผ่นสักหลาดใต้ฐาน'],
+   mat:[['ไม้โครง','ชุด',1],['ไม้แอช ฐาน','แผ่น',2],['สปริงพื้น','เส้น',12],['แผ่นสักหลาด','ชิ้น',6]]},
+  {id:'foam', name:'ฟองน้ำ', hot:'g-foam',
+   chg:'เบาะนั่งเปลี่ยนเป็น <b>พ็อกเก็ตสปริง + ฟองน้ำใหม่</b> · ความนุ่มเทียบโซฟาห้องตัวอย่าง MF-06A',
+   spec:['เบาะนั่ง 1550 × 700 × 270 · ไส้พ็อกเก็ตสปริง หุ้มฟองน้ำรอบ','ฐาน 130 มม. ฟองน้ำแข็ง','พนักหนา 150 · แขนหนา 150','ลบมุม R50 · ห่อใยทุกชิ้น'],
+   mat:[['พ็อกเก็ตสปริง','แผง',1],['ฟองน้ำเบาะ','แผ่น',1.5],['ฟองน้ำพนัก + แขน','แผ่น',1],['ใยโพลี','หลา',6]]},
+  {id:'pattern', name:'วางแบบ', hot:'g-pattern',
+   chg:'ผ้าตัวเปลี่ยนเป็น <b>Octavia-J สี 10-Calico</b> (Acacia) · แพทเทิร์นแขนต้องทำใหม่ตามแขนกว้าง 150',
+   spec:['ผ้าตัว: Octavia-J 10-Calico','หมอน 1: 585 × 330 × 150 · Delve 8630-143 Blue','หมอน 2: 450 × 450 × 150 · 50290-10A Brown','วางลายผ้าทางเดียวกันทั้งตัว'],
+   mat:[['ผ้า Octavia-J 10-Calico','หลา',11],['ผ้า Delve Blue','หลา',0.8],['ผ้า 50290-10A Brown','หลา',0.8],['ผ้าซับใน','หลา',4]]},
+  {id:'sew', name:'เย็บ', hot:'g-sew',
+   chg:'ไม่มีจุดเปลี่ยนเฉพาะแผนกนี้ · ใช้แพทเทิร์นแขนชุดใหม่จากวางแบบ',
+   spec:['เย็บปลอกเบาะนั่ง 1 · พนัก 1 · แขน 1 · ฐาน 1','หมอนอิง 2 ใบ ใส่ซิปซ่อน','ตะเข็บคู่ตามแนวขอบเบาะ'],
+   mat:[['ด้าย','หลอด',2],['ซิป','เส้น',3],['ไส้หมอน','ใบ',2]]},
+  {id:'cover', name:'หุ้ม', hot:'g-cover',
+   chg:'รอบนี้ <b>ไม่หุ้ม</b> · ส่งโครงให้ลูกค้าดูทรงแขนก่อน · หุ้มเมื่อแบบแขนผ่าน',
+   spec:['หุ้มโครง แขน พนัก ฐาน','มุม R50 ต้องเรียบ ไม่มีรอยจีบ','แขนลาดลงต่อเนื่อง ไม่หัก'],
+   mat:[['แม็กซ์ยิง','กล่อง',1],['ผ้ารองใต้','หลา',2.5],['กาว','กก.',0.5]]},
+  {id:'qc', name:'QC', hot:'g-qc', chg:'ตรวจตามแบบ REV.02 เท่านั้น · แบบ REV.01 เลิกใช้',
+   spec:[], mat:[],
+   qc:['กว้างรวม 1700 (±5)','ลึกรวม 850 (±5)','สูงพนัก 730 · สูงที่นั่ง 450','แขนกว้าง 150 · ที่นั่งลึก 700','ความนุ่มเทียบ MF-06A ห้องตัวอย่าง','ผ้าตรงรหัส Octavia-J 10-Calico','มีแผ่นสักหลาดใต้ฐาน','ถ่ายรูป 4 ด้าน แนบใบนี้']}
+];
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => (Math.round(n*100)/100).toString();
+
+function showTab(id){
+  for (const t of ['flow','quote','job']) $('#'+t).hidden = t !== id;
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tab === id));
+  $('#bar').hidden = id !== 'job';
+}
+document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+function showDep(d){
+  document.querySelectorAll('#deps .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.dep === d.id));
+  $('#chg').innerHTML = '<b>เปลี่ยนจากรอบก่อน</b> · ' + d.chg;
+  document.querySelectorAll('.dw .hot').forEach(e => e.classList.remove('hot'));
+  document.querySelectorAll('.dw .' + d.hot).forEach(e => e.classList.add('hot'));
+  $('#spec').innerHTML = d.spec.map(s => '<li>' + s + '</li>').join('');
+  $('#spec').parentElement.hidden = !d.spec.length;
+  $('#matCard').hidden = !d.mat.length;
+  $('#mat').innerHTML = d.mat.map(([n,u,q],i) =>
+    `<tr><td>${n}</td><td class="r num">${fmt(q)} ${u}</td>
+     <td class="r"><input class="qty" inputmode="decimal" aria-label="เบิกจริง ${n}" data-std="${q}" data-i="${i}"></td>
+     <td class="r num" id="df${i}">—</td></tr>`).join('');
+  $('#mat').querySelectorAll('input').forEach(inp => inp.oninput = () => {
+    const v = parseFloat(inp.value), std = parseFloat(inp.dataset.std), c = $('#df' + inp.dataset.i);
+    if (isNaN(v)) { c.textContent = '—'; return; }
+    const df = v - std;
+    c.innerHTML = df === 0 ? '<span class="badge b-ok">ตรงสูตร</span>'
+      : `<span class="badge ${df > 0 ? 'b-bad' : 'b-ok'}">${df > 0 ? '+' : ''}${fmt(df)}</span>`;
+  });
+  $('#qcCard').hidden = !d.qc;
+  $('#qc').innerHTML = (d.qc || []).map(q => `<label class="row"><input type="checkbox" style="width:20px;height:20px"> ${q}</label>`).join('');
+  $('#done').textContent = d.id === 'qc' ? 'ผ่าน ส่งรูปให้ลูกค้า' : 'เสร็จ ส่งต่อแผนกถัดไป';
+}
+$('#deps').innerHTML = DEPS.map(d => `<button class="chip" data-dep="${d.id}" aria-pressed="false">${d.name}</button>`).join('');
+document.querySelectorAll('#deps .chip').forEach(b => b.onclick = () => showDep(DEPS.find(d => d.id === b.dataset.dep)));
+showDep(DEPS[0]);
+</script>
+</body>
+</html>
