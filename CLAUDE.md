@@ -72,6 +72,9 @@
 
 ## ที่อยู่ของระบบ (ข้อมูลที่ session ใหม่ต้องรู้เลย · อย่าถาม Bay)
 
+- **กระดาน CEO ของ Bay (2026-11-16): `https://claude.ai/artifact/MhSaxm4SyvLkX3NqpW9Rru`** · ที่เดียวที่ Bay ดูสถานะ · ช่อง: ต้องตัดสินใจ / Bay ต้องลงมือ / Claude กำลังทำ / รอคนอื่น / งานค้าง / เสร็จแล้ว · ข้อมูลอยู่ในฐานข้อมูลของ artifact (collection `items` + doc `board/summary`) · อ่าน/เขียนด้วยเครื่องมือ `ArtifactData` · **ทุก session: เริ่มงานให้อ่านคำตอบของ Bay ในช่อง `answer` ก่อน · จบงานให้อัปเดตรายการ** · Bay พิมพ์ "อัปเดตกระดาน" = อ่านคำตอบ สั่งงานต่อ เติมรายการใหม่ · ห้ามใส่ตัวเลขต้นทุนหรือข้อมูลลูกค้า
+- **ลำดับความสำคัญที่ Bay สั่ง (2026-11-15):** ทำคอนเทนต์ให้เสร็จ แล้วเอาคอนเทนต์ไปหาเงิน · Claude เป็นผู้วางแผน ส่งคำสั่งให้ session คนทำ · Bay ไม่ชอบถูกถามเยอะ ให้ตั้งค่าเริ่มต้นที่ปลอดภัยแล้วบอก · เอกสาร: `docs/marketing/sprint-2569-11.md` · `docs/modules/leads/`
+
 - **ระบบ chawcher-os (production): `https://chawcher-os.vercel.app`** · โปรเจกต์ Vercel `chawcher-os` ทีม `bay8` · webhook LINE `https://chawcher-os.vercel.app/api/line/webhook` · หน้าสาธารณะ: `/pos` `/phoenix` `/faq` `/api/faq` · คู่มือกดทีละขั้น `docs/bay-action-list.md`
 - Vercel MCP ที่เชื่อมไว้เข้าถึงได้แค่โปรเจกต์อื่น (`bee-coder-islands`) และ `vercel.com` ถูกบล็อกจากเครื่องนี้ (`docs/deploy-vercel.md`) → **ดู/แก้ Vercel เองไม่ได้ · อย่าเสียเวลาลอง** · ใช้ `curl https://chawcher-os.vercel.app/...` เช็กว่าเว็บจริงขึ้นหรือยังได้
 - ฐานข้อมูล Supabase: Bay วาง migration ใน SQL Editor เอง (เราทดสอบในเครื่องด้วย `supabase/tests/README.md`) · โค้ดที่ Bay merge ขึ้น branch `claude/chaw-cher-os-setup-9k21w6` ถึงจะขึ้นเว็บจริง · แต่ละ session ทำงานบน branch ของตัวเองตามที่ระบบกำหนด
