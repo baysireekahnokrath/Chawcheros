@@ -49,6 +49,13 @@ export default async function CatalogPage() {
           <p className="mt-0.5 text-sm text-muted">ตรวจทีละรุ่น ไม่ใช่ทีละแถว</p>
         </Link>
 
+        <Link href="/catalog/new" className="block rounded-2xl border border-border bg-surface p-4">
+          <div className="font-medium">เพิ่มสินค้าใหม่</div>
+          <p className="mt-0.5 text-sm text-muted">
+            วางชื่อ + ขนาดที่ลูกค้าสั่ง → ยืนยันรุ่น → ได้ราคาแนะนำ → เข้าฐานข้อมูล
+          </p>
+        </Link>
+
         <Link href="/catalog/products" className="block rounded-2xl border border-border bg-surface p-4">
           <div className="font-medium">สินค้าในระบบ</div>
           <p className="mt-0.5 text-sm text-muted">

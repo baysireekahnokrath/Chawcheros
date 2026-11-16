@@ -344,3 +344,56 @@ export async function rejectSelection(
   revalidatePath('/catalog/review');
   return { ok: true, count: total };
 }
+
+export type ResizeInput = {
+  baseVariantId: string;
+  width: number;
+  depth: number | null;
+  height: number | null;
+  price: number;
+  note: string;
+};
+export type ResizeResult =
+  | { ok: true; sku: string; skuDisplay: string }
+  | { ok: false; error: string };
+
+/**
+ * เพิ่ม "ขนาดใหม่" ให้รุ่นที่มีอยู่แล้ว · ใช้จากหน้า /catalog/new
+ *
+ * ราคาที่ส่งมาคือราคาที่คนตัดสินใจแล้ว ไม่ใช่ที่ระบบคิด
+ * หน้าเว็บเสนอราคาแนะนำให้ดู แต่แก้ได้เสมอก่อนกด — ระบบเสนอ คนตัดสิน
+ */
+export async function addVariantResize(input: ResizeInput): Promise<ResizeResult> {
+  if (!input.baseVariantId) return { ok: false, error: 'ยังไม่ได้เลือกตัวที่จะอ้างอิง' };
+  if (!Number.isFinite(input.width) || input.width <= 0) {
+    return { ok: false, error: 'ความกว้างต้องเป็นตัวเลขมากกว่า 0' };
+  }
+  if (!Number.isFinite(input.price) || input.price <= 0) {
+    return { ok: false, error: 'ราคาเต็มต้องเป็นตัวเลขมากกว่า 0' };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.schema('catalog').rpc('add_variant_resize', {
+    p_base_variant_id: input.baseVariantId,
+    p_width_cm: input.width,
+    p_depth_cm: input.depth,
+    p_height_cm: input.height,
+    p_price_incl_vat: input.price,
+    p_note: input.note.trim() || null,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  const { data: row } = await supabase
+    .schema('catalog')
+    .from('product_variants')
+    .select('sku')
+    .eq('id', data as string)
+    .single();
+
+  const sku = (row?.sku as string | undefined) ?? '';
+  revalidatePath('/catalog');
+  revalidatePath('/catalog/products');
+  revalidatePath('/price');
+  revalidatePath('/quotes');
+  return { ok: true, sku, skuDisplay: sku ? `${sku.slice(0, 3)}.${sku.slice(3, 6)}.${sku.slice(6)}` : '' };
+}

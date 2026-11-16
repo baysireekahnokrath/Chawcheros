@@ -38,8 +38,20 @@ export type Product = {
 };
 
 const clean = (s: string | null | undefined) => (s ?? '').replace(/\s+/g, ' ').trim();
+/**
+ * ทำข้อความให้เทียบกันได้
+ *
+ * ★ แยกตัวอักษรกับตัวเลขที่ติดกัน · คนเขียน "tv200" "W180" "ta214"
+ *   ถ้าไม่แยก "tv200" เป็นคำเดียวที่ไม่ตรงกับอะไรเลย ทั้งที่หมายถึงชั้นวางทีวี 200
+ * ★ 60*100 กับ 60x100 คือสองตัวเลข ไม่ใช่คำเดียว
+ */
 const norm = (s: string) =>
-  clean(s).toLowerCase().replace(/[()[\]{}.,]/g, ' ').replace(/\s+/g, ' ').trim();
+  clean(s).toLowerCase()
+    .replace(/[()[\]{}.,*]/g, ' ')
+    .replace(/(\d)\s*x\s*(\d)/g, '$1 $2')
+    .replace(/([a-z\u0E00-\u0E7F])(\d)/g, '$1 $2')
+    .replace(/(\d)([a-z\u0E00-\u0E7F])/g, '$1 $2')
+    .replace(/\s+/g, ' ').trim();
 
 /** W180 D44.5 H45 → ข้อความขนาดแบบที่ใบเสนอราคาใช้ */
 export const sizeText = (w: number | null, d: number | null, h: number | null) =>
@@ -83,7 +95,11 @@ export function buildProducts(rows: PriceRow[]): Product[] {
   return [...by.values()];
 }
 
-export type Hit = { p: Product; score: number; why: string };
+export type Hit = {
+  p: Product; score: number; why: string;
+  /** จำนวนคำที่ตรงจริง ๆ · ใช้แยก "ตรงเพราะชื่อ" ออกจาก "ตรงเพราะตัวเลขบังเอิญใกล้กัน" */
+  hits: number;
+};
 
 /**
  * น้ำหนักของคำ · คำที่หายากบอกอะไรได้มากกว่าคำที่โผล่ทุกแถว
@@ -116,27 +132,41 @@ function idfOf(products: Product[]): Map<string, number> {
  * คะแนน · ชื่ออังกฤษตรงทั้งก้อนได้มากสุด ลงมาเป็นตรงทีละคำ
  * ขนาดที่ลูกค้าเขียน (เช่น 1.00m.) ถ้าตรงกับความกว้างจะได้แต้มเพิ่ม
  */
+/**
+ * ความกว้างที่คนเขียนขอมา หน่วยเซนติเมตร · ไม่เจอคืน null
+ *
+ * "1.00m." = 100 · "180 cm" = 180 · "tv200" = 200 · "Koontong Sideboard 120" = 120
+ *
+ * ★ หน่วยอ่านจากข้อความดิบ · norm() เปลี่ยนจุดเป็นช่องว่าง "1.55m." จะกลายเป็น 55
+ * ★ ตัวเลขเปล่าอ่านจากข้อความที่แยกตัวเลขออกแล้ว · "tv200" ต้องได้ 200
+ *   จำกัดช่วง 40-400 กันไปชนตัวเลขที่เป็นส่วนหนึ่งของชื่อรุ่น
+ */
+export function wantedWidth(text: string): number | null {
+  const mm = /(\d+(?:\.\d+)?)\s*(m\b|m\.|เมตร|cm\b|ซม)/i.exec(clean(text));
+  if (mm) return Math.round(+mm[1] * (/^(m\b|m\.|เมตร)/i.test(mm[2]) ? 100 : 1));
+  const bare = [...norm(text).matchAll(/\b(\d{2,3})\b/g)]
+    .map((x) => +x[1]).filter((n) => n >= 40 && n <= 400).pop();
+  return bare ?? null;
+}
+
 export function matchLine(text: string, products: Product[], limit = 8): Hit[] {
   const q = norm(text);
   if (!q) return [];
   const words = q.split(' ').filter((w) => w.length > 1);
 
-  /** ความกว้างที่ลูกค้าเขียน · "1.00m." = 100 ซม. · "180 cm" = 180 ซม.
-   *  ★ อ่านจากข้อความดิบ ไม่ใช่ตัวที่ normalize แล้ว · norm() เปลี่ยนจุดเป็นช่องว่าง
-   *    "1.55m." จึงกลายเป็น "1 55m" แล้วอ่านได้ 55 เมตร */
-  const raw = clean(text);
-  const mm = /(\d+(?:\.\d+)?)\s*(m\b|m\.|เมตร|cm\b|ซม)/i.exec(raw);
-  // ไม่มีหน่วยก็เดาได้ · คนเขียน "Koontong Sideboard 120" หมายถึง 120 ซม.
-  // จำกัดช่วง 40-400 กันไปชนตัวเลขที่เป็นส่วนหนึ่งของชื่อรุ่น
-  const bare = !mm && [...raw.matchAll(/\b(\d{2,3})\b/g)]
-    .map((x) => +x[1]).filter((n) => n >= 40 && n <= 400).pop();
-  const wantW = mm
-    ? Math.round(+mm[1] * (/^(m\b|m\.|เมตร)/i.test(mm[2]) ? 100 : 1))
-    : (bare || null);
+  const wantW = wantedWidth(text);
 
   const idf = idfOf(products);
-  const weightOf = (w: string) => idf.get(w) ?? Math.log(1 + products.length);
-  const totalW = words.reduce((s, w) => s + weightOf(w), 0) || 1;
+  const weightOf = (w: string) => idf.get(w) ?? 0;
+  /**
+   * คิดเปอร์เซ็นต์จากเฉพาะคำที่มีอยู่จริงในใบราคา
+   *
+   * ★ "taka 214" · คำว่า 214 ไม่มีในใบราคาเลย (ทากะไม่มีรุ่นกว้าง 214)
+   *   ถ้านับมันด้วย ทากะจะได้แค่ครึ่งคะแนน แล้วแพ้โซฟาฟีนิกซ์ W213
+   *   ที่บังเอิญกว้างใกล้ 214 ทั้งที่คนเขียนพิมพ์ชื่อรุ่นมาตรง ๆ แล้ว
+   */
+  const known = words.filter((w) => (idf.get(w) ?? 0) > 0);
+  const totalW = known.reduce((s, w) => s + weightOf(w), 0) || 1;
 
   const out: Hit[] = [];
   for (const p of products) {
@@ -148,18 +178,18 @@ export function matchLine(text: string, products: Product[], limit = 8): Hit[] {
     if (enN && q.includes(enN)) { score += 60; why.push('ชื่ออังกฤษตรงทั้งชื่อ'); }
 
     let hitWords = 0, hitW = 0;
-    for (const w of words) if (hay.includes(w)) { hitWords++; hitW += weightOf(w); }
-    if (words.length) {
+    for (const w of known) if (hay.includes(w)) { hitWords++; hitW += weightOf(w); }
+    if (known.length) {
       score += Math.round((hitW / totalW) * 45);
-      if (hitWords) why.push(`ตรง ${hitWords}/${words.length} คำ`);
+      if (hitWords) why.push(`ตรง ${hitWords}/${known.length} คำ`);
     }
 
     if (wantW != null && p.w != null) {
-      if (Math.abs(p.w - wantW) <= 2) { score += 25; why.push(`กว้าง ${p.w} ตรงกับที่ขอ`); }
+      if (Math.abs(p.w - wantW) <= 2) { score += 18; why.push(`กว้าง ${p.w} ตรงกับที่ขอ`); }
       else score -= 3;   // ไม่ตรงก็ยังอยากให้เห็น · ของที่ลูกค้าขออาจไม่มีในใบราคา
     }
 
-    if (score > 0) out.push({ p, score, why: why.join(' · ') });
+    if (score > 0) out.push({ p, score, why: why.join(' · '), hits: hitWords });
   }
 
   out.sort((a, b) => b.score - a.score || (a.p.collection < b.p.collection ? -1 : 1));
@@ -183,4 +213,15 @@ export function matchLine(text: string, products: Product[], limit = 8): Hit[] {
 export function confident(hits: Hit[]): boolean {
   if (!hits.length || hits[0].score < 60) return false;
   return hits.length === 1 || hits[0].score - hits[1].score >= 20;
+}
+
+/**
+ * บรรทัดนี้น่าจะเป็นสินค้าไหม · ใช้ตัดสินตอนแกะข้อความที่ไม่มีขีดนำหน้า
+ *
+ * ต้องมีคำที่ตรงจริงอย่างน้อยหนึ่งคำ · ความกว้างบังเอิญใกล้กันอย่างเดียวไม่พอ
+ * ไม่งั้น "ห้องนอน 234" จะกลายเป็นสินค้าเพราะมีรุ่นกว้าง 234 อยู่พอดี
+ */
+export function looksLikeProduct(line: string, products: Product[]): boolean {
+  const h = matchLine(line, products, 1)[0];
+  return !!h && h.hits >= 1 && h.score >= 25;
 }

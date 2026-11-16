@@ -20,7 +20,10 @@ export type QuoteLine = {
   /** รหัสที่โชว์ในคอลัมน์ No. · ว่างได้ถ้าเป็นค่าขนส่ง */
   no: string;
   head: string;
+  /** บรรทัดสอง · ไม้และขนาด */
   sub: string;
+  /** บรรทัดสาม · วัสดุหุ้มที่ลูกค้าระบุ เช่น "PVC เลือกสีได้" · ใบจริงแยกบรรทัดนี้ออกมา */
+  spec: string;
   colour: string;
   qty: number;
   retail: number | null;

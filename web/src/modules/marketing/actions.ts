@@ -81,3 +81,60 @@ export async function createPromotion(formData: FormData): Promise<ActionResult>
   revalidatePath('/marketing');
   return { ok: true };
 }
+
+/**
+ * โปรฯ ที่ต่อท้ายคำตอบราคาของบอท (0052) · ชำระเงินสด · ขั้นบันได · ส่งฟรี · ของแถม
+ * ไม่แตะกฎส่วนลดของ pricing · ฐานข้อมูลตรวจซ้ำว่ากรอกครบตามประเภท
+ */
+const EXTRA_KINDS = ['ชำระเงินสด', 'ขั้นบันได', 'ส่งฟรี', 'ของแถม'] as const;
+
+export async function createPromoExtra(formData: FormData): Promise<ActionResult> {
+  const kind = String(formData.get('kind') ?? '') as (typeof EXTRA_KINDS)[number];
+  if (!EXTRA_KINDS.includes(kind)) return { ok: false, error: 'เลือกประเภทโปรก่อน' };
+  const num = (k: string) => { const v = String(formData.get(k) ?? '').trim(); return v ? Number(v) : null; };
+  const txt = (k: string) => String(formData.get(k) ?? '').trim() || null;
+
+  const percent = kind === 'ชำระเงินสด' || kind === 'ขั้นบันได' ? num('percent') : null;
+  const minTotal = kind === 'ชำระเงินสด' ? null : num('min_total');
+  const detail = kind === 'ส่งฟรี' || kind === 'ของแถม' ? txt('detail') : null;
+  if ((kind === 'ชำระเงินสด' || kind === 'ขั้นบันได') && !percent) return { ok: false, error: 'ใส่ % ด้วย' };
+  if (kind === 'ขั้นบันได' && !minTotal) return { ok: false, error: 'ใส่ยอดซื้อขั้นต่ำด้วย' };
+  if (kind === 'ของแถม' && !detail) return { ok: false, error: 'บอกว่าแถมอะไร' };
+  const link = txt('link_url');
+  if (link && !/^https:\/\//.test(link)) return { ok: false, error: 'ลิงก์ต้องขึ้นต้นด้วย https://' };
+
+  const scope = String(formData.get('scope') ?? 'ทั้งหมด');
+  const name = txt('name') ?? ({
+    'ชำระเงินสด': `ชำระเงินสด ลด on top ${percent}%`,
+    'ขั้นบันได': `ซื้อครบ ${minTotal} ลดเพิ่ม ${percent}%`,
+    'ส่งฟรี': 'ส่งฟรี',
+    'ของแถม': `แถม ${detail}`,
+  })[kind];
+
+  const supabase = await createClient();
+  const { error } = await supabase.schema('marketing').from('promotions').insert({
+    name,
+    kind,
+    percent,
+    min_total: minTotal,
+    detail,
+    link_url: link,
+    scope,
+    target_id: scope === 'ทั้งหมด' ? null : txt('target_id'),
+    starts_on: String(formData.get('starts_on') ?? ''),
+    ends_on: txt('ends_on'),
+    status: 'กำลังใช้',
+  });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/marketing');
+  return { ok: true };
+}
+
+/** จบโปรก่อนกำหนด · ห้ามลบ (A7) จึงเปลี่ยนสถานะ */
+export async function endPromotion(id: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.schema('marketing').from('promotions').update({ status: 'จบแล้ว' }).eq('id', id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/marketing');
+  return { ok: true };
+}

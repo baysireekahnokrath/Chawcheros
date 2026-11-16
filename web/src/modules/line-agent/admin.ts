@@ -57,7 +57,7 @@ export async function syncSheetsNow() {
   done();
 }
 
-const ROOM_FLAGS = ['see_price', 'see_customer', 'see_money', 'see_address', 'customer_draft', 'can_slip', 'can_photo', 'push_worksheet'] as const;
+const ROOM_FLAGS = ['see_price', 'see_customer', 'see_money', 'see_address', 'customer_draft', 'can_slip', 'can_photo', 'push_worksheet', 'see_kb'] as const;
 
 /** สิทธิ์และหน้าที่ของแต่ละกลุ่ม (0036) · ไม่ติ๊ก = ปิด */
 export async function saveRoomFlags(formData: FormData) {

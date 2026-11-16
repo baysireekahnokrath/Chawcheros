@@ -58,3 +58,20 @@ export async function getDiscountTargets() {
     products: (prods ?? []) as { id: string; collection: string }[],
   };
 }
+
+export type PromoRow = {
+  id: string; name: string; kind: string; percent: number | null; min_total: number | null;
+  detail: string | null; link_url: string | null; scope: string; starts_on: string; ends_on: string | null;
+};
+
+/** โปรที่กำลังใช้หรือจะเริ่ม (ยังไม่หมดเขต) · ไว้ดูและกดจบ */
+export async function getLivePromotions(): Promise<PromoRow[]> {
+  const supabase = await createClient();
+  const today = new Date(Date.now() + 7 * 3600_000).toISOString().slice(0, 10);
+  const { data } = await supabase.schema('marketing').from('promotions')
+    .select('id,name,kind,percent,min_total,detail,link_url,scope,starts_on,ends_on')
+    .eq('status', 'กำลังใช้')
+    .or(`ends_on.is.null,ends_on.gte.${today}`)
+    .order('starts_on');
+  return (data ?? []) as PromoRow[];
+}

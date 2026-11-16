@@ -21,12 +21,15 @@
 import { useMemo, useState } from 'react';
 import type { PriceRow } from '@/modules/pricing/queries';
 import { parseRequest } from '@/modules/quote/parse';
-import { buildProducts, confident, matchLine, type Hit } from '@/modules/quote/match';
+import { buildProducts, confident, looksLikeProduct, matchLine, wantedWidth, type Hit } from '@/modules/quote/match';
+import { fitText, fitWidth, modulesOf, type Fit } from '@/modules/quote/fit';
 import { BAHT, quoteNo, thaiDate, totalsOf, type Quote, type QuoteLine } from '@/modules/quote/doc';
 
 type Row = {
   id: string;
   raw: string;
+  /** บรรทัดที่จับคู่ไม่ติดซึ่งตามมาหลังรายการนี้ · วัสดุ สี ห้อง */
+  notes: string[];
   spec: string;
   qty: number;
   pkey: string;
@@ -54,6 +57,13 @@ type Doc = {
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
+
+/**
+ * ชื่อในรายชื่อให้เลือก · ต้องใส่ไม้กับสีด้วย
+ * ไม่งั้นโต๊ะกลางสวอนสามสีจะขึ้นเป็นบรรทัดเดียวกันเป๊ะสามอัน แยกไม่ออกว่าอันไหนคืออันไหน
+ */
+const optLabel = (p: { head: string; size: string; wood: string }) =>
+  [p.head.replace('ฌ เฌอ | ', ''), p.size, p.wood].filter(Boolean).join(' · ');
 
 const SAMPLE = `CLP
 Option1
@@ -83,8 +93,50 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
   }, [docs, products]);
   const hitsFor = (raw: string) => cands.get(raw) ?? [];
 
+  /**
+   * "ขนาดเท่านี้ ต่อกันยังไงได้บ้าง" (Bay สั่งไว้ 2026-11-12)
+   *
+   * คนขายเขียน "taka 214" เพราะวัดพื้นที่มาได้ 214 ไม่ได้หมายถึงรุ่นชื่อ 214
+   * บอกแค่ "ไม่มีในใบราคา" เท่ากับโยนงานกลับไปให้คนถาม · คิดชุดให้เลย
+   */
+  const fits = useMemo(() => {
+    const m = new Map<string, Fit[]>();
+    const modCache = new Map<string, ReturnType<typeof modulesOf>>();
+    for (const d of docs) for (const r of d.rows) {
+      if (r.free || !r.raw || m.has(r.raw)) continue;
+      const want = wantedWidth(r.raw);
+      const coll = (r.pkey ? byKey.get(r.pkey) : (cands.get(r.raw) ?? [])[0]?.p)?.collection;
+      if (!want || !coll) continue;
+      let mods = modCache.get(coll);
+      if (!mods) { mods = modulesOf(products, coll); modCache.set(coll, mods); }
+      // เสนอเมื่อมีอะไรให้คิดจริง ๆ · มีตัวเดียวที่กว้างพอดีอยู่แล้วและไม่มีทางอื่นเลย ก็ไม่ต้องเสนอ
+      // แต่ถ้ามีทางอื่นด้วย ให้เห็นด้วย · ฟีนิกซ์ 355 มีทั้งตัวเดียวจบ และ 230 + เดย์เบด 125
+      const best = fitWidth(mods, want);
+      if (best.some((f) => f.pieces.length > 1 || f.diff !== 0)) m.set(r.raw, best);
+    }
+    return m;
+  }, [docs, products, byKey, cands]);
+
+  /** เอาชุดที่เลือกมาแทนบรรทัดนี้ · หนึ่งชิ้นหนึ่งบรรทัด */
+  const applyFit = (did: string, rid: string, f: Fit) =>
+    setDoc(did, (d) => {
+      const at = d.rows.findIndex((r) => r.id === rid);
+      const src = d.rows[at];
+      const made: Row[] = f.pieces.map((x) => {
+        const v = x.p.variants[0];
+        return {
+          id: uid(), raw: x.p.head.replace('ฌ เฌอ | ', ''), notes: [], spec: src?.spec ?? '',
+          qty: x.qty * (src?.qty ?? 1), pkey: x.p.key, gi: 0,
+          unit: v ? (v.sale ?? v.retail) : null, free: '',
+        };
+      });
+      const rows2 = [...d.rows];
+      rows2.splice(at, 1, ...made);
+      return { ...d, rows: rows2 };
+    });
+
   function run() {
-    const drafts = parseRequest(text);
+    const drafts = parseRequest(text, (line) => looksLikeProduct(line, products));
     if (!drafts.length) { setToast('แกะไม่ออก · ลองใส่ขีดหน้าแต่ละรายการ เช่น "- Krata Lounge Chair 3 ตัว"'); return; }
     const out: Doc[] = drafts.map((d, i) => ({
       id: uid(),
@@ -97,7 +149,7 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
         const h = matchLine(l.name || l.raw, products);
         const pick = confident(h) ? h[0].p : null;
         return {
-          id: uid(), raw: l.name || l.raw, spec: l.spec, qty: l.qty,
+          id: uid(), raw: l.name || l.raw, notes: l.notes, spec: l.spec, qty: l.qty,
           pkey: pick?.key ?? '', gi: 0,
           unit: pick ? (pick.variants[0].sale ?? pick.variants[0].retail) : null,
           free: '',
@@ -141,9 +193,9 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
         id: r.id,
         no: isFree ? '' : String(++n),
         head: isFree ? r.free : (p?.head ?? r.raw),
-        // ลำดับตามใบจริง · วัสดุ แล้วค่อยขนาด · "ไม้โอ๊ค สีวอลนัท | ขนาด W120 D43.5 H79 cm"
-        sub: isFree ? '' : [r.spec || v?.grade, p?.wood, p?.size && `ขนาด ${p.size} cm`]
-          .filter(Boolean).join(' | '),
+        // ตามใบจริง · บรรทัดสองคือไม้กับขนาด บรรทัดสามคือวัสดุหุ้ม
+        sub: isFree ? '' : [p?.wood, p?.size && `ขนาด ${p.size} cm`].filter(Boolean).join(' | '),
+        spec: isFree ? '' : (r.spec || v?.grade || ''),
         colour: '',
         qty: r.qty,
         retail: isFree ? null : (v?.retail ?? null),
@@ -268,12 +320,10 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                       >
                         <option value="">— ยังไม่ได้เลือก —</option>
                         {cands.map((h) => (
-                          <option key={h.p.key} value={h.p.key}>
-                            {h.p.head.replace('ฌ เฌอ | ', '')} · {h.p.size}
-                          </option>
+                          <option key={h.p.key} value={h.p.key}>{optLabel(h.p)}</option>
                         ))}
                         {p && !cands.some((h) => h.p.key === p.key) && (
-                          <option value={p.key}>{p.head.replace('ฌ เฌอ | ', '')} · {p.size}</option>
+                          <option value={p.key}>{optLabel(p)}</option>
                         )}
                       </select>
 
@@ -302,6 +352,16 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                     </div>
                   )}
 
+                  {!r.free && (
+                    // บรรทัดวัสดุที่จะไปโผล่ในใบ · แก้ได้ เพราะของบางตัวลูกค้าเขียนวัสดุที่ไม่ตรงกับของจริง
+                    <input
+                      value={r.spec} aria-label="บรรทัดวัสดุในใบ"
+                      placeholder={p?.variants[r.gi]?.grade || 'วัสดุหุ้ม เช่น PVC เลือกสีได้'}
+                      onChange={(e) => setRow(d.id, r.id, (x) => ({ ...x, spec: e.target.value }))}
+                      className="mt-2 w-full rounded-lg border border-border bg-bg px-2 py-2 text-sm"
+                    />
+                  )}
+
                   {r.free && (
                     <input
                       value={r.free} aria-label="รายการอิสระ"
@@ -310,9 +370,64 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
                     />
                   )}
 
+                  {!r.free && (fits.get(r.raw)?.length ?? 0) > 0 && (
+                    <details className="mt-2 rounded-lg border border-accent/40 bg-accent/5 p-2">
+                      <summary className="cursor-pointer text-xs font-medium text-accent">
+                        ต่อกันให้ได้ ~{wantedWidth(r.raw)} ซม. · มี {fits.get(r.raw)!.length} แบบ
+                      </summary>
+                      <ul className="mt-2 space-y-1">
+                        {fits.get(r.raw)!.map((f, fi) => (
+                          <li key={fi} className="flex flex-wrap items-center gap-2 text-xs">
+                            <button type="button" onClick={() => applyFit(d.id, r.id, f)}
+                              className="rounded-md bg-accent px-2 py-1 font-medium text-accent-fg">
+                              ใส่ชุดนี้
+                            </button>
+                            <span className="font-medium">{fitText(f)}</span>
+                            <span className={f.diff === 0 ? 'text-ok' : 'text-muted'}>
+                              {f.diff === 0 ? 'พอดี' : `${f.diff > 0 ? 'เกิน' : 'ขาด'} ${Math.abs(f.diff)} ซม.`}
+                            </span>
+                            <span className="text-muted">ลึก {f.depth} · {BAHT(f.sale)} บาท</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-[0.68rem] text-muted">
+                        ราคาคือเกรดถูกที่สุดของแต่ละชิ้น · เลือกเกรดจริงได้หลังกดใส่ชุด
+                      </p>
+                    </details>
+                  )}
+
+                  {r.notes.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+                      <span className="text-muted">ลูกค้าเขียนต่อท้าย:</span>
+                      {r.notes.map((n, ni) => (
+                        <span key={ni} className="inline-flex items-center gap-1 rounded-md border border-border bg-bg px-1.5 py-1">
+                          {n}
+                          <button type="button" title="ใส่เป็นบรรทัดวัสดุของรายการนี้"
+                            onClick={() => setRow(d.id, r.id, (x) => ({
+                              ...x, spec: [x.spec, n].filter(Boolean).join(' '),
+                              notes: x.notes.filter((_, j) => j !== ni),
+                            }))}
+                            className="rounded bg-accent/15 px-1 font-medium text-accent">↑ วัสดุ</button>
+                          <button type="button" title="แยกออกมาเป็นรายการของตัวเอง"
+                            onClick={() => setDoc(d.id, (x) => {
+                              const at = x.rows.findIndex((y) => y.id === r.id);
+                              const rows2 = x.rows.map((y) => (y.id === r.id
+                                ? { ...y, notes: y.notes.filter((_, j) => j !== ni) } : y));
+                              rows2.splice(at + 1, 0, { id: uid(), raw: n, notes: [], spec: '',
+                                qty: 1, pkey: '', gi: 0, unit: null, free: '' });
+                              return { ...x, rows: rows2 };
+                            })}
+                            className="rounded bg-bg px-1 font-medium">+ รายการ</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   {!p && !r.free && (
                     <p className="mt-2 text-xs text-warn">
-                      ยังไม่เจอตัวที่ตรง · เลือกจากรายชื่อ หรือถ้าไม่มีในใบราคาให้ลบบรรทัดนี้แล้วใส่เป็นรายการอิสระ
+                      {cands.length
+                        ? `ยังไม่ได้เลือก · มี ${cands.length} ตัวที่ใกล้เคียงในรายชื่อข้างบน`
+                        : 'ไม่เจอในใบราคาเลย · ลบบรรทัดนี้แล้วใส่เป็นรายการอิสระ หรือแก้คำค้นให้ตรงขึ้น'}
                     </p>
                   )}
 
@@ -329,11 +444,11 @@ export default function QuoteBuilder({ rows }: { rows: PriceRow[] }) {
             <div className="flex flex-wrap gap-2">
               <button type="button"
                 onClick={() => setDoc(d.id, (x) => ({ ...x, rows: [...x.rows,
-                  { id: uid(), raw: '', spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: '' }] }))}
+                  { id: uid(), raw: '', notes: [], spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: '' }] }))}
                 className="rounded-lg border border-border px-3 py-2 text-sm">+ เพิ่มสินค้า</button>
               <button type="button"
                 onClick={() => setDoc(d.id, (x) => ({ ...x, rows: [...x.rows,
-                  { id: uid(), raw: 'ค่าขนส่ง', spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: 'ค่าขนส่ง' }] }))}
+                  { id: uid(), raw: 'ค่าขนส่ง', notes: [], spec: '', qty: 1, pkey: '', gi: 0, unit: null, free: 'ค่าขนส่ง' }] }))}
                 className="rounded-lg border border-border px-3 py-2 text-sm">+ ค่าขนส่ง / รายการอิสระ</button>
             </div>
           </div>
@@ -442,6 +557,7 @@ function Sheet({ q, showImg, first }: {
               <td className="py-1.5">
                 <div>{l.head}</div>
                 {l.sub && <div className="text-black/60">{l.sub}</div>}
+                {l.spec && <div className="text-black/60">{l.spec}</div>}
               </td>
               <td className="py-1.5 text-right">{l.qty}</td>
               <td className="py-1.5 text-right">
