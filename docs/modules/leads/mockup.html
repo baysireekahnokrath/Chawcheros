@@ -1,0 +1,811 @@
+<title>Chaw Cher คนสนใจ ตัวอย่าง</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Noto+Sans+Thai:wght@400;500&display=swap">
+<style>
+/* CI ของ CHAW CHER · ใช้ 5 สีเท่านั้น · น้ำหนักฟอนต์ 400 กับ 500 */
+:root {
+  --bg: #F7F8F8; --ink: #2F4554; --head: #2B4368; --line: #958C7B;
+  --pri: #2B4368; --pri-fg: #F7F8F8;
+  --warm: #83B7BF; --warm-fg: #2B4368;
+  --bar: #2F4554; --bar-fg: #F7F8F8;
+  --focus: #2B4368;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #2F4554; --ink: #F7F8F8; --head: #F7F8F8; --line: #958C7B;
+    --pri: #F7F8F8; --pri-fg: #2B4368;
+    --warm: #83B7BF; --warm-fg: #2B4368;
+    --bar: #2B4368; --bar-fg: #F7F8F8;
+    --focus: #83B7BF;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #2F4554; --ink: #F7F8F8; --head: #F7F8F8; --line: #958C7B;
+  --pri: #F7F8F8; --pri-fg: #2B4368;
+  --warm: #83B7BF; --warm-fg: #2B4368;
+  --bar: #2B4368; --bar-fg: #F7F8F8;
+  --focus: #83B7BF;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Noto Sans Thai", "Montserrat", system-ui, sans-serif;
+  font-size: 15px; line-height: 1.6; font-weight: 400;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3, b, strong, th { font-weight: 500; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.en { font-family: "Montserrat", "Noto Sans Thai", sans-serif; }
+.num { font-variant-numeric: tabular-nums; }
+
+.flag {
+  background: var(--bar); color: var(--bar-fg); font-size: 12px; text-align: center;
+  padding: 6px max(16px, env(safe-area-inset-right, 0px)) 6px max(16px, env(safe-area-inset-left, 0px));
+}
+.wrap {
+  max-width: 760px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 16px 0 4px; }
+.brand .logo { font-family: "Montserrat", sans-serif; letter-spacing: .28em; font-size: 12px; color: var(--head); }
+.brand .logo b { font-weight: 500; }
+.brand h1 { font-size: 20px; color: var(--head); }
+.lead-line { font-size: 14px; margin-bottom: 12px; }
+
+.intro { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.intro h2 { font-size: 15px; color: var(--head); margin-bottom: 6px; }
+.intro ol { margin: 0; padding-left: 20px; font-size: 14px; }
+.intro li { margin-bottom: 2px; }
+.intro .row { display: flex; justify-content: flex-end; margin-top: 6px; }
+.link { border: 0; background: none; padding: 6px 2px; text-decoration: underline; text-underline-offset: 3px; color: var(--head); font-size: 14px; border-radius: 6px; }
+
+/* เมนู · มือถืออยู่ล่าง · จอกว้างอยู่บน */
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  background: var(--bg); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+}
+.nav button {
+  border: 1px solid transparent; background: none; border-radius: 12px; padding: 6px 4px; min-height: 52px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; color: var(--ink);
+}
+.nav svg { width: 20px; height: 20px; }
+.nav button[aria-current="page"] { background: var(--pri); color: var(--pri-fg); font-weight: 500; }
+.nav .cnt { font-size: 12px; }
+@media (min-width: 760px) {
+  .nav { position: static; max-width: 760px; margin: 0 auto 16px; border: 1px solid var(--line); border-radius: 14px; padding: 4px; }
+  .nav button { flex-direction: row; gap: 8px; min-height: 44px; }
+  .wrap { padding-bottom: 48px; }
+  .toast { bottom: 24px !important; }
+}
+
+h2.sec { font-size: 16px; color: var(--head); margin: 20px 0 8px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+h2.sec .n { font-size: 13px; font-weight: 400; color: var(--ink); }
+.hint { font-size: 13px; }
+.hero { border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 14px; }
+.hero .big { font-size: 34px; line-height: 1; color: var(--head); font-weight: 500; }
+.hero p { font-size: 14px; }
+
+.card { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
+.card .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.card .name { font-weight: 500; color: var(--head); font-size: 16px; }
+.snip { font-size: 14px; margin: 4px 0 6px; overflow-wrap: anywhere; }
+.snip::before { content: "“"; } .snip::after { content: "”"; }
+.why { font-size: 13px; margin: 2px 0 8px; }
+.empty { border: 1px dashed var(--line); border-radius: 14px; padding: 14px; font-size: 14px; text-align: center; }
+
+.ch { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; font-size: 12px; font-family: "Montserrat", "Noto Sans Thai", sans-serif; white-space: nowrap; }
+.ch svg { width: 12px; height: 12px; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pill { border: 1px solid var(--line); border-radius: 99px; padding: 0 9px; font-size: 12px; line-height: 22px; white-space: nowrap; }
+.pill.hot { background: var(--pri); color: var(--pri-fg); border-color: var(--pri); font-weight: 500; }
+.pill.warm { background: var(--warm); color: var(--warm-fg); border-color: var(--warm); font-weight: 500; }
+.pill.stage { border-color: var(--ink); font-weight: 500; }
+.pill.none { border-style: dashed; }
+.pill.sug { border-style: dashed; }
+
+.btn {
+  border: 1px solid var(--pri); background: var(--pri); color: var(--pri-fg); border-radius: 12px;
+  padding: 8px 14px; min-height: 44px; font-weight: 500; font-size: 15px;
+}
+.btn.ghost { background: none; color: var(--head); border-color: var(--line); }
+.btn.sm { min-height: 40px; font-size: 14px; padding: 6px 12px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.btnrow .grow { flex: 1 1 140px; }
+
+.draft { margin-top: 8px; }
+.draft label { font-size: 13px; display: block; margin-bottom: 4px; }
+textarea, input[type="text"], input[type="date"], input[type="time"] {
+  width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  padding: 9px 10px; font-size: 16px; line-height: 1.55;
+}
+textarea { resize: vertical; min-height: 104px; display: block; }
+
+.frow { margin-bottom: 8px; }
+.frow .lab { font-size: 13px; margin-bottom: 4px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chips.scroll { flex-wrap: nowrap; overflow-x: auto; padding: 3px; margin: -3px; scrollbar-width: thin; }
+.chip {
+  border: 1px solid var(--line); background: none; border-radius: 99px; padding: 5px 12px; min-height: 36px;
+  font-size: 14px; white-space: nowrap; flex: 0 0 auto;
+}
+.chip[aria-pressed="true"] { background: var(--pri); color: var(--pri-fg); border-color: var(--pri); font-weight: 500; }
+.chip.past { background: var(--warm); color: var(--warm-fg); border-color: var(--warm); }
+
+.listhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 16px 0 10px; }
+.listhead h2 { font-size: 18px; color: var(--head); }
+.rowbtn { display: block; width: 100%; text-align: left; background: none; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+.rowbtn.new { border-width: 2px; border-color: var(--head); }
+.rowbtn .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rowbtn .name { font-weight: 500; color: var(--head); font-size: 16px; }
+.rowbtn .days { margin-left: auto; font-size: 13px; white-space: nowrap; }
+.rowbtn .snip { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowbtn .pills { display: flex; }
+
+.back { margin: 12px 0 4px; }
+.dhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px; }
+.dhead h2 { font-size: 22px; color: var(--head); }
+.box { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 12px; }
+.box h3 { font-size: 15px; color: var(--head); margin-bottom: 8px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.box h3 .step { font-family: "Montserrat", sans-serif; font-size: 12px; border: 1px solid var(--line); border-radius: 99px; width: 22px; height: 22px; display: inline-grid; place-items: center; }
+.grp { margin-bottom: 10px; }
+.grp .lab { font-size: 13px; margin-bottom: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.tagnote { border: 1px dashed var(--line); border-radius: 6px; padding: 0 6px; font-size: 12px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 380px) { .two { grid-template-columns: 1fr; } }
+.result { font-size: 15px; }
+.log { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.log li { padding: 4px 0; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+.log li:first-child { border-top: 0; }
+.log .t { flex: 0 0 96px; }
+
+/* สรุป */
+.sample { border: 1px solid var(--ink); border-radius: 6px; padding: 0 8px; font-size: 12px; font-weight: 500; }
+.funnel { display: grid; gap: 8px; }
+.frow2 { display: grid; grid-template-columns: 92px 1fr; gap: 8px; align-items: center; font-size: 14px; }
+.track { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.fbar { height: 26px; border-radius: 6px; background: var(--pri); min-width: 6px; }
+.fbar.goal { background: var(--warm); }
+.fnum { font-size: 16px; font-weight: 500; color: var(--head); white-space: nowrap; }
+.note { border-left: 3px solid var(--warm); padding: 4px 0 4px 10px; font-size: 14px; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: right; padding: 7px 4px; border-top: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+thead th { border-top: 0; font-size: 13px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kpi { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.kpi .v { font-size: 26px; line-height: 1.2; color: var(--head); font-weight: 500; }
+.kpi .l { font-size: 13px; }
+.qs { display: grid; gap: 6px; }
+.qs div { display: grid; grid-template-columns: 22px 1fr; gap: 6px; align-items: center; }
+
+/* ฟอร์มบันทึก */
+.scrim { position: fixed; inset: 0; z-index: 40; background: color-mix(in srgb, var(--bar) 70%, transparent); display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  background: var(--bg); color: var(--ink); width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: 18px 18px 0 0;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+@media (min-width: 760px) { .scrim { align-items: center; } .sheet { border-radius: 18px; } }
+.sheet h2 { font-size: 18px; color: var(--head); margin-bottom: 2px; }
+.warn { border: 1px solid var(--ink); border-radius: 10px; padding: 10px 12px; font-size: 14px; margin: 8px 0; }
+.err { font-size: 13px; font-weight: 500; margin-top: 4px; }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 50;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  background: var(--bar); color: var(--bar-fg); border: 1px solid var(--line); border-radius: 99px;
+  padding: 8px 16px; font-size: 14px; max-width: calc(100% - 32px); text-align: center;
+}
+.foot { font-size: 12px; margin-top: 24px; }
+</style>
+
+<div class="flag">ตัวอย่างหน้าจอ ข้อมูลสมมติ ยังไม่ต่อระบบจริง</div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="logo">CHAW <b>CHER</b></span>
+      <h1>คนสนใจ</h1>
+    </div>
+    <p class="lead-line">ทุกคนที่ทักมาถามเรื่องสินค้า อยู่ในรายการเดียว หน้านี้บอกทีมขายว่าวันนี้ต้องตอบใคร ตามใคร เพื่อชวนมาโชว์รูม</p>
+    <div id="intro"></div>
+  </header>
+</div>
+
+<nav class="nav" id="nav" aria-label="เมนูหลัก"></nav>
+
+<div class="wrap">
+  <main id="main"></main>
+  <p class="foot">หน้าจอนี้ไม่ส่งข้อความถึงลูกค้าเอง พนักงานคัดลอกแล้วไปส่งในแชทเดิม · ไม่มีข้อมูลต้นทุนหรือกำไรในหน้านี้ · รีเฟรชหน้าแล้วข้อมูลกลับเป็นค่าเริ่มต้น</p>
+</div>
+
+<div id="overlay"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- ค่าคงที่ ---------- */
+  var TOPICS = ['ถามราคา', 'ขอโบรชัวร์', 'นัดโชว์รูม', 'หลังการขาย', 'งานโครงการ'];
+  var PRODUCTS = ['โซฟา', 'เตียง', 'เก้าอี้', 'ตู้และโต๊ะ', 'สั่งทำพิเศษ'];
+  var HEATS = ['ร้อน', 'อุ่น', 'เย็น'];
+  var FLOW = ['ใหม่', 'ตอบแล้ว', 'เสนอราคาแล้ว', 'นัดแล้ว', 'มาโชว์รูม'];
+  var STAGES = FLOW.concat(['ซื้อ', 'หาย']);
+  var CHANNELS = ['LINE', 'Messenger', 'Instagram'];
+  var FORM_CH = ['Messenger', 'Instagram', 'โชว์รูม', 'โทรศัพท์'];
+  var SOURCES = ['LINE', 'Messenger', 'Instagram', 'โชว์รูม', 'โทรศัพท์', 'ลูกค้าเก่า/แนะนำ', 'อื่นๆ'];
+  var REASONS = ['ราคา', 'รอนาน', 'ยังไม่ถึงเวลา', 'เลือกเจ้าอื่น', 'ติดต่อไม่ได้'];
+  var WHEN = [
+    { label: 'ภายใน 1 เดือน', heat: 'ร้อน' },
+    { label: '1 ถึง 3 เดือน', heat: 'อุ่น' },
+    { label: 'เกิน 3 เดือน', heat: 'เย็น' },
+    { label: 'ยังไม่รู้', heat: 'เย็น' }
+  ];
+
+  /* ---------- วันที่ ---------- */
+  function iso(n) {
+    var d = new Date(); d.setDate(d.getDate() + n);
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+  }
+  var TODAY = iso(0), TOMORROW = iso(1);
+  function fmt(s) {
+    if (!s) return 'ยังไม่ตั้ง';
+    if (s === TODAY) return 'วันนี้';
+    if (s === TOMORROW) return 'พรุ่งนี้';
+    var d = new Date(s + 'T00:00:00');
+    if (isNaN(d)) return s;
+    try { return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); } catch (e) { return s; }
+  }
+  function nowLabel() {
+    var d = new Date(), h = d.getHours(), m = d.getMinutes();
+    return 'วันนี้ ' + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+  function daysLabel(n) { return n === 0 ? 'วันนี้' : n + ' วันก่อน'; }
+
+  /* ---------- ข้อมูลสมมติ ---------- */
+  var seq = 0;
+  function L(o) {
+    seq += 1;
+    var base = {
+      id: seq, name: '', ch: 'LINE', snip: '', topic: '', product: '', heat: 'เย็น',
+      sug: { topic: false, product: false, heat: false },
+      stage: 'ใหม่', days: 0, waitMin: 0, when: '', next: '', nextWhat: '',
+      appt: '', apptTime: '', follow: '', followups: 0, source: '', reason: '', isNew: false, log: []
+    };
+    for (var k in o) { if (Object.prototype.hasOwnProperty.call(o, k)) base[k] = o[k]; }
+    return base;
+  }
+  var leads = [
+    L({ name: 'คุณ ก.', ch: 'LINE', snip: 'โซฟาตัวแอล 3 ที่นั่ง ราคาเท่าไหร่คะ', topic: 'ถามราคา', product: 'โซฟา',
+        sug: { topic: true, product: true, heat: true }, stage: 'ใหม่', days: 0, waitMin: 135,
+        log: [{ t: 'วันนี้', x: 'ทักมาทาง LINE ระบบเปิดแถวให้เอง' }] }),
+    L({ name: 'คุณ ข.', ch: 'Instagram', snip: 'มีเตียง 6 ฟุตไหมคะ ขอดูแบบหน่อย', topic: 'ขอโบรชัวร์', product: '',
+        sug: { topic: false, product: false, heat: true }, stage: 'ใหม่', days: 0, waitMin: 80,
+        log: [{ t: 'วันนี้', x: 'พนักงานกดบันทึกคนสนใจ จาก Instagram' }] }),
+    L({ name: 'คุณ ค.', ch: 'LINE', snip: 'ขอ Brochure', topic: 'ขอโบรชัวร์', product: 'โซฟา',
+        sug: { topic: true, product: true, heat: true }, stage: 'ตอบแล้ว', days: 2, next: TODAY,
+        nextWhat: 'ทักตามหลังส่งโบรชัวร์', follow: 'brochure',
+        log: [{ t: '2 วันก่อน', x: 'ส่งโบรชัวร์แล้ว' }, { t: '2 วันก่อน', x: 'ทักมาทาง LINE' }] }),
+    L({ name: 'คุณ ง.', ch: 'Messenger', snip: 'ขอบคุณค่ะ ขอคิดดูก่อนนะคะ', topic: 'ถามราคา', product: 'โซฟา', heat: 'อุ่น',
+        stage: 'เสนอราคาแล้ว', days: 3, when: 'ประมาณ 2 เดือน บ้านใกล้เสร็จ', next: TODAY,
+        nextWhat: 'ชวนมาโชว์รูม', follow: 'invite',
+        log: [{ t: '3 วันก่อน', x: 'เปลี่ยนขั้นเป็น เสนอราคาแล้ว' }, { t: '4 วันก่อน', x: 'พนักงานกดบันทึกคนสนใจ จาก Messenger' }] }),
+    L({ name: 'คุณ จ.', ch: 'LINE', snip: 'สั่งทำขนาดพิเศษได้ไหมครับ', topic: 'ถามราคา', product: 'สั่งทำพิเศษ', heat: 'เย็น',
+        stage: 'เสนอราคาแล้ว', days: 9, next: TODAY, nextWhat: 'ทักตามครั้งที่ 3 หรือปิด', follow: 'invite', followups: 2,
+        log: [{ t: '4 วันก่อน', x: 'ทักตามครั้งที่ 2 ยังไม่ตอบ' }, { t: '7 วันก่อน', x: 'ทักตามครั้งที่ 1' }, { t: '9 วันก่อน', x: 'เปลี่ยนขั้นเป็น เสนอราคาแล้ว' }] }),
+    L({ name: 'คุณ ฉ.', ch: 'LINE', snip: 'พรุ่งนี้บ่ายสองได้ค่ะ', topic: 'นัดโชว์รูม', product: 'โซฟา', heat: 'ร้อน',
+        stage: 'นัดแล้ว', days: 1, when: 'ภายใน 1 เดือน', appt: TOMORROW, apptTime: '14:00', next: TODAY, nextWhat: 'ยืนยันนัด', follow: '',
+        log: [{ t: '1 วันก่อน', x: 'เปลี่ยนขั้นเป็น นัดแล้ว' }] }),
+    L({ name: 'คุณ ช.', ch: 'Instagram', snip: 'เก้าอี้สำหรับร้านกาแฟ ประมาณ 20 ตัวค่ะ', topic: 'งานโครงการ', product: 'เก้าอี้', heat: 'ร้อน',
+        stage: 'นัดแล้ว', days: 2, when: 'ภายใน 1 เดือน', appt: iso(4), apptTime: '11:00', next: iso(3), nextWhat: 'ยืนยันนัด',
+        log: [{ t: '2 วันก่อน', x: 'เปลี่ยนขั้นเป็น นัดแล้ว' }] }),
+    L({ name: 'คุณ ซ.', ch: 'Messenger', snip: 'ขอกลับไปวัดห้องก่อนนะครับ', topic: 'นัดโชว์รูม', product: 'ตู้และโต๊ะ', heat: 'ร้อน',
+        stage: 'มาโชว์รูม', days: 1, when: 'ภายใน 1 เดือน', next: TOMORROW, nextWhat: 'ถามผลวัดห้อง',
+        log: [{ t: '1 วันก่อน', x: 'เปลี่ยนขั้นเป็น มาโชว์รูม' }] }),
+    L({ name: 'คุณ ฌ.', ch: 'LINE', snip: 'โอนแล้วนะคะ', topic: 'นัดโชว์รูม', product: 'เตียง', heat: 'ร้อน',
+        stage: 'ซื้อ', days: 5, source: 'LINE',
+        log: [{ t: '5 วันก่อน', x: 'ปิดเป็น ซื้อ · ที่มา LINE' }, { t: '8 วันก่อน', x: 'เปลี่ยนขั้นเป็น มาโชว์รูม' }] }),
+    L({ name: 'คุณ ญ.', ch: 'Messenger', snip: 'ไว้บ้านเสร็จแล้วจะทักไปใหม่ค่ะ', topic: 'ถามราคา', product: 'โซฟา', heat: 'เย็น',
+        stage: 'หาย', days: 20, reason: 'ยังไม่ถึงเวลา',
+        log: [{ t: '20 วันก่อน', x: 'ปิดเป็น หาย · เหตุผล ยังไม่ถึงเวลา' }] })
+  ];
+
+  /* ---------- สถานะหน้าจอ ---------- */
+  var S = {
+    view: 'today', prev: 'today', cur: null, intro: true,
+    f: { stage: 'ทั้งหมด', heat: 'ทั้งหมด', ch: 'ทั้งหมด' },
+    drafts: {}, out: null, pick: '',
+    form: null,
+    qs: ['ราคาเท่าไหร่ มีโปรฯ อะไรบ้าง', 'โชว์รูมอยู่ที่ไหน เปิดกี่โมง', 'สั่งแล้วรอกี่วัน']
+  };
+
+  /* ---------- ตัวช่วย ---------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function find(id) {
+    for (var i = 0; i < leads.length; i++) { if (leads[i].id === Number(id)) return leads[i]; }
+    return null;
+  }
+  function isOpen(l) { return l.stage !== 'ซื้อ' && l.stage !== 'หาย'; }
+  function btn(act, arg, label, cls, more) {
+    return '<button type="button" class="' + (cls || 'btn') + '" data-act="' + act + '" data-arg="' + esc(arg) + '" data-k="' + esc(act + ':' + arg) + '"' + (more || '') + '>' + label + '</button>';
+  }
+  function chip(act, arg, label, on, cls) {
+    return '<button type="button" class="chip' + (cls ? ' ' + cls : '') + '" aria-pressed="' + (on ? 'true' : 'false') + '" data-act="' + act + '" data-arg="' + esc(arg) + '" data-k="' + esc(act + ':' + arg) + '">' + label + '</button>';
+  }
+  var ICON_CHAT = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" stroke-linejoin="round"/></svg>';
+  function chTag(c) { return '<span class="ch">' + ICON_CHAT + esc(c) + '</span>'; }
+  function heatPill(h) { return '<span class="pill ' + (h === 'ร้อน' ? 'hot' : h === 'อุ่น' ? 'warm' : '') + '">' + esc(h) + '</span>'; }
+  function tagPills(l) {
+    return '<span class="pills">' +
+      (l.topic ? '<span class="pill' + (l.sug.topic ? ' sug' : '') + '">' + esc(l.topic) + '</span>' : '<span class="pill none">เรื่อง ยังไม่ใส่</span>') +
+      (l.product ? '<span class="pill' + (l.sug.product ? ' sug' : '') + '">' + esc(l.product) + '</span>' : '<span class="pill none">สินค้า ยังไม่ใส่</span>') +
+      heatPill(l.heat) +
+      '<span class="pill stage">' + esc(l.stage) + '</span></span>';
+  }
+  function addLog(l, x) { l.log.unshift({ t: nowLabel(), x: x }); }
+  var toastTimer = null;
+  function say(msg) {
+    var t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2600);
+  }
+
+  /* ---------- ร่างข้อความ ---------- */
+  function draftText(l, kind) {
+    var n = l.name, p = l.product || 'สินค้า';
+    if (kind === 'first') return 'สวัสดีครับ' + n + ' ขอบคุณที่สนใจ CHAW CHER ครับ เดี๋ยวผมส่งรายละเอียดให้นะครับ ขอถามนิดเดียวครับ ต้องการใช้ช่วงไหนครับ';
+    if (kind === 'brochure') return 'สวัสดีครับ' + n + ' โบรชัวร์ที่ส่งให้ มีรุ่นไหนที่สนใจเป็นพิเศษไหมครับ ถ้าอยากเห็นของจริง เชิญมาลองนั่งที่โชว์รูม CHAW CHER ได้เลยครับ สะดวกวันไหนบอกผมได้ครับ';
+    if (kind === 'confirm') return 'สวัสดีครับ' + n + ' ยืนยันนัดชมโชว์รูม CHAW CHER ' + fmt(l.appt) + (l.apptTime ? ' เวลา ' + l.apptTime + ' น.' : '') + ' นะครับ ถ้าต้องการเปลี่ยนเวลา แจ้งผมได้เลยครับ แล้วพบกันครับ';
+    return 'สวัสดีครับ' + n + ' ' + p + 'ที่สอบถามไว้ ผมอยากชวนมาดูตัวจริงที่โชว์รูม CHAW CHER ครับ จะได้ลองนั่ง ดูผ้าจริง และเทียบขนาดกับห้องได้เลย สะดวกวันไหนครับ ผมจองเวลาไว้ให้ครับ';
+  }
+  function draftBox(l, kind, label) {
+    var key = l.id + '-' + kind, id = 'ta-' + S.view + '-' + key;
+    var val = Object.prototype.hasOwnProperty.call(S.drafts, key) ? S.drafts[key] : draftText(l, kind);
+    return '<div class="draft"><label for="' + id + '">' + label + ' (แก้ได้ก่อนคัดลอก)</label>' +
+      '<textarea id="' + id + '" data-in="draft" data-key="' + key + '" rows="4">' + esc(val) + '</textarea></div>';
+  }
+
+  /* ---------- งานวันนี้ ---------- */
+  function tasks() {
+    var a = [], b = [], c = [];
+    leads.forEach(function (l) {
+      if (!isOpen(l)) return;
+      if (l.stage === 'ใหม่' && l.waitMin > 60) a.push(l);
+      else if (l.stage === 'นัดแล้ว' && l.appt === TOMORROW && l.next && l.next <= TODAY) c.push(l);
+      else if (l.stage !== 'ใหม่' && l.follow && l.next && l.next <= TODAY) b.push(l);
+    });
+    a.sort(function (x, y) { return y.waitMin - x.waitMin; });
+    return { a: a, b: b, c: c, n: a.length + b.length + c.length };
+  }
+  function waitLabel(m) {
+    var h = Math.floor(m / 60), r = m % 60;
+    return (h ? h + ' ชม. ' : '') + (r ? r + ' นาที' : '');
+  }
+
+  function viewToday() {
+    var t = tasks(), h = '';
+    h += '<h2 class="sec" tabindex="-1" id="vh">วันนี้ต้องทำอะไร</h2>';
+    h += '<div class="hero"><span class="big num">' + t.n + '</span><p>' +
+      (t.n ? 'เรื่องที่รออยู่ ทำจากบนลงล่าง เสร็จแล้วกดปุ่มในการ์ด รายการจะหายไปเอง' : 'ไม่มีงานค้างแล้ววันนี้') + '</p></div>';
+
+    h += '<h2 class="sec">ยังไม่ได้ตอบ เกิน 1 ชั่วโมง <span class="n num">' + t.a.length + ' คน</span></h2>';
+    if (!t.a.length) h += '<div class="empty">ตอบครบทุกคนแล้ว</div>';
+    t.a.forEach(function (l) {
+      h += '<article class="card"><div class="top"><span class="name">' + esc(l.name) + '</span>' + chTag(l.ch) + '</div>' +
+        '<p class="snip">' + esc(l.snip) + '</p>' +
+        '<p class="why">รอมาแล้ว <b class="num">' + waitLabel(l.waitMin) + '</b> · ไปตอบในแชท ' + esc(l.ch) + ' แล้วกลับมากด “ตอบแล้ว”</p>' +
+        draftBox(l, 'first', 'ร่างคำตอบแรก') +
+        '<div class="btnrow">' + btn('copy', 'ta-today-' + l.id + '-first', 'คัดลอกข้อความ', 'btn ghost sm grow') +
+        btn('replied', l.id, 'ตอบแล้ว', 'btn sm grow') + btn('open', l.id, 'เปิดดู', 'btn ghost sm') + '</div></article>';
+    });
+
+    h += '<h2 class="sec">ถึงวันทักตาม วันนี้ <span class="n num">' + t.b.length + ' คน</span></h2>';
+    if (!t.b.length) h += '<div class="empty">ไม่มีคนที่ต้องทักตามวันนี้</div>';
+    t.b.forEach(function (l) {
+      var why = l.follow === 'brochure' ? 'ส่งโบรชัวร์แล้ว เงียบมา ' + l.days + ' วัน' : 'เสนอราคาแล้ว เงียบมา ' + l.days + ' วัน';
+      h += '<article class="card"><div class="top"><span class="name">' + esc(l.name) + '</span>' + chTag(l.ch) + heatPill(l.heat) + '</div>';
+      if (l.followups >= 2) {
+        h += '<p class="why">ทักตามไปแล้ว <b class="num">' + l.followups + ' ครั้ง</b> ยังไม่ตอบ · ระบบเสนอให้ปิดเป็น “หาย” (ต้องเลือกเหตุผล)</p>' +
+          '<div class="btnrow">' + btn('toclose', l.id, 'ปิดเป็นหาย', 'btn sm grow') + btn('open', l.id, 'เปิดดูก่อน', 'btn ghost sm grow') + '</div>';
+      } else {
+        h += '<p class="why">' + why + ' · ระบบร่างข้อความ' + (l.follow === 'brochure' ? 'ทักตาม' : 'ชวนมาโชว์รูม') + 'ให้แล้ว</p>' +
+          draftBox(l, l.follow, 'ร่างข้อความ') +
+          '<div class="btnrow">' + btn('copy', 'ta-today-' + l.id + '-' + l.follow, 'คัดลอกข้อความ', 'btn sm grow') +
+          btn('sent', l.id, 'ส่งแล้ว', 'btn ghost sm grow') + btn('open', l.id, 'เปิดดู', 'btn ghost sm') + '</div>';
+      }
+      h += '</article>';
+    });
+
+    h += '<h2 class="sec">นัดมาโชว์รูม พรุ่งนี้ <span class="n num">' + t.c.length + ' คน</span></h2>';
+    if (!t.c.length) h += '<div class="empty">ไม่มีนัดพรุ่งนี้ที่ยังไม่ได้ยืนยัน</div>';
+    t.c.forEach(function (l) {
+      h += '<article class="card"><div class="top"><span class="name">' + esc(l.name) + '</span>' + chTag(l.ch) + heatPill(l.heat) + '</div>' +
+        '<p class="why">นัดพรุ่งนี้ <b class="num">' + esc(l.apptTime || '') + ' น.</b> · ส่งข้อความยืนยันวันนี้ ลูกค้าจะไม่ลืมนัด</p>' +
+        draftBox(l, 'confirm', 'ร่างข้อความยืนยันนัด') +
+        '<div class="btnrow">' + btn('copy', 'ta-today-' + l.id + '-confirm', 'คัดลอกข้อความ', 'btn sm grow') +
+        btn('sent', l.id, 'ส่งแล้ว', 'btn ghost sm grow') + btn('open', l.id, 'เปิดดู', 'btn ghost sm') + '</div></article>';
+    });
+    return h;
+  }
+
+  /* ---------- รายการ ---------- */
+  function countBy(key, val) {
+    var n = 0; leads.forEach(function (l) { if (val === 'ทั้งหมด' || l[key] === val) n += 1; }); return n;
+  }
+  function viewList() {
+    var h = '<div class="listhead"><h2 tabindex="-1" id="vh">คนสนใจทั้งหมด</h2>' + btn('addopen', '', '+ บันทึกคนสนใจ', 'btn', ' id="addbtn"') + '</div>';
+    h += '<p class="hint" style="margin-bottom:10px">LINE เข้ามาเองอัตโนมัติ · Messenger และ Instagram พนักงานกด “บันทึกคนสนใจ” ครั้งเดียว</p>';
+
+    h += '<div class="frow"><div class="lab">ขั้น</div><div class="chips scroll">';
+    ['ทั้งหมด'].concat(STAGES).forEach(function (s) {
+      h += chip('fstage', s, esc(s) + ' <span class="num">' + countBy('stage', s) + '</span>', S.f.stage === s);
+    });
+    h += '</div></div><div class="frow"><div class="lab">ความพร้อม</div><div class="chips scroll">';
+    ['ทั้งหมด'].concat(HEATS).forEach(function (s) { h += chip('fheat', s, esc(s), S.f.heat === s); });
+    h += '</div></div><div class="frow"><div class="lab">ช่องทาง</div><div class="chips scroll">';
+    ['ทั้งหมด'].concat(CHANNELS).forEach(function (s) { h += chip('fch', s, esc(s), S.f.ch === s); });
+    h += '</div></div>';
+
+    var rows = leads.filter(function (l) {
+      return (S.f.stage === 'ทั้งหมด' || l.stage === S.f.stage) &&
+             (S.f.heat === 'ทั้งหมด' || l.heat === S.f.heat) &&
+             (S.f.ch === 'ทั้งหมด' || l.ch === S.f.ch);
+    });
+    rows.sort(function (x, y) {
+      if (x.isNew !== y.isNew) return x.isNew ? -1 : 1;
+      if (isOpen(x) !== isOpen(y)) return isOpen(x) ? -1 : 1;
+      return y.days - x.days;
+    });
+    h += '<p class="hint" style="margin:10px 0 8px">แสดง <b class="num">' + rows.length + '</b> จาก <span class="num">' + leads.length + '</span> คน · คนที่เงียบนานสุดอยู่บน';
+    if (S.f.stage !== 'ทั้งหมด' || S.f.heat !== 'ทั้งหมด' || S.f.ch !== 'ทั้งหมด') h += ' · ' + btn('fclear', '', 'ล้างตัวกรอง', 'link');
+    h += '</p>';
+    if (!rows.length) h += '<div class="empty">ไม่มีคนที่ตรงกับตัวกรองนี้</div>';
+    rows.forEach(function (l) {
+      h += '<button type="button" class="rowbtn' + (l.isNew ? ' new' : '') + '" data-act="open" data-arg="' + l.id + '" data-k="open:' + l.id + '">' +
+        '<span class="top"><span class="name">' + esc(l.name) + '</span>' + chTag(l.ch) +
+        '<span class="days">' + (l.isNew ? 'เพิ่งบันทึก' : 'ติดต่อล่าสุด ' + daysLabel(l.days)) + '</span></span>' +
+        '<span class="snip">' + esc(l.snip || 'ยังไม่ได้จดว่าถามอะไร') + '</span>' + tagPills(l) + '</button>';
+    });
+    return h;
+  }
+
+  /* ---------- รายละเอียด ---------- */
+  function tagGroup(l, key, title, opts) {
+    var h = '<div class="grp"><div class="lab">' + title;
+    if (l.sug[key] && l[key]) h += ' <span class="tagnote">ระบบเสนอ รอคนยืนยัน</span>';
+    if (!l[key]) h += ' <span class="tagnote">ระบบจับไม่ได้ รอคนใส่</span>';
+    h += '</div><div class="chips">';
+    opts.forEach(function (o) { h += chip('tag', key + '|' + o, esc(o), l[key] === o); });
+    return h + '</div></div>';
+  }
+  function viewDetail() {
+    var l = find(S.cur);
+    if (!l) return '<div class="empty">ไม่พบรายการนี้</div>';
+    var open = isOpen(l), idx = FLOW.indexOf(l.stage), h = '';
+    h += '<div class="back">' + btn('back', '', '← กลับ', 'btn ghost sm') + '</div>';
+    h += '<div class="dhead"><h2 tabindex="-1" id="vh">' + esc(l.name) + '</h2>' + chTag(l.ch) + '<span class="pill stage">' + esc(l.stage) + '</span></div>';
+    h += '<p class="hint">ติดต่อล่าสุด ' + daysLabel(l.days) + ' · ข้อความล่าสุดที่จดไว้</p>';
+    h += '<p class="snip">' + esc(l.snip || 'ยังไม่ได้จด') + '</p>';
+
+    if (!open) {
+      h += '<div class="box"><h3>ผลของรายการนี้</h3><p class="result">' +
+        (l.stage === 'ซื้อ' ? 'ซื้อแล้ว · ที่มา <b>' + esc(l.source) + '</b>' : 'หาย · เหตุผล <b>' + esc(l.reason) + '</b>') + '</p>' +
+        '<p class="hint" style="margin-top:6px">' + (l.stage === 'หาย' ? 'ถ้าลูกค้าทักกลับมา เปิดรายการเดิมต่อได้ ไม่ต้องสร้างใหม่' : 'กดผิด แก้กลับได้') + '</p>' +
+        '<div class="btnrow">' + btn('reopen', l.id, l.stage === 'หาย' ? 'ลูกค้าทักกลับมา เปิดรายการเดิม' : 'ย้อนกลับไปขั้นก่อนหน้า', 'btn ghost sm') + '</div></div>';
+    }
+
+    h += '<div class="box"><h3><span class="step">1</span>ป้าย แตะเพื่อเปลี่ยน</h3>' +
+      tagGroup(l, 'topic', 'เรื่อง', TOPICS) + tagGroup(l, 'product', 'สินค้า', PRODUCTS) + tagGroup(l, 'heat', 'ความพร้อม', HEATS);
+    if ((l.sug.topic && l.topic) || (l.sug.product && l.product) || l.sug.heat) h += '<div class="btnrow">' + btn('confirmtags', l.id, 'ป้ายถูกแล้ว ยืนยัน', 'btn ghost sm') + '</div>';
+    else h += '<p class="hint">ป้ายที่คนตั้งแล้ว ระบบจะไม่เปลี่ยนให้เอง</p>';
+    h += '</div>';
+
+    h += '<div class="box"><h3><span class="step">2</span>คำถามคัดกรอง “ต้องการใช้ช่วงไหน”</h3>' +
+      '<div class="chips" style="margin-bottom:8px">';
+    WHEN.forEach(function (w) { h += chip('when', w.label, esc(w.label), l.when === w.label); });
+    h += '</div><label class="hint" for="whenin">คำตอบของลูกค้า (พิมพ์เองได้)</label>' +
+      '<input type="text" id="whenin" data-in="when" value="' + esc(l.when) + '" placeholder="เช่น ย้ายเข้าบ้านต้นเดือนหน้า">' +
+      '<p class="hint" style="margin-top:6px">แตะตัวเลือกด้านบน ระบบจะเสนอความพร้อมให้: ภายใน 1 เดือน = ร้อน · 1 ถึง 3 เดือน = อุ่น · นานกว่านั้นหรือยังไม่รู้ = เย็น</p></div>';
+
+    if (open) {
+      h += '<div class="box"><h3><span class="step">3</span>ขั้น และสิ่งที่ต้องทำต่อ</h3><div class="chips" style="margin-bottom:10px">';
+      FLOW.forEach(function (s, i) { h += chip('stage', s, (i + 1) + ' ' + esc(s), l.stage === s, i < idx ? 'past' : ''); });
+      h += '</div>';
+      if (idx < FLOW.length - 1) h += btn('stage', FLOW[idx + 1], 'ไปขั้นถัดไป: ' + esc(FLOW[idx + 1]), 'btn', ' style="width:100%" data-k="nextstage"');
+      else h += '<p class="hint">ลูกค้ามาโชว์รูมแล้ว เหลือบันทึกผลด้านล่าง (ประมาณ 9 ใน 10 คนที่มาโชว์รูมซื้อ)</p>';
+      if (idx >= 3) {
+        h += '<div class="two" style="margin-top:10px"><div><label class="hint" for="apptin">วันนัดโชว์รูม</label><input type="date" id="apptin" data-in="appt" value="' + esc(l.appt) + '"></div>' +
+          '<div><label class="hint" for="apptt">เวลา</label><input type="time" id="apptt" data-in="apptTime" value="' + esc(l.apptTime) + '"></div></div>';
+      }
+      h += '<div class="two" style="margin-top:10px"><div><label class="hint" for="nextin">วันที่ต้องทำต่อ</label><input type="date" id="nextin" data-in="next" value="' + esc(l.next) + '"></div>' +
+        '<div><label class="hint" for="nextw">จะทำอะไร</label><input type="text" id="nextw" data-in="nextWhat" value="' + esc(l.nextWhat) + '" placeholder="เช่น ทักตาม"></div></div>' +
+        '<p class="hint" style="margin-top:6px">ถึงวันนั้น รายการนี้จะขึ้นในหน้า “วันนี้” เอง</p></div>';
+
+      if (idx < 4) {
+        var kind = l.stage === 'นัดแล้ว' ? 'confirm' : 'invite';
+        h += '<div class="box"><h3><span class="step">4</span>' + (kind === 'confirm' ? 'ยืนยันนัดโชว์รูม' : 'ชวนมาโชว์รูม') + '</h3>' +
+          '<p class="hint">ระบบร่างให้ พนักงานคัดลอกไปวางในแชท ' + esc(l.ch) + ' แล้วกดส่งเอง ระบบไม่ส่งถึงลูกค้า</p>' +
+          draftBox(l, kind, 'ร่างข้อความ') +
+          '<div class="btnrow">' + btn('copy', 'ta-detail-' + l.id + '-' + kind, 'คัดลอกข้อความ', 'btn grow') + btn('sent', l.id, 'ส่งแล้ว', 'btn ghost grow') + '</div>' +
+          (l.followups ? '<p class="hint" style="margin-top:6px">ทักตามไปแล้ว <span class="num">' + l.followups + '</span> ครั้ง</p>' : '') + '</div>';
+      }
+
+      h += '<div class="box" id="outcome"><h3><span class="step">5</span>ผลสุดท้าย</h3>';
+      if (!S.out) {
+        h += '<p class="hint">ทุกรายการต้องจบที่ ซื้อ หรือ หาย ไม่มีรายการค้างตลอดไป</p>' +
+          '<div class="btnrow">' + btn('out', 'buy', 'ซื้อ', 'btn grow') + btn('out', 'lost', 'หาย', 'btn ghost grow') + '</div>';
+      } else if (S.out === 'buy') {
+        h += '<div class="lab hint" style="margin-bottom:6px">ลูกค้าคนนี้มาจากช่องทางไหน (ที่มาของออเดอร์)</div><div class="chips">';
+        SOURCES.forEach(function (s) { h += chip('pick', s, esc(s), S.pick === s); });
+        h += '</div><div class="btnrow">' + btn('outok', l.id, 'ยืนยัน ซื้อ', 'btn grow', S.pick ? '' : ' disabled') + btn('out', '', 'ยกเลิก', 'btn ghost') + '</div>';
+      } else {
+        h += '<div class="lab hint" style="margin-bottom:6px">เลือกเหตุผล 1 ข้อ</div><div class="chips">';
+        REASONS.forEach(function (s) { h += chip('pick', s, esc(s), S.pick === s); });
+        h += '</div><div class="btnrow">' + btn('outok', l.id, 'ยืนยัน หาย', 'btn grow', S.pick ? '' : ' disabled') + btn('out', '', 'ยกเลิก', 'btn ghost') + '</div>';
+      }
+      h += '</div>';
+    }
+
+    h += '<div class="box"><h3>ประวัติ</h3><ul class="log">';
+    l.log.forEach(function (e) { h += '<li><span class="t num">' + esc(e.t) + '</span><span>' + esc(e.x) + '</span></li>'; });
+    h += '</ul></div>';
+    return h;
+  }
+
+  /* ---------- สรุปสัปดาห์ ---------- */
+  function viewWeek() {
+    var F = [['ทักมา', 42], ['ตอบแล้ว', 38], ['นัดแล้ว', 12], ['มาโชว์รูม', 9], ['ซื้อ', 8]];
+    var h = '<h2 class="sec" tabindex="-1" id="vh">สรุปสัปดาห์ <span class="sample">ตัวอย่าง</span></h2>' +
+      '<p class="hint">ตัวเลขทุกตัวในหน้านี้เป็นตัวเลขสมมติ ระบบจริงจะนับจากรายการให้เอง ไม่มีช่องให้พิมพ์ตัวเลข</p>';
+    h += '<div class="box"><h3>จากทักมา ถึงซื้อ</h3><div class="funnel">';
+    F.forEach(function (r, i) {
+      h += '<div class="frow2"><span>' + r[0] + '</span><span class="track"><span class="fbar' + (i >= 3 ? ' goal' : '') + '" style="width:' + Math.round(r[1] / 42 * 78) + '%"></span><span class="fnum num">' + r[1] + '</span></span></div>';
+    });
+    h += '</div><p class="note">มาโชว์รูม 9 คน ซื้อ 8 คน · แต่จาก 42 คนที่ทักมา นัดได้แค่ 12 คน จุดที่ต้องดันคือ “ชวนมาโชว์รูม”</p></div>';
+
+    h += '<div class="box"><h3>แยกตามช่องทาง <span class="sample">ตัวอย่าง</span></h3><table><thead><tr><th>ช่องทาง</th><th>ทักมา</th><th>นัดแล้ว</th><th>มาโชว์รูม</th><th>ซื้อ</th></tr></thead><tbody class="num">' +
+      '<tr><td class="en">LINE</td><td>24</td><td>7</td><td>5</td><td>5</td></tr>' +
+      '<tr><td class="en">Messenger</td><td>11</td><td>3</td><td>3</td><td>2</td></tr>' +
+      '<tr><td class="en">Instagram</td><td>7</td><td>2</td><td>1</td><td>1</td></tr>' +
+      '<tr><th>รวม</th><th>42</th><th>12</th><th>9</th><th>8</th></tr></tbody></table></div>';
+
+    h += '<div class="kpis" style="margin-top:12px"><div class="kpi"><div class="v num">47 นาที</div><div class="l">เวลาตอบครั้งแรก เฉลี่ย</div></div>' +
+      '<div class="kpi"><div class="v num">6 คน</div><div class="l">ตอบช้ากว่า 1 ชั่วโมง</div></div></div>';
+
+    h += '<div class="box"><h3>คำถามที่ถูกถามซ้ำ 3 อันดับ <span class="sample">ตัวอย่าง</span></h3><div class="qs">';
+    S.qs.forEach(function (q, i) {
+      h += '<div><span class="num">' + (i + 1) + '</span><input type="text" data-in="q" data-i="' + i + '" value="' + esc(q) + '" aria-label="คำถามซ้ำอันดับ ' + (i + 1) + '"></div>';
+    });
+    h += '</div><p class="hint" style="margin-top:6px">ช่วงแรกทีมพิมพ์เอง 3 บรรทัด ภายหลังระบบจะนับให้</p></div>';
+
+    h += '<div class="box"><h3>เหตุผลที่หาย <span class="sample">ตัวอย่าง</span></h3><table><tbody class="num">' +
+      '<tr><td>ราคา</td><td>5</td></tr><tr><td>ยังไม่ถึงเวลา</td><td>4</td></tr><tr><td>ติดต่อไม่ได้</td><td>3</td></tr><tr><td>เลือกเจ้าอื่น</td><td>2</td></tr><tr><td>รอนาน</td><td>1</td></tr></tbody></table></div>';
+    return h;
+  }
+
+  /* ---------- ฟอร์มบันทึก ---------- */
+  function overlayHtml() {
+    var f = S.form; if (!f) return '';
+    var h = '<div class="scrim" data-act="scrim" data-arg=""><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="fh">' +
+      '<h2 id="fh">บันทึกคนสนใจ</h2><p class="hint" style="margin-bottom:10px">ใช้เมื่อมีคนทักทาง Messenger หรือ Instagram หรือเดินเข้าโชว์รูม หรือโทรมา · LINE ไม่ต้องกด ระบบรับเอง</p>' +
+      '<div class="grp"><div class="lab">ช่องทาง</div><div class="chips">';
+    FORM_CH.forEach(function (c) { h += chip('fmch', c, esc(c), f.ch === c); });
+    h += '</div></div><div class="grp"><label class="lab" for="fname">ชื่อที่เห็นในแชท</label><input type="text" id="fname" data-in="fname" value="' + esc(f.name) + '" placeholder="เช่น คุณ ด." autocomplete="off">' +
+      (f.err ? '<p class="err" role="alert">' + esc(f.err) + '</p>' : '') + '</div>' +
+      '<div class="grp"><div class="lab">เรื่อง</div><div class="chips">';
+    TOPICS.forEach(function (c) { h += chip('fmtopic', c, esc(c), f.topic === c); });
+    h += '</div></div><div class="grp"><label class="lab" for="fsnip">ลูกค้าถามว่าอะไร (ไม่บังคับ)</label><input type="text" id="fsnip" data-in="fsnip" value="' + esc(f.snip) + '" placeholder="จดสั้นๆ ให้จำได้" maxlength="200" autocomplete="off"></div>';
+    if (f.dup) {
+      var d = find(f.dup);
+      h += '<div class="warn" role="alert">มีชื่อ <b>' + esc(d.name) + '</b> ทาง ' + esc(d.ch) + ' อยู่แล้ว (ขั้น ' + esc(d.stage) + ') อาจเป็นคนเดียวกัน' +
+        '<div class="btnrow">' + btn('fmexist', d.id, 'เปิดรายการเดิม', 'btn sm grow') + btn('fmforce', '', 'เป็นคนใหม่ บันทึกเลย', 'btn ghost sm grow') + '</div></div>';
+    } else {
+      h += '<div class="btnrow">' + btn('fmsave', '', 'บันทึก', 'btn grow') + btn('fmclose', '', 'ยกเลิก', 'btn ghost') + '</div>';
+    }
+    return h + '</div></div>';
+  }
+
+  /* ---------- วาดหน้าจอ ---------- */
+  var NAVS = [
+    ['today', 'วันนี้', '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5.5l1.5 1.5L8 4.5M4 10.5l1.5 1.5L8 9.5M4 15.5l1.5 1.5L8 14.5M11 6h6M11 11h6M11 16h6" stroke-linecap="round" stroke-linejoin="round"/></svg>'],
+    ['list', 'คนสนใจ', '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7.5" cy="7" r="2.8"/><path d="M2.5 16.5c.6-3 2.5-4.5 5-4.5s4.400 1.500 5 4.500M13.500 4.600a2.800 2.800 0 010 4.800M15 12.300c1.400.700 2.200 2.100 2.500 4.200" stroke-linecap="round"/></svg>'],
+    ['week', 'สรุปสัปดาห์', '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 4.500h14M5 9.500h10M7 14.500h6" stroke-linecap="round"/></svg>']
+  ];
+  function render(focusHead) {
+    var ae = document.activeElement, key = ae && ae.dataset ? ae.dataset.k : null;
+    var n = tasks().n, cur = S.view === 'detail' ? S.prev : S.view, nh = '';
+    NAVS.forEach(function (v) {
+      nh += '<button type="button" data-act="nav" data-arg="' + v[0] + '" data-k="nav:' + v[0] + '"' + (cur === v[0] ? ' aria-current="page"' : '') + '>' + v[2] +
+        '<span>' + v[1] + (v[0] === 'today' ? ' <span class="cnt num">(' + n + ')</span>' : '') + '</span></button>';
+    });
+    $('nav').innerHTML = nh;
+
+    $('intro').innerHTML = S.intro
+      ? '<section class="intro"><h2>หน้านี้คืออะไร</h2><ol>' +
+        '<li>ลูกค้าทักมาทาง LINE, Messenger, Instagram ทุกคนมารวมในรายการเดียว</li>' +
+        '<li>ระบบบอกว่าวันนี้ต้องตอบใคร ตามใคร และร่างข้อความให้ พนักงานคัดลอกไปส่งในแชทเอง</li>' +
+        '<li>เป้าหมายเดียว: ชวนมาโชว์รูม เพราะคนที่มาโชว์รูมประมาณ 9 ใน 10 คนซื้อ</li></ol>' +
+        '<div class="row">' + btn('intro', 'hide', 'เข้าใจแล้ว ซ่อน', 'link') + '</div></section>'
+      : '<p style="margin:-6px 0 8px">' + btn('intro', 'show', 'หน้านี้คืออะไร', 'link') + '</p>';
+
+    $('main').innerHTML = S.view === 'today' ? viewToday() : S.view === 'list' ? viewList() : S.view === 'week' ? viewWeek() : viewDetail();
+    $('overlay').innerHTML = overlayHtml();
+
+    if (focusHead) {
+      var vh = $('vh'); window.scrollTo(0, 0);
+      if (vh) { try { vh.focus({ preventScroll: true }); } catch (e) { vh.focus(); } }
+    } else if (key) {
+      var els = document.querySelectorAll('[data-k]');
+      for (var i = 0; i < els.length; i++) { if (els[i].dataset.k === key && !els[i].disabled) { els[i].focus(); break; } }
+    }
+  }
+  function go(view) { if (view !== 'detail') S.prev = view; S.view = view; S.out = null; S.pick = ''; render(true); }
+
+  /* ---------- คัดลอก ---------- */
+  function copyFrom(taId, b) {
+    var ta = $(taId); if (!ta) return;
+    var text = ta.value;
+    function ok() {
+      b.textContent = 'คัดลอกแล้ว'; say('คัดลอกแล้ว ไปวางในแชทของลูกค้าได้เลย');
+      setTimeout(function () { if (b.isConnected) b.textContent = 'คัดลอกข้อความ'; }, 2500);
+    }
+    function fallback() {
+      var done = false;
+      try { ta.focus(); ta.select(); done = document.execCommand('copy'); } catch (e) { done = false; }
+      if (done) { ok(); } else { b.textContent = 'เลือกข้อความให้แล้ว'; say('เลือกข้อความให้แล้ว กดคัดลอกเองได้เลย'); }
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
+      else fallback();
+    } catch (e) { fallback(); }
+  }
+
+  /* ---------- การกด ---------- */
+  function setStage(l, s) {
+    if (l.stage === s) return;
+    l.stage = s; l.days = 0; l.waitMin = 0; l.isNew = false;
+    addLog(l, 'เปลี่ยนขั้นเป็น ' + s);
+    if (s === 'ตอบแล้ว' && !l.next) { l.next = iso(2); l.nextWhat = l.nextWhat || 'ทักตาม'; l.follow = l.follow || 'invite'; }
+    if (s === 'เสนอราคาแล้ว') { l.next = iso(3); l.nextWhat = 'ชวนมาโชว์รูม'; l.follow = 'invite'; l.followups = 0; }
+    if (s === 'นัดแล้ว') {
+      if (!l.appt) { l.appt = iso(2); l.apptTime = l.apptTime || '14:00'; }
+      l.next = l.appt > TODAY ? isoBefore(l.appt) : TODAY; l.nextWhat = 'ยืนยันนัด'; l.follow = '';
+      if (l.heat !== 'ร้อน') { l.heat = 'ร้อน'; l.sug.heat = true; }
+    }
+    if (s === 'มาโชว์รูม') { l.next = iso(1); l.nextWhat = 'ถามผลหลังมาโชว์รูม'; l.follow = ''; }
+  }
+  function isoBefore(s) {
+    var d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() - 1);
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+  }
+  function closeForm() { S.form = null; render(); var a = $('addbtn'); if (a) a.focus(); }
+  function saveForm(force) {
+    var f = S.form, name = f.name.trim();
+    if (!name) { f.err = 'ใส่ชื่อที่เห็นในแชทก่อน'; render(); var i = $('fname'); if (i) i.focus(); return; }
+    f.err = '';
+    if (!force) {
+      for (var j = 0; j < leads.length; j++) {
+        if (leads[j].ch === f.ch && leads[j].name.replace(/\s+/g, '') === name.replace(/\s+/g, '')) { f.dup = leads[j].id; render(); return; }
+      }
+    }
+    var l = L({ name: name, ch: f.ch, snip: f.snip.trim(), topic: f.topic, product: '', heat: 'เย็น',
+                sug: { topic: false, product: false, heat: true }, stage: 'ใหม่', days: 0, waitMin: 0, isNew: true });
+    l.log = [{ t: nowLabel(), x: 'พนักงานกดบันทึกคนสนใจ จาก ' + f.ch }];
+    leads.push(l);
+    S.form = null; S.f = { stage: 'ทั้งหมด', heat: 'ทั้งหมด', ch: 'ทั้งหมด' };
+    S.view = 'list'; S.prev = 'list'; render();
+    say('บันทึก ' + name + ' แล้ว อยู่บนสุดของรายการ');
+    var a = $('addbtn'); if (a) a.focus();
+  }
+
+  document.addEventListener('click', function (ev) {
+    var el = ev.target.closest('[data-act]'); if (!el) return;
+    var act = el.dataset.act, arg = el.dataset.arg, l;
+    if (act === 'scrim') { if (ev.target === el) closeForm(); return; }
+    switch (act) {
+      case 'nav': go(arg); break;
+      case 'intro': S.intro = arg === 'show'; render(); break;
+      case 'open': S.cur = Number(arg); go('detail'); break;
+      case 'back': go(S.prev); break;
+      case 'copy': copyFrom(arg, el); break;
+      case 'replied': l = find(arg); setStage(l, 'ตอบแล้ว'); render(); say(l.name + ' ย้ายไปขั้น ตอบแล้ว'); break;
+      case 'sent':
+        l = find(arg); l.followups += 1; l.days = 0;
+        if (l.stage === 'นัดแล้ว') { l.next = ''; l.nextWhat = ''; addLog(l, 'ส่งข้อความยืนยันนัดแล้ว'); }
+        else { l.next = iso(3); l.nextWhat = 'ทักตามครั้งถัดไป'; addLog(l, 'ทักตามครั้งที่ ' + l.followups); }
+        render(); say('จดว่าส่งแล้ว' + (l.next ? ' จะเตือนอีกครั้ง ' + fmt(l.next) : '')); break;
+      case 'toclose':
+        S.cur = Number(arg); go('detail'); S.out = 'lost'; S.pick = ''; render();
+        var o = $('outcome'); if (o && o.scrollIntoView) o.scrollIntoView({ block: 'center' });
+        break;
+      case 'fstage': S.f.stage = arg; render(); break;
+      case 'fheat': S.f.heat = arg; render(); break;
+      case 'fch': S.f.ch = arg; render(); break;
+      case 'fclear': S.f = { stage: 'ทั้งหมด', heat: 'ทั้งหมด', ch: 'ทั้งหมด' }; render(); break;
+      case 'addopen':
+        S.form = { ch: 'Messenger', name: '', topic: 'ถามราคา', snip: '', dup: null, err: '' }; render();
+        var fn = $('fname'); if (fn) fn.focus(); break;
+      case 'fmclose': closeForm(); break;
+      case 'fmch': S.form.ch = arg; S.form.dup = null; render(); break;
+      case 'fmtopic': S.form.topic = arg; render(); break;
+      case 'fmsave': saveForm(false); break;
+      case 'fmforce': saveForm(true); break;
+      case 'fmexist': S.form = null; S.cur = Number(arg); go('detail'); break;
+      case 'tag':
+        l = find(S.cur); var p = arg.split('|');
+        l[p[0]] = p[1]; l.sug[p[0]] = false; l.isNew = false; addLog(l, 'ตั้งป้าย ' + p[1]); render(); break;
+      case 'confirmtags': l = find(arg); l.sug = { topic: false, product: false, heat: false }; addLog(l, 'ยืนยันป้ายที่ระบบเสนอ'); render(); say('ยืนยันป้ายแล้ว'); break;
+      case 'when':
+        l = find(S.cur); l.when = arg;
+        for (var w = 0; w < WHEN.length; w++) { if (WHEN[w].label === arg && l.heat !== WHEN[w].heat) { l.heat = WHEN[w].heat; l.sug.heat = true; } }
+        addLog(l, 'ต้องการใช้: ' + arg); render(); break;
+      case 'stage': l = find(S.cur); setStage(l, arg); render(); say('ขั้นตอนนี้: ' + arg); break;
+      case 'out': S.out = arg || null; S.pick = ''; if (S.out === 'buy') { l = find(S.cur); S.pick = SOURCES.indexOf(l.ch) >= 0 ? l.ch : ''; } render(); break;
+      case 'pick': S.pick = arg; render(); break;
+      case 'outok':
+        l = find(arg); if (!S.pick) break;
+        l.prevStage = l.stage;
+        if (S.out === 'buy') { l.stage = 'ซื้อ'; l.source = S.pick; addLog(l, 'ปิดเป็น ซื้อ · ที่มา ' + S.pick); say(l.name + ' ซื้อแล้ว'); }
+        else { l.stage = 'หาย'; l.reason = S.pick; addLog(l, 'ปิดเป็น หาย · เหตุผล ' + S.pick); say(l.name + ' ปิดเป็นหาย'); }
+        l.days = 0; l.next = ''; l.follow = ''; S.out = null; S.pick = ''; render(true); break;
+      case 'reopen':
+        l = find(arg); var was = l.stage;
+        l.stage = l.prevStage || (was === 'ซื้อ' ? 'มาโชว์รูม' : 'ตอบแล้ว'); l.source = ''; l.reason = ''; l.days = 0; l.followups = 0;
+        l.next = TODAY; l.nextWhat = was === 'หาย' ? 'ลูกค้าทักกลับมา ตอบต่อ' : '';
+        addLog(l, was === 'หาย' ? 'ลูกค้าทักกลับมา เปิดรายการเดิม' : 'ย้อนกลับจาก ซื้อ'); render(true); break;
+    }
+  });
+
+  document.addEventListener('input', function (ev) {
+    var el = ev.target, k = el.dataset ? el.dataset.in : null; if (!k) return;
+    var l = find(S.cur);
+    if (k === 'draft') S.drafts[el.dataset.key] = el.value;
+    else if (k === 'q') S.qs[Number(el.dataset.i)] = el.value;
+    else if (k === 'fname') { S.form.name = el.value; }
+    else if (k === 'fsnip') { S.form.snip = el.value; }
+    else if (l && (k === 'when' || k === 'nextWhat' || k === 'next' || k === 'appt' || k === 'apptTime')) l[k] = el.value;
+  });
+  document.addEventListener('change', function (ev) {
+    var el = ev.target, k = el.dataset ? el.dataset.in : null, l = find(S.cur);
+    if (!l || !k) return;
+    if (k === 'next' || k === 'appt' || k === 'apptTime') {
+      l[k] = el.value;
+      if (k === 'appt' && el.value) { l.next = el.value > TODAY ? isoBefore(el.value) : TODAY; l.nextWhat = 'ยืนยันนัด'; }
+      addLog(l, k === 'next' ? 'ตั้งวันทำต่อ ' + fmt(l.next) : 'ตั้งนัดโชว์รูม ' + fmt(l.appt) + (l.apptTime ? ' ' + l.apptTime + ' น.' : ''));
+      render(); say(k === 'next' ? 'ตั้งวันทำต่อ ' + fmt(l.next) : 'จดนัดแล้ว');
+    }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (!S.form) return;
+    if (ev.key === 'Escape') { closeForm(); return; }
+    if (ev.key === 'Enter' && ev.target && ev.target.tagName === 'INPUT') { ev.preventDefault(); saveForm(false); return; }
+    if (ev.key === 'Tab') {
+      var sh = document.querySelector('.sheet'); if (!sh) return;
+      var f = sh.querySelectorAll('button, input'); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+  });
+
+  render();
+})();
+</script>
