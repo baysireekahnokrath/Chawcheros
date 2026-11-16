@@ -175,12 +175,12 @@
 > เป้า: หน้าเก็บ lead ขึ้นจริง · ถ่ายครั้งเดียว · เริ่มวัดผลได้ · รายละเอียดทั้งหมดอยู่ใน `docs/marketing/sprint-2569-11.md`
 
 1. เปิดอ่านแผน sprint: [sprint-2569-11.md](https://github.com/baysireekahnokrath/Chawcheros/blob/ccr-ea409c75-vpgkyx/docs/marketing/sprint-2569-11.md) → ดูข้อ 6 (ค่าเริ่มต้น) ก่อน ถ้าอยากเปลี่ยนข้อไหนบอก Claude
-2. ตรวจร่างหน้า "ขอชุดผ้าฟรี": เปิด [รายการหน้า draft ใน WordPress](https://chawcher.com/wp-admin/edit.php?post_status=draft&post_type=page) → กด **Preview** ที่หน้า "ขอชุดผ้าฟรี" → บอก Claude ว่าแก้ตรงไหน หรือ "ผ่าน"
-3. ตรวจร่างบทความ "วัดห้องก่อนซื้อโซฟา 5 จุด": เปิด [รายการบทความ draft ใน WordPress](https://chawcher.com/wp-admin/edit.php?post_status=draft&post_type=post) → กด **Preview** → บอกว่าแก้ตรงไหน หรือ "ผ่าน" · **ยังไม่ต้องกด Publish** รอภาพจากวันถ่ายก่อน
-4. ซ่อมตัววัดผล ตามข้อ 4 ของแผน sprint (22 ขั้น) เริ่มที่ [Google Tag Manager](https://tagmanager.google.com/) → ต่อที่ [Google Analytics](https://analytics.google.com/) → จบที่ [Google Ads](https://ads.google.com/) · ⚠️ ขั้นตอนเขียนจากเอกสาร ยังไม่ได้ทดสอบบนบัญชีจริง ติดขั้นไหนถ่ายหน้าจอส่งมา
-5. เลือกวันถ่าย 1 วัน ในช่วง 23–27 พ.ย. → บอกกราฟิกและโรงงาน ASE → ส่งรายการถ่าย (ข้อ 2 ของแผน sprint) ให้กราฟิก
+2. ตรวจร่างหน้า "นัดลองนั่งที่โชว์รูม" (แทนหน้า "ขอชุดผ้าฟรี" ที่ยกเลิกแล้ว · O1): เปิด [รายการหน้า draft ใน WordPress](https://chawcher.com/wp-admin/edit.php?post_status=draft&post_type=page) → กด **Preview** ที่หน้า "นัดลองนั่งที่โชว์รูม" → บอก Claude ว่าแก้ตรงไหน หรือ "ผ่าน" · **ยังไม่ต้องกด Publish**
+3. ~~ตรวจร่างบทความ "วัดห้องก่อนซื้อโซฟา 5 จุด"~~ · **ยกเลิก (O2)** ไม่ต้องทำอะไร ร่างปล่อยไว้เป็น draft
+4. ซ่อมตัววัดผล ตามข้อ 4 ของแผน sprint (18 ขั้น · เหลือ event เดียวคือ `book_showroom`) เริ่มที่ [Google Tag Manager](https://tagmanager.google.com/) → ต่อที่ [Google Analytics](https://analytics.google.com/) → จบที่ [Google Ads](https://ads.google.com/) · ⚠️ ขั้นตอนเขียนจากเอกสาร ยังไม่ได้ทดสอบบนบัญชีจริง ติดขั้นไหนถ่ายหน้าจอส่งมา
+5. เลือกวันถ่าย 1 วัน ในช่วง 23–27 พ.ย. → บอกกราฟิกและโรงงาน ASE → ส่งรายการถ่าย (ข้อ 2 ของแผน sprint) ให้น้องญ่า (ผู้ช่วยเรื่องคอนเทนต์ · O7) และกราฟิก
 6. ส่งข้อความขออนุญาตให้ลูกค้าเก่า 2 ราย: คัดลอกข้อความจากข้อ 3 ของแผน sprint → แก้ชื่อในวงเล็บ → ส่งทาง LINE ทีละคน → ลูกค้าตอบรับแล้วส่งถ้อยคำยินยอม 4 บรรทัดตาม → เก็บภาพหน้าจอคำตอบไว้ใน Drive
-7. สั่งทำกล่องชุดผ้าต้นแบบ 1 กล่อง (ผ้า 8 ชิ้น + การ์ด) ให้เสร็จก่อนวันถ่าย · ไม่มีกล่อง = ถ่ายภาพหัวหน้าหน้าขอผ้าและโฆษณา C10 ไม่ได้
+7. ~~สั่งทำกล่องชุดผ้าต้นแบบ~~ · **ยกเลิก (O1 · ไม่ให้ชุดผ้าฟรี)** ไม่ต้องทำกล่อง
 
 ---
 
@@ -195,3 +195,18 @@
 4. ตั้งตอบอัตโนมัติ "ขอ Brochure" และข้อความนอกเวลาทำการ: เปิด [LINE Official Account Manager](https://manager.line.biz/) → ทำตามข้อ 2.1 และ 2.2 ของคู่มือ (ต้องมีลิงก์โบรชัวร์ฉบับล่าสุด) → ลองกดปุ่ม "ขอ Brochure" จากมือถือตัวเอง ต้องได้โบรชัวร์
 5. อ่าน [ด่าน 1 workflow](https://github.com/baysireekahnokrath/Chawcheros/blob/ccr-ea409c75-vpgkyx/docs/modules/leads/1-workflow.md) → บอก Claude ว่าขั้นไหนไม่ตรงกับที่ทีมทำจริง
 6. อ่าน [ด่าน 2 requirement](https://github.com/baysireekahnokrath/Chawcheros/blob/ccr-ea409c75-vpgkyx/docs/modules/leads/2-requirements.md) → คอมเมนต์เป็นเลขข้อ เช่น "LD-12 ตัด · LD-33 เปลี่ยนเป็น 2 ชั่วโมง" → ตอบ "คำถามที่ยังเปิด" 3 ข้อท้ายไฟล์
+
+---
+
+## ตรวจสถานะฐานข้อมูล (2026-11-16)
+
+> เป้า: รู้ว่า migration 0031–0052 ตัวไหนลงในฐานข้อมูลจริงแล้ว และ PIN ของ POS กับฟีนิกซ์ตั้งแล้วหรือยัง
+> **ไฟล์นี้อ่านอย่างเดียว** · เป็นคำสั่ง SELECT คำสั่งเดียว ไม่สร้าง ไม่แก้ ไม่ลบอะไร · รันกี่ครั้งก็ได้ · ไม่แสดงตัว PIN
+> ทดสอบกับฐานข้อมูลจำลองในเครื่องแล้ว · ยังไม่เคยรันกับฐานข้อมูลจริง
+
+1. เปิดไฟล์ SQL: [CHECK-migrations-status.sql](https://github.com/baysireekahnokrath/Chawcheros/blob/ccr-ea409c75-vpgkyx/docs/CHECK-migrations-status.sql)
+2. มุมขวาบนของกล่องโค้ด กดปุ่ม **Copy raw file** (รูปกระดาษสองแผ่นซ้อนกัน) → ได้ทั้งไฟล์อยู่ในคลิปบอร์ด
+3. เปิด [Supabase SQL Editor](https://supabase.com/dashboard/project/iblnlzttabwuydgcmqts/sql/new)
+4. วางในช่องว่าง (Ctrl+V หรือ ⌘+V)
+5. กด **Run** → ได้ตารางเดียว 35 แถว · คอลัมน์ ลำดับ · migration · ตรวจอะไร · สถานะ
+6. ถ่ายหน้าจอตารางผลให้เห็นครบทุกแถว (เลื่อนแล้วถ่ายหลายภาพได้) → ส่งให้ Claude · ไม่ต้องแก้อะไรเอง แถวไหนขึ้น "ยังไม่ลง" Claude จะบอกว่าต้องรันไฟล์ไหนต่อ
