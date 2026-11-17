@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ฐานข้อมูลฝั่งผลิต · แผนผัง</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F7F8F8; --panel:#FFFFFF; --ink:#2F4554; --muted:#5B6670; --line:#DDE1E3;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E4EEF0; --taupe:#958C7B;
+  --ok:#2E6B4F; --ok-bg:#E3EFE8; --warn:#7A5A12; --warn-bg:#F6EEDB; --bad:#9B2C2C; --bad-bg:#F6E3E3;
+  --th:"Noto Sans Thai","Sukhumvit Set",Tahoma,sans-serif; --num:"Montserrat","Noto Sans Thai",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 72px;display:grid;gap:22px}
+.eyebrow{font-family:var(--num);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:4px 0 6px;font-size:26px;font-weight:600;color:var(--navy)}
+h2{margin:0 0 10px;font-size:18px;font-weight:600;color:var(--navy)}
+.lead{margin:0;color:var(--muted);max-width:70ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stale{display:flex;gap:9px;background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:12px 15px;font-size:14px}
+.stale b{font-weight:600}
+
+.figure{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+svg{display:block;min-width:900px;width:100%;height:auto}
+.lane{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 4}
+.lane-t{font:600 12px var(--num);fill:var(--taupe);letter-spacing:.14em}
+.bx{fill:var(--panel);stroke:var(--line);stroke-width:1.2;rx:9}
+.bx-key{fill:var(--aqua-soft);stroke:var(--aqua);stroke-width:1.6}
+.bx-dead{fill:var(--bad-bg);stroke:var(--bad);stroke-width:1.4;stroke-dasharray:5 3}
+.bx-out{fill:none;stroke:var(--taupe);stroke-width:1.2;stroke-dasharray:3 3}
+.t{font:500 13px var(--th);fill:var(--ink)}
+.t-b{font:600 13.5px var(--th);fill:var(--navy)}
+.n{font:600 12px var(--num);fill:var(--muted)}
+.s{font:400 11px var(--th);fill:var(--muted)}
+.s-bad{font:500 11.5px var(--th);fill:var(--bad)}
+.ln{fill:none;stroke:var(--muted);stroke-width:1.3;marker-end:url(#a)}
+.ln-bad{fill:none;stroke:var(--bad);stroke-width:1.6;stroke-dasharray:6 4;marker-end:url(#ab)}
+.lbl{font:400 10.5px var(--num);fill:var(--muted)}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe);font-weight:600}
+td.num{font-family:var(--num);text-align:right;white-space:nowrap}
+.badge{font-size:11.5px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.b-ok{background:var(--ok-bg);color:var(--ok)} .b-warn{background:var(--warn-bg);color:var(--warn)} .b-bad{background:var(--bad-bg);color:var(--bad)}
+ul{margin:0;padding-left:20px} li{margin:6px 0}
+.two{display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:760px){.two{grid-template-columns:1fr 1fr}}
+.kv{border-left:3px solid var(--aqua);padding-left:12px;margin:0 0 14px}
+.kv b{color:var(--navy)}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Mockup · เอกสารอ่าน ไม่ใช่หน้าใช้งาน</p>
+    <h1>ฐานข้อมูลฝั่งผลิต · ทั้งเส้น</h1>
+    <p class="lead">
+      โปรแกรม COST ของโรงงาน (Microsoft Access · ลงวันที่ 1 ม.ค. 2002 · เครื่อง Windows XP ของพี่หนิง)
+      มี 19 ตาราง · ภาพนี้คือของที่ต่อกันจริง ไม่ใช่ของที่ควรจะมี
+    </p>
+  </header>
+
+  <div class="stale">
+    <span>⚠</span>
+    <span>จำนวนแถวทั้งหมดมาจาก <b>CostPrg2.mdb</b> ซึ่งเป็น <b>สำเนาเก่า · ข้อมูลหยุดปี 2019</b>
+      (ไม่มีฟีนิกซ์ · ทากะ · ขุนทอง) · ตัวจริงคือ <b>D:\Cost\CostPrg.mdb</b> ยังรอพี่หนิง ·
+      โครงสร้างเหมือนกัน ตัวเลขจะมากกว่านี้</span>
+  </div>
+
+  <div class="figure">
+  <svg viewBox="0 0 1040 648" role="img" aria-label="แผนผังฐานข้อมูลโปรแกรม COST">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="fill:var(--muted)"/></marker>
+      <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker>
+    </defs>
+
+    <!-- lanes -->
+    <rect class="lane" x="16" y="48" width="256" height="300" rx="10"/>
+    <rect class="lane" x="292" y="48" width="430" height="300" rx="10"/>
+    <rect class="lane" x="742" y="48" width="282" height="580" rx="10"/>
+    <text class="lane-t" x="28" y="40">1 · ใบสั่งผลิต</text>
+    <text class="lane-t" x="304" y="40">2 · สูตรวัสดุ (BOM) + ขนาด</text>
+    <text class="lane-t" x="754" y="40">3 · ใบขอเบิก → ของที่ใช้จริง</text>
+
+    <!-- PI -->
+    <rect class="bx" x="36" y="64" width="216" height="62"/>
+    <text class="t-b" x="48" y="84">PI · ใบสั่ง</text>
+    <text class="n"   x="48" y="101">4,008 แถว</text>
+    <text class="s"   x="48" y="117">CustomerID · No · Rev · WO · week</text>
+
+    <!-- SubPI -->
+    <rect class="bx" x="36" y="162" width="216" height="62"/>
+    <text class="t-b" x="48" y="182">SubPI · รายการในใบสั่ง</text>
+    <text class="n"   x="48" y="199">31,190 แถว</text>
+    <text class="s"   x="48" y="215">CostNo · PartId · ColorID · Amount</text>
+    <path class="ln" d="M144,126 L144,160"/>
+
+    <!-- TypeColorCOST -->
+    <rect class="bx" x="36" y="272" width="216" height="52"/>
+    <text class="t-b" x="48" y="292">TypeColorCOST · สี</text>
+    <text class="n"   x="48" y="309">15 แถว · สีดำ ขาว SB เชอรี่ …</text>
+    <path class="ln" d="M144,270 L144,228"/>
+    <text class="lbl" x="150" y="252">ColorID</text>
+
+    <!-- MainCost -->
+    <rect class="bx bx-key" x="312" y="64" width="252" height="76"/>
+    <text class="t-b" x="324" y="84">★ MainCost · ขนาดสินค้า</text>
+    <text class="n"   x="324" y="101">5,654 แถว</text>
+    <text class="s"   x="324" y="117">W · D · H · SH · SW · SD · Leg · Arm</text>
+    <text class="s"   x="324" y="132">CBM · 40 · 40HQ (จำนวนบรรจุตู้)</text>
+
+    <!-- SpecPack -->
+    <rect class="bx" x="584" y="64" width="128" height="76"/>
+    <text class="t-b" x="596" y="84">SpecPack</text>
+    <text class="n"   x="596" y="101">2,394 แถว</text>
+    <text class="s"   x="596" y="117">สเปคพิเศษ</text>
+    <text class="s"   x="596" y="132">แถบบนใบ P-1</text>
+    <path class="ln" d="M566,102 L582,102"/>
+
+    <!-- Cost -->
+    <rect class="bx bx-key" x="312" y="178" width="400" height="94"/>
+    <text class="t-b" x="324" y="198">★ Cost · สูตรวัสดุทั้งหมด</text>
+    <text class="n"   x="324" y="215">273,961 แถว  ·  1 แถว = วัสดุ 1 ตัวในสูตร 1 สูตร</text>
+    <text class="s"   x="324" y="233">CostNo · PartId · Item · Description · Unit · Unit1 · Net</text>
+    <text class="s"   x="324" y="248">Rec · Rec1 · GroupID · DepID · SelectIssu</text>
+    <text class="s-bad" x="324" y="265">MaterialID ว่างทุกแถว  ·  PRICE ว่าง</text>
+    <path class="ln" d="M536,142 L536,176"/>
+    <text class="lbl" x="542" y="163">CostNo + PartId</text>
+    <path class="ln" d="M254,196 L310,210"/>
+    <text class="lbl" x="316" y="170">จาก SubPI · CostNo+PartId+Amount</text>
+
+    <!-- CostDetial -->
+    <rect class="bx" x="312" y="298" width="186" height="50"/>
+    <text class="t-b" x="324" y="318">CostDetial</text>
+    <text class="n"   x="324" y="335">45,887 แถว · รายละเอียดเพิ่ม</text>
+    <path class="ln" d="M380,274 L380,296"/>
+
+    <!-- Department -->
+    <rect class="bx" x="516" y="298" width="94" height="50"/>
+    <text class="t-b" x="528" y="318">Department</text>
+    <text class="n"   x="528" y="335">15 แถว</text>
+    <path class="ln" d="M560,274 L560,296"/>
+    <text class="lbl" x="566" y="286">DepID</text>
+
+    <!-- Group -->
+    <rect class="bx" x="620" y="298" width="92" height="50"/>
+    <text class="t-b" x="632" y="318">Group</text>
+    <text class="n"   x="632" y="335">11 แถว</text>
+    <path class="ln" d="M666,274 L666,296"/>
+    <text class="lbl" x="672" y="286">GroupID</text>
+
+    <!-- formula -->
+    <rect class="bx bx-key" x="760" y="162" width="248" height="88"/>
+    <text class="t-b" x="772" y="182">คิดจำนวนที่ต้องเบิก</text>
+    <text class="s"   x="772" y="202">Net  ÷  Rec  ÷  Rec1  ×  Amount</text>
+    <text class="s"   x="772" y="219">Rec = ค่าได้เนื้อ (เผื่อของเสีย)</text>
+    <text class="s"   x="772" y="234">Rec1 = ตัวแปลงหน่วย (ตร.ฟุต→หลา)</text>
+    <text class="s"   x="772" y="246">ตรวจกับใบจริงของ SE-04 แล้วตรง</text>
+    <path class="ln" d="M714,210 L758,206"/>
+
+    <!-- slips -->
+    <rect class="bx" x="760" y="286" width="248" height="78"/>
+    <text class="t-b" x="772" y="306">ใบขอเบิกวัตถุดิบ · 6 ใบ/ออเดอร์</text>
+    <text class="s"   x="772" y="325">โครงไม้ · ฟองน้ำ · วางแบบ</text>
+    <text class="s"   x="772" y="340">เย็บ · หุ้ม · QC</text>
+    <text class="s"   x="772" y="356">ปรินต์ลงกระดาษ · ของที่ติ๊กไม่แสดงถูกตัดออก</text>
+    <path class="ln" d="M884,252 L884,284"/>
+
+    <!-- hand written -->
+    <rect class="bx" x="760" y="400" width="248" height="68"/>
+    <text class="t-b" x="772" y="420">ช่องที่กรอกด้วยมือบนกระดาษ</text>
+    <text class="s"   x="772" y="439">จำนวนตาม STD | จำนวนที่เบิกจริง | ผลต่าง</text>
+    <text class="s"   x="772" y="455">ผู้ออกเอกสาร · หัวหน้าแผนก · สโตร์ เซ็น</text>
+    <path class="ln" d="M884,366 L884,398"/>
+
+    <!-- dead end -->
+    <rect class="bx bx-dead" x="760" y="518" width="248" height="94"/>
+    <text class="t-b" x="772" y="538" style="fill:var(--bad)">StockIssu · 0 แถว</text>
+    <text class="s"   x="772" y="557">ช่องออกแบบไว้ครบ: IssuAmount · DepID</text>
+    <text class="s"   x="772" y="572">WO · IssuDate · Price</text>
+    <text class="s-bad" x="772" y="592">ไม่เคยมีใครบันทึกสักแถวเดียวใน 24 ปี</text>
+    <text class="s-bad" x="772" y="605">= โรงงานรู้แต่ STD ไม่เคยรู้ของที่ใช้จริง</text>
+    <path class="ln-bad" d="M884,470 L884,516"/>
+    <text class="lbl" x="892" y="497" style="fill:var(--bad)">ไม่มีใครเอากลับเข้าระบบ</text>
+
+    <!-- outside band -->
+    <text class="lane-t" x="28" y="400">ของที่อยู่นอกโปรแกรม COST</text>
+    <rect class="bx bx-dead" x="36" y="416" width="216" height="58"/>
+    <text class="t-b" x="48" y="436" style="fill:var(--bad)">Purchase · 0 แถว</text>
+    <text class="s"   x="48" y="454">Stock · Purchase · DateIN</text>
+    <text class="s-bad" x="48" y="468">ฝั่งรับของก็ไม่เคยบันทึก</text>
+
+    <rect class="bx bx-out" x="36" y="490" width="216" height="58"/>
+    <text class="t-b" x="48" y="510">Excel ราคาวัตถุดิบ</text>
+    <text class="s"   x="48" y="528">429 แถว · ไฟล์ของพี่หนิงเอง</text>
+    <text class="s"   x="48" y="543">ไม่ได้ต่อกับ Cost.PRICE</text>
+
+    <rect class="bx bx-out" x="276" y="416" width="216" height="58"/>
+    <text class="t-b" x="288" y="436">Google Sheet สต็อกผ้า+หนัง</text>
+    <text class="s"   x="288" y="454">ทำแท็บใหม่ตามวันที่</text>
+    <text class="s"   x="288" y="469">ไม่ต่อกับสูตรหรือใบเบิก</text>
+
+    <rect class="bx bx-out" x="276" y="490" width="216" height="58"/>
+    <text class="t-b" x="288" y="510">INVOICE.mdb</text>
+    <text class="s"   x="288" y="528">ราคาขาย · 24 ตาราง</text>
+    <text class="s"   x="288" y="543">ข้อมูลหยุดปี 2003</text>
+
+    <rect class="bx bx-out" x="516" y="416" width="196" height="132"/>
+    <text class="t-b" x="528" y="436">ชื่อวัสดุเป็นข้อความอิสระ</text>
+    <text class="s"   x="528" y="456">14,904 ชื่อที่ไม่ซ้ำกัน</text>
+    <text class="s"   x="528" y="472">สำหรับวัสดุจริงไม่กี่ร้อยตัว</text>
+    <text class="s"   x="528" y="492">2,460 ชื่อ ซ้ำกันเพราะเว้นวรรค</text>
+    <text class="s"   x="528" y="508">4,706 ชื่อ ใช้ครั้งเดียวในชีวิต</text>
+    <text class="s-bad" x="528" y="530">รวมยอดตามวัสดุไม่ได้</text>
+    <text class="s-bad" x="528" y="543">จนกว่าจะล้างชื่อ</text>
+  </svg>
+  </div>
+
+  <div class="card">
+    <h2>รายการที่ทีมเอาไปใช้งานจริง</h2>
+    <p class="lead" style="margin-bottom:12px">เรียงจาก “เห็นของจริงแล้ว” ลงไปถึง “เดาจากจำนวนแถว”</p>
+    <table>
+      <tr><th>ทีมทำอะไร</th><th>รู้ได้จาก</th><th>แน่ใจแค่ไหน</th></tr>
+      <tr>
+        <td><b>ปรินต์ใบขอเบิกวัตถุดิบ แยก 6 แผนก</b><br><span class="s">พร้อมช่อง จำนวนตาม STD และลายเซ็น 3 ช่อง</span></td>
+        <td>ใบจริง 6 ใบที่พี่หนิงส่งมา (W/O 45/26)</td>
+        <td><span class="badge b-ok">เห็นของจริง</span></td>
+      </tr>
+      <tr>
+        <td><b>บันทึกสูตรวัสดุทุกรุ่น</b> แยกแผนก แยกหมวด</td>
+        <td><span class="num">Cost 273,961</span> แถว · ทุกแถวมี DepID และ GroupID</td>
+        <td><span class="badge b-ok">แน่ใจ</span></td>
+      </tr>
+      <tr>
+        <td><b>บันทึกขนาดสินค้า + CBM + จำนวนบรรจุตู้</b></td>
+        <td><span class="num">MainCost 5,654</span> แถว · ช่อง 40 และ 40HQ กรอกไว้</td>
+        <td><span class="badge b-ok">แน่ใจ</span></td>
+      </tr>
+      <tr>
+        <td><b>รับใบสั่งแล้วแตกเป็นรายการ</b> ผูกสูตร + สี + จำนวน</td>
+        <td><span class="num">PI 4,008</span> / <span class="num">SubPI 31,190</span></td>
+        <td><span class="badge b-ok">แน่ใจ</span></td>
+      </tr>
+      <tr>
+        <td><b>บันทึกสเปคพิเศษของแต่ละรุ่น</b> (สปริง ใยซิลิโคน รีไคลเนอร์)</td>
+        <td><span class="num">SpecPack 2,394</span> แถว · ตรงกับแถบบนใบ P-1</td>
+        <td><span class="badge b-ok">แน่ใจ</span></td>
+      </tr>
+      <tr>
+        <td><b>เผื่อของเสียเป็นรายวัสดุ</b> (Rec_)</td>
+        <td>1.0 = 57% ของแถว · 0.9 = 31% · 0.8 = 9% · ต่ำสุด 0.6</td>
+        <td><span class="badge b-ok">แน่ใจ</span></td>
+      </tr>
+      <tr>
+        <td><b>ติ๊กว่าอะไรไม่ต้องขึ้นใบเบิก</b> (เทปใส กระดาษลูกฟูก TAG)</td>
+        <td>ช่อง SelectIssu + บรรทัดท้ายใบจริง</td>
+        <td><span class="badge b-ok">แน่ใจ</span></td>
+      </tr>
+      <tr>
+        <td><b>คุณมาลิปรับราคาวัสดุ</b> เมื่อราคาตลาดขึ้นเยอะ</td>
+        <td>Bay บอกไว้ · ยังไม่เห็นว่าปรับที่ตารางไหน (PRQ ค้าง)</td>
+        <td><span class="badge b-warn">จาก Bay ยังไม่เห็นของ</span></td>
+      </tr>
+      <tr>
+        <td><b>กรอกจำนวนที่เบิกจริง + ผลต่าง</b> ลงกระดาษ</td>
+        <td>ใบมีช่องพิมพ์มาให้ · แต่ปลายทางในระบบ 0 แถว</td>
+        <td><span class="badge b-bad">กรอกแล้วหาย</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h2>ที่ไม่ได้ใช้เลย</h2>
+      <table>
+        <tr><th>ตาราง / ช่อง</th><th>หลักฐาน</th></tr>
+        <tr><td><b>StockIssu</b> · เบิกจริง</td><td class="num">0 แถว</td></tr>
+        <tr><td><b>Purchase</b> · รับของ / สต็อก</td><td class="num">0 แถว</td></tr>
+        <tr><td>Special / SubSpecial</td><td class="num">0 / 0</td></tr>
+        <tr><td><b>Cost.PRICE</b></td><td>ว่าง</td></tr>
+        <tr><td><b>Cost.MaterialID</b></td><td>ว่างทั้ง 273,961 แถว</td></tr>
+        <tr><td>INVOICE.mdb</td><td>หยุดปี 2003</td></tr>
+        <tr><td>PriceCost / SubPriceCost</td><td class="num">12 / 36 แถว (ปี 2000)</td></tr>
+      </table>
+      <p class="s" style="margin-top:12px">
+        สองตารางแรกคือช่องว่างที่ใหญ่ที่สุด · ไม่ใช่เพราะโปรแกรมทำไม่ได้
+        แต่เพราะไม่มีใครเดินกระดาษกลับมากรอก
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>ระบบเราเสียบเข้าตรงไหน</h2>
+      <p class="kv"><b>1 · ไม่สร้างสูตรใหม่</b><br>
+        <span class="s">สูตร 273,961 แถวมีอยู่แล้ว · งานเราคือ import ไม่ใช่ถอดจากกระดาษ</span></p>
+      <p class="kv"><b>2 · รับช่อง “ผลต่าง” ที่หายไป</b><br>
+        <span class="s">ให้แผนกกรอกจำนวนที่เบิกจริงบนมือถือ แทนการเขียนบนกระดาษแล้วทิ้ง ·
+        นี่คือของที่โรงงานไม่เคยมีใน 24 ปี ไม่ใช่การทำซ้ำของเดิม</span></p>
+      <p class="kv"><b>3 · ล้างชื่อวัสดุก่อนอย่างอื่น</b><br>
+        <span class="s">14,904 ชื่อ → วัสดุจริงไม่กี่ร้อยตัว · ถ้าไม่ล้าง จะรวมยอดตามวัสดุไม่ได้เลย
+        ไม่ว่าจะทำหน้าจออะไรออกมา</span></p>
+      <p class="kv"><b>4 · ต่อสต็อกผ้า/หนังเข้ากับสูตร</b><br>
+        <span class="s">ตอนนี้ชีตสต็อกกับสูตรวัสดุไม่รู้จักกัน · ต่อแล้วจะตอบได้ว่า
+        “ออเดอร์นี้ผ้าพอมั้ย” ซึ่งวันนี้ยังต้องเปิดสองที่เทียบมือ</span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>คำถามที่ยังค้างกับโรงงาน</h2>
+    <ul>
+      <li>ไฟล์ตัวจริง <b>D:\Cost\CostPrg.mdb</b> (ที่ได้มาคือสำเนาปี 2019)</li>
+      <li>ราคาวัสดุอยู่ที่ไหนจริง ๆ — ไม่ได้อยู่ใน Cost.PRICE และไม่ได้อยู่ใน INVOICE.mdb</li>
+      <li>ปัดเศษบนใบเบิกคือปัดขึ้นจริงมั้ย (ของที่นับเป็นชิ้นเห็นเป็นจำนวนเต็มหมด แต่ยังไม่ได้ยืนยัน)</li>
+      <li>ทำไมหนังมีรายงานใบเบิกของตัวเอง แยกจาก 6 แผนก</li>
+      <li>ใครเป็น Admin ของโปรแกรม COST</li>
+    </ul>
+  </div>
+</div>
+</html>

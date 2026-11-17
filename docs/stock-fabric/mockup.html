@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สต็อกผ้าและหนัง · mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F7F8F8; --panel:#FFFFFF; --ink:#2F4554; --muted:#5B6670; --line:#DDE1E3;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E4EEF0; --taupe:#958C7B;
+  --ok:#2E6B4F; --ok-bg:#E3EFE8; --warn:#7A5A12; --warn-bg:#F6EEDB; --bad:#9B2C2C; --bad-bg:#F6E3E3;
+  --th:"Noto Sans Thai","Sukhumvit Set",Tahoma,sans-serif; --num:"Montserrat","Noto Sans Thai",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding:22px 16px 64px;display:grid;gap:20px}
+.eyebrow{font-family:var(--num);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:4px 0 6px;font-size:26px;font-weight:600;color:var(--navy)}
+.lead{margin:0;color:var(--muted);max-width:66ch}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+
+.top{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.top .back{font-size:20px;color:var(--navy)}
+.top .ttl{font-weight:600;flex:1}
+.top .logo{font-family:var(--num);font-size:11px;letter-spacing:.24em;color:var(--muted)}
+.top .logo b{color:var(--navy)}
+
+.stale{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:11px 14px;font-size:14px}
+.stale b{font-weight:600}
+.stale a{color:inherit;margin-left:auto;font-size:13px}
+
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.sum div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sum .k{font-size:12px;color:var(--muted)}
+.sum .v{font-family:var(--num);font-size:24px;font-weight:600}
+
+.search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:0 12px;min-height:46px}
+.search input{border:0;background:transparent;font:inherit;color:inherit;flex:1;outline:none}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.chips button{font:inherit;font-size:13.5px;white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;min-height:38px}
+.chips button[aria-pressed=true]{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+
+.list{display:grid;gap:8px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden}
+.row>button{width:100%;font:inherit;color:inherit;background:none;border:0;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;text-align:left}
+.row .nm{font-weight:500}
+.row .gp{display:block;font-size:12.5px;color:var(--muted)}
+.row .qt{font-family:var(--num);font-size:17px;font-weight:600;text-align:right;white-space:nowrap}
+.row .qt small{display:block;font-size:11px;font-weight:400;color:var(--muted)}
+.badge{font-size:12px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap;margin-left:8px}
+.b-ok{background:var(--ok-bg);color:var(--ok)} .b-warn{background:var(--warn-bg);color:var(--warn)} .b-bad{background:var(--bad-bg);color:var(--bad)}
+.det{border-top:1px dashed var(--line);padding:12px 14px;background:var(--aqua-soft);font-size:14px;display:grid;gap:8px}
+.det table{width:100%;border-collapse:collapse;font-size:13.5px}
+.det td{padding:3px 0}
+.det td:last-child{text-align:right;font-family:var(--num)}
+.q{font-size:13px;color:var(--muted)}
+
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--aqua);border-radius:12px;padding:14px 16px}
+.note h3{margin:0 0 8px;font-size:14px;color:var(--navy)}
+.note ul{margin:0;padding-left:20px}
+.note li{margin:5px 0;font-size:14px}
+.note li b{font-weight:600}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Mockup · ยังไม่ได้สร้างจริง</p>
+    <h1>สต็อกผ้าและหนัง</h1>
+    <p class="lead">
+      เอาแท็บ <b>STOCKผ้า+หนัง</b> จากชีต Chaw Cher Stock ขึ้นเว็บ ·
+      ข้อมูลตัวอย่างในหน้านี้คือของจริงจากชีต ณ 24-10-69
+    </p>
+  </header>
+
+  <div class="top"><span class="back">←</span><span class="ttl">สต็อกผ้าและหนัง</span><span class="logo">CHAW CHER <b>OS</b></span></div>
+
+  <div class="stale">
+    <span>⚠</span>
+    <span>ข้อมูลจากชีต <b>24 ต.ค. 69</b> · เก่า <b class="num">24 วัน</b> — ของจริงอาจไม่เท่านี้แล้ว</span>
+    <a href="#">ดึงใหม่</a>
+  </div>
+
+  <div class="sum">
+    <div><div class="k">สีทั้งหมด</div><div class="v">86</div></div>
+    <div><div class="k">เหลือน้อย</div><div class="v" style="color:var(--warn)">21</div></div>
+    <div><div class="k">หมดแล้ว</div><div class="v" style="color:var(--bad)">5</div></div>
+    <div><div class="k">หนังรวม (ฟุต)</div><div class="v">16,559</div></div>
+  </div>
+
+  <p class="eyebrow" style="margin:-10px 0 0">ตัวเลขสรุป 4 ช่องนี้เป็นค่าประมาณในหน้าตัวอย่าง · ของจริงคิดจากชีตทั้งแผ่น</p>
+
+  <div class="search"><span>🔍</span><input placeholder="พิมพ์ชื่อสี เช่น softbrown, wheat, GL-IVORY" value="softbrown"></div>
+
+  <div class="chips">
+    <button aria-pressed="false">ทั้งหมด</button>
+    <button aria-pressed="true">หนัง</button>
+    <button aria-pressed="false">หนัง OIL+CT</button>
+    <button aria-pressed="false">ผ้า A กอง 1</button>
+    <button aria-pressed="false">ผ้า A กอง 2</button>
+    <button aria-pressed="false">ผ้า B</button>
+    <button aria-pressed="false">ผ้า C</button>
+  </div>
+
+  <div class="list">
+
+    <div class="row">
+      <button aria-expanded="true">
+        <span><span class="nm">SM-SOFTBROWN</span><span class="gp">หนัง</span></span>
+        <span class="qt">595.00<small>ฟุต ?</small></span>
+      </button>
+      <div class="det">
+        <div><b>595 ฟุต ทำอะไรได้</b></div>
+        <table>
+          <tr><td>สตูลขมิ้น (19 ฟุต/ตัว)</td><td>≈ 31 ตัว</td></tr>
+          <tr><td>โซฟา 3 ที่นั่ง (127 ฟุต/ตัว)</td><td>≈ 4 ตัว</td></tr>
+        </table>
+        <p class="q">ตัวเลขฟุตต่อตัวมาจากที่ Bay ให้ไว้ · ยังไม่ยืนยันว่ารวมเผื่อของเสียแล้วหรือยัง (PRQ19)</p>
+        <p class="q">ล็อตล่าสุด · ยังไม่มีข้อมูลในชีต — ถ้าต่อล็อตต้องแจ้งลูกค้าว่าสีอาจเพี้ยน</p>
+      </div>
+    </div>
+
+    <div class="row"><button><span><span class="nm">SM-WHEAT</span><span class="gp">หนัง</span></span><span class="qt">1,728.50<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-DUSTY ROSE</span><span class="gp">หนัง</span></span><span class="qt">3,811.25<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-EXPRESSO</span><span class="gp">หนัง</span></span><span class="qt">2,094.90<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-CHAMPANGE</span><span class="gp">หนัง</span></span><span class="qt">2,078.30<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-L.BLUE</span><span class="gp">หนัง</span></span><span class="qt">823.25<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-TAN</span><span class="gp">หนัง</span></span><span class="qt">701.50<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-WHITE</span><span class="gp">หนัง</span></span><span class="qt">285.25<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">SM-NATURAL</span><span class="gp">หนัง</span><span class="badge b-warn">เหลือน้อย</span></span><span class="qt">181.57<small>ฟุต ?</small></span></button></div>
+
+    <p class="eyebrow" style="margin-top:10px">ตัวอย่างจากกองอื่น</p>
+    <div class="row"><button><span><span class="nm">ASTRO WHEAT</span><span class="gp">ผ้า A กอง 1</span><span class="badge b-bad">หมด</span></span><span class="qt">—</span></button></div>
+    <div class="row"><button><span><span class="nm">GR- GREEN</span><span class="gp">ผ้า A กอง 2</span><span class="badge b-bad">หมด</span></span><span class="qt">0<small>เมตร ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">JUPITER GREY</span><span class="gp">ผ้า A กอง 1</span><span class="badge b-warn">เหลือน้อย</span></span><span class="qt">3.03<small>เมตร ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">NB -HAZEL</span><span class="gp">ผ้า A กอง 1</span></span><span class="qt">350.37<small>เมตร ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">CO-CRETE</span><span class="gp">หนัง OIL+CT</span></span><span class="qt">4,564.73<small>ฟุต ?</small></span></button></div>
+    <div class="row"><button><span><span class="nm">CO-DATE</span><span class="gp">หนัง OIL+CT</span><span class="badge b-warn">หนังด่าง</span></span><span class="qt">126.25<small>ฟุต ?</small></span></button></div>
+  </div>
+
+  <div class="note">
+    <h3>3 เรื่องที่ต้องตัดสินก่อนสร้างจริง</h3>
+    <ul>
+      <li><b>หน่วย</b> — ในชีตไม่มีหน่วยเลย · ผมใส่ <b>ฟุต</b> ให้หนัง (พี่ยืนยันไว้แล้ว) และเดา <b>เมตร</b> ให้ผ้า · ตรงไหนยังไม่ยืนยันขึ้น <b>?</b> ไว้ — ยืนยันแล้วผมเอา ? ออก</li>
+      <li><b>ใครอัปเดต และบ่อยแค่ไหน</b> — ชีตตั้งชื่อแท็บตามวันที่ แปลว่าทำแท็บใหม่ทุกครั้ง · หน้านี้จะดึงแท็บที่วันที่ใหม่สุดอัตโนมัติ แต่ถ้าไม่มีใครทำแท็บใหม่ ตัวเลขก็ค้างอยู่ดี — แถบเหลืองข้างบนจึงบอกเสมอว่าเก่ากี่วัน</li>
+      <li><b>“เหลือน้อย” คือเท่าไหร่</b> — ตอนนี้ตั้งหยาบ ๆ ว่า ผ้าต่ำกว่า 10 เมตร · หนังต่ำกว่า 200 ฟุต (ประมาณ 1 ตัว) · ของจริงควรดูด้วยว่ามีออเดอร์ค้างใช้สีนั้นอยู่มั้ย</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <h3>สิ่งที่หน้านี้ทำได้ แต่ชีตทำไม่ได้</h3>
+    <ul>
+      <li>พิมพ์ชื่อสีค้นได้ทันทีจากมือถือ ไม่ต้องเลื่อนหาใน 6 กอง</li>
+      <li>บอกว่า <b>ข้อมูลเก่ากี่วัน</b> — ชีตไม่บอก ต้องอ่านชื่อแท็บเอง</li>
+      <li>แปลงฟุตเป็น <b>“ทำได้กี่ตัว”</b> ให้เลย</li>
+      <li>บอทใน LINE ถามได้ว่า <i>“หนัง SM-Softbrown เหลือเท่าไหร่”</i> (โมดูล sheet-sync รองรับอยู่แล้ว)</li>
+    </ul>
+  </div>
+</div>
+</html>
