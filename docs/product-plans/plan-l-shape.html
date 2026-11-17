@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<title>L-shape plan</title>
+<!-- ภาพ plan โซฟา L-shape · เปิดด้วย ?side=L หรือ R &w=254&couch=92&dc=162&ds=90&name=TAKA
+     ขนาดที่เขียนตัวเลข = ขนาดจากใบราคา · ความหนาแขน/พนัก/เบาะ วาดประกอบ ไม่ใช่ขนาดจริง -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#2B4368;--slate:#2F4554;--aqua:#83B7BF;--taupe:#958C7B;--off:#F7F8F8}
+html,body{margin:0;background:var(--off)}
+#card{width:1400px;height:1150px;background:var(--off);position:relative;font-family:"Noto Sans Thai",sans-serif;color:var(--slate)}
+svg text{font-family:"Montserrat","Noto Sans Thai",sans-serif}
+</style></head><body><div id="card"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const side = q.get('side') === 'R' ? 'R' : 'L';
+const W = +q.get('w') || 254, C = +q.get('couch') || 92, DC = +q.get('dc') || 162, DS = +q.get('ds') || 90;
+const NAME = q.get('name') || 'TAKA';
+const S = W - C;                      // ความกว้างส่วนโซฟา
+const k = 4;                          // px ต่อ ซม.
+const ox = (1400 - W * k) / 2, oy = 300;
+const BACK = 22, ARM = 10;            // วาดประกอบ ไม่เขียนตัวเลข
+// แปลง x: ด้านขวา = กลับซ้ายขวา
+const X = (x) => ox + (side === 'L' ? x : W - x) * k;
+const Y = (y) => oy + y * k;
+const rect = (x1, y1, x2, y2, o = {}) => {
+  const a = X(x1), b = X(x2), l = Math.min(a, b), w = Math.abs(a - b);
+  return `<rect x="${l}" y="${Y(y1)}" width="${w}" height="${(y2 - y1) * k}" rx="${o.rx ?? 10}" fill="${o.fill ?? '#fff'}" stroke="${o.stroke ?? 'var(--navy)'}" stroke-width="${o.sw ?? 2.5}"/>`;
+};
+const hdim = (x1, x2, y, label, big) => {
+  const a = Math.min(X(x1), X(x2)), b = Math.max(X(x1), X(x2));
+  return `<path d="M${a} ${y}H${b}M${a} ${y - 9}v18M${b} ${y - 9}v18" stroke="var(--taupe)" stroke-width="1.6" fill="none"/>
+  <rect x="${(a + b) / 2 - 44}" y="${y - 17}" width="88" height="34" fill="var(--off)"/>
+  <text x="${(a + b) / 2}" y="${y + 9}" text-anchor="middle" font-size="${big ? 28 : 25}" font-weight="${big ? 600 : 500}" fill="var(--navy)">${label}</text>`;
+};
+const vdim = (x, y1, y2, label) => {
+  const px = X(x) + (X(x) < 700 ? -46 : 46);
+  return `<path d="M${px} ${Y(y1)}V${Y(y2)}M${px - 9} ${Y(y1)}h18M${px - 9} ${Y(y2)}h18" stroke="var(--taupe)" stroke-width="1.6" fill="none"/>
+  <rect x="${px - 34}" y="${(Y(y1) + Y(y2)) / 2 - 18}" width="68" height="36" fill="var(--off)"/>
+  <text x="${px}" y="${(Y(y1) + Y(y2)) / 2 + 9}" text-anchor="middle" font-size="25" font-weight="500" fill="var(--navy)">${label}</text>`;
+};
+const half = C + S / 2;
+let g = '';
+// เบาะนั่ง (วาดก่อน แล้วทับด้วยพนักกับแขน)
+g += rect(0, BACK - 6, C, DC, {rx: 16});                                                    // couch เต็มความกว้าง
+g += rect(C, BACK - 6, half, DS, {rx: 14});
+g += rect(half, BACK - 6, W, DS, {rx: 14});
+// โครง
+g += rect(0, 0, W, BACK + 4, {fill: 'var(--aqua)', rx: 12});                                // พนัก
+g += rect(0, 0, ARM, DS, {fill: 'var(--aqua)', rx: 8});                                     // แขนฝั่ง couch
+g += rect(W - ARM, 0, W, DS, {fill: 'var(--aqua)', rx: 8});                                 // แขนฝั่งโซฟา
+// หมอนพนัก
+for (const [a, b] of [[ARM + 2, C - 2], [C + 2, half - 2], [half + 2, W - ARM - 2]])
+  g += rect(a, 12, b, 36, {rx: 20, fill: 'var(--off)', sw: 2});
+// ชื่อส่วน
+const lab = (x, y, t, s) => `<rect x="${X(x) - 80}" y="${Y(y) - 30}" width="160" height="72" fill="#fff"/><text x="${(X(x))}" y="${Y(y)}" text-anchor="middle" font-size="22" letter-spacing="5" fill="var(--taupe)" font-weight="500">${t}</text>
+  <text x="${X(x)}" y="${Y(y) + 30}" text-anchor="middle" font-size="19" fill="var(--taupe)">${s}</text>`;
+g += lab(C / 2 + ARM / 4, 104, 'COUCH', `${C} × ${DC}`);
+g += lab(C + S / 2 - ARM / 2, 62, 'SOFA', `${S} × ${DS}`);
+// ระยะ
+g += hdim(0, W, oy - 104, W, true);
+g += hdim(0, C, oy - 48, C);
+g += hdim(C, W, oy - 48, S);
+g += vdim(0, 0, DC, DC);
+g += vdim(W, 0, DS, DS);
+
+const th = side === 'L' ? 'Couch ด้านซ้าย' : 'Couch ด้านขวา';
+document.getElementById('card').innerHTML = `
+<svg width="1400" height="1150" viewBox="0 0 1400 1150" xmlns="http://www.w3.org/2000/svg">
+  <text x="70" y="78" font-size="19" letter-spacing="6" fill="var(--taupe)" font-weight="500">CHAW CHER · PLAN VIEW</text>
+  <text x="70" y="124" font-size="38" letter-spacing="3" fill="var(--navy)" font-weight="600">${NAME} L-SHAPE SOFA · W${W}</text>
+  <text x="1330" y="124" text-anchor="end" font-size="34" fill="var(--navy)" font-weight="500" style="font-family:'Noto Sans Thai'">${th}</text>
+  <text x="1330" y="78" text-anchor="end" font-size="19" letter-spacing="6" fill="var(--taupe)" font-weight="500">${side === 'L' ? 'LEFT' : 'RIGHT'}</text>
+  ${g}
+  <path d="M700 ${Y(DC) + 36}v34m-12 -14l12 14l12 -14" stroke="var(--taupe)" stroke-width="1.8" fill="none"/>
+  <text x="700" y="${Y(DC) + 100}" text-anchor="middle" font-size="19" fill="var(--taupe)" style="font-family:'Noto Sans Thai'">ด้านหน้า (ยืนมองเข้าหาโซฟา)</text>
+  <text x="70" y="1104" font-size="19" fill="var(--slate)" style="font-family:'Noto Sans Thai'">หน่วย ซม. · กว้างรวม ${W} = Couch ${C} + Sofa ${S} · ลึก ${DC} (${DS}) · สูง 72 (ที่นั่ง 46)</text>
+  <text x="1330" y="1104" text-anchor="end" font-size="16" fill="var(--taupe)" style="font-family:'Noto Sans Thai'">ภาพประกอบ ไม่ตามสัดส่วนในส่วนแขนและพนัก</text>
+</svg>`;
+</script></body></html>
