@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แผนที่มาร์จิ้น · mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F7F8F8; --panel:#FFFFFF; --ink:#2F4554; --muted:#5B6670; --line:#DDE1E3;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E4EEF0; --taupe:#958C7B;
+  --ok:#2E6B4F; --ok-bg:#E3EFE8; --warn:#7A5A12; --warn-bg:#F6EEDB; --bad:#9B2C2C; --bad-bg:#F6E3E3;
+  --th:"Noto Sans Thai","Sukhumvit Set",Tahoma,sans-serif; --num:"Montserrat","Noto Sans Thai",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 72px;display:grid;gap:18px}
+.eyebrow{font-family:var(--num);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:4px 0 6px;font-size:26px;font-weight:600;color:var(--navy)}
+h2{margin:0 0 10px;font-size:17px;font-weight:600;color:var(--navy)}
+.lead{margin:0;color:var(--muted);max-width:70ch}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+.lock{display:flex;gap:9px;background:var(--bad-bg);color:var(--bad);border-radius:12px;padding:11px 14px;font-size:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.sum>div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sum .k{font-size:12px;color:var(--muted)} .sum .v{font-family:var(--num);font-size:24px;font-weight:600}
+.sum small{display:block;font-size:12px;color:var(--muted)}
+.ctl{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:760px){.ctl{grid-template-columns:1.3fr 1fr 1fr}}
+.ctl label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-size:13.5px;border:0;background:var(--panel);color:var(--ink);padding:9px 6px;cursor:pointer;min-height:42px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--navy);color:var(--on-navy)}
+select,input[type=search]{width:100%;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:0 12px;min-height:42px}
+input[type=range]{width:100%;accent-color:var(--navy)}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:14px}
+th{font-size:12px;font-weight:600;color:var(--taupe);letter-spacing:.04em;text-align:center;padding:10px 6px;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--panel)}
+th:first-child{text-align:left;padding-left:14px}
+td{padding:6px;border-bottom:1px solid var(--line);text-align:center}
+td.p{text-align:left;padding-left:14px;min-width:220px}
+td.p b{font-weight:500} td.p span.sub{display:block;font-size:12px;color:var(--muted)}
+tr.r{cursor:pointer} tr.r:hover td.p b{text-decoration:underline}
+.c{display:inline-block;min-width:52px;border-radius:8px;padding:5px 4px;font-family:var(--num);font-weight:600;font-size:13.5px}
+.c.ok{background:var(--ok-bg);color:var(--ok)} .c.warn{background:var(--warn-bg);color:var(--warn)} .c.bad{background:var(--bad-bg);color:var(--bad)}
+.c.na{color:var(--line);font-weight:400}
+.tag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:1px 7px;color:var(--muted);margin-left:6px;white-space:nowrap}
+tr.d td{background:var(--aqua-soft);text-align:left;padding:12px 14px;font-size:13.5px}
+.dg{display:grid;gap:4px 18px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.dg div{display:flex;justify-content:space-between;gap:10px;white-space:nowrap;border-bottom:1px dashed var(--line);padding:3px 0}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:92px 1fr 44px;gap:10px;align-items:center;font-size:13.5px}
+.bar i{display:block;height:14px;border-radius:4px;background:var(--aqua)}
+.bar i.bad{background:var(--bad)} .bar i.warn{background:var(--taupe)}
+.track{background:var(--aqua-soft);border-radius:4px;position:relative}
+.track u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.two{display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+ul{margin:0;padding-left:20px} li{margin:5px 0;font-size:14px}
+.q{font-size:13px;color:var(--muted);margin:8px 0 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Mockup · ตัวเลขสมมติทั้งหมด · ของจริงห้ามลง repo</p>
+    <h1>แผนที่มาร์จิ้น</h1>
+    <p class="lead">ทุกสินค้าที่มีราคาขายอยู่แล้ว เทียบกับราคาที่โรงงานขายให้เรา (M-40) · ไม่ต้องกรอกอะไร ·
+      ถอด VAT ออกจากราคาขายแล้ว · ยังไม่หักค่าส่ง โชว์รูม การตลาด</p>
+  </header>
+
+  <div class="lock"><span>🔒</span><span><b>เห็นได้เฉพาะ Bay</b> · หน้านี้มีต้นทุนและกำไร ไม่เข้าบอท ไม่เข้าห้อง LINE ไม่ส่งออก</span></div>
+
+  <div class="sum" id="sum"></div>
+
+  <div class="card ctl">
+    <div><label>คิดมาร์จิ้นจากราคาไหน</label>
+      <div class="seg" id="scn">
+        <button data-s="0" aria-pressed="false">ราคาเต็ม</button>
+        <button data-s="1" aria-pressed="false">หลังส่วนลด</button>
+        <button data-s="2" aria-pressed="true">หลังลด + เงินสด</button>
+      </div></div>
+    <div><label>คอลเลกชัน</label><select id="col"></select></div>
+    <div><label>เส้นเตือน <b class="num" id="lv"></b> · ต่ำกว่านี้ขึ้นแดง</label><input type="range" id="line" min="25" max="65" value="45"></div>
+  </div>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>สินค้า · เรียงจากบางสุด</th><th>ลด</th><th>ผ้า A</th><th>ผ้า B</th><th>ผ้า C</th><th>หนังแท้</th><th>หนังออย</th><th>ผสม</th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><span class="c bad">แดง</span> ต่ำกว่าเส้นเตือน</span>
+    <span><span class="c warn">เหลือง</span> เหนือเส้นไม่เกิน 7 จุด</span>
+    <span><span class="c ok">เขียว</span> ปลอดภัย</span>
+    <span><span class="tag">ใกล้เคียง</span> จับคู่กับแถวที่ใกล้ที่สุด ยังไม่ยืนยัน</span>
+    <span>แตะแถวเพื่อดูราคาและต้นทุน</span>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h2>มาร์จิ้นกลางของแต่ละคอลเลกชัน</h2>
+      <div class="bars" id="bars"></div>
+      <p class="q">ขีดดำ = เส้นเตือน</p>
+    </div>
+    <div class="card">
+      <h2>ค่าส่ง 2,000 ต่อเที่ยว กินมาร์จิ้นเท่าไหร่</h2>
+      <div class="bars" id="ship"></div>
+      <p class="q">คิดต่อออเดอร์ ไม่ใช่ต่อชิ้น · ยอดยิ่งต่ำยิ่งเจ็บ · เตียงค่าส่งจริงเกิน 2,000 ต้องดูแยก</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ที่ยังไม่อยู่ในแผนที่</h2>
+    <ul id="un"></ul>
+    <p class="q">ของจริง: ต้นทุนเก็บในฐานข้อมูลหลังสิทธิ์เฉพาะ Bay ไม่อยู่ในโค้ด · อัปเดตเมื่อโรงงานออก M-40 ใหม่</p>
+  </div>
+</div>
+
+<script>
+const DATA = {"rows": [{"col": "คอลเลกชัน ก", "prod": "โซฟา 3 ที่นั่ง", "size": "W200 D90", "sub": "", "cat": "โซฟา", "conf": 2, "note": "ตัวอย่างหมายเหตุของการจับคู่", "cells": {"0": {"full": 40000, "d": 0.25, "o": 0.1, "cost": 12850}, "1": {"full": 46000, "d": 0.25, "o": 0.1, "cost": 12850}, "2": {"full": 52000, "d": 0.25, "o": 0.1, "cost": 16550}, "3": {"full": 64000, "d": 0.25, "o": 0.1, "cost": 18600}, "4": {"full": 80000, "d": 0.25, "o": 0.1, "cost": 22000}}}, {"col": "คอลเลกชัน ก", "prod": "สตูล", "size": "W70 D50", "sub": "", "cat": "สตูล", "conf": 1, "note": "", "cells": {"0": {"full": 20000, "d": 0.25, "o": 0.1, "cost": 7350}, "1": {"full": 23000, "d": 0.25, "o": 0.1, "cost": 8800}, "2": {"full": 26000, "d": 0.25, "o": 0.1, "cost": 9300}, "3": {"full": 32000, "d": 0.25, "o": 0.1, "cost": 12750}, "4": {"full": 40000, "d": 0.25, "o": 0.1, "cost": 14250}}}, {"col": "คอลเลกชัน ก", "prod": "อาร์มแชร์", "size": "W85 D90", "sub": "", "cat": "อาร์มแชร์", "conf": 1, "note": "", "cells": {"0": {"full": 20000, "d": 0.4, "o": 0.1, "cost": 4850}, "1": {"full": 23000, "d": 0.4, "o": 0.1, "cost": 5900}, "2": {"full": 26000, "d": 0.4, "o": 0.1, "cost": 6850}, "3": {"full": 32000, "d": 0.4, "o": 0.1, "cost": 7750}, "4": {"full": 40000, "d": 0.4, "o": 0.1, "cost": 11150}}}, {"col": "คอลเลกชัน ข", "prod": "โซฟาเข้ามุม", "size": "W280 D160", "sub": "", "cat": "โซฟา", "conf": 1, "note": "", "cells": {"0": {"full": 20000, "d": 0.3, "o": 0.1, "cost": 5800}, "1": {"full": 23000, "d": 0.3, "o": 0.1, "cost": 6600}, "2": {"full": 26000, "d": 0.3, "o": 0.1, "cost": 7500}, "3": {"full": 32000, "d": 0.3, "o": 0.1, "cost": 9000}, "4": {"full": 40000, "d": 0.3, "o": 0.1, "cost": 12500}}}, {"col": "คอลเลกชัน ข", "prod": "โซฟา 2 ที่นั่ง", "size": "W160 D90", "sub": "", "cat": "โซฟา", "conf": 1, "note": "", "cells": {"0": {"full": 100000, "d": 0.4, "o": 0.1, "cost": 36550}, "1": {"full": 115000, "d": 0.4, "o": 0.1, "cost": 37050}, "2": {"full": 130000, "d": 0.4, "o": 0.1, "cost": 43150}, "3": {"full": 160000, "d": 0.4, "o": 0.1, "cost": 52500}, "4": {"full": 200000, "d": 0.4, "o": 0.1, "cost": 67250}}}, {"col": "คอลเลกชัน ข", "prod": "ที่พักหัว", "size": "W62 D20", "sub": "", "cat": "ที่พักหัว", "conf": 2, "note": "ตัวอย่างหมายเหตุของการจับคู่", "cells": {"0": {"full": 100000, "d": 0.3, "o": 0.1, "cost": 24200}, "1": {"full": 115000, "d": 0.3, "o": 0.1, "cost": 26100}, "2": {"full": 130000, "d": 0.3, "o": 0.1, "cost": 31950}, "3": {"full": 160000, "d": 0.3, "o": 0.1, "cost": 39950}, "4": {"full": 200000, "d": 0.3, "o": 0.1, "cost": 50500}}}, {"col": "คอลเลกชัน ค", "prod": "เตียง 6 ฟุต", "size": "W193 D218", "sub": "", "cat": "เตียง", "conf": 1, "note": "", "cells": {"0": {"full": 20000, "d": 0.25, "o": 0.1, "cost": 5300}, "1": {"full": 23000, "d": 0.25, "o": 0.1, "cost": 5800}, "2": {"full": 26000, "d": 0.25, "o": 0.1, "cost": 6700}, "3": {"full": 32000, "d": 0.25, "o": 0.1, "cost": 8850}, "4": {"full": 40000, "d": 0.25, "o": 0.1, "cost": 9900}}}, {"col": "คอลเลกชัน ค", "prod": "เตียง 5 ฟุต", "size": "W163 D218", "sub": "", "cat": "เตียง", "conf": 1, "note": "", "cells": {"0": {"full": 10000, "d": 0.4, "o": 0.1, "cost": 2800}, "1": {"full": 11500, "d": 0.4, "o": 0.1, "cost": 3550}, "2": {"full": 13000, "d": 0.4, "o": 0.1, "cost": 3800}, "3": {"full": 16000, "d": 0.4, "o": 0.1, "cost": 5050}, "4": {"full": 20000, "d": 0.4, "o": 0.1, "cost": 5650}}}, {"col": "คอลเลกชัน ง", "prod": "เดย์เบด", "size": "W100 D166", "sub": "", "cat": "โซฟา", "conf": 1, "note": "", "cells": {"0": {"full": 100000, "d": 0.4, "o": 0.1, "cost": 22900}, "1": {"full": 115000, "d": 0.4, "o": 0.1, "cost": 28150}, "2": {"full": 130000, "d": 0.4, "o": 0.1, "cost": 31800}, "3": {"full": 160000, "d": 0.4, "o": 0.1, "cost": 38300}, "4": {"full": 200000, "d": 0.4, "o": 0.1, "cost": 45900}}}, {"col": "คอลเลกชัน ง", "prod": "สตูลใหญ่", "size": "W125 D75", "sub": "", "cat": "สตูล", "conf": 1, "note": "", "cells": {"0": {"full": 10000, "d": 0.25, "o": 0.1, "cost": 2250}, "1": {"full": 11500, "d": 0.25, "o": 0.1, "cost": 2500}, "2": {"full": 13000, "d": 0.25, "o": 0.1, "cost": 3100}, "3": {"full": 16000, "d": 0.25, "o": 0.1, "cost": 3450}, "4": {"full": 20000, "d": 0.25, "o": 0.1, "cost": 4350}}}, {"col": "คอลเลกชัน ง", "prod": "โซฟา 3 ที่นั่ง", "size": "W230 D96", "sub": "", "cat": "โซฟา", "conf": 2, "note": "ตัวอย่างหมายเหตุของการจับคู่", "cells": {"0": {"full": 60000, "d": 0.3, "o": 0.1, "cost": 14050}, "1": {"full": 69000, "d": 0.3, "o": 0.1, "cost": 17500}, "2": {"full": 78000, "d": 0.3, "o": 0.1, "cost": 18150}, "3": {"full": 96000, "d": 0.3, "o": 0.1, "cost": 24350}, "4": {"full": 120000, "d": 0.3, "o": 0.1, "cost": 29250}}}, {"col": "คอลเลกชัน จ", "prod": "เลาจ์แชร์", "size": "W70 D80", "sub": "", "cat": "เลาจ์แชร์", "conf": 1, "note": "", "cells": {"0": {"full": 60000, "d": 0.25, "o": 0.1, "cost": 20650}, "1": {"full": 69000, "d": 0.25, "o": 0.1, "cost": 21700}, "2": {"full": 78000, "d": 0.25, "o": 0.1, "cost": 26200}, "3": {"full": 96000, "d": 0.25, "o": 0.1, "cost": 29200}, "4": {"full": 120000, "d": 0.25, "o": 0.1, "cost": 39550}}}], "total": 80, "hit": 60, "unmatched": {"ไม่มีวัสดุหุ้ม (งานไม้/โต๊ะ/ตู้)": 10, "ไม่พบรุ่น/ขนาดนี้ใน M-40": 8, "ไม่มีแถวต้นทุนของวัสดุนี้": 2}};
+const MAT = ['ผ้า A','ผ้า B','ผ้า C','หนังแท้','หนังออย','ผสม'], VAT = 1.07;
+let scn = 2, line = 45, col = '';
+const f = n => Math.round(n).toLocaleString('en-US');
+function paid(c){ return scn===0 ? c.full : scn===1 ? c.full*(1-c.d) : c.full*(1-c.d)*(1-c.o); }
+function mg(c){ return 1 - c.cost/(paid(c)/VAT); }
+function cls(m){ const p=m*100; return p<line?'bad':p<line+7?'warn':'ok'; }
+function med(a){ a=[...a].sort((x,y)=>x-y); const n=a.length; return n? (n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2):0; }
+
+function draw(){
+  document.getElementById('lv').textContent = line+'%';
+  const rows = DATA.rows.filter(g=>!col||g.col===col).map(g=>{
+    const ms = Object.values(g.cells).map(mg); return {g, min: Math.min(...ms)};
+  }).sort((a,b)=>a.min-b.min);
+  const all = rows.flatMap(r=>Object.values(r.g.cells).map(mg));
+  const under = all.filter(m=>m*100<line).length;
+  document.getElementById('sum').innerHTML =
+    `<div><div class="k">อยู่ในแผนที่</div><div class="v">${all.length}</div><small>ราคา · ${rows.length} สินค้า</small></div>`+
+    `<div><div class="k">มาร์จิ้นกลาง</div><div class="v">${all.length?Math.round(med(all)*100):0}%</div><small>ครึ่งหนึ่งอยู่เหนือค่านี้</small></div>`+
+    `<div><div class="k">ต่ำกว่าเส้นเตือน</div><div class="v" style="color:var(--bad)">${under}</div><small>จาก ${all.length} ราคา</small></div>`+
+    `<div><div class="k">บางสุด · หนาสุด</div><div class="v">${all.length?Math.round(Math.min(...all)*100):0}–${all.length?Math.round(Math.max(...all)*100):0}%</div><small>&nbsp;</small></div>`;
+  document.getElementById('tb').innerHTML = rows.map((r,i)=>{
+    const g=r.g, ds=[...new Set(Object.values(g.cells).map(c=>Math.round(c.d*100)))].join('/');
+    const cells = MAT.map((_,k)=>{ const c=g.cells[k]; if(!c) return '<td><span class="c na">–</span></td>';
+      const m=mg(c); return `<td><span class="c ${cls(m)}">${Math.round(m*100)}%</span></td>`; }).join('');
+    const det = Object.entries(g.cells).map(([k,c])=>
+      `<div><span>${MAT[k]}</span><span class="num">จ่าย ${f(paid(c))} · ทุน ${f(c.cost)} · เหลือ ${f(paid(c)/VAT-c.cost)}</span></div>`).join('');
+    return `<tr class="r" data-i="${i}"><td class="p"><b>${g.prod}</b>${g.conf===2?'<span class="tag">ใกล้เคียง</span>':''}<span class="sub">${g.col} · ${g.size}${g.sub?' · '+g.sub:''}</span></td><td class="num">${ds}%</td>${cells}</tr>`+
+      `<tr class="d" hidden><td colspan="8">${g.note?`<div style="margin-bottom:8px">หมายเหตุ: ${g.note}</div>`:''}<div class="dg">${det}</div><p class="q">"เหลือ" = ราคาที่ลูกค้าจ่ายถอด VAT แล้ว ลบต้นทุน · ต่อชิ้น ก่อนค่าส่ง</p></td></tr>`;
+  }).join('');
+  const by={}; DATA.rows.forEach(g=>Object.values(g.cells).forEach(c=>(by[g.col]=by[g.col]||[]).push(mg(c))));
+  document.getElementById('bars').innerHTML = Object.entries(by).map(([k,v])=>[k,med(v)]).sort((a,b)=>a[1]-b[1]).map(([k,m])=>
+    `<div class="bar"><span>${k}</span><div class="track"><i class="${m*100<line?'bad':''}" style="width:${Math.max(m*100,2)}%"></i><u style="left:${line}%"></u></div><span class="num">${Math.round(m*100)}%</span></div>`).join('');
+}
+document.getElementById('ship').innerHTML = [25000,50000,100000,200000].map(v=>{ const p=2000/(v/VAT)*100;
+  return `<div class="bar"><span class="num">${f(v)}</span><div class="track"><i class="${p>5?'bad':'warn'}" style="width:${p*10}%"></i></div><span class="num">${p.toFixed(1)}</span></div>`; }).join('');
+const cs=[...new Set(DATA.rows.map(g=>g.col))].sort((a,b)=>a.localeCompare(b,'th'));
+document.getElementById('col').innerHTML='<option value="">ทั้งหมด</option>'+cs.map(c=>`<option>${c}</option>`).join('');
+document.getElementById('un').innerHTML = Object.entries(DATA.unmatched).map(([k,n])=>`<li><b class="num">${n}</b> ราคา · ${k}</li>`).join('');
+document.getElementById('col').onchange=e=>{col=e.target.value;draw();};
+document.getElementById('line').oninput=e=>{line=+e.target.value;draw();};
+document.getElementById('scn').onclick=e=>{const b=e.target.closest('button'); if(!b) return; scn=+b.dataset.s;
+  document.querySelectorAll('#scn button').forEach(x=>x.setAttribute('aria-pressed',x===b)); draw();};
+document.getElementById('tb').onclick=e=>{const r=e.target.closest('tr.r'); if(r) r.nextElementSibling.hidden=!r.nextElementSibling.hidden;};
+draw();
+</script>
+</html>
