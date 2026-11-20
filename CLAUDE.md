@@ -65,6 +65,7 @@
 - **allowlist เครื่องนี้:** เพิ่ม `drive.google.com` + `drive.usercontent.google.com` แล้ว (2026-11-16) ใช้โหลดไฟล์ Drive ที่ใหญ่เกิน 10 MB ด้วย `curl 'https://drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t'`
 - **คนที่โรงงาน:** พี่หนิง = เบญจวรรณ (`benjawan694ms@gmail.com`) ทำ costing/จัดซื้อ · **คุณมาลิ** = คนปรับราคาใน COSTING เมื่อราคาวัสดุขึ้นเยอะ · คุณสุทัศน์ · คุณเชียงศักดิ์ = เจ้าของแบบ (DRAWING)
 - **กันพลาดซ้ำ (2026-11-13):** ไฟล์ที่ได้จากโรงงาน ต้องถามก่อนว่าเป็น "ของจริงจากระบบ" หรือ "ทำขึ้นให้ดูเฉพาะกิจ" ก่อนจะสรุปอะไรจากตัวเลขในนั้น · เคยสรุปผิดว่าต้นทุนโรงงานต่ำกว่าจริงครึ่งหนึ่ง ทั้งที่ไฟล์นั้นไม่ใช่ฟอร์ม COSTING จริง
+- งาน P&L / กำไรขาดทุนราย PO → เริ่มที่ `docs/modules/pnl/1-workflow.md` ข้อ 0 · ชีต `Chaw Cher Order Tracking` id `1y9ROPiZHSxFiJSw0oNTrC9xPtmX0RlZu-6vZWPDsxYc` (ช่อง ต้นทุน/รายได้/ค่าขนส่ง/commission **ว่างทั้งปี 2026**) · ชีต `PO template 2026` id `1udWHrgWgNWfhUQ4D4eANMZ07RpXXO5HIaXMOLn7tq6E` (1 แท็บ = 1 BLS · Bay ทำ PO มือที่นี่) · ทั้งสองไฟล์อ่านอย่างเดียว
 - งานข่าว Chaw Cher / ASE (เก็บข่าวทุกเช้า → ร่างโพสต์ WordPress + ข้อความ LINE) → ชีต `Chaw Cher News` (id `19vtyQJyNimSkFeh3RYz7BoE34mlFVIcm4ubce1iGlQA`) → Claude ร่าง 07:43 (งานตั้งเวลา `trig_018WUZozaYetcPKLkCrRFDTi`) → ระบบดึง 09:00 → หน้า `https://chawcher-os.vercel.app/news` · ไม่ใช้ Claude API (Bay สั่ง ไม่เสียตังค์) · `docs/modules/news/0-idea.md` · เพจ ASE: `facebook.com/AseSofa` `instagram.com/ase.living`
 
 ## Google Drive ของโปรเจกต์ (Bay ติ 2026-11-12 · ห้ามสร้างไฟล์ไว้หน้าแรกของ Drive)
