@@ -36,7 +36,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
 .btn{font:inherit;font-weight:600;font-size:14px;border-radius:10px;padding:10px 16px;border:1px solid transparent;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn.pri{background:var(--navy);color:var(--on-navy)} .btn.sec{background:var(--panel);color:var(--ink);border-color:var(--line)}
-.btn.sm{min-height:36px;padding:6px 12px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed} .btn.sm{min-height:36px;padding:6px 12px;font-size:13px}
 .badge{font-size:12px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap;display:inline-block}
 .b-ok{background:var(--ok-bg);color:var(--ok)} .b-warn{background:var(--warn-bg);color:var(--warn)} .b-bad{background:var(--bad-bg);color:var(--bad)}
 .b-n{background:var(--aqua-soft);color:var(--navy)} .b-m{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
@@ -79,6 +79,11 @@ pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
 .q table{font-size:12px} .q th{color:var(--navy);border-bottom:1.5px solid var(--navy)}
 .q .st{color:var(--muted);text-decoration:line-through} .q .gt td{font-weight:700;color:var(--navy);border-top:1.5px solid var(--navy);border-bottom:0}
 .q .m{color:var(--muted)}
+.est{margin-top:14px;border:1px dashed var(--taupe);border-radius:10px;padding:12px;display:grid;gap:10px}
+.estout{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.estout>div{background:var(--warn-bg);border-radius:10px;padding:8px 10px;display:grid}
+.estout b{font-family:var(--num);color:var(--warn);font-size:16px}
+tr.estrow td{background:var(--warn-bg)}
 .only-in{display:none} body.internal .only-in{display:revert}
 .screen{display:none;gap:16px;grid-template-columns:minmax(0,1fr)} .screen.on{display:grid}
 .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
@@ -158,6 +163,8 @@ small.k{color:var(--muted);font-size:12px}
       <div class="stat"><b>22</b><span>เราเสนอ</span></div>
       <div class="stat"><b>965,290</b><span>มูลค่าที่มีราคาแล้ว (รวม VAT)</span></div>
       <div class="stat"><b>5</b><span>คำถามค้าง</span></div>
+      <div class="stat"><b>12 นาที</b><span>จากรับโจทย์ถึงใบแรก · เป้า 15 นาที</span></div>
+      <div class="stat"><b>3</b><span>รายการที่ยังเป็นราคาประมาณการ</span></div>
       <div class="stat in only-in"><b>38%</b><span>กำไรขั้นต้น · ภายในเท่านั้น (เลขสมมติ)</span></div>
     </div>
     <div class="pills" id="flt">
@@ -170,7 +177,7 @@ small.k{color:var(--muted);font-size:12px}
         <div class="r"><span class="badge b-ok">พร้อมเสนอ</span><br>54,540</div></div>
       <div class="row" data-s="wait" data-go="s4" style="cursor:pointer"><div class="ph">รูปจากแบบ</div>
         <div><div class="t"><span class="code">G-46</span> · Sofa · 1600 x 850</div><div class="s">Jasper ปรับกว้าง 160 <span class="badge b-n">แบบเอเซ่</span> <span class="badge b-warn">ปรับแบบ</span></div></div>
-        <div class="r"><span class="badge b-warn">รอเอเซ่</span><br>—</div></div>
+        <div class="r"><span class="badge b-warn">ประมาณการ · รอเอเซ่</span><br>≈ 41,000</div></div>
       <div class="row" data-s="ready"><div class="ph">รูปจากแบบ</div>
         <div><div class="t"><span class="code">G-34</span> · Armchair x2 · 750 x 650</div><div class="s">Spur Armchair · ผ้า A <span class="badge b-n">Supplier</span></div></div>
         <div class="r"><span class="badge b-ok">พร้อมเสนอ</span><br>41,800</div></div>
@@ -217,9 +224,21 @@ small.k{color:var(--muted);font-size:12px}
         <h3>ราคา</h3>
         <table>
           <tr><td>สูตรตามแหล่ง</td><td class="n">แบบเอเซ่ = ราคาซื้อ x 1.5 ปัดหลักร้อย</td></tr>
-          <tr><td>ราคาเสนอ (รวม VAT)</td><td class="n"><span class="badge b-warn">รอราคาขนาด 160</span></td></tr>
+          <tr><td>ราคายืนยัน (รวม VAT)</td><td class="n"><span class="badge b-warn">รอราคาขนาด 160 จากเอเซ่</span></td></tr>
           <tr class="only-in"><td>ราคาซื้อ · กำไร (ภายใน · เลขสมมติ)</td><td class="n">— · —</td></tr>
         </table>
+        <div class="est">
+          <div class="hd"><h3>ราคาประมาณการทันที · ใช้ระหว่างรอราคายืนยัน</h3><span class="badge b-warn">ประมาณการ</span></div>
+          <div class="fgrid">
+            <label class="field">ประเภท<select><option>โซฟา 2 ที่นั่ง</option><option>อาร์มแชร์</option><option>เก้าอี้ทานข้าว</option><option>เตียง</option></select></label>
+            <label class="field">กว้าง (ซม.)<input value="160"></label>
+            <label class="field">เกรดผ้า<select><option>B</option><option>A</option><option>C</option><option>หนังแท้</option></select></label>
+            <label class="field">ความยากของทรง<select><option>ปกติ</option><option>โค้ง / ขึ้นรูป</option><option>มีฐานหมุนหรือโลหะ</option></select></label>
+          </div>
+          <div class="estout"><div><small class="k">ช่วงราคา (รวม VAT)</small><b>37,000 – 45,000</b></div><div><small class="k">ใช้ในใบ</small><b>≈ 41,000</b></div><div><small class="k">ความมั่นใจ</small><b>กลาง · ±10%</b></div></div>
+          <small class="k">คิดจากของใกล้เคียง 3 ชิ้น: Jasper W180 (เคยซื้อ) · Nangnuan W186 · Lulu W160 แล้วปรับตามขนาด ผ้า และความยาก · เลขสมมติ</small>
+          <div style="margin-top:8px"><button class="btn sec sm">ใช้ราคาประมาณการในใบ</button> <button class="btn sec sm">ส่งให้เอเซ่ตีราคายืนยัน</button></div>
+        </div>
       </div>
     </div>
     <div class="bar"><button class="btn sec">ไม่เสนอรายการนี้</button><button class="btn pri" data-go="s3">บันทึก แล้วไปรายการถัดไป</button></div>
@@ -249,27 +268,30 @@ small.k{color:var(--muted);font-size:12px}
 
   <!-- 6 · ใบเสนอ -->
   <section class="screen" id="s6">
-    <div class="hd"><div><h2>ใบเสนอ</h2><small class="k">ออกเป็นฉบับ · ของเก่าไม่ถูกแก้ · ลูกค้าเปิดลิงก์ดูฉบับล่าสุด</small></div><button class="btn pri">ออกฉบับที่ 5</button></div>
+    <div class="hd"><div><h2>ใบเสนอ</h2><small class="k">ออกเป็นฉบับ · ของเก่าไม่ถูกแก้ · ลูกค้าเปิดลิงก์ดูฉบับล่าสุด</small></div><button class="btn pri">ออกฉบับใหม่</button></div>
     <div class="card">
+      <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 5 · ใบประมาณการ <span class="badge b-warn">ร่าง</span></div><div class="s">เพิ่ม G-46 ด้วยราคาประมาณการ · รอราคายืนยัน 1 รายการ</div></div><div class="r">≈ 228,000</div></div>
       <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 4 <span class="badge b-ok">ล่าสุด</span></div><div class="s">22 รายการ · ต่างจากฉบับ 3: เพิ่มหัวกระดาษ · ปัดราคา 6 รายการ · แก้ชื่อรุ่น G-23</div></div><div class="r">965,290</div></div>
       <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 3</div><div class="s">ต่างจากฉบับ 2: ตัดข้อความโปรโมชันเงินสด</div></div><div class="r">965,868</div></div>
       <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 1</div><div class="s">23 รายการ · ยังมี G-06</div></div><div class="r">938,465</div></div>
     </div>
     <div class="q">
-      <div class="hd"><div><h4>QUOTATION</h4>ใบเสนอราคา</div><div style="text-align:right">วันที่ 21/11/2569<br>เลขที่ QUO2611001 · ฉบับที่ 4<br>ยืนราคาถึง 21/12/2569</div></div>
+      <div class="hd"><div><h4>ESTIMATE</h4>ใบประมาณการ <span class="badge b-warn">ยังไม่ใช่ใบเสนอราคา</span></div><div style="text-align:right">วันที่ 21/11/2569<br>เลขที่ QUO2611001 · ฉบับที่ 5 (ร่าง)<br>ยืนราคาถึง 21/12/2569</div></div>
       <p style="margin:8px 0">โครงการ บ้านพักตากอากาศ A · ผู้ประสานงาน สตูดิโอ ก.</p>
       <div class="tw"><table>
         <tr><th>No.</th><th>รหัสตามแบบ</th><th>รายการสินค้า</th><th class="n">จำนวน</th><th class="n">ราคา / หน่วย</th><th class="n">จำนวนเงิน</th><th class="n only-in">กำไร (สมมติ)</th></tr>
         <tr><td>1</td><td><b>G-23</b><br>Living</td><td>ฌ เฌอ | โซฟา 3S (190) ฟีนิกซ์ (Phoenix Sofa)<br><span class="m">ผ้า A · GR-Beige · W190 D96 H85 cm</span></td><td class="n">1</td><td class="n"><span class="st">90,900</span><br>54,540</td><td class="n">54,540</td><td class="n only-in">40%</td></tr>
         <tr><td>2</td><td><b>G-34</b><br>Bedroom 1</td><td>อาร์มแชร์ Spur Armchair<br><span class="m">ผ้า A · W74 D85 H95 cm</span></td><td class="n">2</td><td class="n">20,900</td><td class="n">41,800</td><td class="n only-in">23%</td></tr>
         <tr><td>3</td><td><b>M-12</b><br>Living</td><td>ฌ เฌอ | โซฟา 3S (250) ฟีนิกซ์ (Phoenix Sofa)<br><span class="m">ผ้า C · W250 D96 H85 cm</span></td><td class="n">1</td><td class="n"><span class="st">151,100</span><br>90,660</td><td class="n">90,660</td><td class="n only-in">40%</td></tr>
-        <tr><td colspan="4" style="border:0"></td><td class="n" style="border:0">รวม</td><td class="n" style="border:0">174,766</td><td class="only-in" style="border:0"></td></tr>
-        <tr><td colspan="4" style="border:0"></td><td class="n" style="border:0">VAT 7%</td><td class="n" style="border:0">12,234</td><td class="only-in" style="border:0"></td></tr>
-        <tr class="gt"><td colspan="4"></td><td class="n">รวมทั้งสิ้น</td><td class="n">187,000</td><td class="only-in"></td></tr>
+        <tr class="estrow"><td>4</td><td><b>G-46</b><br>Bedroom 2</td><td>โซฟา Jasper ปรับกว้าง 160 ซม. <span class="badge b-warn">ราคาประมาณการ</span><br><span class="m">ผ้า Jupiter Taupe grey · ราคายืนยันจะแจ้งภายใน 3 วันทำการ · ช่วง 37,000 – 45,000</span></td><td class="n">1</td><td class="n">≈ 41,000</td><td class="n">≈ 41,000</td><td class="n only-in">—</td></tr>
+        <tr><td colspan="4" style="border:0"></td><td class="n" style="border:0">รวมราคายืนยัน</td><td class="n" style="border:0">187,000</td><td class="only-in" style="border:0"></td></tr>
+        <tr><td colspan="4" style="border:0"></td><td class="n" style="border:0">รวมราคาประมาณการ</td><td class="n" style="border:0">≈ 41,000</td><td class="only-in" style="border:0"></td></tr>
+        <tr class="gt"><td colspan="4"></td><td class="n">รวมทั้งสิ้นโดยประมาณ</td><td class="n">≈ 228,000</td><td class="only-in"></td></tr>
       </table></div>
+      <p class="note" style="margin:10px 0 0">ใบนี้มีราคาประมาณการ 1 รายการ จึงออกเป็น <b>ใบประมาณการ</b> ยังกด "ลูกค้ายืนยัน" ไม่ได้จนกว่าทุกรายการเป็นราคายืนยัน</p>
       <p class="m" style="font-size:11.5px;margin:10px 0 0">เงื่อนไข: มัดจำ __% · ผลิต __ วัน · ยังไม่รวมขนส่งและติดตั้ง · รายการที่รอยืนยันจะออกใบเพิ่ม</p>
     </div>
-    <div class="bar"><button class="btn sec">พิมพ์ PDF</button><button class="btn sec">คัดลอกลิงก์ลูกค้า</button><button class="btn pri">ลูกค้ายืนยัน → เปิดออเดอร์</button></div>
+    <div class="bar"><button class="btn sec">พิมพ์ PDF</button><button class="btn sec">คัดลอกลิงก์ลูกค้า</button><button class="btn pri" disabled>ลูกค้ายืนยัน → เปิดออเดอร์</button></div>
   </section>
 
   <!-- 7 · คลังสินค้าอ้างอิง (แบบ B) -->
