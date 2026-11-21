@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>งานโครงการ · mockup</title>
+<style>
+:root{
+  --bg:#F7F8F8; --panel:#FFFFFF; --ink:#2F4554; --muted:#5B6670; --line:#DDE1E3;
+  --navy:#2B4368; --on-navy:#F7F8F8; --aqua:#83B7BF; --aqua-soft:#E4EEF0; --taupe:#958C7B;
+  --ok:#2E6B4F; --ok-bg:#E3EFE8; --warn:#7A5A12; --warn-bg:#F6EEDB; --bad:#9B2C2C; --bad-bg:#F6E3E3;
+  --th:"Noto Sans Thai","Sukhumvit Set",Tahoma,sans-serif; --num:"Montserrat","Noto Sans Thai",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1C2A33; --panel:#24343F; --ink:#E6ECEF; --muted:#A3B1BA; --line:#344853;
+  --navy:#A9CDD3; --on-navy:#1C2A33; --aqua-soft:#2C4250; --taupe:#B8AE9C;
+  --ok:#8FD0AE; --ok-bg:#22392F; --warn:#E8CF8F; --warn-bg:#3A321E; --bad:#F0A3A3; --bad-bg:#432828; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 64px;display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.eyebrow{font-family:var(--num);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin:0}
+h1{margin:4px 0 4px;font-size:24px;font-weight:600;color:var(--navy)}
+h2{font-size:17px;margin:0;color:var(--navy);font-weight:600}
+h3{font-size:12px;font-family:var(--num);letter-spacing:.14em;text-transform:uppercase;color:var(--taupe);margin:0 0 8px}
+.lead{margin:0;color:var(--muted)}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:8px 12px;font-size:13px}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+
+/* แถบขั้นตอน */
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.steps button{font:inherit;font-size:13px;white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.steps button[aria-selected="true"]{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.steps .n{font-family:var(--num);font-weight:600;margin-right:6px;opacity:.8}
+
+/* KIT */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.btn{font:inherit;font-weight:600;font-size:14px;border-radius:10px;padding:10px 16px;border:1px solid transparent;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.pri{background:var(--navy);color:var(--on-navy)} .btn.sec{background:var(--panel);color:var(--ink);border-color:var(--line)}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:13px}
+.badge{font-size:12px;font-weight:500;border-radius:999px;padding:2px 9px;white-space:nowrap;display:inline-block}
+.b-ok{background:var(--ok-bg);color:var(--ok)} .b-warn{background:var(--warn-bg);color:var(--warn)} .b-bad{background:var(--bad-bg);color:var(--bad)}
+.b-n{background:var(--aqua-soft);color:var(--navy)} .b-m{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pills button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:36px}
+.pills button[aria-pressed="true"]{background:var(--aqua-soft);border-color:var(--aqua);color:var(--navy);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:var(--num);font-size:22px;color:var(--navy);font-weight:600}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.in{border-style:dashed}
+.row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.ph{width:64px;height:48px;border-radius:8px;background:var(--aqua-soft);display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
+.ph.big{width:100%;height:150px;font-size:12px}
+.row .t{font-weight:600} .row .s{font-size:13px;color:var(--muted)}
+.row .r{text-align:right;font-family:var(--num);font-size:14px;white-space:nowrap}
+.code{font-family:var(--num);font-weight:600;color:var(--navy)}
+.grid2{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.field{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.field input,.field select,.field textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-height:42px;width:100%}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;color:var(--taupe);font-weight:600;border-bottom:1px solid var(--line);padding:6px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:8px;vertical-align:top}
+td.n,th.n{text-align:right;font-family:var(--num);white-space:nowrap}
+.cand{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;cursor:pointer;background:var(--panel)}
+.cand[data-pick="1"]{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
+.cand[data-pick="2"]{border-color:var(--aqua);box-shadow:0 0 0 1px var(--aqua)}
+.cand .pk{font-size:11px;font-weight:600;color:var(--navy)}
+.src{display:grid;gap:8px;margin-bottom:14px} .src>.badge{justify-self:start}
+.inbox{border:1px dashed var(--taupe);border-radius:10px;padding:10px 12px;font-size:13px}
+.inbox b{color:var(--navy)}
+.bar{position:sticky;bottom:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+pre.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;font:13px/1.5 var(--th);margin:8px 0 0}
+.q{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:20px;font-size:12.5px}
+.q h4{margin:0;font-family:var(--num);letter-spacing:2px;font-size:20px;color:var(--navy)}
+.q table{font-size:12px} .q th{color:var(--navy);border-bottom:1.5px solid var(--navy)}
+.q .st{color:var(--muted);text-decoration:line-through} .q .gt td{font-weight:700;color:var(--navy);border-top:1.5px solid var(--navy);border-bottom:0}
+.q .m{color:var(--muted)}
+.only-in{display:none} body.internal .only-in{display:revert}
+.screen{display:none;gap:16px;grid-template-columns:minmax(0,1fr)} .screen.on{display:grid}
+.hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+small.k{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">CHAW CHER OS · MOCKUP</p>
+    <h1>งานโครงการ · จากโจทย์ลูกค้าถึงใบเสนอราคา</h1>
+    <p class="lead">ข้อมูลในหน้านี้เป็นตัวอย่างสมมติทั้งหมด ยังไม่ได้สร้างจริง</p>
+  </header>
+
+  <nav class="steps" role="tablist" aria-label="หน้าจอ">
+    <button role="tab" data-go="s1" aria-selected="true"><span class="n">1</span>โครงการ</button>
+    <button role="tab" data-go="s2"><span class="n">2</span>รับโจทย์</button>
+    <button role="tab" data-go="s3"><span class="n">3</span>หน้าโครงการ</button>
+    <button role="tab" data-go="s4"><span class="n">4</span>จับคู่</button>
+    <button role="tab" data-go="s5"><span class="n">5</span>คำถามค้าง</button>
+    <button role="tab" data-go="s6"><span class="n">6</span>ใบเสนอ</button>
+    <button role="tab" data-go="s7"><span class="n">7</span>คลังสินค้าอ้างอิง</button>
+  </nav>
+
+  <!-- 1 · รายการโครงการ (แบบ B) -->
+  <section class="screen on" id="s1">
+    <div class="hd"><div><h2>โครงการ</h2><small class="k">หน้าแบบ B · รายการ</small></div><button class="btn pri" data-go="s2">+ โครงการใหม่</button></div>
+    <div class="field"><input placeholder="ค้นหาชื่อโครงการ ลูกค้า หรือ interior"></div>
+    <div class="pills"><button aria-pressed="true">กำลังทำ 2</button><button aria-pressed="false">รอลูกค้า 1</button><button aria-pressed="false">ปิดแล้ว 4</button></div>
+    <div class="card">
+      <div class="row" data-go="s3" style="cursor:pointer"><div class="ph">บ้าน</div>
+        <div><div class="t">บ้านพักตากอากาศ A (ตัวอย่าง)</div><div class="s">Interior: สตูดิโอ ก. · 106 รายการ · เสนอ 22 · คำถามค้าง 5</div></div>
+        <div class="r"><span class="badge b-warn">รอคำตอบ</span><br>965,290</div></div>
+      <div class="row"><div class="ph">โรงแรม</div>
+        <div><div class="t">โรงแรม B · ห้องพัก 86 ห้อง (ตัวอย่าง)</div><div class="s">งานสั่งทำตามแบบ · 15 รหัส 167 ตัว · ฉบับที่ 2</div></div>
+        <div class="r"><span class="badge b-ok">ยืนยันแล้ว</span><br>—</div></div>
+      <div class="row"><div class="ph">คอนโด</div>
+        <div><div class="t">คอนโด C · ห้องตัวอย่าง (ตัวอย่าง)</div><div class="s">12 รายการ · ส่งใบเสนอฉบับ 1 เมื่อ 3 วันก่อน</div></div>
+        <div class="r"><span class="badge b-n">รอลูกค้า</span><br>214,800</div></div>
+    </div>
+  </section>
+
+  <!-- 2 · รับโจทย์ (แบบ D) -->
+  <section class="screen" id="s2">
+    <div class="hd"><div><h2>รับโจทย์</h2><small class="k">หน้าแบบ D · ฟอร์ม · ขั้น 1 ของงาน</small></div></div>
+    <div class="card">
+      <div class="fgrid">
+        <label class="field">ชื่อโครงการ<input value="บ้านพักตากอากาศ A"></label>
+        <label class="field">ลูกค้า / Interior<input value="สตูดิโอ ก."></label>
+        <label class="field">สถานที่ส่ง<input value="นครราชสีมา"></label>
+      </div>
+      <div class="inbox" style="margin-top:12px"><b>ไฟล์โจทย์</b> · furniture-list.pdf (39 หน้า) · รับได้ทั้ง PDF · Excel · รูป · วางข้อความ
+        <div style="margin-top:8px"><button class="btn sec sm">เลือกไฟล์เพิ่ม</button></div></div>
+    </div>
+    <div class="card">
+      <div class="hd"><h3>ระบบแตกรายการให้แล้ว · ตรวจก่อนบันทึก</h3><span class="badge b-warn">ต้องดู 3 แถว</span></div>
+      <div class="tw"><table>
+        <tr><th>รหัส</th><th>ห้อง</th><th>ประเภท</th><th class="n">จำนวน</th><th>ขนาดตามแบบ (มม.)</th><th>สถานะจากแบบ</th><th>ที่ระบบสงสัย</th></tr>
+        <tr><td class="code">G-03</td><td>Living</td><td>Sofa</td><td class="n">2</td><td>2500 x 900</td><td><span class="badge b-ok">เปิดให้เสนอ</span></td><td></td></tr>
+        <tr><td class="code">G-04</td><td>Foyer</td><td>Side table</td><td class="n">1</td><td>450 x 450 x 500</td><td><span class="badge b-m">มีคนทำแล้ว (แถวแดง)</span></td><td></td></tr>
+        <tr><td class="code">G-19</td><td>Game room</td><td>Chair</td><td class="n">14</td><td>1500 x 1500 x 750</td><td><span class="badge b-ok">เปิดให้เสนอ</span></td><td><span class="badge b-warn">ขนาดเหมือนของโต๊ะ</span></td></tr>
+        <tr><td class="code">G-20</td><td>Game room</td><td>Table</td><td class="n">1</td><td>550 x 550</td><td><span class="badge b-ok">เปิดให้เสนอ</span></td><td><span class="badge b-warn">รูปเป็นเก้าอี้</span></td></tr>
+        <tr><td class="code">M-14</td><td>Living</td><td>Sofa</td><td class="n">—</td><td>850 x 850</td><td><span class="badge b-ok">เปิดให้เสนอ</span></td><td><span class="badge b-warn">ไม่ระบุจำนวน</span></td></tr>
+        <tr><td colspan="7"><small class="k">… อีก 101 แถว</small></td></tr>
+      </table></div>
+    </div>
+    <div class="bar"><button class="btn sec">บันทึกร่าง</button><button class="btn pri" data-go="s3">ยืนยัน 106 รายการ</button></div>
+  </section>
+
+  <!-- 3 · หน้าโครงการ (แบบ C) -->
+  <section class="screen" id="s3">
+    <div class="hd"><div><h2>บ้านพักตากอากาศ A <span class="badge b-warn">รอคำตอบ</span></h2><small class="k">หน้าแบบ C · รายละเอียด · Interior: สตูดิโอ ก.</small></div>
+      <button class="btn sec sm" id="mode">มุมมอง: ลูกค้า</button></div>
+    <div class="stats">
+      <div class="stat"><b>106</b><span>รายการในแบบ</span></div>
+      <div class="stat"><b>87</b><span>เปิดให้เสนอ</span></div>
+      <div class="stat"><b>22</b><span>เราเสนอ</span></div>
+      <div class="stat"><b>965,290</b><span>มูลค่าที่มีราคาแล้ว (รวม VAT)</span></div>
+      <div class="stat"><b>5</b><span>คำถามค้าง</span></div>
+      <div class="stat in only-in"><b>38%</b><span>กำไรขั้นต้น · ภายในเท่านั้น (เลขสมมติ)</span></div>
+    </div>
+    <div class="pills" id="flt">
+      <button aria-pressed="true" data-f="all">ทั้งหมด</button><button aria-pressed="false" data-f="todo">ยังไม่จับคู่</button>
+      <button aria-pressed="false" data-f="wait">รอคำตอบ</button><button aria-pressed="false" data-f="ready">พร้อมเสนอ</button><button aria-pressed="false" data-f="skip">ไม่เสนอ</button>
+    </div>
+    <div class="card" id="items">
+      <div class="row" data-s="ready" data-go="s4" style="cursor:pointer"><div class="ph">รูปจากแบบ</div>
+        <div><div class="t"><span class="code">G-23</span> · Sofa · 1800 x 850</div><div class="s">Phoenix Sofa 3S (190) · ผ้า A GR-Beige <span class="badge b-n">ฌ เฌอ</span></div></div>
+        <div class="r"><span class="badge b-ok">พร้อมเสนอ</span><br>54,540</div></div>
+      <div class="row" data-s="wait" data-go="s4" style="cursor:pointer"><div class="ph">รูปจากแบบ</div>
+        <div><div class="t"><span class="code">G-46</span> · Sofa · 1600 x 850</div><div class="s">Jasper ปรับกว้าง 160 <span class="badge b-n">แบบเอเซ่</span> <span class="badge b-warn">ปรับแบบ</span></div></div>
+        <div class="r"><span class="badge b-warn">รอเอเซ่</span><br>—</div></div>
+      <div class="row" data-s="ready"><div class="ph">รูปจากแบบ</div>
+        <div><div class="t"><span class="code">G-34</span> · Armchair x2 · 750 x 650</div><div class="s">Spur Armchair · ผ้า A <span class="badge b-n">Supplier</span></div></div>
+        <div class="r"><span class="badge b-ok">พร้อมเสนอ</span><br>41,800</div></div>
+      <div class="row" data-s="todo"><div class="ph">รูปจากแบบ</div>
+        <div><div class="t"><span class="code">M-22</span> · Console x2 · 1200 x 400 x 800</div><div class="s">ยังไม่ได้เลือก · มีตัวเลือกจากร้านข้างนอก 2 ชิ้น <span class="badge b-n">ร้านข้างนอก</span></div></div>
+        <div class="r"><span class="badge b-m">ยังไม่จับคู่</span><br>—</div></div>
+      <div class="row" data-s="skip"><div class="ph">รูปจากแบบ</div>
+        <div><div class="t"><span class="code">G-30</span> · Bed · King</div><div class="s">มีรุ่นที่ใช้ได้ (Koontong Bed 6 ฟุต) แต่เลือกไม่เสนอ</div></div>
+        <div class="r"><span class="badge b-m">ไม่เสนอ</span><br>—</div></div>
+    </div>
+    <div class="bar"><button class="btn sec" data-go="s5">คำถามค้าง 5</button><button class="btn pri" data-go="s6">ออกใบเสนอ</button></div>
+  </section>
+
+  <!-- 4 · จับคู่รายการเดียว -->
+  <section class="screen" id="s4">
+    <div class="hd"><div><h2><span class="code">G-46</span> · Sofa · ห้อง Bedroom 2</h2><small class="k">หน้าทำงานหลัก · รายการที่ 41 จาก 87</small></div>
+      <div><button class="btn sec sm">← ก่อนหน้า</button> <button class="btn sec sm">ถัดไป →</button></div></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>แบบของลูกค้า</h3>
+        <div class="ph big">รูปจากแบบลูกค้า</div>
+        <table style="margin-top:10px">
+          <tr><td>จำนวน</td><td class="n">1</td></tr><tr><td>ขนาดตามแบบ</td><td class="n">1600 x 850 มม.</td></tr>
+          <tr><td>หมายเหตุจากแบบ</td><td>ห้องเขียนชั้น FL.2 แต่รายการอื่นเป็น FL.3</td></tr>
+        </table>
+        <h3 style="margin-top:16px">ปรับแบบ</h3>
+        <div class="fgrid">
+          <label class="field">ขนาดใหม่<input value="กว้าง 160 ซม."></label>
+          <label class="field">ผ้า / วัสดุ<input value="Jupiter Taupe grey"></label>
+        </div>
+        <p class="note" style="margin:10px 0 0">มีการปรับแบบ ระบบสร้างคำถามถึงผู้ผลิตให้แล้ว 1 ข้อ</p>
+      </div>
+      <div class="card">
+        <div class="hd"><h3>ตัวเลือก · กด 1 ครั้ง = รุ่นหลัก · กดอีกชิ้น = ตัวเลือกที่ 2</h3></div>
+        <div class="src"><span class="badge b-n">แบบของเอเซ่</span>
+          <div class="cand" data-pick="1"><div class="ph">รูป</div><div><div class="pk">รุ่นหลัก</div><b>Jasper Sofa</b> · ปรับเป็น W160<div class="s" style="font-size:13px;color:var(--muted)">มาตรฐาน W180 · ใบ spec มีในคลัง · เคยเสนอ 1 งาน</div></div></div></div>
+        <div class="src"><span class="badge b-n">ฌ เฌอ</span>
+          <div class="cand"><div class="ph">รูป</div><div><b>Nangnuan Sofa 3 ที่นั่ง</b> · W186 D88 H65<div class="s" style="font-size:13px;color:var(--muted)">กว้างกว่าแบบ 26 ซม. · 32,250 · ลูกค้าเลือก 3 จาก 4 งาน</div></div></div></div>
+        <div class="src"><span class="badge b-n">Supplier</span>
+          <div class="cand" data-pick="2"><div class="ph">รูป</div><div><div class="pk">ตัวเลือกที่ 2</div><b>Lulu Sofa</b> · W160 D90 H84<div class="s" style="font-size:13px;color:var(--muted)">ขนาดตรงแบบ · ราคาจากใบเสนอราคา 12 วันก่อน</div></div></div></div>
+        <div class="src"><span class="badge b-n">ร้านข้างนอก</span>
+          <div class="inbox">ยังไม่มีของประเภทนี้ในคลัง · <b>วางลิงก์สินค้า</b> แล้วระบบดึงชื่อ ขนาด ราคา รูป มาเก็บให้
+            <div class="field" style="margin-top:8px"><input placeholder="https://"></div></div></div>
+        <h3>ราคา</h3>
+        <table>
+          <tr><td>สูตรตามแหล่ง</td><td class="n">แบบเอเซ่ = ราคาซื้อ x 1.5 ปัดหลักร้อย</td></tr>
+          <tr><td>ราคาเสนอ (รวม VAT)</td><td class="n"><span class="badge b-warn">รอราคาขนาด 160</span></td></tr>
+          <tr class="only-in"><td>ราคาซื้อ · กำไร (ภายใน · เลขสมมติ)</td><td class="n">— · —</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="bar"><button class="btn sec">ไม่เสนอรายการนี้</button><button class="btn pri" data-go="s3">บันทึก แล้วไปรายการถัดไป</button></div>
+  </section>
+
+  <!-- 5 · คำถามค้าง -->
+  <section class="screen" id="s5">
+    <div class="hd"><div><h2>คำถามค้าง</h2><small class="k">รวมคำถามเป็นข้อความชุดเดียวต่อผู้รับ · คำตอบกลับเข้ารายการ</small></div></div>
+    <div class="pills"><button aria-pressed="true">เอเซ่ 5</button><button aria-pressed="false">บุ๊ค 3</button><button aria-pressed="false">ลูกค้า 4</button></div>
+    <div class="card">
+      <div class="hd"><h3>ถึงเอเซ่ · ส่งเมื่อ 2 วันก่อน · ตอบแล้ว 1 จาก 5</h3><button class="btn sec sm" id="copy">คัดลอกข้อความชุดเดียว</button></div>
+      <pre class="msg" id="msg">สวัสดีครับ มี 5 รายการที่ต้องผลิตโดยปรับแบบ รบกวนตอบแต่ละข้อ 3 เรื่อง
+ก) ทำได้ไหม  ข) ถ้าทำ ได้ของเมื่อไหร่  ค) ราคา
+
+1. G-03 Cloud sofa ปรับเป็นกว้างรวม 250 ซม. 3 ที่นั่ง จำนวน 2 ชุด
+2. G-46 Jasper ปรับกว้างเป็น 160 ซม. ผ้า Jupiter Taupe grey จำนวน 1 ตัว
+3. G-52 สตูล MF-10A ปรับเป็น 100 x 100 ซม. จำนวน 1 ตัว
+…</pre>
+      <div class="tw" style="margin-top:12px"><table>
+        <tr><th>รายการ</th><th>คำถาม</th><th>คำตอบ</th><th>สถานะ</th></tr>
+        <tr><td class="code">G-03</td><td>ราคาเดิมเป็นของขนาด 250 ใช่ไหม</td><td>ใช่ · ผลิต 45 วัน</td><td><span class="badge b-ok">ตอบแล้ว</span></td></tr>
+        <tr><td class="code">G-46</td><td>ทำ 160 ได้ไหม · ราคา · กี่วัน</td><td><div class="field"><input placeholder="กรอกคำตอบ"></div></td><td><span class="badge b-warn">รอ 2 วัน</span></td></tr>
+        <tr><td class="code">G-52</td><td>ทำ 100 x 100 ได้ไหม · ราคา</td><td><div class="field"><input placeholder="กรอกคำตอบ"></div></td><td><span class="badge b-warn">รอ 2 วัน</span></td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 6 · ใบเสนอ -->
+  <section class="screen" id="s6">
+    <div class="hd"><div><h2>ใบเสนอ</h2><small class="k">ออกเป็นฉบับ · ของเก่าไม่ถูกแก้ · ลูกค้าเปิดลิงก์ดูฉบับล่าสุด</small></div><button class="btn pri">ออกฉบับที่ 5</button></div>
+    <div class="card">
+      <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 4 <span class="badge b-ok">ล่าสุด</span></div><div class="s">22 รายการ · ต่างจากฉบับ 3: เพิ่มหัวกระดาษ · ปัดราคา 6 รายการ · แก้ชื่อรุ่น G-23</div></div><div class="r">965,290</div></div>
+      <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 3</div><div class="s">ต่างจากฉบับ 2: ตัดข้อความโปรโมชันเงินสด</div></div><div class="r">965,868</div></div>
+      <div class="row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="t">ฉบับที่ 1</div><div class="s">23 รายการ · ยังมี G-06</div></div><div class="r">938,465</div></div>
+    </div>
+    <div class="q">
+      <div class="hd"><div><h4>QUOTATION</h4>ใบเสนอราคา</div><div style="text-align:right">วันที่ 21/11/2569<br>เลขที่ QUO2611001 · ฉบับที่ 4<br>ยืนราคาถึง 21/12/2569</div></div>
+      <p style="margin:8px 0">โครงการ บ้านพักตากอากาศ A · ผู้ประสานงาน สตูดิโอ ก.</p>
+      <div class="tw"><table>
+        <tr><th>No.</th><th>รหัสตามแบบ</th><th>รายการสินค้า</th><th class="n">จำนวน</th><th class="n">ราคา / หน่วย</th><th class="n">จำนวนเงิน</th><th class="n only-in">กำไร (สมมติ)</th></tr>
+        <tr><td>1</td><td><b>G-23</b><br>Living</td><td>ฌ เฌอ | โซฟา 3S (190) ฟีนิกซ์ (Phoenix Sofa)<br><span class="m">ผ้า A · GR-Beige · W190 D96 H85 cm</span></td><td class="n">1</td><td class="n"><span class="st">90,900</span><br>54,540</td><td class="n">54,540</td><td class="n only-in">40%</td></tr>
+        <tr><td>2</td><td><b>G-34</b><br>Bedroom 1</td><td>อาร์มแชร์ Spur Armchair<br><span class="m">ผ้า A · W74 D85 H95 cm</span></td><td class="n">2</td><td class="n">20,900</td><td class="n">41,800</td><td class="n only-in">23%</td></tr>
+        <tr><td>3</td><td><b>M-12</b><br>Living</td><td>ฌ เฌอ | โซฟา 3S (250) ฟีนิกซ์ (Phoenix Sofa)<br><span class="m">ผ้า C · W250 D96 H85 cm</span></td><td class="n">1</td><td class="n"><span class="st">151,100</span><br>90,660</td><td class="n">90,660</td><td class="n only-in">40%</td></tr>
+        <tr><td colspan="4" style="border:0"></td><td class="n" style="border:0">รวม</td><td class="n" style="border:0">174,766</td><td class="only-in" style="border:0"></td></tr>
+        <tr><td colspan="4" style="border:0"></td><td class="n" style="border:0">VAT 7%</td><td class="n" style="border:0">12,234</td><td class="only-in" style="border:0"></td></tr>
+        <tr class="gt"><td colspan="4"></td><td class="n">รวมทั้งสิ้น</td><td class="n">187,000</td><td class="only-in"></td></tr>
+      </table></div>
+      <p class="m" style="font-size:11.5px;margin:10px 0 0">เงื่อนไข: มัดจำ __% · ผลิต __ วัน · ยังไม่รวมขนส่งและติดตั้ง · รายการที่รอยืนยันจะออกใบเพิ่ม</p>
+    </div>
+    <div class="bar"><button class="btn sec">พิมพ์ PDF</button><button class="btn sec">คัดลอกลิงก์ลูกค้า</button><button class="btn pri">ลูกค้ายืนยัน → เปิดออเดอร์</button></div>
+  </section>
+
+  <!-- 7 · คลังสินค้าอ้างอิง (แบบ B) -->
+  <section class="screen" id="s7">
+    <div class="hd"><div><h2>คลังสินค้าอ้างอิง</h2><small class="k">หน้าแบบ B · ของทุกชิ้นที่เคยแนบเข้างาน ถูกเก็บที่นี่เอง</small></div><button class="btn pri">+ วางลิงก์ / อัปโหลดใบเสนอราคา</button></div>
+    <div class="field"><input placeholder="ค้นหา เช่น คอนโซล 150 ดำ · เก้าอี้หวาย · ทราเวอร์ทีน"></div>
+    <div class="pills"><button aria-pressed="true">ทั้งหมด 842</button><button aria-pressed="false">ฌ เฌอ 751</button><button aria-pressed="false">แบบเอเซ่ 18</button><button aria-pressed="false">Supplier 28</button><button aria-pressed="false">ร้านข้างนอก 45</button><button aria-pressed="false">ยังไม่ตรวจ 41</button></div>
+    <div class="card">
+      <div class="row"><div class="ph">รูป</div>
+        <div><div class="t">Scarlet Armchair <span class="badge b-n">แบบเอเซ่</span> <span class="badge b-ok">ตรวจแล้ว</span></div>
+          <div class="s">W81 D94 H97 SH43 · ขาโอ๊ค/วอลนัท · มีใบ spec · ปรับได้: วัสดุหุ้ม · ป้าย: อาร์มแชร์ หนัง</div>
+          <div class="s">เคยใช้ 1 งาน (เสนอ · รอลูกค้า) <span class="only-in">· ราคาซื้อล่าสุด ผ้า A เมื่อ 2 วันก่อน</span></div></div>
+        <div class="r"><span class="badge b-m">ซ่อนชื่อแหล่ง</span></div></div>
+      <div class="row"><div class="ph">รูป</div>
+        <div><div class="t">Andaman Coffee Table <span class="badge b-n">ร้านข้างนอก</span> <span class="badge b-warn">ยังไม่ตรวจ</span></div>
+          <div class="s">W120 D60 H45 · ไม้โอ๊ค · มีลิ้นชัก · ป้าย: โต๊ะกลาง</div>
+          <div class="s">ราคาขายปลีก 8,500 รวม VAT · เห็นเมื่อ 1 วันก่อน · เคยใช้ 1 งาน</div></div>
+        <div class="r"><button class="btn sec sm">ตรวจราคาใหม่</button></div></div>
+      <div class="row"><div class="ph">รูป</div>
+        <div><div class="t">Bagel Chair <span class="badge b-n">Supplier</span> <span class="badge b-ok">ตรวจแล้ว</span></div>
+          <div class="s">W48 D57 H79 SH45 · ผ้า · ป้าย: เก้าอี้ทานข้าว</div>
+          <div class="s">ประวัติราคา 2 ครั้ง · ล่าสุดจากใบเสนอราคา 12 วันก่อน · เคยใช้ 1 งาน</div></div>
+        <div class="r"><span class="badge b-m">ซ่อนชื่อแหล่ง</span></div></div>
+    </div>
+    <p class="note">ต้นทุนและชื่อแหล่ง เห็นเฉพาะมุมมองภายใน และไม่เข้าบอทหรือ LINE</p>
+  </section>
+</div>
+<script>
+const go=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('.steps button').forEach(b=>b.setAttribute('aria-selected',b.dataset.go===id));window.scrollTo(0,0)};
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){go(g.dataset.go);return}
+  const p=e.target.closest('.pills button'); if(p){p.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===p));
+    if(p.dataset.f){document.querySelectorAll('#items .row').forEach(r=>r.style.display=(p.dataset.f==='all'||r.dataset.s===p.dataset.f)?'':'none')}return}
+  const c=e.target.closest('.cand'); if(c){const cur=c.dataset.pick;document.querySelectorAll('.cand').forEach(x=>{if(x.dataset.pick==='1'&&!cur){x.dataset.pick='2'}else if(x!==c&&x.dataset.pick==='2'&&!cur){delete x.dataset.pick}});c.dataset.pick='1';
+    document.querySelectorAll('.cand').forEach(x=>{const k=x.querySelector('.pk');if(k)k.remove();if(x.dataset.pick){const d=document.createElement('div');d.className='pk';d.textContent=x.dataset.pick==='1'?'รุ่นหลัก':'ตัวเลือกที่ 2';x.children[1].prepend(d)}});return}
+  if(e.target.id==='mode'){const on=document.body.classList.toggle('internal');e.target.textContent='มุมมอง: '+(on?'ภายใน':'ลูกค้า')}
+  if(e.target.id==='copy'){navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('msg').textContent);e.target.textContent='คัดลอกแล้ว'}
+});
+</script>
+</body>
+</html>
