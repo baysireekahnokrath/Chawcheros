@@ -1,0 +1,184 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>ECSLS #5 Armchair</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap">
+<style>
+/* Layout: เอกสารคอลัมน์เดียว อ่านจากบนลงล่าง · ผังขั้นตอน → ภาพตัดแม่พิมพ์ → ผ้าหุ้ม → เวลา 5 นาที → ความเสี่ยง */
+:root{
+  --bg:#F7F8F8; --surface:#FFFFFF; --fg:#2F4554; --muted:#6B7A84; --line:#DDE2E5;
+  --navy:#2B4368; --aqua:#83B7BF; --aqua-soft:#E3F0F2; --taupe:#958C7B;
+  --mold:#C5CCD2; --foam:#F2E2B1; --wood:#B98F5E; --ink:#2B4368;
+  --th:"Noto Sans Thai","Sukhumvit Set",system-ui,sans-serif;
+  --en:"Montserrat","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B252E; --surface:#24313C; --fg:#E8ECEE; --muted:#A7B3BA; --line:#3A4955;
+    --navy:#A9C0E4; --aqua:#83B7BF; --aqua-soft:#2C4148; --taupe:#B9B1A2;
+    --mold:#52606C; --foam:#8C7C48; --wood:#A87D50; --ink:#E8ECEE; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B252E; --surface:#24313C; --fg:#E8ECEE; --muted:#A7B3BA; --line:#3A4955;
+  --navy:#A9C0E4; --aqua:#83B7BF; --aqua-soft:#2C4148; --taupe:#B9B1A2;
+  --mold:#52606C; --foam:#8C7C48; --wood:#A87D50; --ink:#E8ECEE; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--th);font-size:16px;line-height:1.7}
+.wrap{max-width:860px;margin:0 auto;padding-block:32px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:44px}
+.brand{font-family:var(--en);letter-spacing:.28em;font-size:12px;color:var(--taupe);text-transform:uppercase}
+.brand b{font-weight:600;color:var(--navy)}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.3;font-weight:600;color:var(--navy);margin:10px 0 8px;text-wrap:balance}
+h2{font-size:21px;font-weight:600;color:var(--navy);margin:0 0 4px;text-wrap:balance}
+h3{font-size:16px;font-weight:600;margin:0}
+p{margin:0}
+.lead{max-width:62ch;color:var(--fg)}
+.note{color:var(--muted);font-size:14px}
+.tag{display:inline-block;font-size:13px;background:var(--aqua-soft);color:var(--fg);border-radius:99px;padding:2px 12px;margin-top:12px}
+section{display:flex;flex-direction:column;gap:16px}
+
+/* ขั้นตอน */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.steps li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
+.steps .n{font-family:var(--en);font-weight:600;font-size:20px;color:var(--aqua);font-variant-numeric:tabular-nums;line-height:1.5}
+.steps .who{font-size:13px;color:var(--taupe)}
+.steps li.key h3{color:var(--navy)}
+.steps li.key .n{color:var(--navy)}
+.steps .flag{font-size:12px;border:1px solid var(--navy);color:var(--navy);border-radius:99px;padding:0 8px;margin-left:6px;white-space:nowrap}
+
+/* ภาพ */
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+.fig svg{display:block;width:100%;height:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start}
+.two>*{min-width:0}
+.legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.legend li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;font-size:15px}
+.dot{width:24px;height:24px;border-radius:50%;background:var(--navy);color:var(--bg);font-family:var(--en);font-size:12px;font-weight:600;display:grid;place-items:center;margin-top:2px}
+svg text{font-family:var(--en);font-size:12px;font-weight:600}
+.c-bg{fill:var(--navy)} .c-tx{fill:var(--bg)}
+.s-ink{stroke:var(--ink);fill:none}
+
+/* แผ่นผ้า */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--taupe);font-size:13px}
+td.num{font-family:var(--en);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* เวลา */
+.bar{display:flex;border-radius:4px;overflow:hidden;height:14px}
+.bar i{display:block}
+.bar i:nth-child(odd){background:var(--navy)} .bar i:nth-child(even){background:var(--aqua)}
+.time{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.time b{font-family:var(--en);font-variant-numeric:tabular-nums;color:var(--navy);display:block;font-size:18px;font-weight:600}
+.time span{font-size:14px}
+
+.risks{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px}
+.risks>div{min-width:0;display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--taupe);padding-top:12px}
+.risks p{font-size:15px}
+.next{background:var(--aqua-soft);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">CHAW <b>CHER</b> · ECSLS · #5 Armchair · Main Living Area</div>
+    <h1>Armchair ทรงโค้ง 2 ตัว: แยกเป็น 4 โมดูล หุ้มทีละชิ้นแล้วขันน็อตประกอบ</h1>
+    <p class="lead">งานนี้มี 2 ตัว จึงไม่ทำแม่พิมพ์ทั้งตัว ใช้โมเดล 3D ตัวเดียวคุมโครง ฟองน้ำ และ pattern แล้วทดลองหล่อโฟมเฉพาะขา ซึ่งเป็นชิ้นเล็กและใช้แม่พิมพ์เดียวได้ 4 ชิ้น</p>
+    <span class="tag">ร่างแผนผลิต · ขนาดและสเปกเป็นค่าสมมติ รอยืนยันกับลูกค้าและช่าง</span>
+  </header>
+
+  <section>
+    <h2>แยกเก้าอี้เป็น 4 โมดูล</h2>
+    <p class="note">ผังโครงสร้าง ไม่ใช่แบบผลิต · ขนาดสมมติจากสัดส่วนในรูป: กว้าง 85 · ลึก 75 · สูง 70 · ที่นั่งสูง 40 ซม.</p>
+    <div class="two">
+      <div class="fig">
+        <svg viewBox="0 0 520 330" role="img" aria-label="มองจากด้านหน้า พนัก ที่นั่ง และขาสองข้าง">
+          <line x1="30" y1="302" x2="490" y2="302" class="s-ink" stroke-width="1.5"/>
+          <rect x="70" y="150" width="110" height="150" rx="45" fill="var(--foam)"/>
+          <rect x="340" y="150" width="110" height="150" rx="45" fill="var(--foam)"/>
+          <rect x="97" y="172" width="56" height="116" rx="24" fill="var(--wood)"/>
+          <rect x="367" y="172" width="56" height="116" rx="24" fill="var(--wood)"/>
+          <rect x="60" y="108" width="400" height="62" rx="30" fill="var(--foam)" stroke="var(--bg)" stroke-width="3"/>
+          <rect x="92" y="130" width="336" height="16" rx="4" fill="var(--mold)"/>
+          <rect x="120" y="84" width="10" height="46" fill="var(--mold)"/>
+          <rect x="390" y="84" width="10" height="46" fill="var(--mold)"/>
+          <rect x="48" y="18" width="424" height="74" rx="36" fill="var(--foam)"/>
+          <line x1="84" y1="55" x2="436" y2="55" stroke="var(--mold)" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="125" cy="160" r="5" fill="var(--aqua)"/><circle cx="395" cy="160" r="5" fill="var(--aqua)"/>
+          <circle cx="260" cy="40" r="12" class="c-bg"/><text x="260" y="44" text-anchor="middle" class="c-tx">1</text>
+          <circle cx="260" cy="118" r="12" class="c-bg"/><text x="260" y="122" text-anchor="middle" class="c-tx">2</text>
+          <circle cx="125" cy="240" r="12" class="c-bg"/><text x="125" y="244" text-anchor="middle" class="c-tx">3</text>
+          <circle cx="395" cy="240" r="12" class="c-bg"/><text x="395" y="244" text-anchor="middle" class="c-tx">3</text>
+          <circle cx="205" cy="160" r="12" class="c-bg"/><text x="205" y="164" text-anchor="middle" class="c-tx">4</text>
+          <circle cx="155" cy="98" r="12" class="c-bg"/><text x="155" y="102" text-anchor="middle" class="c-tx">5</text>
+        </svg>
+        <p class="note" style="padding:8px 4px 0">มองจากด้านหน้า</p>
+      </div>
+      <div class="fig">
+        <svg viewBox="0 0 520 330" role="img" aria-label="มองจากด้านบน พนักเป็นรูปตัว U โอบที่นั่ง">
+          <rect x="150" y="110" width="220" height="195" rx="42" fill="var(--aqua-soft)" stroke="var(--ink)" stroke-width="1.5"/>
+          <path d="M110 250 L110 125 Q110 50 260 50 Q410 50 410 125 L410 250" fill="none" stroke="var(--foam)" stroke-width="62" stroke-linecap="round"/>
+          <path d="M110 250 L110 125 Q110 50 260 50 Q410 50 410 125 L410 250" fill="none" stroke="var(--mold)" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="260" cy="50" r="12" class="c-bg"/><text x="260" y="54" text-anchor="middle" class="c-tx">1</text>
+          <circle cx="260" cy="210" r="12" class="c-bg"/><text x="260" y="214" text-anchor="middle" class="c-tx">2</text>
+        </svg>
+        <p class="note" style="padding:8px 4px 0">มองจากด้านบน</p>
+      </div>
+    </div>
+    <ol class="legend">
+      <li><span class="dot">1</span><span><b>พนัก + แขน</b> แถบรูปตัว U ชิ้นเดียว แกนเป็นท่อเหล็กกลมดัดโค้ง</span></li>
+      <li><span class="dot">2</span><span><b>ที่นั่ง</b> กรอบเหล็กกล่อง ขึงสายรัดยางยืด พาดระหว่างขาสองข้าง</span></li>
+      <li><span class="dot">3</span><span><b>ขา ซ้ายและขวา</b> เป็นชิ้นเดียวกัน แกนไม้อัด CNC ประกบ ทั้งงาน 2 ตัวใช้ 4 ชิ้นเหมือนกัน</span></li>
+      <li><span class="dot">4</span><span><b>น็อตยึดขากับที่นั่ง</b> ขันจากด้านในขา รอยต่อบังซิปของผ้าหุ้ม</span></li>
+      <li><span class="dot">5</span><span><b>เสาเหล็ก 2 ต้น</b> ด้านหลัง รับพนักลงกรอบที่นั่ง เป็นจุดรับแรงที่ต้องให้ช่างเหล็กคำนวณ</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>ลำดับงานจริง</h2>
+    <ol class="steps">
+      <li class="key"><span class="n">1</span><div><h3>ยืนยันขนาดกับลูกค้า <span class="flag">ต้องทำก่อน</span></h3><p>แบบลูกค้าไม่มีขนาด ส่งขนาดสมมติ 85 × 75 × 70 ซม. ที่นั่งสูง 40 ซม. ให้ลูกค้าเซ็นรับ</p><p class="who">ฝ่ายขาย</p></div></li>
+      <li><span class="n">2</span><div><h3>ขึ้นโมเดล 3D แยก 4 โมดูล</h3><p>กำหนดจุดน็อต แนวตะเข็บ และตำแหน่งซิปของแต่ละโมดูลในโมเดล</p><p class="who">ฝ่ายออกแบบ</p></div></li>
+      <li><span class="n">3</span><div><h3>ทำโครง</h3><p>ขา: ไม้อัด 18 มม. CNC · ที่นั่ง: เหล็กกล่อง + สายรัดยางยืด · พนัก: ท่อเหล็กกลมดัด (เริ่มที่ 25–32 มม. หนา 2 มม. ให้ช่างเหล็กยืนยัน)</p><p class="who">แผนกโครง + ร้านดัดเหล็ก</p></div></li>
+      <li><span class="n">4</span><div><h3>ขึ้นรูปฟองน้ำ</h3><p>ติดฟองน้ำแผ่นตามแม่แบบที่ตัดจากโมเดล แล้วหุ้มใยโพลี · ทดลองหล่อโฟมเฉพาะขา 4 ชิ้น ถ้าไม่ผ่านใช้ฟองน้ำแผ่นแทนได้ทันที</p><p class="who">แผนกฟองน้ำ + วิศวกร</p></div></li>
+      <li><span class="n">5</span><div><h3>คลี่ pattern จากโมเดล แล้วพิมพ์</h3><p>ผ้าบูเคล่หลังยืด ย่อ pattern ราว 3% ลองกับโมดูลขาก่อน</p><p class="who">แผนกวางแบบ</p></div></li>
+      <li><span class="n">6</span><div><h3>เย็บ 4 ถุง หุ้ม แล้วขันน็อตประกอบ</h3><p>ทำตัวที่ 1 ให้จบ ทดสอบนั่ง แก้ pattern แล้วค่อยทำตัวที่ 2</p><p class="who">แผนกเย็บ + หุ้ม + QC</p></div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>ผ้าหุ้ม: 4 ถุงต่อตัว ซิปซ่อนที่รอยต่อ</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>โมดูล</th><th>ต่อตัว</th><th>แผ่นผ้าต่อถุง</th><th>ตำแหน่งซิป</th></tr></thead>
+        <tbody>
+          <tr><td>ขา</td><td class="num">2</td><td>3 (ข้าง 2 + แถบรอบ 1)</td><td>หน้าบนของขา ที่นั่งทับมิด</td></tr>
+          <tr><td>ที่นั่ง</td><td class="num">1</td><td>3 (บน + ล่าง + แถบรอบ)</td><td>ใต้ที่นั่ง ด้านหลัง</td></tr>
+          <tr><td>พนัก + แขน</td><td class="num">1</td><td>2 (ด้านใน + ด้านนอก)</td><td>ขอบล่างด้านนอก ยาวตลอดช่วงหลัง</td></tr>
+          <tr><td><b>รวมต่อตัว</b></td><td class="num"><b>4 ถุง</b></td><td><b>11 แผ่น</b></td><td>ซิป 4 เส้น มองไม่เห็นเมื่อประกอบ</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>เป้าเวลาหุ้มและประกอบ 5 นาที</h2>
+    <div class="bar" aria-hidden="true"><i style="flex:90"></i><i style="flex:60"></i><i style="flex:90"></i><i style="flex:60"></i></div>
+    <ol class="time">
+      <li><b>1:30</b><span>สวมถุงขา 2 ข้าง รูดซิป</span></li>
+      <li><b>1:00</b><span>สวมถุงที่นั่ง รูดซิป</span></li>
+      <li><b>1:30</b><span>สวมถุงพนัก รูดซิปยาว</span></li>
+      <li><b>1:00</b><span>ขันน็อตประกอบ 4 โมดูล</span></li>
+    </ol>
+    <p class="note">เป็นเป้าหมาย ยังไม่ได้จับเวลาจริง · ไม่รวมเวลาเย็บ</p>
+  </section>
+
+  <section>
+    <h2>3 เรื่องที่ต้องตัดสินก่อนเริ่ม</h2>
+    <div class="risks">
+      <div><h3>ส่วนยื่นต้องใช้เหล็ก</h3><p>พนักลอยเหนือที่นั่งและที่นั่งพาดระหว่างขา โครงไม้ล้วนจะหักที่ช่วงโค้ง ขนาดท่อและจุดเชื่อมต้องให้ช่างเหล็กหรือวิศวกรยืนยัน</p></div>
+      <div><h3>ทรงคล้ายงานออกแบบที่มีชื่อ</h3><p>รูปทรงใกล้กับเก้าอี้ Djinn ของ Olivier Mourgue (1965) ควรถามผู้ออกแบบของลูกค้าว่าเป็นงานอ้างอิง แล้วปรับสัดส่วนให้เป็นแบบของเราเอง</p></div>
+      <div><h3>ราคาต้องรวมตัวทดลอง</h3><p>งาน 2 ตัวที่มีโมเดล 3D โครงเหล็กดัด และการแก้ pattern มีค่าเตรียมงานสูงกว่างานปกติ ควรประมาณการก่อนตอบรับ</p></div>
+    </div>
+  </section>
+</div>
