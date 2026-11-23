@@ -74,6 +74,7 @@
 - **ก่อนสร้างไฟล์/ชีต/เอกสารใน Drive ทุกครั้ง** → ใส่ `parentId` เป็นโฟลเดอร์ย่อยที่ตรงเรื่อง · ไม่มีเรื่องที่ตรง = สร้างโฟลเดอร์ใหม่เลขถัดไป (`08 …`) ใน "Chaw Cher" · ห้ามปล่อยไว้ My Drive หน้าแรก
 - รูป/ไฟล์ที่ Bay ส่งมาในแชท → เก็บสำเนาใน Drive โฟลเดอร์ของเรื่องนั้นด้วย (ตั้งชื่อ `YYYY-MM-DD เรื่อง`)
 - `07 News` = `https://drive.google.com/drive/folders/1xSLD-fGg9TRtZtjOSE9H55Yi4DNzfRxl` · มีชีต Chaw Cher News + โฟลเดอร์ `รูปข่าว` (`1M1vxIqwpP8bTQ0XPmbd8jIFeCXyZcN99`) แยกโฟลเดอร์ละข่าว
+- **งานแฟร์ / ออกบูธ (ASE · Chaw Cher)** → โฟลเดอร์ `Fair` `https://drive.google.com/drive/folders/1d-1DC3hJ58wK7crHXDylXcX2L6geQOAD` (Bay สั่ง 2026-11-23) · **แยกปี → แยกงาน**: `Fair/<ปี>/<YYYY-MM ชื่องาน (สถานที่)>` · ปี 2026 = `1wWA_iWRCJOLAl2AQeX2qWrB2kIf37Oky` · งานแรก `2026-11 FIND Design Fair Asia (QSNCC)` = `1hlTFhJjBT5RhpJ60DTAHbJvVbZNV1lRb` (ASE ออกบูธใน Thailand Creative House ของ CEA · 26-28 พ.ย. 2026)
 - โฟลเดอร์ "chawcher" (`1RDyJ3IIUmxx730qIG8nMGWk_bIAQnobE`) ที่มี chawcher-os / product-launch / google-ads-search / product-facts = ไฟล์ skill ของ Claude · ไม่ใช่ที่เก็บงาน
 
 ## ที่อยู่ของระบบ (ข้อมูลที่ session ใหม่ต้องรู้เลย · อย่าถาม Bay)
