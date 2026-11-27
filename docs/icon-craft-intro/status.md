@@ -4,11 +4,11 @@
 
 ## สถานะ
 - mockup: `docs/icon-craft-intro/mockup.html` · Bay อนุมัติแล้ว (2026-11-27)
-- **หน้า draft บน chawcher.com: WordPress page id 18252** · ชื่อ "One Page Introduction" · slug `one-page-introduction` · **ยังไม่เผยแพร่** (รอ Bay ยืนยัน)
+- **เผยแพร่แล้ว (Bay กดเอง 2026-11-27): `https://chawcher.com/one-page-introduction/`** · WordPress page id 18252 · ชื่อ "One Page Introduction"
   - แก้: `https://chawcher.com/wp-admin/post.php?post=18252&action=edit`
   - preview: `https://chawcher.com/?page_id=18252&preview=true`
 - เป็น Custom HTML block ก้อนเดียว · CSS ทั้งหมดอยู่ใต้ class `.cci` (ไม่ชนธีม) · รูปใช้ไฟล์ที่อยู่ใน media ของเว็บอยู่แล้ว
-- ยังไม่ได้ดูหน้า preview ในธีมจริง (ต้องล็อกอิน) → Bay ต้องเปิดดูเองก่อนเผยแพร่
+- ตรวจหน้าจริงแล้ว (2026-11-27): จอคอม 1280 + มือถือ · ไม่ล้นจอ · ฟอนต์ถูก · รูปครบ 10 รูป (เว็บใช้ lazy load ของ LiteSpeed รูปขึ้นตอนเลื่อนถึง)
 
 ## เนื้อหา · ที่มา
 - ข้อความ: หน้า About Us / Contact Us ของ chawcher.com
