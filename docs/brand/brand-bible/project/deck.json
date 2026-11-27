@@ -1,0 +1,29 @@
+{
+  "v": 5,
+  "createdOnFiles": { "v": 1, "at": "2026-11-27T12:05:00Z" },
+  "lists": "css",
+  "format": { "v": 1, "shared": ["project/deck.css"] },
+  "title": "Chaw Cher Brand Bible",
+  "cover": "cover",
+  "order": [
+    "cover",
+    "a-divider", "a-contents", "situation", "challenges", "shift", "advantages",
+    "connect", "differentiation", "portfolio", "visuals",
+    "b-divider", "concept", "core-idea", "naming", "name-parts",
+    "pillars", "pillar-craft", "pillar-fit", "pillar-family", "pillar-nature",
+    "logo", "logo-colors", "typography", "color", "architecture", "voice",
+    "expression", "application", "homepage",
+    "verify", "next"
+  ],
+  "sections": {
+    "s0": { "description": "ปกเล่ม Brand Bible ของ Chaw Cher ฉบับร่าง", "start": "cover" },
+    "s1": { "description": "A กลยุทธ์แบรนด์: สถานการณ์ ความท้าทาย จุดแข็ง แก่นคุณค่า จุดยืน และพอร์ตแบรนด์", "start": "a-divider" },
+    "s2": { "description": "B อัตลักษณ์และการสื่อสาร: แนวคิดหลัก ความหมายชื่อ เสาหลักการสื่อสาร โลโก้ ฟอนต์ สี น้ำเสียง และการนำไปใช้", "start": "b-divider" },
+    "s3": { "description": "ข้อความที่ต้องตรวจหลักฐานก่อนใช้ และเรื่องที่ Bay ต้องตัดสิน", "start": "verify" }
+  },
+  "faces": {
+    "montserrat": { "family": "Montserrat", "href": "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" },
+    "noto-sans-thai": { "family": "Noto Sans Thai", "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" }
+  },
+  "designSystems": []
+}

@@ -48,6 +48,7 @@
 - SQL ที่ Bay ต้องรัน อยู่ใน `docs/sql-todo/` เท่านั้น · รันแล้วย้ายไป `docs/sql-archive/`
 - branch ของเว็บจริงคือ `main`
 - ทุกงานที่ออกในชื่อ CHAW CHER (สไลด์ โพสต์ หน้าเว็บ ใบรับรอง ป้าย) ใช้ CI ตาม `docs/brand/README.md` (สี ฟอนต์ โลโก้ใน `docs/brand/`)
+- **Brand Bible ของ ฌ เฌอ (ร่าง 1 · 2026-11-27 · รอ Bay ยืนยัน)** = `docs/brand/brand-bible/` · ดูที่ https://claude.ai/artifact/UuAHAG8V4vyvNvSnk8khin · สรุปว่าอะไรยืนยันแล้ว/ยังเป็นข้อเสนอ อยู่ท้าย `docs/brand/README.md` · ต้นแบบคือ ASE Brand Bible (IDEA LAB · DITP · ส.ค. 2026) ที่ Bay ส่งมา
 - โค้ดเว็บอยู่ใน `web/` (อ่าน `web/CLAUDE.md` ก่อนแก้)
 
 ## เว็บและเครื่องมือที่เชื่อมไว้แล้ว (อ่านก่อนถาม Bay ว่า "ใช้อะไร / ทำที่ไหน")

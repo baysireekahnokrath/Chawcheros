@@ -46,3 +46,12 @@ CHAW CHER HOME SALES GALLERY · โทร 062 601 8045
 
 ## LINE OA
 `line-oa-qr.png` — QR เพิ่มเพื่อน LINE (จากไฟล์ 2dbarcodes_GW.zip ใน Drive, 5 พ.ย. 2569)
+
+## Brand Bible (ร่าง 1 · 2026-11-27 · รอ Bay ยืนยัน)
+- เล่มกลยุทธ์แบรนด์ + อัตลักษณ์ + แนวทางสื่อสาร ของ ฌ เฌอ · 32 หน้า · โครงเดียวกับ ASE Brand Bible (ส.ค. 2026)
+- ดูได้ที่ https://claude.ai/artifact/UuAHAG8V4vyvNvSnk8khin (สไลด์ · ดาวน์โหลด PDF/PPTX ได้จากหน้านั้น)
+- ไฟล์ต้นทาง: `docs/brand/brand-bible/project/` (`deck.json` · `deck.css` · `slides/*.html`) · แก้แล้ว publish กลับไปที่ลิงก์เดิม
+- **ยังเป็นข้อเสนอ ห้ามใช้เป็นข้อความขายจนกว่า Bay ยืนยัน:** แก่น "Home, Rooted. / บ้านที่มีราก" · "ฌ เฌอ = ต้นไม้ของบ้าน" · DNA "Natural. Fitted. Lasting." · จุดยืน LIVE ROOTED · เสาหลัก 4 ข้อ (Craft Heir · Fit Advisor · Family Companion · Nature Keeper) · ขอบเขต LIV / TEEN · น้ำเสียง
+- **ของเดิมที่คงไว้:** โลโก้ สี ฟอนต์ ตาม CI 2021 · "Engaging and Inspiring Living" · ความเชื่อ "ธรรมชาติคือคำตอบของความผ่อนคลายที่แท้จริง" · ระบบชื่อนก (จากหน้า About Us บน chawcher.com)
+- **5 ข้อความบนหน้า About Us ที่ต้องมีหลักฐานก่อนใช้ต่อ** (หน้า 31 ของเล่ม): โรงงานญี่ปุ่นแท้ๆ · F**** · โรงงานไม้ 100 ปี/ดีไซเนอร์ระดับโลก · โรงแรม 5–6 ดาว · ไม้รีไซเคิล/Waste Management
+- เรื่องที่รอ Bay ตัดสิน 5 ข้อ อยู่หน้า 32 ของเล่ม

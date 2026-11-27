@@ -1,0 +1,157 @@
+/* Chaw Cher Brand Bible · สีและฟอนต์ตาม docs/brand/README.md
+   Navy #2B4368 · Slate #2F4554 · Aqua #83B7BF · Taupe #958C7B · Off-white #F7F8F8 */
+
+section {
+  padding: 128px 128px 160px;
+  background: #F7F8F8;
+  color: #2F4554;
+  font-family: 'Montserrat', 'Noto Sans Thai', Arial, sans-serif;
+  counter-increment: page;
+}
+section::after {
+  content: counter(page);
+  position: absolute;
+  right: 128px;
+  bottom: 64px;
+  font-size: 24px;
+  color: #6E6656;
+}
+.dark { background: #2F4554; color: #F7F8F8; }
+.navy { background: #2B4368; color: #F7F8F8; }
+.dark::after, .navy::after, .photo::after { color: #C9D6DA; }
+
+.top {
+  position: absolute;
+  left: 128px;
+  top: 60px;
+  width: 900px;
+  font-size: 24px;
+  letter-spacing: 6px;
+  font-weight: 500;
+  color: #6E6656;
+}
+.dark .top, .navy .top, .photo .top { color: #C9D6DA; }
+.rule {
+  position: absolute;
+  left: 128px;
+  top: 108px;
+  width: 1664px;
+  border-top: 2px solid #C9CDD0;
+}
+.dark .rule, .navy .rule { border-top: 2px solid #5B7080; }
+
+.eyebrow {
+  font-size: 24px;
+  letter-spacing: 4px;
+  font-weight: 500;
+  color: #6E6656;
+  margin-bottom: 16px;
+}
+.dark .eyebrow, .navy .eyebrow { color: #A9CDD3; }
+
+h1 { font-size: 104px; font-weight: 500; line-height: 1.1; color: #2B4368; }
+h2 { font-size: 60px; font-weight: 500; line-height: 1.2; color: #2B4368; margin-bottom: 44px; }
+h3 { font-size: 40px; font-weight: 500; line-height: 1.3; color: #2B4368; }
+.dark h1, .dark h2, .dark h3, .navy h1, .navy h2, .navy h3 { color: #F7F8F8; }
+
+p { font-size: 30px; line-height: 1.5; }
+.lead { font-size: 40px; line-height: 1.45; }
+.fine { font-size: 26px; line-height: 1.5; }
+.muted { color: #5A6770; }
+.dark .muted, .navy .muted { color: #C9D6DA; }
+.accent { color: #A9CDD3; }
+
+ul { font-size: 30px; line-height: 1.5; padding-left: 40px; }
+li { margin-bottom: 12px; }
+.tight { font-size: 26px; }
+.tight li { margin-bottom: 8px; }
+
+.tag {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: 500;
+  color: #2B4368;
+  background: #BFDCE0;
+  padding: 6px 20px;
+  border-radius: 40px;
+  margin-bottom: 20px;
+}
+
+.cards { display: grid; gap: 32px; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.c4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.card {
+  background: #FFFFFF;
+  border: 2px solid #D5DADD;
+  border-radius: 24px;
+  padding: 28px 32px;
+}
+.card .k { font-size: 24px; letter-spacing: 3px; font-weight: 500; color: #6E6656; margin-bottom: 12px; }
+.card h3 { font-size: 30px; font-weight: 600; margin-bottom: 10px; }
+.card .big { font-size: 40px; font-weight: 500; }
+.card .t { font-size: 26px; line-height: 1.5; }
+.card.fill { background: #2B4368; border: 2px solid #2B4368; }
+.card.fill h3, .card.fill .t { color: #F7F8F8; }
+.card.fill .k { color: #A9CDD3; }
+.card.soft { background: #E3EEF0; border: 2px solid #BFDCE0; }
+.dark .card { background: #3B5262; border: 2px solid #5B7080; }
+.dark .card h3, .dark .card .t { color: #F7F8F8; }
+.dark .card .k { color: #A9CDD3; }
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+.split-wide { display: grid; grid-template-columns: 3fr 2fr; gap: 72px; }
+.stack { display: flex; flex-direction: column; gap: 24px; }
+.band {
+  background: #2B4368;
+  border-radius: 24px;
+  padding: 36px 48px;
+  margin-top: 32px;
+}
+.band h3 { color: #F7F8F8; margin-bottom: 8px; }
+.band .t { font-size: 26px; line-height: 1.5; color: #E3EEF0; }
+
+.ph { width: 100%; object-fit: cover; border-radius: 24px; }
+.full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.shade { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: #1E2E3A; opacity: 0.62; }
+.photo h1, .photo h2, .photo p { color: #F7F8F8; }
+
+table { font-size: 26px; width: 100%; color: #2F4554; }
+thead tr, .head { background: #2B4368; }
+th { color: #F7F8F8; text-align: left; }
+
+.sw { border-radius: 24px; padding: 32px; height: 300px; }
+.sw .n { font-size: 30px; font-weight: 500; margin-bottom: 8px; }
+.sw .h { font-size: 24px; line-height: 1.5; }
+.sw-navy { background: #2B4368; color: #F7F8F8; }
+.sw-slate { background: #2F4554; color: #F7F8F8; }
+.sw-aqua { background: #83B7BF; color: #1E2E3A; }
+.sw-taupe { background: #958C7B; color: #14191D; }
+.sw-white { background: #FFFFFF; border: 2px solid #D5DADD; color: #2F4554; }
+
+.axis-box {
+  position: absolute;
+  width: 300px;
+  padding: 18px 12px;
+  border-radius: 16px;
+  font-size: 26px;
+  line-height: 1.35;
+  font-weight: 500;
+  text-align: center;
+}
+.from { background: #E4E0D9; color: #3D382F; }
+.to { background: #2B4368; color: #F7F8F8; }
+.here { background: #BFDCE0; color: #2B4368; border: 2px solid #2B4368; }
+
+.rows .row { font-size: 26px; line-height: 1.5; padding: 18px 0; border-bottom: 2px solid #D5DADD; }
+.c5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 24px; }
+.panel { border-radius: 24px; height: 520px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
+.panel .cap { font-size: 24px; letter-spacing: 3px; font-weight: 500; }
+.p-navy { background: #2B4368; color: #F7F8F8; }
+.p-white { background: #FFFFFF; border: 2px solid #D5DADD; color: #2B4368; }
+.p-aqua { background: #83B7BF; color: #1E2E3A; }
+.p-slate { background: #2F4554; color: #F7F8F8; }
+.sample-en { font-size: 60px; line-height: 1.2; color: #2B4368; letter-spacing: 4px; }
+.sample-th { font-size: 60px; line-height: 1.4; color: #2B4368; }
+.cap-img { font-size: 24px; letter-spacing: 4px; font-weight: 500; margin-top: 20px; color: #A9CDD3; }
+.msg { font-size: 30px; line-height: 1.45; font-weight: 500; margin-bottom: 16px; }
