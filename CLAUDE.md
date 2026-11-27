@@ -84,6 +84,7 @@
 - **WordPress REST จากระบบ:** Vercel มี `WP_USER`=`content-agent` + `WP_APP_PASSWORD` แล้ว (ใส่ 2026-10-06 สำหรับโมดูลคอนเทนต์ R7 · branch `claude/wizardly-clarke-fiby92` ยังไม่ merge) · หน้า /news ใช้ชุดเดียวกัน · ห้ามให้ Bay สร้างใหม่
 - บัญชีที่ระบบใช้อ่าน Google Sheet (แชร์ Viewer ให้ตัวนี้): `chawcher-sheets@chaw-cher-1563265514558.iam.gserviceaccount.com`
 - เว็บแบรนด์ chawcher.com: หน้า FAQ draft อยู่ที่ WordPress page id 18148 (`docs/modules/line-agent/8-knowledge.md`)
+- หน้าแนะนำแบรนด์ 1 หน้าสำหรับส่งคู่ค้า (One Page Introduction · เริ่มจากคุณฟลุค ICON CRAFT): WordPress page id 18252 draft · `docs/icon-craft-intro/status.md` (มีลิงก์ social ของแบรนด์ครบ)
 
 ### กฎกันลืม
 เจอข้อมูลที่ต้องถาม Bay (URL, ชื่อโปรเจกต์, เลข id, ใครดูแลอะไร) แล้ว Bay ตอบ → **เขียนลงไฟล์นี้ทันทีในรอบนั้น** ก่อนปิดงาน · ถ้าค้น `docs/` เจอก่อนถาม ให้ใช้เลย แล้วเพิ่มลงไฟล์นี้ถ้ายังไม่มี
